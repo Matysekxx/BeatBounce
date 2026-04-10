@@ -1,4 +1,4 @@
-package cz.matysekxx.beatbounce.core;
+package cz.matysekxx.beatbounce;
 
 import javax.swing.*;
 

@@ -1,4 +1,4 @@
-package cz.matysekxx.beatbounce.core.model.level;
+package cz.matysekxx.beatbounce.model.level;
 
 public class Level {
 }

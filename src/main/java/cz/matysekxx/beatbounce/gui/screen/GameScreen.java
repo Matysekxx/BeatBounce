@@ -1,4 +1,4 @@
-package cz.matysekxx.beatbounce.core.gui.screen;
+package cz.matysekxx.beatbounce.gui.screen;
 
 public class GameScreen extends Screen {
 }

@@ -1,4 +1,4 @@
-package cz.matysekxx.beatbounce.core.event;
+package cz.matysekxx.beatbounce.event;
 
 public class Event {
 }

@@ -1,4 +1,4 @@
-package cz.matysekxx.beatbounce.core.controller;
+package cz.matysekxx.beatbounce.controller;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;

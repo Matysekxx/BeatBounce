@@ -1,4 +1,4 @@
-package cz.matysekxx.beatbounce.core.model.audio;
+package cz.matysekxx.beatbounce.model.audio;
 
 import javax.sound.sampled.*;
 import java.io.File;

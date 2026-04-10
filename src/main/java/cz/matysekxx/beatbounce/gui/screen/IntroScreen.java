@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class IntroScreen extends Screen {
-    public IntroScreen() {
+    IntroScreen() {
         super();
         this.setLayout(new BorderLayout());
 

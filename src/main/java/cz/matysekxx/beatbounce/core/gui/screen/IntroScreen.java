@@ -1,4 +1,6 @@
-package cz.matysekxx.beatbounce.core.gui;
+package cz.matysekxx.beatbounce.core.gui.screen;
+
+import cz.matysekxx.beatbounce.core.gui.ButtonFactory;
 
 import javax.swing.*;
 import java.awt.*;

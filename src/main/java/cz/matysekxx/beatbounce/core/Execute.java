@@ -1,6 +1,6 @@
 package cz.matysekxx.beatbounce.core;
 
-import cz.matysekxx.beatbounce.core.gui.IntroScreen;
+import cz.matysekxx.beatbounce.core.gui.screen.IntroScreen;
 
 public class Execute implements Runnable {
     @Override

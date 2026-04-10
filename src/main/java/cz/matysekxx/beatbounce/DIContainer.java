@@ -20,9 +20,7 @@ public final class DIContainer {
         }
     }
 
-    public static <T> T getComponent(Class<T> component) {
-        @SuppressWarnings("unchecked")
-        final T c = (T) components.get(component);
-        return c;
+    @SuppressWarnings("unchecked") public static <T> T getComponent(Class<T> component) {
+        return (T) components.get(component);
     }
 }

@@ -3,6 +3,7 @@ package cz.matysekxx.beatbounce.util;
 import java.time.Duration;
 
 public final class Utility {
+    private Utility() {}
     public static void sleep(long millis) {
         try {Thread.sleep(millis);}
         catch (InterruptedException e) {

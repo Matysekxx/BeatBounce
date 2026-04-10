@@ -7,7 +7,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class EventQueue {
     static {
-        DIContainer.register(new EventQueue());
+        DIContainer.register(EventQueue.class, new EventQueue());
     }
     private final BlockingQueue<Event> eventQueue = new LinkedBlockingQueue<>();
 

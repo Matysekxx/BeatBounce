@@ -1,4 +1,5 @@
 package cz.matysekxx.beatbounce.core.model.level;
 
-public class Tile {
-}
+import java.awt.*;
+
+public record Tile(Rectangle rectangle) {}

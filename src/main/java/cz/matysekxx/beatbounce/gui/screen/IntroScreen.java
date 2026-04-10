@@ -1,6 +1,7 @@
 package cz.matysekxx.beatbounce.gui.screen;
 
 import cz.matysekxx.beatbounce.gui.ButtonFactory;
+import cz.matysekxx.beatbounce.util.Utility;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,12 +16,14 @@ public class IntroScreen extends Screen {
         buttonPanel.setOpaque(false);
 
         final JButton startButton = ButtonFactory.createStartButton(e -> {
+            Utility.sleep(200);
             new MainMenuScreen();
             this.dispose();
         });
         buttonPanel.add(startButton);
 
         final JButton exitButton = ButtonFactory.createExitButton(e -> {
+            Utility.sleep(200);
             System.exit(0);
         });
         buttonPanel.add(exitButton);

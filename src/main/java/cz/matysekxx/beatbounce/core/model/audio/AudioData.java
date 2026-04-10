@@ -3,14 +3,7 @@ package cz.matysekxx.beatbounce.core.model.audio;
 import javax.sound.sampled.*;
 import java.io.File;
 
-public class AudioData {
-    private final Clip clip;
-    private final short[] samples;
-    private final AudioFormat format;
-
-    public short[] getSamples() {
-        return samples;
-    }
+public record AudioData(Clip clip, short[] samples, AudioFormat format) {
 
     public static AudioData create(String fileName) {
         try {
@@ -28,12 +21,6 @@ public class AudioData {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private AudioData(Clip clip, short[] samples, AudioFormat format) {
-        this.clip = clip;
-        this.samples = samples;
-        this.format = format;
     }
 
     private static short[] bytesToShorts(byte[] bytes, boolean bigEndian) {

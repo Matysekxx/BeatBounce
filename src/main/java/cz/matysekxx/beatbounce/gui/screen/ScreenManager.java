@@ -8,4 +8,16 @@ public class ScreenManager {
     }
 
     private ScreenManager() {}
+
+    public MainMenuScreen showMainMenuScreen() {
+        return new MainMenuScreen();
+    }
+
+    public GameScreen showGameScreen() {
+        return new GameScreen();
+    }
+
+    public IntroScreen showIntroScreen() {
+        return new IntroScreen();
+    }
 }

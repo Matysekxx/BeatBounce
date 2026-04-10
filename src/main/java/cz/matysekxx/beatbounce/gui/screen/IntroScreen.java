@@ -9,11 +9,12 @@ import java.awt.*;
 public class IntroScreen extends Screen {
     public IntroScreen() {
         super();
-        this.setLayout(new GridBagLayout());
+        this.setLayout(new BorderLayout());
 
         final JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 100));
         buttonPanel.setOpaque(false);
+
 
         final JButton startButton = ButtonFactory.createStartButton(e -> {
             Utility.sleep(200);
@@ -28,6 +29,6 @@ public class IntroScreen extends Screen {
         });
         buttonPanel.add(exitButton);
 
-        this.add(buttonPanel);
+        this.add(buttonPanel, BorderLayout.SOUTH);
     }
 }

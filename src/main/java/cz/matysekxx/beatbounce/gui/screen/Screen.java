@@ -13,7 +13,6 @@ public abstract class Screen extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setLocationRelativeTo(null);
-        this.setResizable(false);
         this.setVisible(true);
     }
 }

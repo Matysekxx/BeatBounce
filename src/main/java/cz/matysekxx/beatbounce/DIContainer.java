@@ -14,6 +14,12 @@ public final class DIContainer {
         }
     }
 
+    public static <T> void register(Class<T> type, T component) {
+        if (components.put(type, component) != null) {
+            System.err.println("Component has been overwritten: " + type.getName());
+        }
+    }
+
     public static <T> T getComponent(Class<T> component) {
         @SuppressWarnings("unchecked")
         final T c = (T) components.get(component);

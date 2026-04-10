@@ -1,51 +1,68 @@
 package cz.matysekxx.beatbounce.core.gui;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class ButtonFactory {
-    private static final Color MAGENTA_GLOW = new Color(255, 23, 140);
-    private static final Color MAGENTA_DARK = new Color(130, 0, 120);
-    private static final Color CYAN_GLOW = new Color(0, 255, 255);
-    private static final Color CYAN_DARK = new Color(0, 80, 100);
+    private static final Color MAGENTA_TOP_GLOW = new Color(255, 30, 240);
+    private static final Color MAGENTA_TOP_FILL = new Color(230, 0, 200);
+
+    private static final Color MAGENTA_FRONT_SIDE = new Color(100, 0, 90);
+
+    private static final Color CYAN_TOP_GLOW = new Color(0, 255, 255);
+    private static final Color CYAN_TOP_FILL = new Color(0, 200, 220);
+    private static final Color CYAN_FRONT_SIDE = new Color(0, 70, 90);
     private static final Color WHITE = new Color(255, 255, 255);
 
     public static JButton createStartButton(ActionListener actionListener) {
-        final JButton button = new JButton("Start");
-        button.addActionListener(actionListener);
-        button.setBackground(MAGENTA_DARK);
-        button.setForeground(WHITE);
-        button.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED, MAGENTA_GLOW, MAGENTA_DARK.darker()));
-        return button;
+        return createButton("START", MAGENTA_TOP_FILL, MAGENTA_TOP_GLOW, MAGENTA_FRONT_SIDE, actionListener);
     }
 
     public static JButton createExitButton(ActionListener actionListener) {
-        final JButton button = new JButton("Exit");
-        button.addActionListener(actionListener);
-        button.setBackground(CYAN_DARK);
-        button.setForeground(WHITE);
-
-        button.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED, CYAN_GLOW, CYAN_DARK.darker()));
-        styleNeonButton(button);
-        return button;
+        return createButton("EXIT", CYAN_TOP_FILL, CYAN_TOP_GLOW, CYAN_FRONT_SIDE, actionListener);
     }
 
-    private static void styleNeonButton(JButton button) {
-        button.setFont(new Font("SansSerif", Font.BOLD, 18));
+    private static JButton createButton(String text, Color topFill, Color topGlow, Color frontSide, ActionListener listener) {
+        final JButton button = new JButton(text) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                final Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                final int w = getWidth();
+                final int h = getHeight();
+
+                final int depth = 6;
+                final int arc = 40;
+                g2.setColor(frontSide);
+                g2.fillRoundRect(0, depth, w, h - depth, arc, arc);
+
+                g2.setColor(topFill);
+                g2.fillRoundRect(0, 0, w, h - depth, arc, arc);
+                g2.setColor(topGlow);
+                g2.setStroke(new BasicStroke(3.5f));
+                g2.drawRoundRect(2, 2, w - 4, h - depth - 4, arc, arc);
+
+                g2.setFont(getFont());
+                g2.setColor(getForeground());
+                final FontMetrics fm = g2.getFontMetrics();
+                final int textX = (w - fm.stringWidth(getText())) >> 1;
+                final int textY = ((h - depth) + fm.getAscent() - fm.getDescent()) >> 1;
+                g2.drawString(getText(), textX, textY);
+
+                g2.dispose();
+            }
+        };
+
+        button.addActionListener(listener);
+        button.setForeground(WHITE);
+        button.setFont(new Font("Monospaced", Font.BOLD, 22));
+        button.setPreferredSize(new Dimension(220, 80));
+
+        button.setContentAreaFilled(false);
+        button.setBorderPainted(false);
         button.setFocusPainted(false);
-        button.setContentAreaFilled(true);
-        button.setOpaque(true);
-        button.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent evt) {
-                button.setBackground(button.getBackground().brighter());
-            }
-            public void mouseExited(MouseEvent evt) {
-                button.setBackground(button.getBackground().darker());
-            }
-        });
+        button.setOpaque(false);
+        return button;
     }
 }

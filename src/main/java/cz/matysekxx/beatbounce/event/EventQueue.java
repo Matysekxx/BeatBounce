@@ -9,6 +9,8 @@ public class EventQueue {
     static {
         DIContainer.register(EventQueue.class, new EventQueue());
     }
+
+    private EventQueue() {}
     private final BlockingQueue<Event> eventQueue = new LinkedBlockingQueue<>();
 
     public void enqueue(Event event) {

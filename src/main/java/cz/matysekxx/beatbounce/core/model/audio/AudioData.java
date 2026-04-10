@@ -2,6 +2,8 @@ package cz.matysekxx.beatbounce.core.model.audio;
 
 import javax.sound.sampled.*;
 import java.io.File;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 
 public record AudioData(Clip clip, short[] samples, AudioFormat format) {
 
@@ -9,10 +11,11 @@ public record AudioData(Clip clip, short[] samples, AudioFormat format) {
         try {
             final AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(fileName));
             final AudioFormat audioFormat = audioInputStream.getFormat();
-            final short[] samples = bytesToShorts(audioInputStream.readAllBytes(), audioFormat.isBigEndian());
+            final byte[] allBytes = audioInputStream.readAllBytes();
+            final short[] samples = bytesToShorts(allBytes, audioFormat.isBigEndian());
 
             final Clip clip = AudioSystem.getClip();
-            clip.open(audioInputStream);
+            clip.open(audioFormat, allBytes, 0, allBytes.length);
             audioInputStream.close();
 
             return new AudioData(
@@ -21,6 +24,12 @@ public record AudioData(Clip clip, short[] samples, AudioFormat format) {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static CompletableFuture<AudioData> createAsync(String fileName) {
+        return CompletableFuture.supplyAsync(
+                () -> create(fileName), Executors.newVirtualThreadPerTaskExecutor()
+        );
     }
 
     private static short[] bytesToShorts(byte[] bytes, boolean bigEndian) {

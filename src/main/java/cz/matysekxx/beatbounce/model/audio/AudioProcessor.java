@@ -1,4 +1,4 @@
 package cz.matysekxx.beatbounce.model.audio;
 
-public class AudioAnalyzer {
+public class AudioProcessor {
 }

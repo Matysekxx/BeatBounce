@@ -12,4 +12,12 @@ public class Level {
         this.tiles = tiles;
         this.songName = songName;
     }
+
+    public List<AbstractTile> getTiles() {
+        return tiles;
+    }
+
+    public String getSongName() {
+        return songName;
+    }
 }

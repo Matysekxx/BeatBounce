@@ -29,14 +29,14 @@ public class AudioAnalyzer {
         final short[] samples = audioData.samples();
         final int chunkSize = 1024;
         for (int i = 0; i < samples.length; i += chunkSize) {
+            final short[] chunk = new short[chunkSize];
             final int end = Math.min(i + chunkSize, samples.length);
-            final short[] chunk = new short[end - i];
             System.arraycopy(samples, i, chunk, 0, end - i);
             processor.processChunk(chunk);
         }
 
         beatEvents.sort(Comparator.comparingDouble(BeatEvent::timestamp));
-
+        System.out.println("Analyzing done");;
         return beatEvents;
     }
 }

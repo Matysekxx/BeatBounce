@@ -6,8 +6,8 @@ import cz.matysekxx.beatbounce.util.Utility;
 import javax.swing.*;
 import java.awt.*;
 
-public class IntroScreen extends Screen {
-    IntroScreen() {
+public class IntroScreen extends Screen {;
+    public IntroScreen(ScreenManager screenManager) {
         super();
         this.setLayout(new BorderLayout());
 
@@ -18,7 +18,7 @@ public class IntroScreen extends Screen {
 
         final JButton startButton = ButtonFactory.createStartButton(e -> {
             Utility.sleep(200);
-            new MainMenuScreen();
+            screenManager.showScreen(MainMenuScreen.class);
             this.dispose();
         });
         buttonPanel.add(startButton);

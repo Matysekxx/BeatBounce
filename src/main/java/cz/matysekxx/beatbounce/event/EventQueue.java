@@ -1,14 +1,9 @@
 package cz.matysekxx.beatbounce.event;
 
-import cz.matysekxx.beatbounce.DIContainer;
-
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class EventQueue {
-    static {
-        DIContainer.register(EventQueue.class, new EventQueue());
-    }
 
     private EventQueue() {}
     private final BlockingQueue<Event> eventQueue = new LinkedBlockingQueue<>();

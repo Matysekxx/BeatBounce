@@ -32,7 +32,7 @@ public record AudioData(Clip clip, short[] samples, AudioFormat format) {
         );
     }
 
-    private static short[] bytesToShorts(byte[] bytes, boolean bigEndian) {
+    public static short[] bytesToShorts(byte[] bytes, boolean bigEndian) {
         final short[] shorts = new short[(bytes.length >> 1)];
         for (int i = 0; i < shorts.length; i++) {
             final int b1 = bytes[i * 2] & 255;
@@ -42,5 +42,19 @@ public record AudioData(Clip clip, short[] samples, AudioFormat format) {
             else shorts[i] = (short) ((b2 << 8) | b1);
         }
         return shorts;
+    }
+
+    public static byte[] shortsToBytes(short[] shorts, boolean bigEndian) {
+        final byte[] bytes = new byte[shorts.length * 2];
+        for (int i = 0; i < shorts.length; i++) {
+            if (bigEndian) {
+                bytes[i * 2] = (byte) (shorts[i] >> 8);
+                bytes[i * 2 + 1] = (byte) (shorts[i] & 255);
+            } else {
+                bytes[i * 2] = (byte) (shorts[i] & 255);
+                bytes[i * 2 + 1] = (byte) (shorts[i] >> 8);
+            }
+        }
+        return bytes;
     }
 }

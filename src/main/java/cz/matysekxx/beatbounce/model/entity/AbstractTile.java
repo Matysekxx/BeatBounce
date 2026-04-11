@@ -1,20 +1,20 @@
 package cz.matysekxx.beatbounce.model.entity;
 
 import cz.matysekxx.beatbounce.gui.Paintable;
-import cz.matysekxx.beatbounce.model.audio.BeatData;
+import cz.matysekxx.beatbounce.event.BeatEvent;
 
 import java.awt.*;
 
 public abstract class AbstractTile extends Entity implements Paintable {
-    private final BeatData beatData;
+    private final BeatEvent beatEvent;
     private Rectangle rectangle;
 
-    public AbstractTile(BeatData beatData, Point point) {
+    public AbstractTile(BeatEvent beatEvent, Point point) {
         super(point.x,  point.y);
-        this.beatData = beatData;
+        this.beatEvent = beatEvent;
     }
 
-    public BeatData getBeatData() {
-        return beatData;
+    public BeatEvent getBeatEvent() {
+        return beatEvent;
     }
 }

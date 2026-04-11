@@ -1,12 +1,12 @@
 package cz.matysekxx.beatbounce.model.entity;
 
-import cz.matysekxx.beatbounce.model.audio.BeatData;
+import cz.matysekxx.beatbounce.event.BeatEvent;
 
 import java.awt.*;
 
 public class NormalTile extends AbstractTile {
-    public NormalTile(BeatData beatData, Point point) {
-        super(beatData, point);
+    public NormalTile(BeatEvent beatEvent, Point point) {
+        super(beatEvent, point);
     }
 
     @Override

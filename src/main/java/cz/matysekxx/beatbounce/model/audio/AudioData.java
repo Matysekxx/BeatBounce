@@ -5,7 +5,10 @@ import java.io.File;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
-public record AudioData(Clip clip, short[] samples, AudioFormat format) {
+public record AudioData(
+        short[] samples,
+        AudioFormat format
+) {
 
     public static AudioData create(String fileName) {
         try {
@@ -19,7 +22,7 @@ public record AudioData(Clip clip, short[] samples, AudioFormat format) {
             audioInputStream.close();
 
             return new AudioData(
-                    clip, samples, audioFormat
+                    samples, audioFormat
             );
         } catch (Exception e) {
             throw new RuntimeException(e);

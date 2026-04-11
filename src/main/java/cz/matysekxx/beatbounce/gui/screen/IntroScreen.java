@@ -28,7 +28,7 @@ public class IntroScreen extends Screen {;
             System.exit(0);
         });
         buttonPanel.add(exitButton);
-
         this.add(buttonPanel, BorderLayout.SOUTH);
+        this.setVisible(true);
     }
 }

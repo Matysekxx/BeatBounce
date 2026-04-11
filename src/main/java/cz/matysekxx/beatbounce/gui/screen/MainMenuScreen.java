@@ -1,7 +1,8 @@
 package cz.matysekxx.beatbounce.gui.screen;
 
 public class MainMenuScreen extends Screen {
-    MainMenuScreen() {
+    public MainMenuScreen() {
         super();
+        this.setVisible(true);
     }
 }

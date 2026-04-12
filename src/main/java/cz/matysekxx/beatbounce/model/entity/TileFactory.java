@@ -8,11 +8,11 @@ public class TileFactory {
 
     private TileFactory() {}
 
-    public static NormalTile createNormalTile(BeatEvent event, int x, int y) {
-        return new NormalTile(event, new Point(x, y));
+    public static NormalTile createNormalTile(BeatEvent event, int x, int y, double z) {
+        return new NormalTile(event, new Point(x, y), z);
     }
 
-    public static LongTile createLongTile(BeatEvent event, int x, int y, int widthInPixels) {
-        return new LongTile(event, new Point(x, y), widthInPixels);
+    public static LongTile createLongTile(BeatEvent event, int x, int y, double z, double lengthInZ) {
+        return new LongTile(event, new Point(x, y), z, lengthInZ);
     }
 }

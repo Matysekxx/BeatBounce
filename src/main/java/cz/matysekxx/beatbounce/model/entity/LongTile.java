@@ -6,20 +6,25 @@ import java.awt.*;
 
 public class LongTile extends AbstractTile {
     
-    private final int width;
+    private final double lengthInZ;
     
-    public LongTile(BeatEvent beatEvent, Point point, int width) {
-        super(beatEvent, point);
-        this.width = width;
+    public LongTile(BeatEvent beatEvent, Point point, double z, double lengthInZ) {
+        super(beatEvent, point, z);
+        this.lengthInZ = lengthInZ;
     }
 
-    public int getWidth() {
-        return width;
+    @Override
+    public double getLengthInZ() {
+        return lengthInZ;
     }
 
     @Override
     public void paint(Graphics2D g2d) {
+    }
+
+    @Override
+    public void paint3D(Graphics2D g2d, int screenX, int screenY, int scaledWidth, int scaledHeight) {
         g2d.setColor(Color.RED);
-        g2d.fillRect(x, y, width, 20);
+        g2d.fillRect(screenX, screenY, scaledWidth, scaledHeight);
     }
 }

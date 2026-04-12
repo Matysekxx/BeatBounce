@@ -9,12 +9,7 @@ public class NormalTile extends AbstractTile {
         super(beatEvent, point, z);
     }
 
-    @Override
-    public void paint(Graphics2D g2d) {
-    }
-
-    @Override
-    public void paint3D(Graphics2D g2d, Polygon polygon) {
+    @Override public void paint3D(Graphics2D g2d, Polygon polygon) {
         g2d.setColor(Color.GREEN);
         g2d.fillPolygon(polygon);
     }

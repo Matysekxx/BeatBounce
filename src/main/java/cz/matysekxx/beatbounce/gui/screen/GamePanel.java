@@ -1,6 +1,7 @@
 package cz.matysekxx.beatbounce.gui.screen;
 
 import cz.matysekxx.beatbounce.gui.Camera3D;
+import cz.matysekxx.beatbounce.gui.WindowData;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.level.Level;
 import cz.matysekxx.beatbounce.util.Utility;
@@ -100,38 +101,7 @@ public class GamePanel extends JPanel implements Runnable {
         final var tiles = level.getTiles();
         for (int i = tiles.size() - 1; i >= 0; i--) {
             final AbstractTile tile = tiles.get(i);
-            final double distance = cam.getDistanceTo(tile.getZ());
-            final double length = tile.getLengthInZ() > 0 ? tile.getLengthInZ() : 50;
-            final double tileDepth = distance + length;
-
-            if (tileDepth <= 0 || distance > 3000) continue;
-
-            final double scaleFront = cam.getScale(tile.getZ());
-            final double scaleBack = cam.getScale(tile.getZ() + length);
-
-            final int screenYFront = (int) (horizonY + ((150 - cam.getY()) * scaleFront));
-            final int screenYBack = (int) (horizonY + ((150 - cam.getY()) * scaleBack));
-
-            final double centerScreenFront = calculateCenterScreen(tile, width, scaleFront);
-            final double centerScreenBack = calculateCenterScreen(tile, width, scaleBack);
-
-            final double frontWidth = 100*scaleFront;
-            final double backWidth = 100*scaleBack;
-
-            final int[] pointsX = {
-                    (int) (centerScreenFront - frontWidth / 2),
-                    (int) (centerScreenFront + frontWidth / 2),
-                    (int) (centerScreenBack + backWidth / 2),
-                    (int) (centerScreenBack - backWidth / 2)
-            };
-            final int[] pointsY = {
-                    screenYFront, screenYFront, screenYBack, screenYBack
-            };
-            tile.paint3D(g2d, new Polygon(pointsX, pointsY, 4));
+            tile.paint3D(g2d, cam, new WindowData(width, height));
         }
-    }
-
-    private double calculateCenterScreen(AbstractTile tile, int width ,double scale) {
-        return ((double) width / 2) + ((tile.getX() - cam.getX()) * scale);
     }
 }

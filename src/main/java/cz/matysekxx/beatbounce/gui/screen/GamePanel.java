@@ -50,6 +50,7 @@ public class GamePanel extends JPanel implements Runnable {
         final int width = getWidth();
         final int height = getHeight();
         final int horizonY = height / 3;
+        final double fieldOfView = 500.0;
 
         var xPoints = new int[]{100, width - 100, (width / 2) + 150, (width / 2) - 150};
         var yPoints = new int[]{height, height, horizonY, horizonY};
@@ -59,9 +60,9 @@ public class GamePanel extends JPanel implements Runnable {
         for (int z = 0; z < 2000; z += 200) {
             final double distance = z - (cameraZ % 200);
             if (distance <= 0) continue;
-            final double scale = 250.0 / (distance + 1);
+            final double scale = fieldOfView / (distance + 1);
             final int screenY = horizonY + (int)(150 * scale);
-            if (screenY > horizonY && screenY < height) {
+            if (screenY >= horizonY && screenY <= height) {
                 g2d.drawLine(0, screenY, width, screenY);
             }
         }
@@ -71,24 +72,40 @@ public class GamePanel extends JPanel implements Runnable {
         final var tiles = level.getTiles();
         for (int i = tiles.size() - 1; i >= 0; i--) {
             final AbstractTile tile = tiles.get(i);
-            final double distanceFront = tile.getZ() - cameraZ;
-            if (distanceFront > 0 && distanceFront < 3000) {
-                final double scaleFront = 250.0 / (distanceFront + 1);
-                final int screenYFront = horizonY + (int)(150 * scaleFront);
+            final double distance = tile.getZ() - cameraZ;
+            final double length = tile.getLengthInZ() > 0 ? tile.getLengthInZ() : 50;
+            final double tileDepth = distance + length;
 
-                final int scaledWidth = (int)(80 * scaleFront);
-                final int screenX = (width / 2) + (int)(tile.getX() * scaleFront) - (scaledWidth / 2);
+            if (tileDepth <= 0 || distance > 3000) continue;
 
-                final int screenYBack;
-                if (tile.getLengthInZ() > 0) {
-                    final double scaleBack = 250.0 / (distanceFront + tile.getLengthInZ() + 1);
-                    screenYBack = horizonY + (int)(150 * scaleBack);
-                } else {
-                    screenYBack = screenYFront - (int)(20 * scaleFront);
-                }
-                final int scaledHeight = screenYFront - screenYBack;
-                tile.paint3D(g2d, screenX, screenYBack, scaledWidth, scaledHeight);
-            }
+            final double clippedDistance = Math.max(distance, 0.0);
+
+            final double scaleFront = fieldOfView / (clippedDistance + 1);
+            final double scaleBack = fieldOfView / (tileDepth + 1);
+
+            final int screenYFront = horizonY + (int)(150 * scaleFront);
+            final int screenYBack = horizonY + (int)(150 * scaleBack);
+
+            final double centerScreenFront = calculateCenterScreen(tile, width, scaleFront);
+            final double centerScreenBack = calculateCenterScreen(tile, width, scaleBack);
+
+            final double frontWidth = 100*scaleFront;
+            final double backWidth = 100*scaleBack;
+
+            final int[] pointsX = {
+                    (int) (centerScreenFront - frontWidth / 2),
+                    (int) (centerScreenFront + frontWidth / 2),
+                    (int) (centerScreenBack + backWidth / 2),
+                    (int) (centerScreenBack - backWidth / 2)
+            };
+            final int[] pointsY = {
+                    screenYFront, screenYFront, screenYBack, screenYBack
+            };
+            tile.paint3D(g2d, new Polygon(pointsX, pointsY, 4));
         }
+    }
+
+    private static double calculateCenterScreen(AbstractTile tile, int width ,double scale) {
+        return ((double) width / 2) + (tile.getX() * scale);
     }
 }

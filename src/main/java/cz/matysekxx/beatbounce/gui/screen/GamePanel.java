@@ -5,20 +5,22 @@ import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.level.Level;
 import cz.matysekxx.beatbounce.util.Utility;
 
+import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
 public class GamePanel extends JPanel implements Runnable {
     private Level level;
+    private Clip clip;
     
     private final Camera3D cam;
     private boolean running;
 
-    public GamePanel(Level level) {
+    public GamePanel(Level level, Clip clip) {
         this.level = level;
+        this.clip = clip;
         this.running = false;
         this.setBackground(Color.DARK_GRAY);
         cam = new Camera3D(0, 0, 0, 500.0);
@@ -39,6 +41,7 @@ public class GamePanel extends JPanel implements Runnable {
     public void startGame() {
         if (!this.running) {
             this.running = true;
+            clip.start();
             Thread.ofVirtual().start(this);
         }
     }
@@ -49,12 +52,9 @@ public class GamePanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
-        long lastTime = System.currentTimeMillis();
         while (running) {
-            final long now = System.currentTimeMillis();
-            final double deltaTime = (now - lastTime) / 1000.0;
-            lastTime = now;
-            cam.addToZ(deltaTime * 1000.0);
+            final double currentAudioTimeSeconds = clip.getMicrosecondPosition() / 1_000_000.0;
+            cam.setZ(currentAudioTimeSeconds * 1000.0);
             repaint();
             Utility.sleep(16);
         }

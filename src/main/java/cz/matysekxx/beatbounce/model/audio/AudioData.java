@@ -7,7 +7,8 @@ import java.util.concurrent.Executors;
 
 public record AudioData(
         short[] samples,
-        AudioFormat format
+        AudioFormat format,
+        Clip clip
 ) {
 
     public static AudioData create(String fileName) {
@@ -22,7 +23,7 @@ public record AudioData(
             audioInputStream.close();
 
             return new AudioData(
-                    samples, audioFormat
+                    samples, audioFormat, clip
             );
         } catch (Exception e) {
             throw new RuntimeException(e);

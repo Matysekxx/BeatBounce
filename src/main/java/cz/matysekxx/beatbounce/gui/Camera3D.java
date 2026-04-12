@@ -21,6 +21,10 @@ public class Camera3D {
         this.z += deltaZ;
     }
 
+    public void setZ(double z) {
+        this.z = z;
+    }
+
     public void addToX(double deltaX) {
         this.x += deltaX;
     }
@@ -50,8 +54,7 @@ public class Camera3D {
     }
 
     public double getScale(double objectZ) {
-        double distance = Math.max(0.0, this.getDistanceTo(objectZ));
-
+        final double distance = Math.max(0.0, this.getDistanceTo(objectZ));
         return fieldOfView / (distance + 1);
     }
 }

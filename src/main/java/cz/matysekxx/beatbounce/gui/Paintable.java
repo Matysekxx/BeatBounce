@@ -3,9 +3,7 @@ package cz.matysekxx.beatbounce.gui;
 import java.awt.*;
 
 public interface Paintable {
-    void paint(Graphics2D g2d);
+    void paint3D(Graphics2D g2d, Camera3D camera, WindowData windowData);
 
-    default void paint(Graphics g) {
-        paint((Graphics2D) g);
-    }
+    void paint3D(Graphics2D g2d, Polygon polygon);
 }

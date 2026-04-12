@@ -1,21 +1,39 @@
 package cz.matysekxx.beatbounce.gui.screen;
 
+import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.level.Level;
 import cz.matysekxx.beatbounce.util.Utility;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 public class GamePanel extends JPanel implements Runnable {
     private Level level;
+    
+    private final Camera3D cam;
     private boolean running;
-    private double cameraZ = 0;
 
     public GamePanel(Level level) {
         this.level = level;
         this.running = false;
         this.setBackground(Color.DARK_GRAY);
+        cam = new Camera3D(0, 0, 0, 500.0);
+        this.setFocusable(true);
+        this.requestFocusInWindow();
+
+        this.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_LEFT) cam.addToX(-100);
+                if (e.getKeyCode() == KeyEvent.VK_RIGHT) cam.addToX(100);
+                if (e.getKeyCode() == KeyEvent.VK_UP) cam.addToY(-100);
+                if (e.getKeyCode() == KeyEvent.VK_DOWN) cam.addToY(100);
+            }
+        });
     }
 
     public void startGame() {
@@ -33,10 +51,10 @@ public class GamePanel extends JPanel implements Runnable {
     public void run() {
         long lastTime = System.currentTimeMillis();
         while (running) {
-            long now = System.currentTimeMillis();
-            double deltaTime = (now - lastTime) / 1000.0;
+            final long now = System.currentTimeMillis();
+            final double deltaTime = (now - lastTime) / 1000.0;
             lastTime = now;
-            cameraZ += deltaTime * 1000.0;
+            cam.addToZ(deltaTime * 1000.0);
             repaint();
             Utility.sleep(16);
         }
@@ -46,22 +64,32 @@ public class GamePanel extends JPanel implements Runnable {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         final Graphics2D g2d = (Graphics2D) g;
+        g2d.setColor(Color.WHITE);
         
         final int width = getWidth();
         final int height = getHeight();
         final int horizonY = height / 3;
-        final double fieldOfView = 500.0;
 
-        var xPoints = new int[]{100, width - 100, (width / 2) + 150, (width / 2) - 150};
-        var yPoints = new int[]{height, height, horizonY, horizonY};
-        g2d.setColor(Color.WHITE);
+        var xPoints = new int[]{
+                (int) (100 - cam.getX()),
+                (int) (width - 100 - cam.getX()),
+                (int) (((double) width / 2) + 150 - (cam.getX() / 4)),
+                (int) (((double) width / 2) - 150 - (cam.getX() / 4))
+        };
+        var yPoints = new int[]{
+                (int) (height - cam.getY()),
+                (int) (height - cam.getY()),
+                (int) (horizonY - (cam.getY() / 4)),
+                (int) (horizonY - (cam.getY() / 4))
+        };
+
         g2d.fillPolygon(xPoints, yPoints, 4);
 
         for (int z = 0; z < 2000; z += 200) {
-            final double distance = z - (cameraZ % 200);
+            final double distance = z - (cam.getZ() % 200);
             if (distance <= 0) continue;
-            final double scale = fieldOfView / (distance + 1);
-            final int screenY = horizonY + (int)(150 * scale);
+            final double scale = cam.getScale(cam.getZ() + distance);
+            final int screenY = (int) (horizonY + ((150 - cam.getY()) * scale));
             if (screenY >= horizonY && screenY <= height) {
                 g2d.drawLine(0, screenY, width, screenY);
             }
@@ -72,19 +100,17 @@ public class GamePanel extends JPanel implements Runnable {
         final var tiles = level.getTiles();
         for (int i = tiles.size() - 1; i >= 0; i--) {
             final AbstractTile tile = tiles.get(i);
-            final double distance = tile.getZ() - cameraZ;
+            final double distance = cam.getDistanceTo(tile.getZ());
             final double length = tile.getLengthInZ() > 0 ? tile.getLengthInZ() : 50;
             final double tileDepth = distance + length;
 
             if (tileDepth <= 0 || distance > 3000) continue;
 
-            final double clippedDistance = Math.max(distance, 0.0);
+            final double scaleFront = cam.getScale(tile.getZ());
+            final double scaleBack = cam.getScale(tile.getZ() + length);
 
-            final double scaleFront = fieldOfView / (clippedDistance + 1);
-            final double scaleBack = fieldOfView / (tileDepth + 1);
-
-            final int screenYFront = horizonY + (int)(150 * scaleFront);
-            final int screenYBack = horizonY + (int)(150 * scaleBack);
+            final int screenYFront = (int) (horizonY + ((150 - cam.getY()) * scaleFront));
+            final int screenYBack = (int) (horizonY + ((150 - cam.getY()) * scaleBack));
 
             final double centerScreenFront = calculateCenterScreen(tile, width, scaleFront);
             final double centerScreenBack = calculateCenterScreen(tile, width, scaleBack);
@@ -105,7 +131,7 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    private static double calculateCenterScreen(AbstractTile tile, int width ,double scale) {
-        return ((double) width / 2) + (tile.getX() * scale);
+    private double calculateCenterScreen(AbstractTile tile, int width ,double scale) {
+        return ((double) width / 2) + ((tile.getX() - cam.getX()) * scale);
     }
 }

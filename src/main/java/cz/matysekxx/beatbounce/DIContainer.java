@@ -11,7 +11,8 @@ public final class DIContainer {
     private DIContainer() {}
 
     public static void init() {
-
+        //register(LevelGenerator.class, new LevelGenerator());
+        //register(ScreenManager.class, new ScreenManager());
     }
 
     public static void register(Object component) {

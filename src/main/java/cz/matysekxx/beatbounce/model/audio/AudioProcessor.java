@@ -16,8 +16,10 @@ public class AudioProcessor {
     private final float sampleRate;
     private double currentTime = 0.0;
 
-    private static final double HIGH_INTENSITY_THRESHOLD = 0.15;
-    private static final double LOW_INTENSITY_THRESHOLD = 0.05;
+    private static final double HIGH_INTENSITY_THRESHOLD = 0.35;
+    private static final double LOW_INTENSITY_THRESHOLD = 0.20;
+    private static final int BUFFER_OVERLAP = 10;
+    private static final int BUFFER_SIZE = 1024;
     private boolean inHighIntensity = false;
     private boolean inLowIntensity = false;
 
@@ -25,8 +27,7 @@ public class AudioProcessor {
         this.format = format;
         this.onBeatDetected = onBeatDetected;
         this.sampleRate = format.getSampleRate();
-
-        this.detector = new PercussionOnsetDetector(sampleRate, 1024, 8,
+        this.detector = new PercussionOnsetDetector(sampleRate, BUFFER_SIZE, BUFFER_OVERLAP,
                 (time, salience) -> {
             final double adjustedTime = (currentTime + time) / speedMultiplier;
             onBeatDetected.accept(new BeatEvent(adjustedTime, salience));

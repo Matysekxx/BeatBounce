@@ -27,5 +27,5 @@ public abstract class AbstractTile extends Entity implements Paintable {
         return 0;
     }
 
-    public abstract void paint3D(Graphics2D g2d, int screenX, int screenY, int scaledWidth, int scaledHeight);
+    public abstract void paint3D(Graphics2D g2d, Polygon polygon);
 }

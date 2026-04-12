@@ -14,8 +14,8 @@ public class NormalTile extends AbstractTile {
     }
 
     @Override
-    public void paint3D(Graphics2D g2d, int screenX, int screenY, int scaledWidth, int scaledHeight) {
+    public void paint3D(Graphics2D g2d, Polygon polygon) {
         g2d.setColor(Color.GREEN);
-        g2d.fillRect(screenX, screenY, scaledWidth, scaledHeight);
+        g2d.fillPolygon(polygon);
     }
 }

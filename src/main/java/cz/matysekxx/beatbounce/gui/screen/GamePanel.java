@@ -77,7 +77,7 @@ public class GamePanel extends JPanel implements Runnable {
                 final int screenYFront = horizonY + (int)(150 * scaleFront);
 
                 final int scaledWidth = (int)(80 * scaleFront);
-                final int screenX = (width / 2) - (scaledWidth / 2);
+                final int screenX = (width / 2) + (int)(tile.getX() * scaleFront) - (scaledWidth / 2);
 
                 final int screenYBack;
                 if (tile.getLengthInZ() > 0) {

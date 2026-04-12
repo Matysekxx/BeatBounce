@@ -14,19 +14,30 @@ public class LevelGenerator {
     public Level generateLevel(List<BeatEvent> events, String songName) {
         final List<AbstractTile> tiles = new ArrayList<>();
         Double highIntensityStartTime = null;
+        int highIntensityLane = 0;
+        
+        int currentLane = 0;
+        double lastBeatTime = -1.0;
 
         for (BeatEvent event : events) {
             final double zPosition = event.timestamp() * Z_UNITS_PER_SECOND;
 
-            final int randomLane = (int) (Math.random() * 3) - 1;
-            final int xPosition = randomLane * LANE_WIDTH;
-
             switch (event.eventType()) {
-                case BEAT -> tiles.add(TileFactory.createNormalTile(event, xPosition, 0, zPosition));
-                case INTENSITY_HIGH_START -> highIntensityStartTime = event.timestamp();
+                case BEAT -> {
+                    if (lastBeatTime < 0 || (event.timestamp() - lastBeatTime) >= 0.25) {
+                        currentLane = (int) (Math.random() * 3) - 1;
+                    }
+                    lastBeatTime = event.timestamp();
+                    final int xPosition = currentLane * LANE_WIDTH;
+                    tiles.add(TileFactory.createNormalTile(event, xPosition, 0, zPosition));
+                }
+                case INTENSITY_HIGH_START -> {
+                    highIntensityStartTime = event.timestamp();
+                    highIntensityLane = currentLane;
+                }
                 case INTENSITY_HIGH_END -> {
                     if (highIntensityStartTime != null) {
-                        createLongTileIfLongEnough(tiles, event, highIntensityStartTime);
+                        createLongTileIfLongEnough(tiles, event, highIntensityStartTime, highIntensityLane);
                         highIntensityStartTime = null;
                     }
                 }
@@ -36,13 +47,12 @@ public class LevelGenerator {
         return new Level(tiles, songName);
     }
 
-    private void createLongTileIfLongEnough(List<AbstractTile> tiles, BeatEvent endEvent, double startTime) {
+    private void createLongTileIfLongEnough(List<AbstractTile> tiles, BeatEvent endEvent, double startTime, int lane) {
         final double duration = endEvent.timestamp() - startTime;
         if (duration >= MIN_LONG_TILE_DURATION_SEC) {
             final double zPosition = startTime * Z_UNITS_PER_SECOND;
             final double lengthInZ = duration * Z_UNITS_PER_SECOND;
-            final int randomLane = (int) (Math.random() * 3) - 1;
-            final int xPosition = randomLane * LANE_WIDTH;
+            final int xPosition = lane * LANE_WIDTH;
 
             tiles.add(TileFactory.createLongTile(endEvent, xPosition, 0, zPosition, lengthInZ));
         }

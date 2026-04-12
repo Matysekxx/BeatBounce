@@ -1,47 +1,57 @@
 package cz.matysekxx.beatbounce.gui;
 
 public class Camera3D {
-    private double cameraX;
-    private double cameraY;
-    private double cameraZ;
+    private double x;
+    private double y;
+    private double z;
 
-    private double cameraHeight;
-    private double cameraWidth;
-    private double fieldOfView;
+    private final double fieldOfView;
 
     public Camera3D(
-            double cameraX, double cameraY, double cameraZ,
-            double fieldOfView, double cameraHeight, double cameraWidth
+            double x, double y, double z,
+            double fieldOfView
     ) {
-        this.cameraX = cameraX;
-        this.cameraY = cameraY;
-        this.cameraZ = cameraZ;
+        this.x = x;
+        this.y = y;
+        this.z = z;
         this.fieldOfView = fieldOfView;
-        this.cameraHeight = cameraHeight;
-        this.cameraWidth = cameraWidth;
     }
 
-    public double getCameraHeight() {
-        return cameraHeight;
+    public void addToZ(double deltaZ) {
+        this.z += deltaZ;
     }
 
-    public double getCameraWidth() {
-        return cameraWidth;
+    public void addToX(double deltaX) {
+        this.x += deltaX;
     }
 
-    public double getCameraX() {
-        return cameraX;
+    public  void addToY(double deltaY) {
+        this.y += deltaY;
     }
 
-    public double getCameraY() {
-        return cameraY;
+    public double getX() {
+        return x;
     }
 
-    public double getCameraZ() {
-        return cameraZ;
+    public double getY() {
+        return y;
+    }
+
+    public double getZ() {
+        return z;
     }
 
     public double getFieldOfView() {
         return fieldOfView;
+    }
+
+    public double getDistanceTo(double objectZ) {
+        return objectZ - this.z;
+    }
+
+    public double getScale(double objectZ) {
+        double distance = Math.max(0.0, this.getDistanceTo(objectZ));
+
+        return fieldOfView / (distance + 1);
     }
 }

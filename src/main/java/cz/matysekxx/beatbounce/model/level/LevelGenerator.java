@@ -8,20 +8,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LevelGenerator {
-    private static final int START_X_OFFSET = 200;
-    private static final int FLOOR_Y_POSITION = 400;
-    private static final double PIXELS_PER_SECOND = 300.0;
+    private static final double Z_UNITS_PER_SECOND = 1000.0;
     private static final double MIN_LONG_TILE_DURATION_SEC = 0.5;
-    private static final int LONG_TILE_Y_OFFSET = -50;
 
     public Level generateLevel(List<BeatEvent> events, String songName) {
         final List<AbstractTile> tiles = new ArrayList<>();
         Double highIntensityStartTime = null;
 
         for (BeatEvent event : events) {
-            final int currentX = calculateXPosition(event.timestamp());
+            final double zPosition = event.timestamp() * Z_UNITS_PER_SECOND;
             switch (event.eventType()) {
-                case BEAT -> tiles.add(TileFactory.createNormalTile(event, currentX, FLOOR_Y_POSITION));
+                case BEAT -> tiles.add(TileFactory.createNormalTile(event, 0, 0, zPosition));
                 case INTENSITY_HIGH_START -> highIntensityStartTime = event.timestamp();
                 case INTENSITY_HIGH_END -> {
                     if (highIntensityStartTime != null) {
@@ -35,18 +32,14 @@ public class LevelGenerator {
         return new Level(tiles, songName);
     }
 
-    private int calculateXPosition(double timestampInSeconds) {
-        return START_X_OFFSET + (int) (timestampInSeconds * PIXELS_PER_SECOND);
-    }
-
     private void createLongTileIfLongEnough(List<AbstractTile> tiles, BeatEvent endEvent, double startTime) {
         final double duration = endEvent.timestamp() - startTime;
 
         if (duration >= MIN_LONG_TILE_DURATION_SEC) {
-            final int startX = calculateXPosition(startTime);
-            final int lengthInPixels = (int) (duration * PIXELS_PER_SECOND);
+            final double zPosition = startTime * Z_UNITS_PER_SECOND;
+            final double lengthInZ = duration * Z_UNITS_PER_SECOND;
 
-            tiles.add(TileFactory.createLongTile(endEvent, startX, FLOOR_Y_POSITION + LONG_TILE_Y_OFFSET, lengthInPixels));
+            tiles.add(TileFactory.createLongTile(endEvent, 0, 0, zPosition, lengthInZ));
         }
     }
 }

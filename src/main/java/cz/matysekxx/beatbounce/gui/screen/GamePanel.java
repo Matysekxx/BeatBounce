@@ -13,8 +13,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class GamePanel extends JPanel implements Runnable {
-    private Level level;
-    private Clip clip;
+    private final Level level;
+    private final Clip clip;
     
     private final Camera3D cam;
     private boolean running;
@@ -24,7 +24,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.clip = clip;
         this.running = false;
         this.setBackground(Color.DARK_GRAY);
-        cam = new Camera3D(0, 0, 0, 500.0);
+        this.cam = new Camera3D(0, 0, 0, 500.0);
         this.setFocusable(true);
         this.requestFocusInWindow();
 
@@ -71,20 +71,7 @@ public class GamePanel extends JPanel implements Runnable {
         final int height = getHeight();
         final int horizonY = height / 3;
 
-        var xPoints = new int[]{
-                (int) (100 - cam.getX()),
-                (int) (width - 100 - cam.getX()),
-                (int) (((double) width / 2) + 150 - (cam.getX() / 4)),
-                (int) (((double) width / 2) - 150 - (cam.getX() / 4))
-        };
-        var yPoints = new int[]{
-                (int) (height - cam.getY()),
-                (int) (height - cam.getY()),
-                (int) (horizonY - (cam.getY() / 4)),
-                (int) (horizonY - (cam.getY() / 4))
-        };
-
-        g2d.fillPolygon(xPoints, yPoints, 4);
+        this.drawTrack(g2d, width, height, horizonY);
 
         for (int z = 0; z < 2000; z += 200) {
             final double distance = z - (cam.getZ() % 200);
@@ -97,11 +84,30 @@ public class GamePanel extends JPanel implements Runnable {
         }
 
         g2d.setColor(Color.GREEN);
-
         final var tiles = level.getTiles();
         for (int i = tiles.size() - 1; i >= 0; i--) {
             final AbstractTile tile = tiles.get(i);
+            final double distance = cam.getDistanceTo(tile.getZ());
+            final double tileDepth = distance + tile.getLengthInZ();
+            if (tileDepth <= 0 || distance > 3000) continue;
+
             tile.paint3D(g2d, cam, new WindowData(width, height));
         }
+    }
+
+    public void drawTrack(Graphics2D g2d, int width, int height, int horizonY) {
+        final var xPoints = new int[]{
+                (int) (100 - cam.getX()),
+                (int) (width - 100 - cam.getX()),
+                (int) (((double) width / 2) + 150 - (cam.getX() / 4)),
+                (int) (((double) width / 2) - 150 - (cam.getX() / 4))
+        };
+        final var yPoints = new int[]{
+                (int) (height - cam.getY()),
+                (int) (height - cam.getY()),
+                (int) (horizonY - (cam.getY() / 4)),
+                (int) (horizonY - (cam.getY() / 4))
+        };
+        g2d.fillPolygon(xPoints, yPoints, 4);
     }
 }

@@ -15,15 +15,12 @@ public class LevelGenerator {
         final List<AbstractTile> tiles = new ArrayList<>();
         Double highIntensityStartTime = null;
         int highIntensityLane = 0;
-        
+
         int currentLane = 0;
         int consecutiveInLane = 0;
         double lastBeatTime = -1.0;
 
         for (BeatEvent event : events) {
-            final double zPosition = event.timestamp() * Z_UNITS_PER_SECOND;
-
-            //TODO: pridat jednotlive event handlery pro jednotlive typy beat eventu
             switch (event.eventType()) {
                 case BEAT -> {
                     if (highIntensityStartTime != null) continue;
@@ -31,23 +28,19 @@ public class LevelGenerator {
                         int move;
                         if (consecutiveInLane >= 2) {
                             move = (currentLane == 0) ? (Math.random() > 0.5 ? 1 : -1) : (currentLane > 0 ? -1 : 1);
-                        } else {
-                            move = (int) (Math.random() * 3) - 1;
-                        }
+                        } else move = (int) (Math.random() * 3) - 1;
+
+                        final int newLane = Math.max(-1, Math.min(1, currentLane + move));
     
-                        int newLane = currentLane + move;
-                        newLane = Math.max(-1, Math.min(1, newLane));
-    
-                        if (newLane == currentLane) {
-                            consecutiveInLane++;
-                        } else {
+                        if (newLane == currentLane) consecutiveInLane++;
+                        else {
                             consecutiveInLane = 1;
                             currentLane = newLane;
                         }
                     }
                     lastBeatTime = event.timestamp();
                     final int xPosition = currentLane * LANE_WIDTH;
-                    tiles.add(TileFactory.createNormalTile(event, xPosition, 0, zPosition));
+                    tiles.add(TileFactory.createNormalTile(event, xPosition, 0, event.timestamp() * Z_UNITS_PER_SECOND));
                 }
                 case INTENSITY_HIGH_START -> {
                     highIntensityStartTime = event.timestamp();
@@ -61,19 +54,17 @@ public class LevelGenerator {
                 }
             }
         }
-
         return new Level(tiles, songName);
     }
 
     private void createLongTileIfLongEnough(List<AbstractTile> tiles, BeatEvent endEvent, double startTime, int lane) {
         final double duration = endEvent.timestamp() - startTime;
+        final double zPosition = startTime * Z_UNITS_PER_SECOND;
         if (duration >= MIN_LONG_TILE_DURATION_SEC) {
-            final double zPosition = startTime * Z_UNITS_PER_SECOND;
             final double lengthInZ = duration * Z_UNITS_PER_SECOND;
             final int xPosition = lane * LANE_WIDTH;
             tiles.add(TileFactory.createLongTile(endEvent, xPosition, 0, zPosition, lengthInZ));
         } else {
-            final double zPosition = startTime * Z_UNITS_PER_SECOND;
             final int xPosition = lane * LANE_WIDTH;
             tiles.add(TileFactory.createNormalTile(endEvent, xPosition, 0, zPosition));
         }

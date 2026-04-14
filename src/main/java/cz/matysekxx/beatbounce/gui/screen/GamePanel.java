@@ -4,7 +4,7 @@ import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.gui.WindowData;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.level.Level;
-import cz.matysekxx.beatbounce.util.Utility;
+import cz.matysekxx.beatbounce.util.Time;
 
 import javax.sound.sampled.Clip;
 import javax.swing.*;
@@ -57,7 +57,7 @@ public class GamePanel extends JPanel implements Runnable {
             final double currentAudioTimeSeconds = clip.getMicrosecondPosition() / 1_000_000.0;
             cam.setZ(currentAudioTimeSeconds * 1000.0);
             repaint();
-            Utility.sleep(16);
+            Time.sleep(16);
         }
     }
 
@@ -91,7 +91,7 @@ public class GamePanel extends JPanel implements Runnable {
             final double tileDepth = distance + tile.getLengthInZ();
             if (tileDepth <= 0 || distance > 3000) continue;
 
-            tile.paint3D(g2d, cam, new WindowData(width, height));
+            tile.paint3D(g2d, cam, WindowData.of(width, height));
         }
     }
 

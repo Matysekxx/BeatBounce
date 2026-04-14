@@ -31,7 +31,7 @@ public abstract class AbstractTile extends Entity implements Paintable {
         final double scaleBack = cam.getScale(this.getZ() + getLengthInZ());
         this.paint3D(g2d, new Polygon(
                 createXPoints(
-                        cam, windowData, scaleFront, scaleBack),
+                        cam, windowData.width(), scaleFront, scaleBack),
                 createYPoints(
                         cam, scaleFront, scaleBack, windowData.height() / 3),
                 4
@@ -46,11 +46,11 @@ public abstract class AbstractTile extends Entity implements Paintable {
         };
     }
 
-    private int[] createXPoints(Camera3D cam, WindowData windowData, double scaleFront, double scaleBack) {
+    private int[] createXPoints(Camera3D cam, int width, double scaleFront, double scaleBack) {
         final double centerScreenFront = calculateCenterScreen(
-                this, (int) cam.getX(), windowData.width(), scaleFront);
+                this, (int) cam.getX(), width, scaleFront);
         final double centerScreenBack = calculateCenterScreen(
-                this, (int) cam.getX(), windowData.width(), scaleBack);
+                this, (int) cam.getX(), width, scaleBack);
 
         final double frontWidth = 100*scaleFront;
         final double backWidth = 100*scaleBack;

@@ -8,13 +8,14 @@ import cz.matysekxx.beatbounce.model.entity.TileFactory;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class LevelGenerator {
     private static final double Z_UNITS_PER_SECOND = 1000.0;
     private static final double MIN_LONG_TILE_DURATION_SEC = 0.3;
     private static final int LANE_WIDTH = 120;
-    public Level generateLevel(List<BeatEvent> events, String songName) {
+    public static Level generateLevel(List<BeatEvent> events, String songName) {
         return new GenerationContext(events, songName).generate();
     }
 
@@ -28,37 +29,26 @@ public class LevelGenerator {
         private int consecutiveInLane = 0;
         private double lastBeatTime = -1.0;
 
-        //private final EnumMap<EventType, Consumer<BeatEvent>> handlers = new EnumMap<>(EventType.class);
+        private final EnumMap<EventType, Consumer<BeatEvent>> handlers;
 
         public GenerationContext(List<BeatEvent> events, String songName) {
             this.events = events;
             this.songName = songName;
             this.tiles = new ArrayList<>();
-
-            /*
-            handlers.put(EventType.BEAT, this::handleBeat);
-            handlers.put(EventType.INTENSITY_HIGH_START, this::handleIntensityHighStart);
-            handlers.put(EventType.INTENSITY_HIGH_END, this::handleIntensityHighEnd);
-            */
+            this.handlers = new EnumMap<>(Map.of(
+                    EventType.BEAT, this::handleBeat,
+                    EventType.INTENSITY_HIGH_START, this::handleIntensityHighStart,
+                    EventType.INTENSITY_HIGH_END, this::handleIntensityHighEnd
+            ));
         }
 
-        /*
         private void handle(BeatEvent event) {
-            if (handlers.containsKey(event.eventType()))
-                handlers.get(event.eventType()).accept(event);
+            if (handlers.containsKey(event.type()))
+                handlers.get(event.type()).accept(event);
         }
-         */
 
         public Level generate() {
-            for (BeatEvent event : events) {
-                switch (event.eventType()) {
-                    case BEAT -> handleBeat(event);
-                    case INTENSITY_HIGH_START -> handleIntensityHighStart(event);
-                    case INTENSITY_HIGH_END -> handleIntensityHighEnd(event);
-                    case INTENSITY_LOW_START -> {}
-                    case INTENSITY_LOW_END -> {}
-                }
-            }
+            events.forEach(this::handle);
             return new Level(tiles, songName);
         }
 
@@ -71,7 +61,6 @@ public class LevelGenerator {
                 } else move = (int) (Math.random() * 3) - 1;
 
                 final int newLane = Math.max(-1, Math.min(1, currentLane + move));
-
                 if (newLane == currentLane) consecutiveInLane++;
                 else {
                     consecutiveInLane = 1;

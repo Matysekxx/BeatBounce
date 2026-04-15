@@ -36,7 +36,8 @@ public class AudioAnalyzer {
         }
 
         beatEvents.sort(Comparator.comparingDouble(BeatEvent::timestamp));
-        System.out.println("Analyzing done");;
+        System.out.println("Analyzing done");
+        ;
         return beatEvents;
     }
 }

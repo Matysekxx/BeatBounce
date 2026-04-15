@@ -5,8 +5,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class EventQueue {
 
-    private EventQueue() {}
     private final BlockingQueue<Event> eventQueue = new LinkedBlockingQueue<>();
+
+    private EventQueue() {
+    }
 
     public void enqueue(Event event) {
         eventQueue.add(event);

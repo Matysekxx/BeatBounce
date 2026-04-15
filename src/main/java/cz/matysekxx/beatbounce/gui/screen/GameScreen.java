@@ -11,14 +11,15 @@ import java.awt.*;
 
 public class GameScreen extends Screen {
     private final GamePanel gamePanel;
+
     public GameScreen() {
         super();
         this.setLayout(new BorderLayout());
-        Dotenv dotenv = Dotenv.load();
-        LevelGenerator levelGenerator = new LevelGenerator();
-        AudioData audioData = AudioData.create(dotenv.get("AUDIO_FILE"));
-        Level level = levelGenerator.generateLevel(new AudioAnalyzer(audioData, 1.f).analyze(), null);
-        gamePanel = new GamePanel(level, audioData.clip());
+        final Dotenv dotenv = Dotenv.load();
+        final AudioData audioData = AudioData.create(dotenv.get("AUDIO_FILE"));
+        final Level level = LevelGenerator.generateLevel(
+                new AudioAnalyzer(audioData, 1.f).analyze(), null);
+        gamePanel = new GamePanel(level, audioData.clip(), audioData.samples(), audioData.format().getSampleRate());
         this.add(gamePanel, BorderLayout.CENTER);
         gamePanel.startGame();
     }

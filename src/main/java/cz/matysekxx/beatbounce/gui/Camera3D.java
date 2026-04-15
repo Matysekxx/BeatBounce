@@ -1,11 +1,10 @@
 package cz.matysekxx.beatbounce.gui;
 
 public class Camera3D {
+    private final double fieldOfView;
     private double x;
     private double y;
     private double z;
-
-    private final double fieldOfView;
 
     public Camera3D(
             double x, double y, double z,
@@ -21,15 +20,11 @@ public class Camera3D {
         this.z += deltaZ;
     }
 
-    public void setZ(double z) {
-        this.z = z;
-    }
-
     public void addToX(double deltaX) {
         this.x += deltaX;
     }
 
-    public  void addToY(double deltaY) {
+    public void addToY(double deltaY) {
         this.y += deltaY;
     }
 
@@ -43,6 +38,10 @@ public class Camera3D {
 
     public double getZ() {
         return z;
+    }
+
+    public void setZ(double z) {
+        this.z = z;
     }
 
     public double getFieldOfView() {

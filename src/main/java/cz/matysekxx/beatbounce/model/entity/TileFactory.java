@@ -2,11 +2,12 @@ package cz.matysekxx.beatbounce.model.entity;
 
 import cz.matysekxx.beatbounce.event.BeatEvent;
 
-import java.awt.Point;
+import java.awt.*;
 
 public class TileFactory {
 
-    private TileFactory() {}
+    private TileFactory() {
+    }
 
     public static NormalTile createNormalTile(BeatEvent event, int x, int y, double z) {
         return new NormalTile(event, new Point(x, y), z);

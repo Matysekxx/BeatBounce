@@ -1,8 +1,8 @@
 package cz.matysekxx.beatbounce.model.entity;
 
+import cz.matysekxx.beatbounce.event.BeatEvent;
 import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.gui.Paintable;
-import cz.matysekxx.beatbounce.event.BeatEvent;
 import cz.matysekxx.beatbounce.gui.WindowData;
 
 import java.awt.*;
@@ -12,7 +12,7 @@ public abstract class AbstractTile extends Entity implements Paintable {
     protected double z;
 
     public AbstractTile(BeatEvent beatEvent, Point point, double z) {
-        super(point.x,  point.y);
+        super(point.x, point.y);
         this.beatEvent = beatEvent;
         this.z = z;
     }
@@ -41,7 +41,7 @@ public abstract class AbstractTile extends Entity implements Paintable {
     private int[] createYPoints(Camera3D cam, double scaleFront, double scaleBack, int horizonY) {
         final int screenYFront = (int) (horizonY + ((150 - cam.getY()) * scaleFront));
         final int screenYBack = (int) (horizonY + ((150 - cam.getY()) * scaleBack));
-        return new int[] {
+        return new int[]{
                 screenYFront, screenYFront, screenYBack, screenYBack
         };
     }
@@ -52,8 +52,8 @@ public abstract class AbstractTile extends Entity implements Paintable {
         final double centerScreenBack = calculateCenterScreen(
                 this, (int) cam.getX(), width, scaleBack);
 
-        final double frontWidth = 100*scaleFront;
-        final double backWidth = 100*scaleBack;
+        final double frontWidth = 100 * scaleFront;
+        final double backWidth = 100 * scaleBack;
 
         return new int[]{
                 (int) (centerScreenFront - frontWidth / 2),
@@ -62,6 +62,7 @@ public abstract class AbstractTile extends Entity implements Paintable {
                 (int) (centerScreenBack - backWidth / 2)
         };
     }
+
     private double calculateCenterScreen(AbstractTile tile, int camX, int width, double scale) {
         return ((double) width / 2) + ((tile.getX() - camX) * scale);
     }

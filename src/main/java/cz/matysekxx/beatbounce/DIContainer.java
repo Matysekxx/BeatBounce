@@ -8,7 +8,8 @@ import java.util.Map;
 public final class DIContainer {
     private final static Map<Class<?>, Object> components = new HashMap<>();
 
-    private DIContainer() {}
+    private DIContainer() {
+    }
 
     public static void init() {
         //register(LevelGenerator.class, new LevelGenerator());
@@ -33,8 +34,7 @@ public final class DIContainer {
             System.err.println("Component not found: " + type.getName());
             return null;
         }
-        @SuppressWarnings("unchecked")
-        final T c = (T) components.get(type);
+        @SuppressWarnings("unchecked") final T c = (T) components.get(type);
         if (c == null) {
             System.err.println("Component is null: " + type.getName());
         }

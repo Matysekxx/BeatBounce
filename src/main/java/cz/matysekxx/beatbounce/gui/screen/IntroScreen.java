@@ -1,12 +1,15 @@
 package cz.matysekxx.beatbounce.gui.screen;
 
 import cz.matysekxx.beatbounce.gui.ButtonFactory;
-import static cz.matysekxx.beatbounce.util.Time.sleep;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class IntroScreen extends Screen {;
+import static cz.matysekxx.beatbounce.util.Time.sleep;
+
+public class IntroScreen extends Screen {
+    ;
+
     public IntroScreen(ScreenManager screenManager) {
         super();
         this.setLayout(new BorderLayout());

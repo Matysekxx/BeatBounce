@@ -15,6 +15,7 @@ public class LevelGenerator {
     private static final double Z_UNITS_PER_SECOND = 1000.0;
     private static final double MIN_LONG_TILE_DURATION_SEC = 0.3;
     private static final int LANE_WIDTH = 120;
+
     public static Level generateLevel(List<BeatEvent> events, String songName) {
         return new GenerationContext(events, songName).generate();
     }
@@ -23,13 +24,12 @@ public class LevelGenerator {
         private final List<AbstractTile> tiles;
         private final List<BeatEvent> events;
         private final String songName;
+        private final EnumMap<EventType, Consumer<BeatEvent>> handlers;
         private Double highIntensityStartTime = null;
         private int highIntensityLane = 0;
         private int currentLane = 0;
         private int consecutiveInLane = 0;
         private double lastBeatTime = -1.0;
-
-        private final EnumMap<EventType, Consumer<BeatEvent>> handlers;
 
         public GenerationContext(List<BeatEvent> events, String songName) {
             this.events = events;

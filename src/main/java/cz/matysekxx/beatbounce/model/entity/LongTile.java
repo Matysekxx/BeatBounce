@@ -5,19 +5,21 @@ import cz.matysekxx.beatbounce.event.BeatEvent;
 import java.awt.*;
 
 public class LongTile extends AbstractTile {
-    
+
     private final double lengthInZ;
-    @Override public double getLengthInZ() {
-        return lengthInZ;
-    }
-    
+
     public LongTile(BeatEvent beatEvent, Point point, double z, double lengthInZ) {
         super(beatEvent, point, z);
         this.lengthInZ = lengthInZ;
     }
 
+    @Override
+    public double getLengthInZ() {
+        return lengthInZ;
+    }
 
-    @Override public void paint3D(Graphics2D g2d, Polygon polygon) {
+    @Override
+    public void paint3D(Graphics2D g2d, Polygon polygon) {
         g2d.setColor(Color.CYAN);
         g2d.fillPolygon(polygon);
     }

@@ -15,7 +15,7 @@ import java.awt.event.KeyEvent;
 public class GamePanel extends JPanel implements Runnable {
     private final Level level;
     private final Clip clip;
-    
+
     private final Camera3D cam;
     private final short[] audioSamples;
     private final float sampleRate;
@@ -70,7 +70,7 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(g);
         final Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(Color.WHITE);
-        
+
         final int width = getWidth();
         final int height = getHeight();
         final int horizonY = height / 3;

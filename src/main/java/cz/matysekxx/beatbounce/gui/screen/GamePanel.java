@@ -17,11 +17,15 @@ public class GamePanel extends JPanel implements Runnable {
     private final Clip clip;
     
     private final Camera3D cam;
+    private final short[] audioSamples;
+    private final float sampleRate;
     private boolean running;
 
-    public GamePanel(Level level, Clip clip) {
+    public GamePanel(Level level, Clip clip, short[] audioSamples, float sampleRate) {
         this.level = level;
         this.clip = clip;
+        this.audioSamples = audioSamples;
+        this.sampleRate = sampleRate;
         this.running = false;
         this.setBackground(Color.DARK_GRAY);
         this.cam = new Camera3D(0, 0, 0, 500.0);
@@ -72,16 +76,7 @@ public class GamePanel extends JPanel implements Runnable {
         final int horizonY = height / 3;
 
         this.drawTrack(g2d, width, height, horizonY);
-
-        for (int z = 0; z < 2000; z += 200) {
-            final double distance = z - (cam.getZ() % 200);
-            if (distance <= 0) continue;
-            final double scale = cam.getScale(cam.getZ() + distance);
-            final int screenY = (int) (horizonY + ((150 - cam.getY()) * scale));
-            if (screenY >= horizonY && screenY <= height) {
-                g2d.drawLine(0, screenY, width, screenY);
-            }
-        }
+        this.drawLines(g2d, horizonY, width, height);
 
         g2d.setColor(Color.GREEN);
         final var tiles = level.getTiles();
@@ -90,12 +85,24 @@ public class GamePanel extends JPanel implements Runnable {
             final double distance = cam.getDistanceTo(tile.getZ());
             final double tileDepth = distance + tile.getLengthInZ();
             if (tileDepth <= 0 || distance > 3000) continue;
-
             tile.paint3D(g2d, cam, WindowData.of(width, height));
+        }
+        drawWaveform(g2d, width, height);
+    }
+
+    private void drawLines(Graphics2D g2d, int horizonY, int w, int h) {
+        for (int z = 0; z < 2000; z += 200) {
+            final double distance = z - (cam.getZ() % 200);
+            if (distance <= 0) continue;
+            final double scale = cam.getScale(cam.getZ() + distance);
+            final int screenY = (int) (horizonY + ((150 - cam.getY()) * scale));
+            if (screenY >= horizonY && screenY <= h) {
+                g2d.drawLine(0, screenY, w, screenY);
+            }
         }
     }
 
-    public void drawTrack(Graphics2D g2d, int width, int height, int horizonY) {
+    private void drawTrack(Graphics2D g2d, int width, int height, int horizonY) {
         final var xPoints = new int[]{
                 (int) (100 - cam.getX()),
                 (int) (width - 100 - cam.getX()),
@@ -109,5 +116,9 @@ public class GamePanel extends JPanel implements Runnable {
                 (int) (horizonY - (cam.getY() / 4))
         };
         g2d.fillPolygon(xPoints, yPoints, 4);
+    }
+
+    private void drawWaveform(Graphics2D g2d, int width, int height) {
+        //TODO: vykreslit amplitudy hudby
     }
 }

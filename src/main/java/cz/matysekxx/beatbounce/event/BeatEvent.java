@@ -2,7 +2,7 @@ package cz.matysekxx.beatbounce.event;
 
 public record BeatEvent(
     double timestamp,
-    EventType eventType,
+    EventType type,
     double salience,
     double intensityValue
 ) {

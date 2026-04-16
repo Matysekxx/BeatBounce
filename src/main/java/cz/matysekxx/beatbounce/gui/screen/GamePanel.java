@@ -87,7 +87,7 @@ public class GamePanel extends JPanel implements Runnable {
             if (tileDepth <= 0 || distance > 3000) continue;
             tile.paint3D(g2d, cam, WindowData.of(width, height));
         }
-        drawWaveform(g2d, width, height);
+        drawWaveform(g2d, width);
     }
 
     private void drawLines(Graphics2D g2d, int horizonY, int w, int h) {
@@ -118,7 +118,51 @@ public class GamePanel extends JPanel implements Runnable {
         g2d.fillPolygon(xPoints, yPoints, 4);
     }
 
-    private void drawWaveform(Graphics2D g2d, int width, int height) {
-        //TODO: vykreslit amplitudy hudby
+    private void drawWaveform(Graphics2D g2d, int width) {
+        g2d.setColor(Color.CYAN);
+        final int waveformHeight = 100;
+
+        final long currentMicroseconds = clip.getMicrosecondPosition();
+        final long currentSamples = (long) (currentMicroseconds / 1_000_000.0 * sampleRate);
+
+        final int samplesToDisplay = (int)sampleRate  << 1;
+
+        final int startIndex = (int) (currentSamples - samplesToDisplay >> 1);
+        final int endIndex = Math.min(startIndex + samplesToDisplay, audioSamples.length);
+
+        if (startIndex >= endIndex) return;
+
+        final double samplesPerPixel = (double) (endIndex - startIndex) / width;
+
+        for (int x = 0; x < width; x++) {
+            final int sampleStart = (int) (startIndex + x * samplesPerPixel);
+            int sampleEnd = (int) (startIndex + (x + 1) * samplesPerPixel);
+
+            if (sampleEnd > endIndex) sampleEnd = endIndex;
+
+            if (sampleStart >= sampleEnd) {
+                continue;
+            }
+
+            short minSample = Short.MAX_VALUE;
+            short maxSample = Short.MIN_VALUE;
+
+            for (int i = sampleStart; i < sampleEnd; i++) {
+                final short sample = audioSamples[i];
+                if (sample < minSample) minSample = sample;
+                if (sample > maxSample) maxSample = sample;
+            }
+
+            final int yMax = waveformHeight >> 1 - (maxSample / waveformHeight << 16);
+            final int yMin = waveformHeight >> 1 - (minSample /  waveformHeight << 16);
+
+            g2d.drawLine(x, yMin, x, yMax);
+        }
+
+        g2d.setColor(Color.RED);
+        final int currentX = (int) ((currentSamples - startIndex) / samplesPerPixel);
+        if (currentX >= 0 && currentX < width) {
+            g2d.drawLine(currentX, waveformHeight, currentX, 0);
+        }
     }
 }

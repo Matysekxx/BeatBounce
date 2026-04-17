@@ -15,7 +15,6 @@ import java.awt.event.KeyEvent;
 public class GamePanel extends JPanel implements Runnable {
     private final Level level;
     private final Clip clip;
-
     private final Camera3D cam;
     private final short[] audioSamples;
     private final float sampleRate;
@@ -87,6 +86,7 @@ public class GamePanel extends JPanel implements Runnable {
             if (tileDepth <= 0 || distance > 3000) continue;
             tile.paint3D(g2d, cam, WindowData.of(width, height));
         }
+        g2d.setColor(Color.CYAN);
         drawWaveform(g2d, width);
     }
 
@@ -119,15 +119,14 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void drawWaveform(Graphics2D g2d, int width) {
-        g2d.setColor(Color.CYAN);
         final int waveformHeight = 100;
 
         final long currentMicroseconds = clip.getMicrosecondPosition();
         final long currentSamples = (long) (currentMicroseconds / 1_000_000.0 * sampleRate);
 
-        final int samplesToDisplay = (int)sampleRate  << 1;
+        final int samplesToDisplay = (int)sampleRate << 1;
 
-        final int startIndex = (int) (currentSamples - samplesToDisplay >> 1);
+        final int startIndex = Math.max(0, (int) (currentSamples - (samplesToDisplay >> 1)));
         final int endIndex = Math.min(startIndex + samplesToDisplay, audioSamples.length);
 
         if (startIndex >= endIndex) return;
@@ -140,9 +139,7 @@ public class GamePanel extends JPanel implements Runnable {
 
             if (sampleEnd > endIndex) sampleEnd = endIndex;
 
-            if (sampleStart >= sampleEnd) {
-                continue;
-            }
+            if (sampleStart >= sampleEnd) continue;
 
             short minSample = Short.MAX_VALUE;
             short maxSample = Short.MIN_VALUE;
@@ -153,8 +150,8 @@ public class GamePanel extends JPanel implements Runnable {
                 if (sample > maxSample) maxSample = sample;
             }
 
-            final int yMax = waveformHeight >> 1 - (maxSample / waveformHeight << 16);
-            final int yMin = waveformHeight >> 1 - (minSample /  waveformHeight << 16);
+            final int yMax = (waveformHeight / 2) - (maxSample * (waveformHeight / 2) / 32768);
+            final int yMin = (waveformHeight / 2) - (minSample * (waveformHeight / 2) / 32768);
 
             g2d.drawLine(x, yMin, x, yMax);
         }

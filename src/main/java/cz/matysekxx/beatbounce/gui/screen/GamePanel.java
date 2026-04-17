@@ -31,7 +31,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.cam = new Camera3D(0, 0, 0, 500.0);
         this.setFocusable(true);
         this.requestFocusInWindow();
-        gameThread = Thread.ofVirtual().unstarted(this);
+        gameThread = new Thread(this);
 
         this.addKeyListener(new KeyAdapter() {
             @Override

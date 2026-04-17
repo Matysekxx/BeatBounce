@@ -13,4 +13,12 @@ public record BeatEvent(
     public BeatEvent(double timestamp, EventType eventType, double intensityValue) {
         this(timestamp, eventType, 0.0, intensityValue);
     }
+
+    public static BeatEvent of(double timestamp, EventType eventType, double intensityValue) {
+        return new BeatEvent(timestamp, eventType, intensityValue);
+    }
+
+    public static  BeatEvent of(double timestamp, double salience) {
+        return new BeatEvent(timestamp, EventType.BEAT, salience, 0.0);
+    }
 }

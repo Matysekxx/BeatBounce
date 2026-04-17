@@ -21,6 +21,10 @@ public class GameScreen extends Screen {
                 new AudioAnalyzer(audioData, 1.f).analyze(), null);
         gamePanel = new GamePanel(level, audioData.clip(), audioData.samples(), audioData.format().getSampleRate());
         this.add(gamePanel, BorderLayout.CENTER);
+    }
+
+    @Override
+    public void start() {
         gamePanel.startGame();
     }
 }

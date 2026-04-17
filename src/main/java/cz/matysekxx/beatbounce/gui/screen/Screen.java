@@ -13,4 +13,6 @@ public abstract class Screen extends JFrame {
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setLocationRelativeTo(null);
     }
+
+    public abstract void start();
 }

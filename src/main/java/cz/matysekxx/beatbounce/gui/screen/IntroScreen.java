@@ -8,7 +8,6 @@ import java.awt.*;
 import static cz.matysekxx.beatbounce.util.Time.sleep;
 
 public class IntroScreen extends Screen {
-    ;
 
     public IntroScreen(ScreenManager screenManager) {
         super();
@@ -34,6 +33,11 @@ public class IntroScreen extends Screen {
         });
         buttonPanel.add(exitButton);
         this.add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+    @Override
+    public void start() {
+        //TODO: pridat animaci pro intro screen pozadi
     }
 
     private static class IntroBackgroundPanel extends JPanel {

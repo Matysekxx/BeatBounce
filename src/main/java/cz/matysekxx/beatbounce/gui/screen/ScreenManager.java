@@ -30,6 +30,7 @@ public class ScreenManager {
             activeWindow.setExtendedState(JFrame.MAXIMIZED_BOTH);
             activeWindow.setVisible(true);
             activeWindow.toFront();
+            activeWindow.start();
         }
     }
 }

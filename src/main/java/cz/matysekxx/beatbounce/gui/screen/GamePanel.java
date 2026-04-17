@@ -19,6 +19,7 @@ public class GamePanel extends JPanel implements Runnable {
     private final short[] audioSamples;
     private final float sampleRate;
     private boolean running;
+    private final Thread gameThread;
 
     public GamePanel(Level level, Clip clip, short[] audioSamples, float sampleRate) {
         this.level = level;
@@ -30,6 +31,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.cam = new Camera3D(0, 0, 0, 500.0);
         this.setFocusable(true);
         this.requestFocusInWindow();
+        gameThread = Thread.ofVirtual().unstarted(this);
 
         this.addKeyListener(new KeyAdapter() {
             @Override
@@ -46,12 +48,14 @@ public class GamePanel extends JPanel implements Runnable {
         if (!this.running) {
             this.running = true;
             clip.start();
-            Thread.ofVirtual().start(this);
+            gameThread.start();
         }
     }
 
     public void stopGame() {
         this.running = false;
+        clip.stop();
+        gameThread.interrupt();
     }
 
     @Override

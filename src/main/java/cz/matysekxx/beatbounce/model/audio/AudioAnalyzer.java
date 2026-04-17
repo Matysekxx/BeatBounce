@@ -27,17 +27,18 @@ public class AudioAnalyzer {
         );
 
         final short[] samples = audioData.samples();
-        final int chunkSize = 1024;
-        for (int i = 0; i < samples.length; i += chunkSize) {
-            final short[] chunk = new short[chunkSize];
-            final int end = Math.min(i + chunkSize, samples.length);
-            System.arraycopy(samples, i, chunk, 0, end - i);
+        final int bufferSize = 2048;
+        final int overlap = 1024;
+        final int stepSize = bufferSize - overlap;
+
+        for (int i = 0; i <= samples.length - bufferSize; i += stepSize) {
+            final short[] chunk = new short[bufferSize];
+            System.arraycopy(samples, i, chunk, 0, bufferSize);
             processor.processChunk(chunk);
         }
 
         beatEvents.sort(Comparator.comparingDouble(BeatEvent::timestamp));
-        System.out.println("Analyzing done");
-        ;
+        System.out.println("Analyzing done: " + beatEvents.size() + " events detected.");
         return beatEvents;
     }
 }

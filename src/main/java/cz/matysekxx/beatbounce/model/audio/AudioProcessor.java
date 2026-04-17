@@ -2,6 +2,7 @@ package cz.matysekxx.beatbounce.model.audio;
 
 import be.tarsos.dsp.AudioEvent;
 import be.tarsos.dsp.io.TarsosDSPAudioFormat;
+import be.tarsos.dsp.onsets.ComplexOnsetDetector;
 import be.tarsos.dsp.onsets.PercussionOnsetDetector;
 import cz.matysekxx.beatbounce.event.BeatEvent;
 import cz.matysekxx.beatbounce.event.EventType;
@@ -12,46 +13,57 @@ import java.util.function.Consumer;
 public class AudioProcessor {
     /**
      * The RMS (volume) threshold that triggers the start of a high-intensity section (e.g., a drop or chorus).
-     * A higher value means the music must be louder to generate long tiles.
      */
-    private static final double HIGH_INTENSITY_THRESHOLD = 0.50;
+    private static final double HIGH_INTENSITY_THRESHOLD = 0.15;
     /**
      * The RMS (volume) threshold that triggers the start of a low-intensity section.
-     * Values falling below this threshold indicate quiet parts of the song.
      */
-    private static final double LOW_INTENSITY_THRESHOLD = 0.25;
+    private static final double LOW_INTENSITY_THRESHOLD = 0.08;
     /**
-     * Sensitivity of the percussion onset detector (typically 0-100).
-     * A higher value makes the detector more sensitive, capturing softer beats and faster rhythms.
+     * Smoothing factor for RMS calculation to avoid jittery intensity toggles (0.0 to 1.0).
      */
-    private static final double SENSITIVITY = 90.0;
-    /**
-     * The salience threshold for the onset detector.
-     * Detected beats with a peak strength (salience) below this value will be ignored.
-     */
-    private static final double THRESHOLD = 8.0;
+    private static final double SMOOTHING_FACTOR = 0.98;
     /**
      * The number of audio samples processed in a single chunk.
      * Must be a power of 2 (e.g., 512, 1024, 2048) for the FFT algorithm to work correctly.
      */
-    private static final int BUFFER_SIZE = 1024;
-    private final PercussionOnsetDetector detector;
+    private static final int BUFFER_SIZE = 2048;
+    private static final int OVERLAP = 1024;
+
+    private final PercussionOnsetDetector percussionDetector;
+    private final ComplexOnsetDetector complexDetector;
     private final AudioFormat format;
     private final Consumer<BeatEvent> onBeatDetected;
     private final float sampleRate;
     private double currentTime = 0.0;
+    private double smoothedRms = 0.0;
     private boolean inHighIntensity = false;
     private boolean inLowIntensity = false;
+    private double lastBeatTime = -1.0;
+    private static final double MIN_BEAT_INTERVAL = 0.01;
 
     public AudioProcessor(AudioFormat format, float speedMultiplier, Consumer<BeatEvent> onBeatDetected) {
         this.format = format;
         this.onBeatDetected = onBeatDetected;
         this.sampleRate = format.getSampleRate();
-        this.detector = new PercussionOnsetDetector(sampleRate, BUFFER_SIZE,
+
+        this.percussionDetector = new PercussionOnsetDetector(sampleRate, BUFFER_SIZE,
                 (time, salience) -> {
-                    final double adjustedTime = (currentTime + time) / speedMultiplier;
-                    onBeatDetected.accept(new BeatEvent(adjustedTime, salience));
-                }, SENSITIVITY, THRESHOLD);
+                    handleDetectedBeat(time, salience, speedMultiplier);
+                }, 85.0, 5.0);
+
+        this.complexDetector = new ComplexOnsetDetector(BUFFER_SIZE, 0.3);
+        this.complexDetector.setHandler((time, salience) -> {
+            handleDetectedBeat(time, salience, speedMultiplier);
+        });
+    }
+
+    private void handleDetectedBeat(double time, double salience, float speedMultiplier) {
+        final double adjustedTime = (currentTime + time) / speedMultiplier;
+        if (lastBeatTime < 0 || (adjustedTime - lastBeatTime) > MIN_BEAT_INTERVAL) {
+            onBeatDetected.accept(BeatEvent.of(adjustedTime, salience));
+            lastBeatTime = adjustedTime;
+        }
     }
 
     private static AudioEvent createFromFormat(AudioFormat format) {
@@ -70,11 +82,14 @@ public class AudioProcessor {
 
         final AudioEvent event = createFromFormat(format);
         event.setFloatBuffer(floatBuffer);
-        event.setOverlap(0);
-        detector.process(event);
+        event.setOverlap(OVERLAP);
+        
+        percussionDetector.process(event);
+        complexDetector.process(event);
 
         checkIntensityChanges(rms);
-        currentTime += (double) chunk.length / sampleRate;
+        currentTime += (double) (chunk.length - OVERLAP) / sampleRate;
+        if (currentTime < 0) currentTime = 0;
     }
 
     private float[] convertToFloatBuffer(short[] chunk) {
@@ -91,21 +106,23 @@ public class AudioProcessor {
     }
 
     private void checkIntensityChanges(double rms) {
-        if (rms > HIGH_INTENSITY_THRESHOLD && !inHighIntensity) {
-            onBeatDetected.accept(new BeatEvent(currentTime, EventType.INTENSITY_HIGH_START, rms));
+        smoothedRms = (smoothedRms * SMOOTHING_FACTOR) + (rms * (1.0 - SMOOTHING_FACTOR));
+
+        if (smoothedRms > HIGH_INTENSITY_THRESHOLD && !inHighIntensity) {
+            onBeatDetected.accept(BeatEvent.of(currentTime, EventType.INTENSITY_HIGH_START, smoothedRms));
             inHighIntensity = true;
             inLowIntensity = false;
-        } else if (rms <= HIGH_INTENSITY_THRESHOLD && inHighIntensity) {
-            onBeatDetected.accept(new BeatEvent(currentTime, EventType.INTENSITY_HIGH_END, rms));
+        } else if (smoothedRms <= HIGH_INTENSITY_THRESHOLD && inHighIntensity) {
+            onBeatDetected.accept(BeatEvent.of(currentTime, EventType.INTENSITY_HIGH_END, smoothedRms));
             inHighIntensity = false;
         }
 
-        if (rms < LOW_INTENSITY_THRESHOLD && !inLowIntensity) {
-            onBeatDetected.accept(new BeatEvent(currentTime, EventType.INTENSITY_LOW_START, rms));
+        if (smoothedRms < LOW_INTENSITY_THRESHOLD && !inLowIntensity) {
+            onBeatDetected.accept(BeatEvent.of(currentTime, EventType.INTENSITY_LOW_START, smoothedRms));
             inLowIntensity = true;
             inHighIntensity = false;
-        } else if (rms >= LOW_INTENSITY_THRESHOLD && inLowIntensity) {
-            onBeatDetected.accept(new BeatEvent(currentTime, EventType.INTENSITY_LOW_END, rms));
+        } else if (smoothedRms >= LOW_INTENSITY_THRESHOLD && inLowIntensity) {
+            onBeatDetected.accept(BeatEvent.of(currentTime, EventType.INTENSITY_LOW_END, smoothedRms));
             inLowIntensity = false;
         }
     }

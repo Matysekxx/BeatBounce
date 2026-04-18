@@ -11,8 +11,6 @@ public class Sphere extends Entity implements Paintable {
     private double z;
     private double targetX;
     private double currentX;
-
-    // Jump properties
     private double jumpStartTime;
     private double jumpDuration;
     private double peakHeight;

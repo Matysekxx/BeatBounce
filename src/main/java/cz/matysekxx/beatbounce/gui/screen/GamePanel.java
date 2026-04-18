@@ -3,6 +3,7 @@ package cz.matysekxx.beatbounce.gui.screen;
 import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.gui.WindowData;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
+import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.level.Level;
 import cz.matysekxx.beatbounce.util.Time;
 
@@ -20,6 +21,9 @@ public class GamePanel extends JPanel implements Runnable {
     private final float sampleRate;
     private boolean running;
     private final Thread gameThread;
+    private final Sphere sphere;
+    private int currentTileIndex = -1;
+    private double cameraTargetX = 0;
 
     public GamePanel(Level level, Clip clip, short[] audioSamples, float sampleRate) {
         this.level = level;
@@ -28,18 +32,21 @@ public class GamePanel extends JPanel implements Runnable {
         this.sampleRate = sampleRate;
         this.running = false;
         this.setBackground(Color.DARK_GRAY);
-        this.cam = new Camera3D(0, 0, 0, 500.0);
+        this.cam = new Camera3D(0, 0, -500, 500.0);
+        this.sphere = new Sphere(0, 150, 0, 20);
         this.setFocusable(true);
         this.requestFocusInWindow();
         gameThread = new Thread(this);
 
         this.addKeyListener(new KeyAdapter() {
             @Override
-            public void keyReleased(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_LEFT) cam.addToX(-100);
-                if (e.getKeyCode() == KeyEvent.VK_RIGHT) cam.addToX(100);
-                if (e.getKeyCode() == KeyEvent.VK_UP) cam.addToY(-100);
-                if (e.getKeyCode() == KeyEvent.VK_DOWN) cam.addToY(100);
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                    sphere.setTargetX(sphere.getTargetX() - 120);
+                }
+                if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                    sphere.setTargetX(sphere.getTargetX() + 120);
+                }
             }
         });
     }
@@ -61,17 +68,61 @@ public class GamePanel extends JPanel implements Runnable {
     @Override
     public void run() {
         while (running) {
-            final double currentAudioTimeSeconds = clip.getMicrosecondPosition() / 1_000_000.0;
-            cam.setZ(currentAudioTimeSeconds * 1000.0);
+            final double currentTime = clip.getMicrosecondPosition() / 1_000_000.0;
+            double targetZ = currentTime * 1000.0;
+            
+            sphere.setZ(targetZ);
+            cam.setZ(targetZ - 500);
+
+            cameraTargetX += (sphere.getX() - cameraTargetX) * 0.1;
+            cam.addToX(cameraTargetX - cam.getX());
+
+            updateSphere(currentTime);
+
             repaint();
             Time.sleep(16);
         }
+    }
+
+    private void updateSphere(double currentTime) {
+        if (!sphere.isJumping())
+            startNextJump();
+        else if (currentTime >= sphere.getJumpEndTime())
+            startNextJump();
+        
+        sphere.update(currentTime);
+    }
+
+    //TODO: presunout metody na update kulicky do samostatne tridy Model
+
+    private void startNextJump() {
+        final var tiles = level.getTiles();
+        
+        final int nextIndex = currentTileIndex + 1;
+        if (nextIndex >= tiles.size()) return;
+
+        final AbstractTile currentTile = nextIndex > 0 ? tiles.get(nextIndex - 1) : null;
+        final AbstractTile nextTile = tiles.get(nextIndex);
+
+        final double startZ = (currentTile != null) ? currentTile.getZ() : 0;
+        final double endZ = nextTile.getZ();
+        final double distanceZ = endZ - startZ;
+        
+        double duration = distanceZ / 1000.0;
+        if (duration <= 0) duration = 0.2;
+
+        final double height = 50 + (distanceZ * 0.15);
+        final double startTime = startZ / 1000.0;
+        
+        sphere.startJump(startTime, duration, height);
+        currentTileIndex = nextIndex;
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         final Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setColor(Color.WHITE);
 
         final int width = getWidth();
@@ -90,6 +141,10 @@ public class GamePanel extends JPanel implements Runnable {
             if (tileDepth <= 0 || distance > 3000) continue;
             tile.paint3D(g2d, cam, WindowData.of(width, height));
         }
+
+        g2d.setColor(Color.MAGENTA);
+        sphere.paint3D(g2d, cam, WindowData.of(width, height));
+
         g2d.setColor(Color.CYAN);
         drawWaveform(g2d, width);
     }

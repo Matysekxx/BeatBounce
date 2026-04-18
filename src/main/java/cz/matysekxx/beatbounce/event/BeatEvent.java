@@ -18,7 +18,7 @@ public record BeatEvent(
         return new BeatEvent(timestamp, eventType, intensityValue);
     }
 
-    public static  BeatEvent of(double timestamp, double salience) {
+    public static BeatEvent of(double timestamp, double salience) {
         return new BeatEvent(timestamp, EventType.BEAT, salience, 0.0);
     }
 }

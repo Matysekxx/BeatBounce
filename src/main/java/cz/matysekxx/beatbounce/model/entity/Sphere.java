@@ -33,7 +33,7 @@ public class Sphere extends Entity implements Paintable {
     }
 
     public void update(double currentTime) {
-        currentX += (targetX - currentX) * 0.15;
+        currentX += (targetX - currentX) * 0.3;
         this.x = (int) currentX;
         if (isJumping) {
             final double elapsed = currentTime - jumpStartTime;
@@ -50,12 +50,12 @@ public class Sphere extends Entity implements Paintable {
         }
     }
 
-    public void setTargetX(double targetX) {
-        this.targetX = targetX;
-    }
-
     public double getTargetX() {
         return targetX;
+    }
+
+    public void setTargetX(double targetX) {
+        this.targetX = targetX;
     }
 
     public boolean isJumping() {

@@ -31,6 +31,7 @@ public class LevelGenerator {
         private int consecutiveInLane = 0;
         private double lastTileZ = -1000.0;
         private int beatsToSkipLongTile = 0;
+
         public GenerationContext(List<BeatEvent> events, String songName) {
             this.events = events;
             this.songName = songName;

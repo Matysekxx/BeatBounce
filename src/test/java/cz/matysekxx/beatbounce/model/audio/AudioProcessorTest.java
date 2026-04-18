@@ -8,7 +8,8 @@ import javax.sound.sampled.AudioFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class AudioProcessorTest {
 
@@ -16,7 +17,7 @@ public class AudioProcessorTest {
     public void testIntensityDetection() {
         AudioFormat format = new AudioFormat(44100, 16, 1, true, false);
         List<BeatEvent> detectedEvents = new ArrayList<>();
-        
+
         AudioProcessor processor = new AudioProcessor(format, 1.0f, detectedEvents::add);
 
         short[] silence = new short[2048];
@@ -24,7 +25,7 @@ public class AudioProcessorTest {
 
         boolean foundLowIntensity = detectedEvents.stream()
                 .anyMatch(e -> e.type() == EventType.INTENSITY_LOW_START);
-        
+
         assertTrue("Should detect low intensity for silence", foundLowIntensity);
 
         short[] noise = new short[2048];
@@ -38,7 +39,7 @@ public class AudioProcessorTest {
 
         boolean foundHighIntensity = detectedEvents.stream()
                 .anyMatch(e -> e.type() == EventType.INTENSITY_HIGH_START);
-        
+
         assertTrue("Should detect high intensity for loud noise", foundHighIntensity);
     }
 
@@ -46,15 +47,15 @@ public class AudioProcessorTest {
     public void testBeatFiltering() {
         AudioFormat format = new AudioFormat(44100, 16, 1, true, false);
         List<BeatEvent> detectedEvents = new ArrayList<>();
-        
+
         AudioProcessor processor = new AudioProcessor(format, 1.0f, detectedEvents::add);
-        
+
         short[] chunk = new short[2048];
         processor.processChunk(chunk);
         int countBefore = detectedEvents.size();
-        
+
         processor.processChunk(chunk);
-        assertEquals("Consecutive empty chunks should not necessarily trigger new beats", 
+        assertEquals("Consecutive empty chunks should not necessarily trigger new beats",
                 countBefore, detectedEvents.size());
     }
 }

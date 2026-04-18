@@ -29,7 +29,7 @@ public class AudioProcessor {
      */
     private static final int BUFFER_SIZE = 2048;
     private static final int OVERLAP = 1024;
-
+    private static final double MIN_BEAT_INTERVAL = 0.01;
     private final PercussionOnsetDetector percussionDetector;
     private final ComplexOnsetDetector complexDetector;
     private final AudioFormat format;
@@ -40,7 +40,6 @@ public class AudioProcessor {
     private boolean inHighIntensity = false;
     private boolean inLowIntensity = false;
     private double lastBeatTime = -1.0;
-    private static final double MIN_BEAT_INTERVAL = 0.01;
 
     public AudioProcessor(AudioFormat format, float speedMultiplier, Consumer<BeatEvent> onBeatDetected) {
         this.format = format;
@@ -48,22 +47,10 @@ public class AudioProcessor {
         this.sampleRate = format.getSampleRate();
 
         this.percussionDetector = new PercussionOnsetDetector(sampleRate, BUFFER_SIZE,
-                (time, salience) -> {
-                    handleDetectedBeat(time, salience, speedMultiplier);
-                }, 85.0, 5.0);
+                (time, salience) -> handleDetectedBeat(time, salience, speedMultiplier), 85.0, 5.0);
 
         this.complexDetector = new ComplexOnsetDetector(BUFFER_SIZE, 0.3);
-        this.complexDetector.setHandler((time, salience) -> {
-            handleDetectedBeat(time, salience, speedMultiplier);
-        });
-    }
-
-    private void handleDetectedBeat(double time, double salience, float speedMultiplier) {
-        final double adjustedTime = (currentTime + time) / speedMultiplier;
-        if (lastBeatTime < 0 || (adjustedTime - lastBeatTime) > MIN_BEAT_INTERVAL) {
-            onBeatDetected.accept(BeatEvent.of(adjustedTime, salience));
-            lastBeatTime = adjustedTime;
-        }
+        this.complexDetector.setHandler((time, salience) -> handleDetectedBeat(time, salience, speedMultiplier));
     }
 
     private static AudioEvent createFromFormat(AudioFormat format) {
@@ -76,6 +63,14 @@ public class AudioProcessor {
         ));
     }
 
+    private void handleDetectedBeat(double time, double salience, float speedMultiplier) {
+        final double adjustedTime = (currentTime + time) / speedMultiplier;
+        if (lastBeatTime < 0 || (adjustedTime - lastBeatTime) > MIN_BEAT_INTERVAL) {
+            onBeatDetected.accept(BeatEvent.of(adjustedTime, salience));
+            lastBeatTime = adjustedTime;
+        }
+    }
+
     public void processChunk(short[] chunk) {
         final float[] floatBuffer = convertToFloatBuffer(chunk);
         final double rms = calculateRMS(floatBuffer);
@@ -83,7 +78,7 @@ public class AudioProcessor {
         final AudioEvent event = createFromFormat(format);
         event.setFloatBuffer(floatBuffer);
         event.setOverlap(OVERLAP);
-        
+
         percussionDetector.process(event);
         complexDetector.process(event);
 

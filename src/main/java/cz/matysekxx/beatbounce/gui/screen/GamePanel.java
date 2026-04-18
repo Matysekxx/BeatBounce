@@ -10,21 +10,23 @@ import cz.matysekxx.beatbounce.util.Time;
 import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 
 public class GamePanel extends JPanel implements Runnable {
+    private static final int LANE_WIDTH = 120;
     private final Level level;
     private final Clip clip;
     private final Camera3D cam;
     private final short[] audioSamples;
     private final float sampleRate;
-    private boolean running;
     private final Thread gameThread;
     private final Sphere sphere;
+    private boolean running;
     private int currentTileIndex = -1;
     private boolean lastInputWasMouse = false;
-
-    private static final int LANE_WIDTH = 120;
 
     public GamePanel(Level level, Clip clip, short[] audioSamples, float sampleRate) {
         this.level = level;
@@ -85,7 +87,7 @@ public class GamePanel extends JPanel implements Runnable {
         while (running) {
             final double currentTime = clip.getMicrosecondPosition() / 1_000_000.0;
             double targetZ = currentTime * 1000.0;
-            
+
             sphere.setZ(targetZ);
             cam.setZ(targetZ - 500);
 
@@ -103,7 +105,7 @@ public class GamePanel extends JPanel implements Runnable {
             startNextJump();
         else if (currentTime >= sphere.getJumpEndTime())
             startNextJump();
-        
+
         sphere.update(currentTime);
     }
 
@@ -111,7 +113,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     private void startNextJump() {
         final var tiles = level.getTiles();
-        
+
         final int nextIndex = currentTileIndex + 1;
         if (nextIndex >= tiles.size()) return;
 
@@ -121,13 +123,13 @@ public class GamePanel extends JPanel implements Runnable {
         final double startZ = (currentTile != null) ? currentTile.getZ() : 0;
         final double endZ = nextTile.getZ();
         final double distanceZ = endZ - startZ;
-        
+
         double duration = distanceZ / 1000.0;
         if (duration <= 0) duration = 0.2;
 
         final double height = 50 + (distanceZ * 0.15);
         final double startTime = startZ / 1000.0;
-        
+
         sphere.startJump(startTime, duration, height);
         currentTileIndex = nextIndex;
     }
@@ -199,7 +201,7 @@ public class GamePanel extends JPanel implements Runnable {
         final long currentMicroseconds = clip.getMicrosecondPosition();
         final long currentSamples = (long) (currentMicroseconds / 1_000_000.0 * sampleRate);
 
-        final int samplesToDisplay = (int)sampleRate << 1;
+        final int samplesToDisplay = (int) sampleRate << 1;
 
         final int startIndex = Math.max(0, (int) (currentSamples - (samplesToDisplay >> 1)));
         final int endIndex = Math.min(startIndex + samplesToDisplay, audioSamples.length);

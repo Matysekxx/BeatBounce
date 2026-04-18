@@ -10,7 +10,8 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class LevelGeneratorTest {
 
@@ -45,13 +46,13 @@ public class LevelGeneratorTest {
         long longTileCount = level.getTiles().stream()
                 .filter(t -> t instanceof LongTile)
                 .count();
-        
+
         assertEquals(1, longTileCount);
         AbstractTile longTile = level.getTiles().stream()
                 .filter(t -> t instanceof LongTile)
                 .findFirst()
                 .orElseThrow();
-        
+
         assertEquals(1000.0, longTile.getZ(), 0.1);
         assertEquals(500.0, longTile.getLengthInZ(), 0.1);
     }
@@ -80,7 +81,7 @@ public class LevelGeneratorTest {
                 .map(AbstractTile::getX)
                 .distinct()
                 .count();
-        
+
         assertTrue("Should use multiple lanes", distinctLanes > 1);
     }
 }

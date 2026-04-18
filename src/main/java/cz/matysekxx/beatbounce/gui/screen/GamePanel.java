@@ -10,8 +10,7 @@ import cz.matysekxx.beatbounce.util.Time;
 import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 
 public class GamePanel extends JPanel implements Runnable {
     private final Level level;
@@ -23,7 +22,9 @@ public class GamePanel extends JPanel implements Runnable {
     private final Thread gameThread;
     private final Sphere sphere;
     private int currentTileIndex = -1;
-    private double cameraTargetX = 0;
+    private boolean lastInputWasMouse = false;
+
+    private static final int LANE_WIDTH = 120;
 
     public GamePanel(Level level, Clip clip, short[] audioSamples, float sampleRate) {
         this.level = level;
@@ -41,12 +42,26 @@ public class GamePanel extends JPanel implements Runnable {
         this.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                    sphere.setTargetX(sphere.getTargetX() - 120);
+                if (lastInputWasMouse) {
+                    sphere.setTargetX(snapToNearestLane(sphere.getTargetX()));
+                    lastInputWasMouse = false;
                 }
-                if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                    sphere.setTargetX(sphere.getTargetX() + 120);
-                }
+                if (e.getKeyCode() == KeyEvent.VK_LEFT)
+                    sphere.setTargetX(sphere.getTargetX() - LANE_WIDTH);
+                else if (e.getKeyCode() == KeyEvent.VK_RIGHT)
+                    sphere.setTargetX(sphere.getTargetX() + LANE_WIDTH);
+            }
+        });
+        this.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                lastInputWasMouse = true;
+                final int mouseX = e.getX();
+                final int width = getWidth();
+                final double scale = cam.getScale(sphere.getZ());
+                if (scale <= 0) return;
+                final double newTargetX = cam.getX() + (mouseX - width / 2.0) / scale;
+                sphere.setTargetX(newTargetX);
             }
         });
     }
@@ -74,8 +89,7 @@ public class GamePanel extends JPanel implements Runnable {
             sphere.setZ(targetZ);
             cam.setZ(targetZ - 500);
 
-            cameraTargetX += (sphere.getX() - cameraTargetX) * 0.1;
-            cam.addToX(cameraTargetX - cam.getX());
+            cam.addToX((sphere.getX() - cam.getX()) * 0.2);
 
             updateSphere(currentTime);
 
@@ -177,6 +191,8 @@ public class GamePanel extends JPanel implements Runnable {
         g2d.fillPolygon(xPoints, yPoints, 4);
     }
 
+
+    //TODO: pouzit SwingWorker, ThreadPool, Future nebo Completable Future pro predpripreveni Waveform
     private void drawWaveform(Graphics2D g2d, int width) {
         final int waveformHeight = 100;
 
@@ -220,5 +236,9 @@ public class GamePanel extends JPanel implements Runnable {
         if (currentX >= 0 && currentX < width) {
             g2d.drawLine(currentX, waveformHeight, currentX, 0);
         }
+    }
+
+    private double snapToNearestLane(double x) {
+        return Math.round(x / LANE_WIDTH) * LANE_WIDTH;
     }
 }

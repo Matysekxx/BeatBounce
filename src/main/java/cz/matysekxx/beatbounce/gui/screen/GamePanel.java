@@ -25,8 +25,13 @@ public class GamePanel extends JPanel implements Runnable {
     private final Thread gameThread;
     private final Sphere sphere;
     private boolean running;
+
+    public enum GameState { PLAYING, FALLING, GAME_OVER }
+    private GameState gameState = GameState.PLAYING;
     private int currentTileIndex = -1;
     private boolean lastInputWasMouse = false;
+    private double gameZProgress = 0;
+    private double fallStartZ = 0;
 
     public GamePanel(Level level, Clip clip, short[] audioSamples, float sampleRate) {
         this.level = level;
@@ -34,9 +39,10 @@ public class GamePanel extends JPanel implements Runnable {
         this.audioSamples = audioSamples;
         this.sampleRate = sampleRate;
         this.running = false;
+        this.setFocusable(true);
         this.setBackground(Color.DARK_GRAY);
         this.cam = new Camera3D(0, 0, -500, 500.0);
-        this.sphere = new Sphere(0, 150, 0, 20);
+        this.sphere = new Sphere(0, 150, 0, 25);
         this.setFocusable(true);
         this.requestFocusInWindow();
         gameThread = new Thread(this);
@@ -71,47 +77,86 @@ public class GamePanel extends JPanel implements Runnable {
     public void startGame() {
         if (!this.running) {
             this.running = true;
+            this.gameState = GameState.PLAYING;
+            this.currentTileIndex = -1;
+            this.gameZProgress = 0;
+            this.fallStartZ = 0;
+            this.sphere.reset();
+            
+            cam.setX(0);
+            cam.setY(0);
+            cam.setZ(-500);
+
+            startNextJump(0);
+
+            clip.setFramePosition(0);
             clip.start();
-            gameThread.start();
+            this.gameThread.start();
         }
     }
 
     public void stopGame() {
+        if (!this.running) return;
         this.running = false;
         clip.stop();
         gameThread.interrupt();
+        try {
+            gameThread.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.err.println("Game thread interrupted while stopping: " + e.getMessage());
+        }
     }
 
     @Override
     public void run() {
         while (running) {
             final double currentTime = clip.getMicrosecondPosition() / 1_000_000.0;
-            double targetZ = currentTime * 1000.0;
-
-            sphere.setZ(targetZ);
-            cam.setZ(targetZ - 500);
-
-            cam.addToX((sphere.getX() - cam.getX()) * 0.2);
-
-            updateSphere(currentTime);
-
+            gameZProgress = currentTime * 1000.0;
+            updateGameLogic(currentTime);
             repaint();
             Time.sleep(16);
         }
     }
 
-    private void updateSphere(double currentTime) {
-        if (!sphere.isJumping())
-            startNextJump();
-        else if (currentTime >= sphere.getJumpEndTime())
-            startNextJump();
+    //TODO: presunout herni logiku do samostatne tridy
+    private void updateGameLogic(double currentTime) {
+        if (gameState == GameState.PLAYING) {
+            sphere.setZ(gameZProgress);
+            cam.setZ(gameZProgress - 500);
 
-        sphere.update(currentTime);
+            if (currentTileIndex + 1 < level.getTiles().size()) {
+                final AbstractTile nextTile = level.getTiles().get(currentTileIndex + 1);
+                if (gameZProgress >= nextTile.getZ()) {
+                    final double tileMinX = nextTile.getX() - (LANE_WIDTH / 2.0) - sphere.getRadius();
+                    final double tileMaxX = nextTile.getX() + (LANE_WIDTH / 2.0) + sphere.getRadius();
+
+                    if (sphere.getX() >= tileMinX && sphere.getX() <= tileMaxX) {
+                        currentTileIndex++;
+                        startNextJump(currentTime);
+                    } else {
+                        gameState = GameState.FALLING;
+                        sphere.startFalling();
+                        fallStartZ = sphere.getZ();
+                        clip.stop();
+                    }
+                }
+            }
+            sphere.update(currentTime);
+
+        } else if (gameState == GameState.FALLING) {
+            sphere.update(currentTime);
+            sphere.setZ(fallStartZ);
+            cam.setZ(gameZProgress - 500);
+            if (sphere.getCurrentY() > 500) {
+                gameState = GameState.GAME_OVER;
+            }
+        } else if (gameState == GameState.GAME_OVER) {
+            cam.setZ(gameZProgress - 500);
+        }
     }
-
-    //TODO: presunout metody na update kulicky do samostatne tridy Model
-
-    private void startNextJump() {
+    
+    private void startNextJump(double currentTime) {
         final var tiles = level.getTiles();
 
         final int nextIndex = currentTileIndex + 1;
@@ -128,10 +173,8 @@ public class GamePanel extends JPanel implements Runnable {
         if (duration <= 0) duration = 0.2;
 
         final double height = 50 + (distanceZ * 0.15);
-        final double startTime = startZ / 1000.0;
 
-        sphere.startJump(startTime, duration, height);
-        currentTileIndex = nextIndex;
+        sphere.startJump(currentTime, duration, height);
     }
 
     @Override
@@ -163,6 +206,16 @@ public class GamePanel extends JPanel implements Runnable {
 
         g2d.setColor(Color.CYAN);
         drawWaveform(g2d, width);
+
+        if (gameState == GameState.GAME_OVER) {
+            g2d.setColor(Color.RED);
+            g2d.setFont(new Font("Arial", Font.BOLD, 72));
+            String gameOverText = "GAME OVER";
+            FontMetrics fm = g2d.getFontMetrics();
+            int textWidth = fm.stringWidth(gameOverText);
+            int textHeight = fm.getHeight();
+            g2d.drawString(gameOverText, (width - textWidth) / 2, (height - textHeight) / 2 + fm.getAscent());
+        }
     }
 
     private void drawLines(Graphics2D g2d, int horizonY, int w, int h) {

@@ -1,27 +1,34 @@
 package cz.matysekxx.beatbounce.gui.screen;
 
+import cz.matysekxx.beatbounce.util.Lazy;
+
 import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class ScreenManager {
 
-    private final Map<Class<? extends Screen>, Screen> windows = new HashMap<>();
+    private final Map<Class<? extends Screen>, Lazy<Screen>> windows = new HashMap<>();
     private Screen activeWindow;
 
     public ScreenManager() {
-        registerScreen(new IntroScreen(this));
-        registerScreen(new MainMenuScreen());
-        registerScreen(new GameScreen());
+        registerScreen(IntroScreen.class, () -> new IntroScreen(this));
+        registerScreen(MainMenuScreen.class, MainMenuScreen::new);
+        registerScreen(GameScreen.class, GameScreen::new);
     }
 
-    public void registerScreen(Screen screen) {
-        windows.put(screen.getClass(), screen);
-        screen.setVisible(false);
+    public <T extends Screen> void registerScreen(Class<T> screenClass, Supplier<T> constructor) {
+        if (windows.containsKey(screenClass)) {
+            return;
+        }
+        @SuppressWarnings("unchecked")
+        final Lazy<Screen> lazyScreen = (Lazy<Screen>) Lazy.of(constructor);
+        windows.put(screenClass, lazyScreen);
     }
 
     public <T extends Screen> void showScreen(Class<T> screenClass) {
-        final Screen nextScreen = windows.get(screenClass);
+        final Screen nextScreen = windows.get(screenClass).get();
         if (nextScreen != null) {
             nextScreen.setExtendedState(JFrame.MAXIMIZED_BOTH);
             nextScreen.setVisible(true);
@@ -29,6 +36,7 @@ public class ScreenManager {
             nextScreen.start();
 
             if (activeWindow != null && activeWindow != nextScreen) {
+                activeWindow.stop();
                 activeWindow.setVisible(false);
             }
             activeWindow = nextScreen;

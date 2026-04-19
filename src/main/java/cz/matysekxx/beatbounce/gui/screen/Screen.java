@@ -14,5 +14,11 @@ public abstract class Screen extends JFrame {
         this.setLocationRelativeTo(null);
     }
 
-    public abstract void start();
+    public void start() {
+
+    }
+
+    public void stop() {
+
+    }
 }

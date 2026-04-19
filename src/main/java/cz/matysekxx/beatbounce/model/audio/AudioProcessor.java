@@ -29,7 +29,7 @@ public class AudioProcessor {
      */
     private static final int BUFFER_SIZE = 2048;
     private static final int OVERLAP = 1024;
-    private static final double MIN_BEAT_INTERVAL = 0.01;
+    private static final double MIN_BEAT_INTERVAL = 0.25;
     private final PercussionOnsetDetector percussionDetector;
     private final ComplexOnsetDetector complexDetector;
     private final AudioFormat format;
@@ -49,7 +49,7 @@ public class AudioProcessor {
         this.percussionDetector = new PercussionOnsetDetector(sampleRate, BUFFER_SIZE,
                 (time, salience) -> handleDetectedBeat(time, salience, speedMultiplier), 85.0, 5.0);
 
-        this.complexDetector = new ComplexOnsetDetector(BUFFER_SIZE, 0.3);
+        this.complexDetector = new ComplexOnsetDetector(BUFFER_SIZE, 0.5);
         this.complexDetector.setHandler((time, salience) -> handleDetectedBeat(time, salience, speedMultiplier));
     }
 

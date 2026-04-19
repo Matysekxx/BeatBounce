@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 public class LevelGenerator {
     private static final double Z_UNITS_PER_SECOND = 1000.0;
     private static final double MIN_LONG_TILE_DURATION_SEC = 0.3;
-    private static final double MAX_LONG_TILE_DURATION_SEC = 4.0;
+    private static final double MAX_LONG_TILE_DURATION_SEC = 1.5;
     private static final int LANE_WIDTH = 120;
 
     public static Level generateLevel(List<BeatEvent> events, String songName) {
@@ -89,7 +89,7 @@ public class LevelGenerator {
                 if (duration >= MIN_LONG_TILE_DURATION_SEC) {
                     addLongTile(first, last);
                     highIntensityBuffer.clear();
-                    beatsToSkipLongTile = 5;
+                    beatsToSkipLongTile = 10;
                     return;
                 }
             }

@@ -21,16 +21,17 @@ public class ScreenManager {
     }
 
     public <T extends Screen> void showScreen(Class<T> screenClass) {
-        if (activeWindow != null) {
-            activeWindow.setVisible(false);
-        }
         final Screen nextScreen = windows.get(screenClass);
         if (nextScreen != null) {
+            nextScreen.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            nextScreen.setVisible(true);
+            nextScreen.toFront();
+            nextScreen.start();
+
+            if (activeWindow != null && activeWindow != nextScreen) {
+                activeWindow.setVisible(false);
+            }
             activeWindow = nextScreen;
-            activeWindow.setExtendedState(JFrame.MAXIMIZED_BOTH);
-            activeWindow.setVisible(true);
-            activeWindow.toFront();
-            activeWindow.start();
         }
     }
 }

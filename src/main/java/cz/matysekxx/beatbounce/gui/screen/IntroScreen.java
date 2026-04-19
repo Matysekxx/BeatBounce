@@ -24,7 +24,6 @@ public class IntroScreen extends Screen {
         final JButton startButton = ButtonFactory.createStartButton(e -> {
             sleep(200);
             screenManager.showScreen(GameScreen.class);
-            this.dispose();
         });
         buttonPanel.add(startButton);
         final JButton exitButton = ButtonFactory.createExitButton(e -> {

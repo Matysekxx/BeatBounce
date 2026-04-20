@@ -22,7 +22,7 @@ public class IsometricNeonButton extends JButton {
         this.arc = arc;
 
         this.setForeground(Color.WHITE);
-        this.setFont(new Font("Monospaced", Font.BOLD, 22));
+        this.setFont(new Font("Monospaced", Font.BOLD | Font.ITALIC, 24));
         this.setPreferredSize(size);
         this.setContentAreaFilled(false);
         this.setBorderPainted(false);
@@ -78,6 +78,9 @@ public class IsometricNeonButton extends JButton {
         final FontMetrics fm = g2.getFontMetrics();
         final int textX = (w - fm.stringWidth(getText())) >> 1;
         final int textY = (((h - depth) + fm.getAscent() - fm.getDescent()) >> 1) + currentPressOffset;
+        g2.setColor(new Color(0,0,0,120));
+        g2.drawString(getText(), textX + 2, textY + 2);
+        g2.setColor(getForeground());
         g2.drawString(getText(), textX, textY);
 
         g2.dispose();

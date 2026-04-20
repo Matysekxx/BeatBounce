@@ -5,12 +5,12 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 
 public class ButtonFactory {
-    private static final Color MAGENTA_TOP_GLOW = new Color(255, 30, 240);
-    private static final Color MAGENTA_TOP_FILL = new Color(230, 0, 200);
-    private static final Color MAGENTA_FRONT_SIDE = new Color(100, 0, 90);
-    private static final Color CYAN_TOP_GLOW = new Color(0, 255, 255);
-    private static final Color CYAN_TOP_FILL = new Color(0, 200, 220);
-    private static final Color CYAN_FRONT_SIDE = new Color(0, 70, 90);
+    private static final Color MAGENTA_TOP_GLOW = new Color(255, 100, 200);
+    private static final Color MAGENTA_TOP_FILL = new Color(255, 0, 128);
+    private static final Color MAGENTA_FRONT_SIDE = new Color(100, 0, 50);
+    private static final Color CYAN_TOP_GLOW = new Color(100, 255, 255);
+    private static final Color CYAN_TOP_FILL = new Color(0, 200, 255);
+    private static final Color CYAN_FRONT_SIDE = new Color(0, 70, 100);
 
     public static JButton createStartButton(ActionListener actionListener) {
         return createButton("START", MAGENTA_TOP_FILL, MAGENTA_TOP_GLOW, MAGENTA_FRONT_SIDE, actionListener);

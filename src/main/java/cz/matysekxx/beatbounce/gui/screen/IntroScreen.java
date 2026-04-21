@@ -1,6 +1,7 @@
 package cz.matysekxx.beatbounce.gui.screen;
 
 import cz.matysekxx.beatbounce.gui.ButtonFactory;
+import cz.matysekxx.beatbounce.gui.Star;
 
 import javax.swing.*;
 import java.awt.*;
@@ -85,7 +86,7 @@ public class IntroScreen extends Screen {
             super.paintComponent(g);
             final Graphics2D g2d = (Graphics2D) g.create();
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            
+
             final int w = getWidth();
             final int h = getHeight();
             final int horizonY = h / 2 + 50;
@@ -105,7 +106,7 @@ public class IntroScreen extends Screen {
                 final double projX = (s.x / s.z) * fov;
                 final double projY = (s.y / s.z) * fov;
                 final double size = Math.max(0.5, 4.0 - (s.z / 100.0));
-                
+
                 final int alpha = (int) Math.min(255, Math.max(0, 255 - (s.z * 0.5)));
                 g2d.setColor(new Color(0, 255, 255, alpha));
                 g2d.fillOval((int) projX, (int) projY, (int) size, (int) size);
@@ -165,27 +166,13 @@ public class IntroScreen extends Screen {
             }
 
             final RadialGradientPaint vignette = new RadialGradientPaint(
-                w / 2f, h / 2f, w * 0.8f,
-                new float[]{0.4f, 1.0f},
-                new Color[]{new Color(0, 0, 0, 0), new Color(0, 0, 0, 220)}
+                    w / 2f, h / 2f, w * 0.8f,
+                    new float[]{0.4f, 1.0f},
+                    new Color[]{new Color(0, 0, 0, 0), new Color(0, 0, 0, 220)}
             );
             g2d.setPaint(vignette);
             g2d.fillRect(0, 0, w, h);
             g2d.dispose();
-        }
-
-        private static class Star {
-            private double x, y, z;
-            private Star() { reset(true); }
-            private void reset(boolean randomZ) {
-                x = (Math.random() - 0.5) * 2000;
-                y = (Math.random() - 0.5) * 2000;
-                z = randomZ ? Math.random() * 500 : 500;
-            }
-            private void update() {
-                z -= 3.0;
-                if (z <= 1) reset(false);
-            }
         }
     }
 }

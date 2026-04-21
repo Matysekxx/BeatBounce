@@ -2,6 +2,7 @@ package cz.matysekxx.beatbounce.gui.screen;
 
 import cz.matysekxx.beatbounce.gui.ButtonFactory;
 import cz.matysekxx.beatbounce.gui.Star;
+import cz.matysekxx.beatbounce.gui.RenderUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -79,8 +80,6 @@ public class IntroScreen extends Screen {
             for (int i = 0; i < STARS_COUNT; i++) stars.add(new Star());
         }
 
-
-        //TODO: rozsekat metodu do vice metod
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
@@ -91,31 +90,22 @@ public class IntroScreen extends Screen {
             final int h = getHeight();
             final int horizonY = h / 2 + 50;
 
-            final GradientPaint sky = new GradientPaint(
-                    0, 0, new Color(2, 2, 10), 0,
-                    horizonY,
-                    new Color(40, 5, 60)
+            RenderUtils.drawBackground(g2d, w, h);
+            RenderUtils.drawStars(g2d, stars, w, horizonY);
+            RenderUtils.drawFloor(g2d, w, h, horizonY);
 
-            );
-            g2d.setPaint(sky);
-            g2d.fillRect(0, 0, w, horizonY);
+            drawIntroGrid(g2d, w, h, horizonY);
 
-            g2d.translate(w / 2, horizonY - 100);
-            for (Star s : stars) {
-                final double fov = 300.0;
-                final double projX = (s.x / s.z) * fov;
-                final double projY = (s.y / s.z) * fov;
-                final double size = Math.max(0.5, 4.0 - (s.z / 100.0));
+            RenderUtils.drawHorizonLine(g2d, w, horizonY);
 
-                final int alpha = (int) Math.min(255, Math.max(0, 255 - (s.z * 0.5)));
-                g2d.setColor(new Color(0, 255, 255, alpha));
-                g2d.fillOval((int) projX, (int) projY, (int) size, (int) size);
-            }
-            g2d.translate(-w / 2, -(horizonY - 100));
+            drawTitle(g2d, w, h);
 
-            g2d.setColor(new Color(3, 0, 10));
-            g2d.fillRect(0, horizonY, w, h - horizonY);
+            RenderUtils.drawCRTScanlines(g2d, w, h);
+            RenderUtils.drawVignette(g2d, w, h);
+            g2d.dispose();
+        }
 
+        private void drawIntroGrid(Graphics2D g2d, int w, int h, int horizonY) {
             g2d.setColor(new Color(0, 255, 255, 140));
             final int vanishingPointX = w / 2;
             for (int i = -30; i <= 30; i++) {
@@ -131,16 +121,10 @@ public class IntroScreen extends Screen {
                     g2d.drawLine(0, lineY, w, lineY);
                 }
             }
+        }
 
-            g2d.setColor(new Color(255, 0, 255, 200));
-            g2d.setStroke(new BasicStroke(3));
-            g2d.drawLine(0, horizonY, w, horizonY);
-            g2d.setStroke(new BasicStroke(1));
-            g2d.setColor(Color.WHITE);
-            g2d.drawLine(0, horizonY, w, horizonY);
-
-
-            //TODO: predelat jeste nejak Title
+        //TODO: doupravit Title napr animovat ho nebo ho udelat pomoci kombinace barev
+        private void drawTitle(Graphics2D g2d, int w, int h) {
             final String text = "BEAT BOUNCE";
             g2d.setFont(new Font("Monospaced", Font.BOLD | Font.ITALIC, 115));
             final FontMetrics fm = g2d.getFontMetrics();
@@ -159,20 +143,6 @@ public class IntroScreen extends Screen {
 
             g2d.setColor(new Color(240, 255, 255));
             g2d.drawString(text, x, y);
-
-            g2d.setColor(new Color(0, 0, 0, 40));
-            for (int i = 0; i < h; i += 3) {
-                g2d.drawLine(0, i, w, i);
-            }
-
-            final RadialGradientPaint vignette = new RadialGradientPaint(
-                    w / 2f, h / 2f, w * 0.8f,
-                    new float[]{0.4f, 1.0f},
-                    new Color[]{new Color(0, 0, 0, 0), new Color(0, 0, 0, 220)}
-            );
-            g2d.setPaint(vignette);
-            g2d.fillRect(0, 0, w, h);
-            g2d.dispose();
         }
     }
 }

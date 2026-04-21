@@ -4,22 +4,24 @@ import cz.matysekxx.beatbounce.gui.ButtonFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import static cz.matysekxx.beatbounce.util.Time.sleep;
 
 public class IntroScreen extends Screen {
+    private final IntroBackgroundPanel backgroundPanel;
 
     public IntroScreen(ScreenManager screenManager) {
         super();
         this.setLayout(new BorderLayout());
-        final IntroBackgroundPanel backgroundPanel = new IntroBackgroundPanel(new Color(92, 79, 244), new Color(13, 31, 140, 240));
+        backgroundPanel = new IntroBackgroundPanel();
         backgroundPanel.setLayout(new BorderLayout());
         this.setContentPane(backgroundPanel);
 
         final JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 100));
         buttonPanel.setOpaque(false);
-
 
         final JButton startButton = ButtonFactory.createStartButton(e -> {
             sleep(200);
@@ -36,40 +38,154 @@ public class IntroScreen extends Screen {
 
     @Override
     public void start() {
-        //TODO: pridat animaci pro intro screen pozadi
+        backgroundPanel.startAnimation();
+    }
+
+    @Override
+    public void stop() {
+        backgroundPanel.stopAnimation();
     }
 
     private static class IntroBackgroundPanel extends JPanel {
-        private final Color firstColor;
-        private final Color secondColor;
+        private float time = 0;
+        private Timer timer;
+        private final Collection<Star> stars = new ArrayList<>(STARS_COUNT);
+        private static final int STARS_COUNT = 800;
 
-        public IntroBackgroundPanel(Color firstColor, Color secondColor) {
-            super();
-            this.firstColor = firstColor;
-            this.secondColor = secondColor;
+        public IntroBackgroundPanel() { super(); initStars(); }
+
+        public void startAnimation() {
+            if (timer == null) {
+                timer = new Timer(16, e -> {
+                    time += 0.04f;
+                    if (!stars.isEmpty()) {
+                        for (Star s : stars) s.update();
+                    }
+                    repaint();
+                });
+                timer.start();
+            }
         }
 
+        public void stopAnimation() {
+            if (timer != null) {
+                timer.stop();
+                timer = null;
+            }
+        }
+
+        private void initStars() {
+            for (int i = 0; i < STARS_COUNT; i++) stars.add(new Star());
+        }
+
+
+        //TODO: rozsekat metodu do vice metod
+        @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             final Graphics2D g2d = (Graphics2D) g.create();
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            GradientPaint gp = new GradientPaint(0, 0, firstColor, 0, getHeight(), secondColor);
+            
+            final int w = getWidth();
+            final int h = getHeight();
+            final int horizonY = h / 2 + 50;
 
-            g2d.setPaint(gp);
-            g2d.fillRect(0, 0, getWidth(), getHeight());
+            final GradientPaint sky = new GradientPaint(
+                    0, 0, new Color(2, 2, 10), 0,
+                    horizonY,
+                    new Color(40, 5, 60)
 
+            );
+            g2d.setPaint(sky);
+            g2d.fillRect(0, 0, w, horizonY);
+
+            g2d.translate(w / 2, horizonY - 100);
+            for (Star s : stars) {
+                final double fov = 300.0;
+                final double projX = (s.x / s.z) * fov;
+                final double projY = (s.y / s.z) * fov;
+                final double size = Math.max(0.5, 4.0 - (s.z / 100.0));
+                
+                final int alpha = (int) Math.min(255, Math.max(0, 255 - (s.z * 0.5)));
+                g2d.setColor(new Color(0, 255, 255, alpha));
+                g2d.fillOval((int) projX, (int) projY, (int) size, (int) size);
+            }
+            g2d.translate(-w / 2, -(horizonY - 100));
+
+            g2d.setColor(new Color(3, 0, 10));
+            g2d.fillRect(0, horizonY, w, h - horizonY);
+
+            g2d.setColor(new Color(0, 255, 255, 140));
+            final int vanishingPointX = w / 2;
+            for (int i = -30; i <= 30; i++) {
+                final int bottomX = vanishingPointX + i * 150;
+                g2d.drawLine(vanishingPointX, horizonY, bottomX, h);
+            }
+
+            final float gridOffset = time % 1.0f;
+            for (int z = 1; z <= 20; z++) {
+                final double depth = Math.pow((z + gridOffset) / 20.0, 2.5);
+                final int lineY = horizonY + (int) ((h - horizonY) * depth);
+                if (lineY > horizonY && lineY <= h) {
+                    g2d.drawLine(0, lineY, w, lineY);
+                }
+            }
+
+            g2d.setColor(new Color(255, 0, 255, 200));
+            g2d.setStroke(new BasicStroke(3));
+            g2d.drawLine(0, horizonY, w, horizonY);
+            g2d.setStroke(new BasicStroke(1));
+            g2d.setColor(Color.WHITE);
+            g2d.drawLine(0, horizonY, w, horizonY);
+
+
+            //TODO: predelat jeste nejak Title
             final String text = "BEAT BOUNCE";
-            g2d.setFont(new Font("Monospaced", Font.BOLD, 90));
+            g2d.setFont(new Font("Monospaced", Font.BOLD | Font.ITALIC, 115));
+            final FontMetrics fm = g2d.getFontMetrics();
+            final int x = (w - fm.stringWidth(text)) >> 1;
+            final int y = (h / 3);
 
-            final int x = (getWidth() - g2d.getFontMetrics().stringWidth(text)) >> 1;
-            final int y = (getHeight() >> 1);
+            final double pulse = (Math.sin(time * 3) + 1.0) / 2.0;
+            for (int i = 12; i >= 1; i -= 2) {
+                final int alpha = (int) (10 + (20 * pulse) / i);
+                g2d.setColor(new Color(0, 255, 255, alpha));
+                g2d.drawString(text, x - i, y - i);
+                g2d.drawString(text, x + i, y + i);
+                g2d.drawString(text, x - i, y + i);
+                g2d.drawString(text, x + i, y - i);
+            }
 
-            final Color neonPink = new Color(234, 255, 249, 255);
-
-            g2d.setColor(neonPink);
+            g2d.setColor(new Color(240, 255, 255));
             g2d.drawString(text, x, y);
 
+            g2d.setColor(new Color(0, 0, 0, 40));
+            for (int i = 0; i < h; i += 3) {
+                g2d.drawLine(0, i, w, i);
+            }
+
+            final RadialGradientPaint vignette = new RadialGradientPaint(
+                w / 2f, h / 2f, w * 0.8f,
+                new float[]{0.4f, 1.0f},
+                new Color[]{new Color(0, 0, 0, 0), new Color(0, 0, 0, 220)}
+            );
+            g2d.setPaint(vignette);
+            g2d.fillRect(0, 0, w, h);
             g2d.dispose();
+        }
+
+        private static class Star {
+            private double x, y, z;
+            private Star() { reset(true); }
+            private void reset(boolean randomZ) {
+                x = (Math.random() - 0.5) * 2000;
+                y = (Math.random() - 0.5) * 2000;
+                z = randomZ ? Math.random() * 500 : 500;
+            }
+            private void update() {
+                z -= 3.0;
+                if (z <= 1) reset(false);
+            }
         }
     }
 }

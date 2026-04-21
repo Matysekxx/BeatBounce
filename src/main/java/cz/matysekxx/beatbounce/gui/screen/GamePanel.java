@@ -1,7 +1,9 @@
 package cz.matysekxx.beatbounce.gui.screen;
 
 import cz.matysekxx.beatbounce.gui.Camera3D;
+import cz.matysekxx.beatbounce.gui.Star;
 import cz.matysekxx.beatbounce.gui.WindowData;
+import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.level.Level;
@@ -14,6 +16,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class GamePanel extends JPanel implements Runnable {
     private static final int LANE_WIDTH = 120;
@@ -30,8 +34,9 @@ public class GamePanel extends JPanel implements Runnable {
     private GameState gameState = GameState.PLAYING;
     private int currentTileIndex = -1;
     private boolean lastInputWasMouse = false;
-    private double gameZProgress = 0;
+    private double gameZProgress;
     private double fallStartZ = 0;
+    private final Collection<Star> stars = new ArrayList<>();
 
     public GamePanel(Level level, Clip clip, short[] audioSamples, float sampleRate) {
         this.level = level;
@@ -40,7 +45,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.sampleRate = sampleRate;
         this.running = false;
         this.setFocusable(true);
-        this.setBackground(Color.DARK_GRAY);
+        this.setBackground(Color.BLACK);
         this.cam = new Camera3D(0, 0, -500, 500.0);
         this.sphere = new Sphere(0, 150, 0, 25);
         this.setFocusable(true);
@@ -76,23 +81,27 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void startGame() {
         if (!this.running) {
-            this.running = true;
-            this.gameState = GameState.PLAYING;
-            this.currentTileIndex = -1;
-            this.gameZProgress = 0;
-            this.fallStartZ = 0;
-            this.sphere.reset();
-            
-            cam.setX(0);
-            cam.setY(0);
-            cam.setZ(-500);
-
-            startNextJump(0);
-
-            clip.setFramePosition(0);
-            clip.start();
+            initVariables();
             this.gameThread.start();
         }
+    }
+
+    public void initVariables() {
+        this.running = true;
+        this.gameState = GameState.PLAYING;
+        this.currentTileIndex = -1;
+        this.gameZProgress = 0;
+        this.fallStartZ = 0;
+        this.sphere.reset();
+
+        cam.setX(0);
+        cam.setY(0);
+        cam.setZ(-500);
+
+        startNextJump(0);
+
+        clip.setFramePosition(0);
+        clip.start();
     }
 
     public void stopGame() {
@@ -110,17 +119,23 @@ public class GamePanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
+        gameZProgress = 0;
         while (running) {
             final double currentTime = clip.getMicrosecondPosition() / 1_000_000.0;
             gameZProgress = currentTime * 1000.0;
             updateGameLogic(currentTime);
             repaint();
             Time.sleep(16);
+            if (gameState == GameState.GAME_OVER) {
+                initVariables();
+            }
         }
     }
 
     //TODO: presunout herni logiku do samostatne tridy
     private void updateGameLogic(double currentTime) {
+        if (!stars.isEmpty()) for (Star s : stars) s.update();
+
         if (gameState == GameState.PLAYING) {
             sphere.setZ(gameZProgress);
             cam.setZ(gameZProgress - 500);
@@ -155,7 +170,7 @@ public class GamePanel extends JPanel implements Runnable {
             cam.setZ(gameZProgress - 500);
         }
     }
-    
+
     private void startNextJump(double currentTime) {
         final var tiles = level.getTiles();
 
@@ -177,20 +192,39 @@ public class GamePanel extends JPanel implements Runnable {
         sphere.startJump(currentTime, duration, height);
     }
 
+    private void initStars(int w) {
+        if (stars.isEmpty() && w > 0) {
+            for (int i = 0; i < 800; i++) stars.add(new Star());
+        }
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         final Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2d.setColor(Color.WHITE);
 
         final int width = getWidth();
         final int height = getHeight();
         final int horizonY = height / 3;
 
-        this.drawTrack(g2d, width, height, horizonY);
-        this.drawLines(g2d, horizonY, width, height);
+        initStars(width);
 
+        drawEnvironment(g2d, width, height, horizonY);
+        drawGameObjects(g2d, width, height);
+        drawPostProcessing(g2d, width, height);
+    }
+
+    private void drawEnvironment(Graphics2D g2d, int width, int height, int horizonY) {
+        RenderUtils.drawBackground(g2d, width, height);
+        RenderUtils.drawStars(g2d, stars, width, horizonY);
+        RenderUtils.drawFloor(g2d, width, height, horizonY);
+        drawHorizonEqualizer(g2d, width, horizonY);
+        RenderUtils.drawHorizonLine(g2d, width, horizonY);
+        drawNeonGrid(g2d, width, height, horizonY);
+    }
+
+    private void drawGameObjects(Graphics2D g2d, int width, int height) {
         g2d.setColor(Color.GREEN);
         final var tiles = level.getTiles();
         for (int i = tiles.size() - 1; i >= 0; i--) {
@@ -203,94 +237,94 @@ public class GamePanel extends JPanel implements Runnable {
 
         g2d.setColor(Color.MAGENTA);
         sphere.paint3D(g2d, cam, WindowData.of(width, height));
+    }
 
-        g2d.setColor(Color.CYAN);
-        drawWaveform(g2d, width);
+    private void drawPostProcessing(Graphics2D g2d, int width, int height) {
+        RenderUtils.drawCRTScanlines(g2d, width, height);
+        RenderUtils.drawVignette(g2d, width, height);
+    }
 
-        if (gameState == GameState.GAME_OVER) {
-            g2d.setColor(Color.RED);
-            g2d.setFont(new Font("Arial", Font.BOLD, 72));
-            String gameOverText = "GAME OVER";
-            FontMetrics fm = g2d.getFontMetrics();
-            int textWidth = fm.stringWidth(gameOverText);
-            int textHeight = fm.getHeight();
-            g2d.drawString(gameOverText, (width - textWidth) / 2, (height - textHeight) / 2 + fm.getAscent());
+    private void drawHorizonEqualizer(Graphics2D g2d, int width, int horizonY) {
+        final int numBars = 64;
+        final int barWidth = width / numBars;
+        final long currentSample = (long) (clip.getMicrosecondPosition() / 1_000_000.0 * sampleRate);
+
+        int windowSize = 2048;
+        final int startSample = Math.max(0, (int) currentSample);
+        if (startSample + windowSize > audioSamples.length) windowSize = audioSamples.length - startSample;
+        if (windowSize <= 0) return;
+
+        final int samplesPerBar = Math.max(1, windowSize / numBars);
+        
+        for (int i = 0; i < numBars; i++) {
+            long sum = 0;
+            for (int j = 0; j < samplesPerBar; j++) {
+                final int idx = startSample + i * samplesPerBar + j;
+                if (idx < audioSamples.length) {
+                    sum += Math.abs(audioSamples[idx]);
+                }
+            }
+            final double avgAmplitude = (double) sum / samplesPerBar;
+            final double normalized = avgAmplitude / 32768.0;
+
+            final double normalizedX = (i - (numBars / 2.0)) / (numBars / 2.0);
+            final double bellCurve = Math.exp(-Math.pow(normalizedX, 2) * 3);
+
+            final int maxBarHeight = getHeight() / 4;
+            final int barHeight = (int) (5 + (maxBarHeight * normalized * 2.5 * bellCurve));
+            final int barX = i * barWidth;
+            final int barY = horizonY - barHeight;
+
+            final int r = (int) Math.min(255, Math.max(0, 255 * bellCurve));
+            final int g = (int) Math.min(255, Math.max(0, 255 * (1 - bellCurve)));
+            
+            g2d.setColor(new Color(r, g, 255, 180));
+            g2d.fillRect(barX + 2, barY, barWidth - 4, barHeight);
+            
+            g2d.setColor(new Color(255, 255, 255, 220));
+            g2d.fillRect(barX + 2, barY, barWidth - 4, 3);
+            
+            g2d.setColor(new Color(r, g, 255, 30));
+            g2d.fillRect(barX + 2, horizonY, barWidth - 4, barHeight / 2);
         }
     }
 
-    private void drawLines(Graphics2D g2d, int horizonY, int w, int h) {
-        for (int z = 0; z < 2000; z += 200) {
-            final double distance = z - (cam.getZ() % 200);
+    private void drawNeonGrid(Graphics2D g2d, int width, int height, int horizonY) {
+        for (int z = 0; z < 3000; z += 150) {
+            final double distance = z - (cam.getZ() % 150);
             if (distance <= 0) continue;
             final double scale = cam.getScale(cam.getZ() + distance);
             final int screenY = (int) (horizonY + ((150 - cam.getY()) * scale));
-            if (screenY >= horizonY && screenY <= h) {
-                g2d.drawLine(0, screenY, w, screenY);
+            
+            if (screenY >= horizonY && screenY <= height) {
+                final int alpha = (int) Math.max(0, Math.min(150, 255 - (distance / 3000.0 * 255)));
+                g2d.setColor(new Color(0, 255, 255, alpha));
+                g2d.drawLine(0, screenY, width, screenY);
             }
         }
-    }
 
-    private void drawTrack(Graphics2D g2d, int width, int height, int horizonY) {
-        final var xPoints = new int[]{
-                (int) (100 - cam.getX()),
-                (int) (width - 100 - cam.getX()),
-                (int) (((double) width / 2) + 150 - (cam.getX() / 4)),
-                (int) (((double) width / 2) - 150 - (cam.getX() / 4))
-        };
-        final var yPoints = new int[]{
-                (int) (height - cam.getY()),
-                (int) (height - cam.getY()),
-                (int) (horizonY - (cam.getY() / 4)),
-                (int) (horizonY - (cam.getY() / 4))
-        };
-        g2d.fillPolygon(xPoints, yPoints, 4);
-    }
-
-
-    //TODO: pouzit SwingWorker, ThreadPool, Future nebo Completable Future pro predpripreveni Waveform
-    private void drawWaveform(Graphics2D g2d, int width) {
-        final int waveformHeight = 100;
-
-        final long currentMicroseconds = clip.getMicrosecondPosition();
-        final long currentSamples = (long) (currentMicroseconds / 1_000_000.0 * sampleRate);
-
-        final int samplesToDisplay = (int) sampleRate << 1;
-
-        final int startIndex = Math.max(0, (int) (currentSamples - (samplesToDisplay >> 1)));
-        final int endIndex = Math.min(startIndex + samplesToDisplay, audioSamples.length);
-
-        if (startIndex >= endIndex) return;
-
-        final double samplesPerPixel = (double) (endIndex - startIndex) / width;
-
-        for (int x = 0; x < width; x++) {
-            final int sampleStart = (int) (startIndex + x * samplesPerPixel);
-            int sampleEnd = (int) (startIndex + (x + 1) * samplesPerPixel);
-
-            if (sampleEnd > endIndex) sampleEnd = endIndex;
-
-            if (sampleStart >= sampleEnd) continue;
-
-            short minSample = Short.MAX_VALUE;
-            short maxSample = Short.MIN_VALUE;
-
-            for (int i = sampleStart; i < sampleEnd; i++) {
-                final short sample = audioSamples[i];
-                if (sample < minSample) minSample = sample;
-                if (sample > maxSample) maxSample = sample;
+        final int[] laneXs = {-300, -180, -60, 60, 180, 300};
+        g2d.setStroke(new BasicStroke(2));
+        for (int lx : laneXs) {
+            final double startScale = cam.getScale(cam.getZ() + 100);
+            final double endScale = cam.getScale(cam.getZ() + 3000);
+            
+            if (startScale <= 0) continue;
+            
+            final int startScreenX = (int) (width / 2.0 + (lx - cam.getX()) * startScale);
+            final int startScreenY = (int) (horizonY + ((150 - cam.getY()) * startScale));
+            
+            final int endScreenX = (int) (width / 2.0 + (lx - cam.getX()) * endScale);
+            final int endScreenY = (int) (horizonY + ((150 - cam.getY()) * endScale));
+            
+            if (Math.abs(lx) > 180) {
+                g2d.setColor(new Color(255, 0, 255, 100));
+            } else {
+                g2d.setColor(new Color(0, 255, 255, 120));
             }
-
-            final int yMax = (waveformHeight / 2) - (maxSample * (waveformHeight / 2) / 32768);
-            final int yMin = (waveformHeight / 2) - (minSample * (waveformHeight / 2) / 32768);
-
-            g2d.drawLine(x, yMin, x, yMax);
+            g2d.drawLine(startScreenX, startScreenY, endScreenX, endScreenY);
         }
-
-        g2d.setColor(Color.RED);
-        final int currentX = (int) ((currentSamples - startIndex) / samplesPerPixel);
-        if (currentX >= 0 && currentX < width) {
-            g2d.drawLine(currentX, waveformHeight, currentX, 0);
-        }
+        g2d.setStroke(new BasicStroke(1));
     }
 
     private double snapToNearestLane(double x) {

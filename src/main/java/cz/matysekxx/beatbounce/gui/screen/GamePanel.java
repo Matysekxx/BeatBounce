@@ -4,6 +4,8 @@ import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.gui.Star;
 import cz.matysekxx.beatbounce.gui.WindowData;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
+import cz.matysekxx.beatbounce.model.GameModel;
+import cz.matysekxx.beatbounce.model.GameState;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.level.Level;
@@ -16,6 +18,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -28,14 +31,9 @@ public class GamePanel extends JPanel implements Runnable {
     private final float sampleRate;
     private final Thread gameThread;
     private final Sphere sphere;
+    private final GameModel gameModel;
     private boolean running;
-
-    public enum GameState { PLAYING, FALLING, GAME_OVER }
-    private GameState gameState = GameState.PLAYING;
-    private int currentTileIndex = -1;
     private boolean lastInputWasMouse = false;
-    private double gameZProgress;
-    private double fallStartZ = 0;
     private final Collection<Star> stars = new ArrayList<>();
 
     public GamePanel(Level level, Clip clip, short[] audioSamples, float sampleRate) {
@@ -51,6 +49,15 @@ public class GamePanel extends JPanel implements Runnable {
         this.setFocusable(true);
         this.requestFocusInWindow();
         gameThread = new Thread(this);
+
+        final BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+
+        final Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+                cursorImg, new Point(0, 0), "blank cursor");
+
+        this.setCursor(blankCursor);
+
+        this.gameModel = new GameModel(level, sphere, cam, clip);
 
         this.addKeyListener(new KeyAdapter() {
             @Override
@@ -81,33 +88,16 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void startGame() {
         if (!this.running) {
-            initVariables();
+            this.running = true;
+            gameModel.init();
             this.gameThread.start();
         }
-    }
-
-    public void initVariables() {
-        this.running = true;
-        this.gameState = GameState.PLAYING;
-        this.currentTileIndex = -1;
-        this.gameZProgress = 0;
-        this.fallStartZ = 0;
-        this.sphere.reset();
-
-        cam.setX(0);
-        cam.setY(0);
-        cam.setZ(-500);
-
-        startNextJump(0);
-
-        clip.setFramePosition(0);
-        clip.start();
     }
 
     public void stopGame() {
         if (!this.running) return;
         this.running = false;
-        clip.stop();
+        gameModel.stop();
         gameThread.interrupt();
         try {
             gameThread.join();
@@ -119,77 +109,16 @@ public class GamePanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
-        gameZProgress = 0;
         while (running) {
             final double currentTime = clip.getMicrosecondPosition() / 1_000_000.0;
-            gameZProgress = currentTime * 1000.0;
-            updateGameLogic(currentTime);
+            gameModel.update(currentTime);
             repaint();
             Time.sleep(16);
-            if (gameState == GameState.GAME_OVER) {
-                initVariables();
+            if (gameModel.getGameState() == GameState.GAME_OVER) {
+                Time.sleep(1000);
+                if (running) gameModel.init();
             }
         }
-    }
-
-    //TODO: presunout herni logiku do samostatne tridy
-    private void updateGameLogic(double currentTime) {
-        if (!stars.isEmpty()) for (Star s : stars) s.update();
-
-        if (gameState == GameState.PLAYING) {
-            sphere.setZ(gameZProgress);
-            cam.setZ(gameZProgress - 500);
-
-            if (currentTileIndex + 1 < level.getTiles().size()) {
-                final AbstractTile nextTile = level.getTiles().get(currentTileIndex + 1);
-                if (gameZProgress >= nextTile.getZ()) {
-                    final double tileMinX = nextTile.getX() - (LANE_WIDTH / 2.0) - sphere.getRadius();
-                    final double tileMaxX = nextTile.getX() + (LANE_WIDTH / 2.0) + sphere.getRadius();
-
-                    if (sphere.getX() >= tileMinX && sphere.getX() <= tileMaxX) {
-                        currentTileIndex++;
-                        startNextJump(currentTime);
-                    } else {
-                        gameState = GameState.FALLING;
-                        sphere.startFalling();
-                        fallStartZ = sphere.getZ();
-                        clip.stop();
-                    }
-                }
-            }
-            sphere.update(currentTime);
-
-        } else if (gameState == GameState.FALLING) {
-            sphere.update(currentTime);
-            sphere.setZ(fallStartZ);
-            cam.setZ(gameZProgress - 500);
-            if (sphere.getCurrentY() > 500) {
-                gameState = GameState.GAME_OVER;
-            }
-        } else if (gameState == GameState.GAME_OVER) {
-            cam.setZ(gameZProgress - 500);
-        }
-    }
-
-    private void startNextJump(double currentTime) {
-        final var tiles = level.getTiles();
-
-        final int nextIndex = currentTileIndex + 1;
-        if (nextIndex >= tiles.size()) return;
-
-        final AbstractTile currentTile = nextIndex > 0 ? tiles.get(nextIndex - 1) : null;
-        final AbstractTile nextTile = tiles.get(nextIndex);
-
-        final double startZ = (currentTile != null) ? currentTile.getZ() : 0;
-        final double endZ = nextTile.getZ();
-        final double distanceZ = endZ - startZ;
-
-        double duration = distanceZ / 1000.0;
-        if (duration <= 0) duration = 0.2;
-
-        final double height = 50 + (distanceZ * 0.15);
-
-        sphere.startJump(currentTime, duration, height);
     }
 
     private void initStars(int w) {
@@ -212,6 +141,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         drawEnvironment(g2d, width, height, horizonY);
         drawGameObjects(g2d, width, height);
+        //drawHUD(g2d, width, height);
         drawPostProcessing(g2d, width, height);
     }
 
@@ -239,6 +169,31 @@ public class GamePanel extends JPanel implements Runnable {
         sphere.paint3D(g2d, cam, WindowData.of(width, height));
     }
 
+    private void drawHUD(Graphics2D g2d, int width, int height) {
+        if (gameModel.getGameState() == GameState.GAME_OVER)
+            drawGameOver(g2d, width, height);
+    }
+
+    private void drawGameOver(Graphics2D g2d, int width, int height) {
+        final String text = "GAME OVER";
+        g2d.setFont(new Font("Monospaced", Font.BOLD | Font.ITALIC, 90));
+        final FontMetrics fm = g2d.getFontMetrics();
+        final int x = (width - fm.stringWidth(text)) >> 1;
+        final int y = height >> 1;
+
+        double pulse = (Math.sin(System.currentTimeMillis() / 300.0) + 1.0) / 2.0;
+        for (int i = 12; i >= 1; i -= 2) {
+            int alpha = (int) (10 + (40 * pulse) / i);
+            g2d.setColor(new Color(255, 0, 0, alpha));
+            g2d.drawString(text, x - i, y - i);
+            g2d.drawString(text, x + i, y + i);
+            g2d.drawString(text, x - i, y + i);
+            g2d.drawString(text, x + i, y - i);
+        }
+        g2d.setColor(new Color(255, 200, 200));
+        g2d.drawString(text, x, y);
+    }
+
     private void drawPostProcessing(Graphics2D g2d, int width, int height) {
         RenderUtils.drawCRTScanlines(g2d, width, height);
         RenderUtils.drawVignette(g2d, width, height);
@@ -249,7 +204,7 @@ public class GamePanel extends JPanel implements Runnable {
         final int barWidth = width / numBars;
         final long currentSample = (long) (clip.getMicrosecondPosition() / 1_000_000.0 * sampleRate);
 
-        int windowSize = 2048;
+        int windowSize = 4096;
         final int startSample = Math.max(0, (int) currentSample);
         if (startSample + windowSize > audioSamples.length) windowSize = audioSamples.length - startSample;
         if (windowSize <= 0) return;

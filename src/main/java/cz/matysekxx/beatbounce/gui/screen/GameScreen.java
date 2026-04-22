@@ -18,7 +18,7 @@ public class GameScreen extends Screen {
         final Dotenv dotenv = Dotenv.load();
         final AudioData audioData = AudioData.create(dotenv.get("AUDIO_FILE"));
         final Level level = LevelGenerator.generateLevel(
-                new AudioAnalyzer(audioData, 1.f).analyze(), null);
+                new AudioAnalyzer(audioData, 1.f).analyze(), "ahoj svete");
         gamePanel = new GamePanel(level, audioData.clip(), audioData.samples(), audioData.format().getSampleRate());
         this.add(gamePanel, BorderLayout.CENTER);
     }

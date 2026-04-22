@@ -8,12 +8,11 @@ import cz.matysekxx.beatbounce.model.entity.TileFactory;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Consumer;
 
 public class LevelGenerator {
     private static final double Z_UNITS_PER_SECOND = 1000.0;
-    private static final double MIN_LONG_TILE_DURATION_SEC = 0.3;
-    private static final double MAX_LONG_TILE_DURATION_SEC = 1.5;
     private static final int LANE_WIDTH = 120;
 
     public static Level generateLevel(List<BeatEvent> events, String songName) {
@@ -24,116 +23,73 @@ public class LevelGenerator {
         private final List<AbstractTile> tiles;
         private final List<BeatEvent> events;
         private final String songName;
-        private final List<BeatEvent> highIntensityBuffer = new ArrayList<>();
-        private final EnumMap<EventType, Consumer<BeatEvent>> handlers = new EnumMap<>(EventType.class);
-        private boolean inHighIntensity = false;
+        private final Random rng;
+        
         private int currentLane = 0;
         private int consecutiveInLane = 0;
-        private double lastTileZ = -1000.0;
-        private int beatsToSkipLongTile = 0;
+        private int normalTilesSinceLong = 0;
 
         public GenerationContext(List<BeatEvent> events, String songName) {
             this.events = events;
             this.songName = songName;
             this.tiles = new ArrayList<>();
-            handlers.put(EventType.BEAT, this::handleBeat);
-            handlers.put(EventType.INTENSITY_HIGH_START, (_) -> setInHighIntensity(true));
-            handlers.put(EventType.INTENSITY_HIGH_END, (_) -> {
-                flushHighIntensityBuffer();
-                setInHighIntensity(false);
-                beatsToSkipLongTile = 0;
-            });
-        }
-
-        public void setInHighIntensity(boolean inHighIntensity) {
-            this.inHighIntensity = inHighIntensity;
-        }
-
-        public void handle(BeatEvent event) {
-            if (handlers.containsKey(event.type())) handlers.get(event.type()).accept(event);
+            this.rng = new Random(songName.hashCode());
         }
 
         public Level generate() {
-            events.forEach(this::handle);
-            flushHighIntensityBuffer();
-            return new Level(tiles, songName);
-        }
-
-        private void handleBeat(BeatEvent event) {
-            if (inHighIntensity) {
-                if (beatsToSkipLongTile > 0) {
-                    addNormalTile(event);
-                    beatsToSkipLongTile--;
-                    return;
-                }
-                highIntensityBuffer.add(event);
-                if (highIntensityBuffer.size() > 1) {
-                    final double duration = event.timestamp() - highIntensityBuffer.getFirst().timestamp();
-                    if (duration > MAX_LONG_TILE_DURATION_SEC) {
-                        flushHighIntensityBuffer();
+            final List<BeatEvent> beats = new ArrayList<>();
+            for (BeatEvent e : events) {
+                if (e.type() == EventType.BEAT) {
+                    if (beats.isEmpty() || e.timestamp() - beats.getLast().timestamp() >= 0.15) {
+                        beats.add(e);
                     }
                 }
-            } else {
-                addNormalTile(event);
             }
-        }
+            
+            double lastTileZ = -1000.0;
 
-        private void flushHighIntensityBuffer() {
-            if (highIntensityBuffer.isEmpty()) return;
+            for (int i = 0; i < beats.size(); i++) {
+                final BeatEvent current = beats.get(i);
+                final BeatEvent next = (i + 1 < beats.size()) ? beats.get(i + 1) : null;
 
-            if (highIntensityBuffer.size() >= 2) {
-                BeatEvent first = highIntensityBuffer.getFirst();
-                BeatEvent last = highIntensityBuffer.getLast();
-                final double duration = last.timestamp() - first.timestamp();
+                final double zPos = current.timestamp() * Z_UNITS_PER_SECOND;
+                if (zPos - lastTileZ < 150.0) continue; 
 
-                if (duration >= MIN_LONG_TILE_DURATION_SEC) {
-                    addLongTile(first, last);
-                    highIntensityBuffer.clear();
-                    beatsToSkipLongTile = 10;
-                    return;
+                currentLane = getNextLane(currentLane);
+
+                boolean makeLongTile = false;
+                double longTileLength = 0;
+
+                if (next != null) {
+                    final double nextZPos = next.timestamp() * Z_UNITS_PER_SECOND;
+                    final double distanceZ = nextZPos - zPos;
+
+                    if (distanceZ >= 400.0 && distanceZ <= 1500.0 && normalTilesSinceLong >= 4) {
+                        makeLongTile = true;
+                        longTileLength = distanceZ - 150.0;
+                    }
+                }
+
+                if (makeLongTile) {
+                    tiles.add(TileFactory.createLongTile(current, currentLane * LANE_WIDTH, 0, zPos, longTileLength));
+                    normalTilesSinceLong = 0;
+                    lastTileZ = zPos + longTileLength;
+                } else {
+                    tiles.add(TileFactory.createNormalTile(current, currentLane * LANE_WIDTH, 0, zPos));
+                    normalTilesSinceLong++;
+                    lastTileZ = zPos;
                 }
             }
-            for (BeatEvent be : highIntensityBuffer) addNormalTile(be);
 
-            highIntensityBuffer.clear();
-        }
-
-        private void addNormalTile(BeatEvent event) {
-            final double zPosition = event.timestamp() * Z_UNITS_PER_SECOND;
-            if (zPosition - lastTileZ < 80.0) return;
-
-            currentLane = getNextLane(currentLane);
-            tiles.add(TileFactory.createNormalTile(event, currentLane * LANE_WIDTH, 0, zPosition));
-            lastTileZ = zPosition;
-        }
-
-        private void addLongTile(BeatEvent startEvent, BeatEvent endEvent) {
-            double startZ = startEvent.timestamp() * Z_UNITS_PER_SECOND;
-            final double endZ = endEvent.timestamp() * Z_UNITS_PER_SECOND;
-            double length = endZ - startZ;
-
-            if (startZ - lastTileZ < 150.0) {
-                startZ = lastTileZ + 150.0;
-                length = endZ - startZ;
-            }
-
-            if (length < MIN_LONG_TILE_DURATION_SEC * Z_UNITS_PER_SECOND) {
-                addNormalTile(startEvent);
-                return;
-            }
-
-            currentLane = getNextLane(currentLane);
-            tiles.add(TileFactory.createLongTile(startEvent, currentLane * LANE_WIDTH, 0, startZ, length));
-
-            lastTileZ = endZ;
+            return new Level(tiles, songName);
         }
 
         private int getNextLane(int lane) {
             int move;
             if (consecutiveInLane >= 2) {
-                move = (lane == 0) ? (Math.random() > 0.5 ? 1 : -1) : (lane > 0 ? -1 : 1);
+                move = (lane == 0) ? (rng.nextBoolean() ? 1 : -1) : (lane > 0 ? -1 : 1);
             } else {
-                final double r = Math.random();
+                final double r = rng.nextDouble();
                 if (r < 0.2) move = 0;
                 else if (r < 0.6) move = 1;
                 else move = -1;
@@ -143,11 +99,9 @@ public class LevelGenerator {
             if (newLane > 1) newLane = 0;
             if (newLane < -1) newLane = 0;
 
-            if (newLane == lane) {
-                consecutiveInLane++;
-            } else {
-                consecutiveInLane = 1;
-            }
+            if (newLane == lane) consecutiveInLane++;
+            else consecutiveInLane = 1;
+            
             return newLane;
         }
     }

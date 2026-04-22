@@ -6,6 +6,9 @@ import cz.matysekxx.beatbounce.gui.RenderUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -30,11 +33,26 @@ public class IntroScreen extends Screen {
             screenManager.showScreen(GameScreen.class);
         });
         buttonPanel.add(startButton);
+
+        final JButton creditButton = ButtonFactory.createCreditButton(e -> {
+            sleep(200);
+            Thread.ofVirtual().start(() -> {
+                try {
+                    if (Desktop.isDesktopSupported())
+                        Desktop.getDesktop().browse(new URI("https://github.com/Matysekxx/BeatBounce"));
+                } catch (IOException | URISyntaxException ex) {
+                    throw new RuntimeException("Cannot open browser", ex);
+                }
+            });
+        });
+        buttonPanel.add(creditButton);
+
         final JButton exitButton = ButtonFactory.createExitButton(e -> {
             sleep(200);
             System.exit(0);
         });
         buttonPanel.add(exitButton);
+
         this.add(buttonPanel, BorderLayout.SOUTH);
     }
 

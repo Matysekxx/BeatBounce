@@ -5,7 +5,4 @@ public class MainMenuScreen extends Screen {
         super();
     }
 
-    @Override
-    public void start() {
-    }
 }

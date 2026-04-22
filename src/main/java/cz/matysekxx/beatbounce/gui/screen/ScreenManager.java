@@ -27,6 +27,13 @@ public class ScreenManager {
         windows.put(screenClass, lazyScreen);
     }
 
+    public <T extends Screen> void initScreen(Class<T> screenClass) {
+        final Lazy<Screen> lazyScreen = windows.get(screenClass);
+        if (!lazyScreen.wasInitialized()) {
+            lazyScreen.initialize();
+        }
+    }
+
     public <T extends Screen> void showScreen(Class<T> screenClass) {
         final Screen nextScreen = windows.get(screenClass).get();
         if (nextScreen != null) {

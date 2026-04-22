@@ -20,4 +20,12 @@ public class Lazy<T> {
         }
         return value;
     }
+
+    public boolean wasInitialized() {
+        return value != null;
+    }
+
+    public void initialize()  {
+        if (!wasInitialized()) value = supplier.get();
+    }
 }

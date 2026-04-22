@@ -25,8 +25,18 @@ public class IntroScreen extends Screen {
 
         final JButton startButton = ButtonFactory.createStartButton(e -> {
             sleep(200);
-            screenManager.showScreen(GameScreen.class);
+            ((JButton) e.getSource()).setEnabled(false);
+            ((JButton) e.getSource()).setText("LOADING...");
+            final SwingWorker<Void, Void> worker = new SwingWorker<>() {
+                @Override protected Void doInBackground() {
+                    screenManager.initScreen(GameScreen.class);
+                    return null;
+                }
+                @Override protected void done() { screenManager.showScreen(GameScreen.class); }
+            };
+            worker.execute();
         });
+
         buttonPanel.add(startButton);
 
         final JButton creditButton = ButtonFactory.createCreditButton(e -> {

@@ -1,48 +1,48 @@
 package cz.matysekxx.beatbounce.controller;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import cz.matysekxx.beatbounce.gui.Camera3D;
+import cz.matysekxx.beatbounce.model.entity.Sphere;
 
-public class GameController implements KeyListener, MouseListener {
+import java.awt.event.*;
+
+public class GameController extends KeyAdapter implements MouseMotionListener {
+    private final static int LANE_WIDTH = 120;
+    private boolean lastInputWasMouse = false;
+    private final Camera3D cam;
+    private final Sphere sphere;
+
+    public GameController(Camera3D cam, Sphere sphere) {
+        this.cam = cam;
+        this.sphere = sphere;
+    }
+
     @Override
-    public void keyTyped(KeyEvent e) {
+    public void mouseDragged(MouseEvent e) {}
 
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        this.lastInputWasMouse = true;
+        final int mouseX = e.getX();
+        final int width = e.getComponent().getWidth();;
+        final double scale = cam.getScale(sphere.getZ());
+        if (scale <= 0) return;
+        final double newTargetX = cam.getX() + (mouseX - width / 2.0) / scale;
+        sphere.setTargetX(newTargetX);
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-
+        if (this.lastInputWasMouse) {
+            sphere.setTargetX(snapToNearestLane(sphere.getTargetX()));
+            this.lastInputWasMouse = false;
+        }
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_LEFT -> sphere.setTargetX(sphere.getTargetX() - LANE_WIDTH);
+            case KeyEvent.VK_RIGHT -> sphere.setTargetX(sphere.getTargetX() + LANE_WIDTH);
+        }
     }
 
-    @Override
-    public void keyReleased(KeyEvent e) {
-
-    }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-
+    private double snapToNearestLane(double x) {
+        return Math.round(x / LANE_WIDTH) * LANE_WIDTH;
     }
 }

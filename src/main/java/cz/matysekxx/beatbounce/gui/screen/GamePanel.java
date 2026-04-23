@@ -1,5 +1,6 @@
 package cz.matysekxx.beatbounce.gui.screen;
 
+import cz.matysekxx.beatbounce.controller.GameController;
 import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.gui.Star;
 import cz.matysekxx.beatbounce.gui.WindowData;
@@ -33,7 +34,6 @@ public class GamePanel extends JPanel implements Runnable {
     private final Sphere sphere;
     private final GameModel gameModel;
     private boolean running;
-    private boolean lastInputWasMouse = false;
     private final Collection<Star> stars = new ArrayList<>();
 
     public GamePanel(Level level, Clip clip, short[] audioSamples, float sampleRate) {
@@ -54,36 +54,11 @@ public class GamePanel extends JPanel implements Runnable {
 
         final Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
                 cursorImg, new Point(0, 0), "blank cursor");
-
         this.setCursor(blankCursor);
-
         this.gameModel = new GameModel(level, sphere, cam, clip);
-
-        this.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (lastInputWasMouse) {
-                    sphere.setTargetX(snapToNearestLane(sphere.getTargetX()));
-                    lastInputWasMouse = false;
-                }
-                if (e.getKeyCode() == KeyEvent.VK_LEFT)
-                    sphere.setTargetX(sphere.getTargetX() - LANE_WIDTH);
-                else if (e.getKeyCode() == KeyEvent.VK_RIGHT)
-                    sphere.setTargetX(sphere.getTargetX() + LANE_WIDTH);
-            }
-        });
-        this.addMouseMotionListener(new MouseMotionAdapter() {
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                lastInputWasMouse = true;
-                final int mouseX = e.getX();
-                final int width = getWidth();
-                final double scale = cam.getScale(sphere.getZ());
-                if (scale <= 0) return;
-                final double newTargetX = cam.getX() + (mouseX - width / 2.0) / scale;
-                sphere.setTargetX(newTargetX);
-            }
-        });
+        final GameController gameController = new GameController(cam, sphere);
+        this.addKeyListener(gameController);
+        this.addMouseMotionListener(gameController);
     }
 
     public void startGame() {
@@ -280,9 +255,5 @@ public class GamePanel extends JPanel implements Runnable {
             g2d.drawLine(startScreenX, startScreenY, endScreenX, endScreenY);
         }
         g2d.setStroke(new BasicStroke(1));
-    }
-
-    private double snapToNearestLane(double x) {
-        return Math.round(x / LANE_WIDTH) * LANE_WIDTH;
     }
 }

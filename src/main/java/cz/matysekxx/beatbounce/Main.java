@@ -8,6 +8,8 @@ public class Main {
         System.setProperty("sun.java2d.noddraw", "true");
         System.setProperty("sun.awt.noerasebackground", "true");
         System.setProperty("sun.java2d.pmoffscreen", "false");
+        System.setProperty("awt.useSystemAAFontSettings", "on");
+        System.setProperty("swing.aatext", "true");
     }
 
     static void setTestingProperties() {

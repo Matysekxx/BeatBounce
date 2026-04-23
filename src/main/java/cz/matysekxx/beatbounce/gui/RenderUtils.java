@@ -12,6 +12,13 @@ public final class RenderUtils {
 
     private RenderUtils() {}
 
+    public static void initGraphic2D(Graphics2D g2d) {
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+    }
+
     public static void drawBackground(Graphics2D g2d, int width, int height) {
         final RadialGradientPaint bg = new RadialGradientPaint(
                 width / 2f, height / 2f, width,
@@ -72,8 +79,9 @@ public final class RenderUtils {
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
 
         final double pulse = (Math.sin(System.currentTimeMillis() / 400.0) + 1.0) / 2.0;
-        for (float i = 8f; i >= 1f; i -= 0.5f) {
-            float alpha = (float) (0.05 + (0.15 * pulse) / (i * 0.5));
+
+        for (float i = 8f; i >= 1f; i -= 1.5f) {
+            float alpha = (float) (0.12 + (0.25 * pulse) / (i * 0.5));
             if (alpha > 1.0f) alpha = 1.0f;
 
             g2d.setColor(new Color(c.getRed()/255f, c.getGreen()/255f, c.getBlue()/255f, alpha));

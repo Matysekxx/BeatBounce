@@ -116,7 +116,7 @@ public class Sphere extends Entity implements Paintable {
         if (scale <= 0) return;
 
         final int screenX = (int) (windowData.width() / 2. + (currentX - cam.getX()) * scale);
-        final int screenY = (int) (windowData.height() / 3. + (currentY - cam.getY()) * scale);
+        final int screenY = (int) (windowData.height() / 3. + (currentY - radius - cam.getY()) * scale);
         final int scaledRadius = (int) (radius * scale);
 
         g2d.setColor(Color.MAGENTA);

@@ -53,6 +53,8 @@ public class LevelGenerator {
                 final BeatEvent next = (i + 1 < beats.size()) ? beats.get(i + 1) : null;
 
                 final double zPos = current.timestamp() * Z_UNITS_PER_SECOND;
+
+                final double zOffset = 50.0; 
                 if (zPos - lastTileZ < 150.0) continue; 
 
                 currentLane = getNextLane(currentLane);
@@ -71,11 +73,11 @@ public class LevelGenerator {
                 }
 
                 if (makeLongTile) {
-                    tiles.add(TileFactory.createLongTile(current, currentLane * LANE_WIDTH, 0, zPos, longTileLength));
+                    tiles.add(TileFactory.createLongTile(current, currentLane * LANE_WIDTH, 0, zPos - zOffset, longTileLength));
                     normalTilesSinceLong = 0;
                     lastTileZ = zPos + longTileLength;
                 } else {
-                    tiles.add(TileFactory.createNormalTile(current, currentLane * LANE_WIDTH, 0, zPos));
+                    tiles.add(TileFactory.createNormalTile(current, currentLane * LANE_WIDTH, 0, zPos - zOffset));
                     normalTilesSinceLong++;
                     lastTileZ = zPos;
                 }

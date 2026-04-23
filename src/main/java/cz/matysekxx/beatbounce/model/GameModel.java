@@ -19,6 +19,7 @@ public class GameModel {
     private int currentTileIndex = -1;
     private double gameZProgress;
     private double fallStartZ = 0;
+    private int score = 0;
 
     public GameModel(Level level, Sphere sphere, Camera3D cam, Clip clip) {
         this.level = level;
@@ -50,6 +51,10 @@ public class GameModel {
         }
     }
 
+    public int getScore() {
+        return score;
+    }
+
     public void update(double currentTime) {
         this.gameZProgress = currentTime * 1000.0;
         switch (gameState) {
@@ -65,6 +70,7 @@ public class GameModel {
 
                         if (sphere.getX() >= tileMinX && sphere.getX() <= tileMaxX) {
                             currentTileIndex++;
+                            score++;
                             startNextJump(currentTime);
                         } else {
                             gameState = GameState.FALLING;
@@ -82,6 +88,7 @@ public class GameModel {
                 cam.setZ(gameZProgress - 500);
                 if (sphere.getCurrentY() > 500) {
                     gameState = GameState.GAME_OVER;
+                    score = 0;
                 }
             }
         }

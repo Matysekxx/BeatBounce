@@ -1,10 +1,8 @@
 package cz.matysekxx.beatbounce.model.audio;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
+import javax.sound.sampled.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
@@ -14,9 +12,32 @@ public record AudioData(
         Clip clip
 ) {
 
+    private static AudioInputStream getConvertedStream(String fileName) {
+        final AudioInputStream is;
+        try {
+            is = AudioSystem.getAudioInputStream(new File(fileName));
+        } catch (UnsupportedAudioFileException e) {
+            throw new RuntimeException("Unsupported audio file");
+        } catch (IOException e) {
+            throw new RuntimeException("Cannot open file");
+        }
+        final AudioFormat af = is.getFormat();
+        if (af.getEncoding() == AudioFormat.Encoding.PCM_SIGNED) return is;
+
+        return AudioSystem.getAudioInputStream(new AudioFormat(
+                AudioFormat.Encoding.PCM_SIGNED,
+                af.getSampleRate(),
+                16,
+                af.getChannels(),
+                af.getChannels() * 2,
+                af.getSampleRate(),
+                false
+        ), is);
+    }
+
     public static AudioData create(String fileName) {
         try {
-            final AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(fileName));
+            final AudioInputStream audioInputStream = getConvertedStream(fileName);
             final AudioFormat audioFormat = audioInputStream.getFormat();
             final byte[] allBytes = audioInputStream.readAllBytes();
             final short[] samples = bytesToShorts(allBytes, audioFormat.isBigEndian());

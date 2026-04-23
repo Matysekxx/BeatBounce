@@ -115,7 +115,7 @@ public class GamePanel extends JPanel implements Runnable {
             repaint();
             Time.sleep(16);
             if (gameModel.getGameState() == GameState.GAME_OVER) {
-                Time.sleep(1000);
+                Time.sleep(500);
                 if (running) gameModel.init();
             }
         }
@@ -204,7 +204,7 @@ public class GamePanel extends JPanel implements Runnable {
         final int barWidth = width / numBars;
         final long currentSample = (long) (clip.getMicrosecondPosition() / 1_000_000.0 * sampleRate);
 
-        int windowSize = 4096;
+        int windowSize = 512;
         final int startSample = Math.max(0, (int) currentSample);
         if (startSample + windowSize > audioSamples.length) windowSize = audioSamples.length - startSample;
         if (windowSize <= 0) return;

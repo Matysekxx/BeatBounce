@@ -10,7 +10,8 @@ public final class Time {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            System.err.println("Thread interrupted");
+            Thread.currentThread().interrupt();
         }
     }
 

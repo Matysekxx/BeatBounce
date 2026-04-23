@@ -17,7 +17,9 @@ public class GameController extends KeyAdapter implements MouseMotionListener {
     }
 
     @Override
-    public void mouseDragged(MouseEvent e) {}
+    public void mouseDragged(MouseEvent e) {
+        this.mouseMoved(e);
+    }
 
     @Override
     public void mouseMoved(MouseEvent e) {

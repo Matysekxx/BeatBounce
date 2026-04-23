@@ -128,14 +128,21 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void drawScore(Graphics2D g2d, int width) {
-        final String text = Integer.toString(gameModel.getScore());
+        final Integer score = gameModel.getScore();
+        final String text = Integer.toString(score);
         g2d.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 60));
 
         final FontMetrics fm = g2d.getFontMetrics();
         final int x = (width - fm.stringWidth(text)) / 2;
         final int y = 70;
-        final Color neonColor = new Color(0, 255, 220);
-        RenderUtils.drawText(g2d, text, x, y, neonColor);
+        final Color c = switch (score) {
+            case Integer i when i < 50 -> new Color(0, 255, 220);
+            case Integer i when i < 75 -> new Color(50, 255, 50);
+            case Integer i when i < 100-> new Color(0, 150, 255);
+            case Integer i when i < 150 -> new Color(191, 0, 255);
+            default -> new Color(255, 215, 0);
+        };
+        RenderUtils.drawText(g2d, text, x, y, c);
         g2d.setStroke(new BasicStroke(2));
         g2d.drawLine(x - 20, y + 10, x + fm.stringWidth(text) + 20, y + 10);
     }
@@ -153,6 +160,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         g2d.setColor(Color.MAGENTA);
         sphere.paint3D(g2d, cam, WindowData.of(width, height));
+
     }
 
     private void drawHUD(Graphics2D g2d, int width, int height) {

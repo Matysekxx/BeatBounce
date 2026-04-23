@@ -51,7 +51,7 @@ public class GameModel {
         }
     }
 
-    public int getScore() {
+    public Integer getScore() {
         return score;
     }
 

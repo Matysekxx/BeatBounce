@@ -8,6 +8,7 @@ import cz.matysekxx.beatbounce.event.BeatEvent;
 import cz.matysekxx.beatbounce.event.EventType;
 
 import javax.sound.sampled.AudioFormat;
+import java.awt.image.VolatileImage;
 import java.util.function.Consumer;
 
 public class AudioProcessor {
@@ -29,7 +30,7 @@ public class AudioProcessor {
      */
     private static final int BUFFER_SIZE = 2048;
     private static final int OVERLAP = 1024;
-    private static final double MIN_BEAT_INTERVAL = 0.2;
+    private static final double MIN_BEAT_INTERVAL = 0.15;
     private final PercussionOnsetDetector percussionDetector;
     private final ComplexOnsetDetector complexDetector;
     private final AudioFormat format;

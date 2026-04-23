@@ -4,6 +4,11 @@ import java.awt.*;
 import java.util.Collection;
 
 public final class RenderUtils {
+    public final static Color cyan = new Color(0, 255, 220);
+    public final static Color green = new Color(50, 255, 50);
+    public final static Color blue = new Color(0, 150, 255);
+    public final static Color purple = new Color(191, 0, 255);
+    public final static Color yellow = new Color(255, 215, 0);
 
     private RenderUtils() {}
 

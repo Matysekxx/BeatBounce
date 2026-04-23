@@ -59,4 +59,25 @@ public class RenderUtils {
         g2d.setPaint(vignette);
         g2d.fillRect(0, 0, width, height);
     }
+
+    public static void drawText(Graphics2D g2d, String text, int x, int y, Color c) {
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
+
+        final double pulse = (Math.sin(System.currentTimeMillis() / 400.0) + 1.0) / 2.0;
+        for (float i = 8f; i >= 1f; i -= 0.5f) {
+            float alpha = (float) (0.05 + (0.15 * pulse) / (i * 0.5));
+            if (alpha > 1.0f) alpha = 1.0f;
+
+            g2d.setColor(new Color(c.getRed()/255f, c.getGreen()/255f, c.getBlue()/255f, alpha));
+            g2d.drawString(text, x - i, y);
+            g2d.drawString(text, x + i, y);
+            g2d.drawString(text, x, y - i);
+            g2d.drawString(text, x, y + i);
+        }
+        g2d.setColor(new Color(0, 0, 0, 100));
+        g2d.drawString(text, x + 1, y + 1);
+        g2d.setColor(new Color(255, 230, 240));
+        g2d.drawString(text, x, y);
+    }
 }

@@ -83,7 +83,6 @@ public class IntroPanel extends JPanel {
         }
     }
 
-    //TODO: doupravit Title napr animovat ho nebo ho udelat pomoci kombinace barev
     private void drawTitle(Graphics2D g2d, int w, int h) {
         final String text = "BEAT BOUNCE";
         g2d.setFont(new Font("Monospaced", Font.BOLD | Font.ITALIC, 115));
@@ -91,17 +90,6 @@ public class IntroPanel extends JPanel {
         final int x = (w - fm.stringWidth(text)) >> 1;
         final int y = (h / 3);
 
-        final double pulse = (Math.sin(time * 3) + 1.0) / 2.0;
-        for (int i = 16; i >= 1; i -= 2) {
-            final int alpha = (int) (10 + (20 * pulse) / i);
-            g2d.setColor(new Color(0, 255, 255, alpha));
-            g2d.drawString(text, x - i, y - i);
-            g2d.drawString(text, x + i, y + i);
-            g2d.drawString(text, x - i, y + i);
-            g2d.drawString(text, x + i, y - i);
-        }
-
-        g2d.setColor(new Color(240, 255, 255));
-        g2d.drawString(text, x, y);
+        RenderUtils.drawText(g2d, text, x, y, new Color(0, 255, 255));
     }
 }

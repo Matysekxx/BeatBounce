@@ -15,10 +15,6 @@ import cz.matysekxx.beatbounce.util.Time;
 import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,6 +38,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.audioSamples = audioSamples;
         this.sampleRate = sampleRate;
         this.running = false;
+        this.setLayout(new BorderLayout());
         this.setFocusable(true);
         this.setBackground(Color.BLACK);
         this.cam = new Camera3D(0, 0, -500, 500.0);
@@ -118,6 +115,7 @@ public class GamePanel extends JPanel implements Runnable {
         drawGameObjects(g2d, width, height);
         //drawHUD(g2d, width, height);
         drawPostProcessing(g2d, width, height);
+        drawScore(g2d, width);
     }
 
     private void drawEnvironment(Graphics2D g2d, int width, int height, int horizonY) {
@@ -127,6 +125,19 @@ public class GamePanel extends JPanel implements Runnable {
         drawHorizonEqualizer(g2d, width, horizonY);
         RenderUtils.drawHorizonLine(g2d, width, horizonY);
         drawNeonGrid(g2d, width, height, horizonY);
+    }
+
+    private void drawScore(Graphics2D g2d, int width) {
+        final String text = Integer.toString(gameModel.getScore());
+        g2d.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 60));
+
+        final FontMetrics fm = g2d.getFontMetrics();
+        final int x = (width - fm.stringWidth(text)) / 2;
+        final int y = 70;
+        final Color neonColor = new Color(0, 255, 220);
+        RenderUtils.drawText(g2d, text, x, y, neonColor);
+        g2d.setStroke(new BasicStroke(2));
+        g2d.drawLine(x - 20, y + 10, x + fm.stringWidth(text) + 20, y + 10);
     }
 
     private void drawGameObjects(Graphics2D g2d, int width, int height) {
@@ -155,18 +166,7 @@ public class GamePanel extends JPanel implements Runnable {
         final FontMetrics fm = g2d.getFontMetrics();
         final int x = (width - fm.stringWidth(text)) >> 1;
         final int y = height >> 1;
-
-        double pulse = (Math.sin(System.currentTimeMillis() / 300.0) + 1.0) / 2.0;
-        for (int i = 12; i >= 1; i -= 2) {
-            int alpha = (int) (10 + (40 * pulse) / i);
-            g2d.setColor(new Color(255, 0, 0, alpha));
-            g2d.drawString(text, x - i, y - i);
-            g2d.drawString(text, x + i, y + i);
-            g2d.drawString(text, x - i, y + i);
-            g2d.drawString(text, x + i, y - i);
-        }
-        g2d.setColor(new Color(255, 200, 200));
-        g2d.drawString(text, x, y);
+        RenderUtils.drawText(g2d, text, x, y, new Color(250, 96, 241));
     }
 
     private void drawPostProcessing(Graphics2D g2d, int width, int height) {

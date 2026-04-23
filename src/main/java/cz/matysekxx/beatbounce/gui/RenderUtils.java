@@ -3,7 +3,9 @@ package cz.matysekxx.beatbounce.gui;
 import java.awt.*;
 import java.util.Collection;
 
-public class RenderUtils {
+public final class RenderUtils {
+
+    private RenderUtils() {}
 
     public static void drawBackground(Graphics2D g2d, int width, int height) {
         final RadialGradientPaint bg = new RadialGradientPaint(

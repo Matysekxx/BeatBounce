@@ -7,32 +7,58 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import cz.matysekxx.beatbounce.util.Time;
 
-public class IntroPanel extends JPanel {
+public class IntroPanel extends JPanel implements Runnable {
     private float time = 0;
-    private Timer timer;
+    private boolean running = false;
+    private Thread animatorThread;
     private final Collection<Star> stars = new ArrayList<>(STARS_COUNT);
     private static final int STARS_COUNT = 400;
+    private int currentFps = 0;
+    private int frameCount = 0;
+    private long lastFpsTime = 0;
 
-    public IntroPanel() { super(); initStars(); }
+    public IntroPanel() {
+        super();
+        initStars();
+        this.setDoubleBuffered(true);
+        this.setOpaque(true);
+    }
 
     public void startAnimation() {
-        if (timer == null) {
-            timer = new Timer(16, e -> {
-                time += 0.04f;
-                if (!stars.isEmpty()) {
-                    for (Star s : stars) s.update();
-                }
-                repaint();
-            });
-            timer.start();
+        if (!running) {
+            running = true;
+            animatorThread = new Thread(this);
+            animatorThread.start();
         }
     }
 
     public void stopAnimation() {
-        if (timer != null) {
-            timer.stop();
-            timer = null;
+        running = false;
+        if (animatorThread != null) {
+            animatorThread.interrupt();
+            animatorThread = null;
+        }
+    }
+
+    @Override
+    public void run() {
+        lastFpsTime = System.currentTimeMillis();
+        while (running) {
+            time += 0.04f;
+            if (!stars.isEmpty()) {
+                for (Star s : stars) s.update();
+            }
+            repaint();
+
+            frameCount++;
+            if (System.currentTimeMillis() - lastFpsTime >= 1000) {
+                currentFps = frameCount;
+                frameCount = 0;
+                lastFpsTime = System.currentTimeMillis();
+            }
+            Time.sleep(16);
         }
     }
 
@@ -44,7 +70,7 @@ public class IntroPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         final Graphics2D g2d = (Graphics2D) g.create();
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        RenderUtils.initGraphic2D(g2d);
 
         final int w = getWidth();
         final int h = getHeight();
@@ -60,9 +86,16 @@ public class IntroPanel extends JPanel {
 
         drawTitle(g2d, w, h);
 
-        RenderUtils.drawCRTScanlines(g2d, w, h);
-        RenderUtils.drawVignette(g2d, w, h);
+        // RenderUtils.drawCRTScanlines(g2d, w, h);
+        // RenderUtils.drawVignette(g2d, w, h);
+        drawFPS(g2d);
         g2d.dispose();
+    }
+
+    private void drawFPS(Graphics2D g2d) {
+        g2d.setFont(new Font("Monospaced", Font.BOLD, 16));
+        g2d.setColor(Color.YELLOW);
+        g2d.drawString("FPS: " + currentFps, 10, 20);
     }
 
     private void drawIntroGrid(Graphics2D g2d, int w, int h, int horizonY) {

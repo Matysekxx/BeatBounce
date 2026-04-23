@@ -31,6 +31,9 @@ public class GamePanel extends JPanel implements Runnable {
     private final GameModel gameModel;
     private boolean running;
     private final Collection<Star> stars = new ArrayList<>();
+    private int currentFps = 0;
+    private int frameCount = 0;
+    private long lastFpsTime = 0;
 
     public GamePanel(Level level, Clip clip, short[] audioSamples, float sampleRate) {
         this.level = level;
@@ -45,6 +48,8 @@ public class GamePanel extends JPanel implements Runnable {
         this.sphere = new Sphere(0, 150, 0, 25);
         this.setFocusable(true);
         this.requestFocusInWindow();
+        this.setDoubleBuffered(true);
+        this.setOpaque(true);
         gameThread = new Thread(this);
 
         final BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
@@ -81,10 +86,19 @@ public class GamePanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
+        lastFpsTime = System.currentTimeMillis();
         while (running) {
             final double currentTime = clip.getMicrosecondPosition() / 1_000_000.0;
             gameModel.update(currentTime);
             repaint();
+
+            frameCount++;
+            if (System.currentTimeMillis() - lastFpsTime >= 1000) {
+                currentFps = frameCount;
+                frameCount = 0;
+                lastFpsTime = System.currentTimeMillis();
+            }
+
             Time.sleep(16);
             if (gameModel.getGameState() == GameState.GAME_OVER) {
                 Time.sleep(500);
@@ -103,7 +117,8 @@ public class GamePanel extends JPanel implements Runnable {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         final Graphics2D g2d = (Graphics2D) g;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        RenderUtils.initGraphic2D(g2d);
+
 
         final int width = getWidth();
         final int height = getHeight();
@@ -116,6 +131,13 @@ public class GamePanel extends JPanel implements Runnable {
         //drawHUD(g2d, width, height);
         drawPostProcessing(g2d, width, height);
         drawScore(g2d, width);
+        drawFPS(g2d);
+    }
+
+    private void drawFPS(Graphics2D g2d) {
+        g2d.setFont(new Font("Monospaced", Font.BOLD, 16));
+        g2d.setColor(Color.YELLOW);
+        g2d.drawString("FPS: " + currentFps, 10, 20);
     }
 
     private void drawEnvironment(Graphics2D g2d, int width, int height, int horizonY) {
@@ -178,8 +200,8 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void drawPostProcessing(Graphics2D g2d, int width, int height) {
-        RenderUtils.drawCRTScanlines(g2d, width, height);
-        RenderUtils.drawVignette(g2d, width, height);
+        // RenderUtils.drawCRTScanlines(g2d, width, height);
+        // RenderUtils.drawVignette(g2d, width, height);
     }
 
     private void drawHorizonEqualizer(Graphics2D g2d, int width, int horizonY) {

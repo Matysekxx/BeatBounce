@@ -60,7 +60,7 @@ public class IsometricNeonButton extends JButton {
     @Override
     protected void paintComponent(Graphics g) {
         final Graphics2D g2 = (Graphics2D) g.create();
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        RenderUtils.initGraphic2D(g2);
         final int w = getWidth();
         final int h = getHeight();
         g2.setColor(frontSide);

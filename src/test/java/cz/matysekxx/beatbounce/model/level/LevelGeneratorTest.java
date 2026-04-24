@@ -5,13 +5,12 @@ import cz.matysekxx.beatbounce.event.EventType;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.LongTile;
 import cz.matysekxx.beatbounce.model.entity.NormalTile;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class LevelGeneratorTest {
 
@@ -25,8 +24,8 @@ public class LevelGeneratorTest {
 
         assertEquals("Test Song", level.getSongName());
         assertEquals(2, level.getTiles().size());
-        assertTrue(level.getTiles().get(0) instanceof NormalTile);
-        assertTrue(level.getTiles().get(1) instanceof NormalTile);
+        assertInstanceOf(NormalTile.class, level.getTiles().get(0));
+        assertInstanceOf(NormalTile.class, level.getTiles().get(1));
 
         assertEquals(1000.0, level.getTiles().get(0).getZ(), 0.1);
         assertEquals(2000.0, level.getTiles().get(1).getZ(), 0.1);
@@ -82,6 +81,6 @@ public class LevelGeneratorTest {
                 .distinct()
                 .count();
 
-        assertTrue("Should use multiple lanes", distinctLanes > 1);
+        assertTrue(distinctLanes > 1, "Should use multiple lanes");
     }
 }

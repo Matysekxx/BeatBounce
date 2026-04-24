@@ -2,14 +2,15 @@ package cz.matysekxx.beatbounce.model.audio;
 
 import cz.matysekxx.beatbounce.event.BeatEvent;
 import cz.matysekxx.beatbounce.event.EventType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.sound.sampled.AudioFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+
 
 public class AudioProcessorTest {
 

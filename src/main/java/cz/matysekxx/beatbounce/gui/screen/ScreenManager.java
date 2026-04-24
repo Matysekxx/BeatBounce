@@ -22,8 +22,7 @@ public class ScreenManager {
         if (windows.containsKey(screenClass)) {
             return;
         }
-        @SuppressWarnings("unchecked")
-        final Lazy<Screen> lazyScreen = (Lazy<Screen>) Lazy.of(constructor);
+        @SuppressWarnings("unchecked") final Lazy<Screen> lazyScreen = (Lazy<Screen>) Lazy.of(constructor);
         windows.put(screenClass, lazyScreen);
     }
 

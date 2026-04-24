@@ -8,7 +8,6 @@ import cz.matysekxx.beatbounce.event.BeatEvent;
 import cz.matysekxx.beatbounce.event.EventType;
 
 import javax.sound.sampled.AudioFormat;
-import java.awt.image.VolatileImage;
 import java.util.function.Consumer;
 
 public class AudioProcessor {

@@ -15,6 +15,7 @@ public class Main {
     static void setTestingProperties() {
         System.setProperty("sun.java2d.trace", "count");
     }
+
     static void main() {
         setProperties();
         setTestingProperties();

@@ -3,13 +3,16 @@ package cz.matysekxx.beatbounce.controller;
 import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 
-import java.awt.event.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 
 public class GameController extends KeyAdapter implements MouseMotionListener {
     private final static int LANE_WIDTH = 120;
-    private boolean lastInputWasMouse = false;
     private final Camera3D cam;
     private final Sphere sphere;
+    private boolean lastInputWasMouse = false;
 
     public GameController(Camera3D cam, Sphere sphere) {
         this.cam = cam;
@@ -25,7 +28,7 @@ public class GameController extends KeyAdapter implements MouseMotionListener {
     public void mouseMoved(MouseEvent e) {
         this.lastInputWasMouse = true;
         final int mouseX = e.getX();
-        final int width = e.getComponent().getWidth();;
+        final int width = e.getComponent().getWidth();
         final double scale = cam.getScale(sphere.getZ());
         if (scale <= 0) return;
         final double newTargetX = cam.getX() + (mouseX - width / 2.0) / scale;

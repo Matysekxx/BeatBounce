@@ -6,10 +6,8 @@ import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.TileFactory;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Consumer;
 
 public class LevelGenerator {
     private static final double Z_UNITS_PER_SECOND = 1000.0;
@@ -24,7 +22,7 @@ public class LevelGenerator {
         private final List<BeatEvent> events;
         private final String songName;
         private final Random rng;
-        
+
         private int currentLane = 0;
         private int consecutiveInLane = 0;
         private int normalTilesSinceLong = 0;
@@ -45,7 +43,7 @@ public class LevelGenerator {
                     }
                 }
             }
-            
+
             double lastTileZ = -1000.0;
 
             for (int i = 0; i < beats.size(); i++) {
@@ -54,8 +52,8 @@ public class LevelGenerator {
 
                 final double zPos = current.timestamp() * Z_UNITS_PER_SECOND;
 
-                final double zOffset = 50.0; 
-                if (zPos - lastTileZ < 150.0) continue; 
+                final double zOffset = 50.0;
+                if (zPos - lastTileZ < 150.0) continue;
 
                 currentLane = getNextLane(currentLane);
 
@@ -103,7 +101,7 @@ public class LevelGenerator {
 
             if (newLane == lane) consecutiveInLane++;
             else consecutiveInLane = 1;
-            
+
             return newLane;
         }
     }

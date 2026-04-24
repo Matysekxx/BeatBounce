@@ -32,8 +32,16 @@ public class Camera3D {
         return x;
     }
 
+    public void setX(double x) {
+        this.x = x;
+    }
+
     public double getY() {
         return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
     }
 
     public double getZ() {
@@ -42,14 +50,6 @@ public class Camera3D {
 
     public void setZ(double z) {
         this.z = z;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public void setY(double y) {
-        this.y = y;
     }
 
     public double getFieldOfView() {

@@ -2,9 +2,8 @@ package cz.matysekxx.beatbounce.gui.screen;
 
 import cz.matysekxx.beatbounce.controller.GameController;
 import cz.matysekxx.beatbounce.gui.Camera3D;
-import cz.matysekxx.beatbounce.gui.Star;
-import cz.matysekxx.beatbounce.gui.WindowData;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
+import cz.matysekxx.beatbounce.gui.WindowData;
 import cz.matysekxx.beatbounce.model.GameModel;
 import cz.matysekxx.beatbounce.model.GameState;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
@@ -16,8 +15,6 @@ import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Collection;
 
 public class GamePanel extends JPanel implements Runnable {
     private static final int LANE_WIDTH = 120;
@@ -30,7 +27,6 @@ public class GamePanel extends JPanel implements Runnable {
     private final Sphere sphere;
     private final GameModel gameModel;
     private boolean running;
-    private final Collection<Star> stars = new ArrayList<>();
     private int currentFps = 0;
     private int frameCount = 0;
     private long lastFpsTime = 0;
@@ -107,12 +103,6 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    private void initStars(int w) {
-        if (stars.isEmpty() && w > 0) {
-            for (int i = 0; i < 800; i++) stars.add(new Star());
-        }
-    }
-
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -124,12 +114,9 @@ public class GamePanel extends JPanel implements Runnable {
         final int height = getHeight();
         final int horizonY = height / 3;
 
-        initStars(width);
-
         drawEnvironment(g2d, width, height, horizonY);
         drawGameObjects(g2d, width, height);
         //drawHUD(g2d, width, height);
-        drawPostProcessing(g2d, width, height);
         drawScore(g2d, width);
         drawFPS(g2d);
     }
@@ -142,7 +129,6 @@ public class GamePanel extends JPanel implements Runnable {
 
     private void drawEnvironment(Graphics2D g2d, int width, int height, int horizonY) {
         RenderUtils.drawBackground(g2d, width, height);
-        RenderUtils.drawStars(g2d, stars, width, horizonY);
         RenderUtils.drawFloor(g2d, width, height, horizonY);
         drawHorizonEqualizer(g2d, width, horizonY);
         RenderUtils.drawHorizonLine(g2d, width, horizonY);
@@ -160,7 +146,7 @@ public class GamePanel extends JPanel implements Runnable {
         final Color c = switch (score) {
             case Integer i when i < 50 -> RenderUtils.cyan;
             case Integer i when i < 75 -> RenderUtils.green;
-            case Integer i when i < 100-> RenderUtils.blue;
+            case Integer i when i < 100 -> RenderUtils.blue;
             case Integer i when i < 150 -> RenderUtils.purple;
             default -> RenderUtils.yellow;
         };
@@ -199,11 +185,6 @@ public class GamePanel extends JPanel implements Runnable {
         RenderUtils.drawText(g2d, text, x, y, new Color(250, 96, 241));
     }
 
-    private void drawPostProcessing(Graphics2D g2d, int width, int height) {
-        // RenderUtils.drawCRTScanlines(g2d, width, height);
-        // RenderUtils.drawVignette(g2d, width, height);
-    }
-
     private void drawHorizonEqualizer(Graphics2D g2d, int width, int horizonY) {
         final int numBars = 64;
         final int barWidth = width / numBars;
@@ -215,7 +196,7 @@ public class GamePanel extends JPanel implements Runnable {
         if (windowSize <= 0) return;
 
         final int samplesPerBar = Math.max(1, windowSize / numBars);
-        
+
         for (int i = 0; i < numBars; i++) {
             long sum = 0;
             for (int j = 0; j < samplesPerBar; j++) {
@@ -227,7 +208,7 @@ public class GamePanel extends JPanel implements Runnable {
             final double avgAmplitude = (double) sum / samplesPerBar;
             final double normalized = avgAmplitude / 32768.0;
 
-            final double normalizedX = (i - (numBars / 2.0)) / (numBars / 2.0);
+            final double normalizedX = (double) (i - (numBars >> 1)) / (numBars >> 1);
             final double bellCurve = Math.exp(-Math.pow(normalizedX, 2) * 3);
 
             final int maxBarHeight = getHeight() / 4;
@@ -237,13 +218,13 @@ public class GamePanel extends JPanel implements Runnable {
 
             final int r = (int) Math.min(255, Math.max(0, 255 * bellCurve));
             final int g = (int) Math.min(255, Math.max(0, 255 * (1 - bellCurve)));
-            
+
             g2d.setColor(new Color(r, g, 255, 180));
             g2d.fillRect(barX + 2, barY, barWidth - 4, barHeight);
-            
+
             g2d.setColor(new Color(255, 255, 255, 220));
             g2d.fillRect(barX + 2, barY, barWidth - 4, 3);
-            
+
             g2d.setColor(new Color(r, g, 255, 30));
             g2d.fillRect(barX + 2, horizonY, barWidth - 4, barHeight / 2);
         }
@@ -255,7 +236,7 @@ public class GamePanel extends JPanel implements Runnable {
             if (distance <= 0) continue;
             final double scale = cam.getScale(cam.getZ() + distance);
             final int screenY = (int) (horizonY + ((150 - cam.getY()) * scale));
-            
+
             if (screenY >= horizonY && screenY <= height) {
                 final int alpha = (int) Math.max(0, Math.min(150, 255 - (distance / 3000.0 * 255)));
                 g2d.setColor(new Color(0, 255, 255, alpha));
@@ -268,15 +249,15 @@ public class GamePanel extends JPanel implements Runnable {
         for (int lx : laneXs) {
             final double startScale = cam.getScale(cam.getZ() + 100);
             final double endScale = cam.getScale(cam.getZ() + 3000);
-            
+
             if (startScale <= 0) continue;
-            
+
             final int startScreenX = (int) (width / 2.0 + (lx - cam.getX()) * startScale);
             final int startScreenY = (int) (horizonY + ((150 - cam.getY()) * startScale));
-            
+
             final int endScreenX = (int) (width / 2.0 + (lx - cam.getX()) * endScale);
             final int endScreenY = (int) (horizonY + ((150 - cam.getY()) * endScale));
-            
+
             if (Math.abs(lx) > 180) {
                 g2d.setColor(new Color(255, 0, 255, 100));
             } else {

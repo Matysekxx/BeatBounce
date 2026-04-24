@@ -10,7 +10,8 @@ public final class RenderUtils {
     public final static Color purple = new Color(191, 0, 255);
     public final static Color yellow = new Color(255, 215, 0);
 
-    private RenderUtils() {}
+    private RenderUtils() {
+    }
 
     public static void initGraphic2D(Graphics2D g2d) {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -84,7 +85,7 @@ public final class RenderUtils {
             float alpha = (float) (0.12 + (0.25 * pulse) / (i * 0.5));
             if (alpha > 1.0f) alpha = 1.0f;
 
-            g2d.setColor(new Color(c.getRed()/255f, c.getGreen()/255f, c.getBlue()/255f, alpha));
+            g2d.setColor(new Color(c.getRed() / 255f, c.getGreen() / 255f, c.getBlue() / 255f, alpha));
             g2d.drawString(text, x - i, y);
             g2d.drawString(text, x + i, y);
             g2d.drawString(text, x, y - i);

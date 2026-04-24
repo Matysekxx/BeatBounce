@@ -7,6 +7,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+
 import static cz.matysekxx.beatbounce.util.Time.sleep;
 
 public class IntroScreen extends Screen {
@@ -28,11 +29,16 @@ public class IntroScreen extends Screen {
             ((JButton) e.getSource()).setEnabled(false);
             ((JButton) e.getSource()).setText("LOADING...");
             final SwingWorker<Void, Void> worker = new SwingWorker<>() {
-                @Override protected Void doInBackground() {
+                @Override
+                protected Void doInBackground() {
                     screenManager.initScreen(GameScreen.class);
                     return null;
                 }
-                @Override protected void done() { screenManager.showScreen(GameScreen.class); }
+
+                @Override
+                protected void done() {
+                    screenManager.showScreen(GameScreen.class);
+                }
             };
             worker.execute();
         });

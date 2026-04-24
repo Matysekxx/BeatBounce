@@ -1,27 +1,21 @@
 package cz.matysekxx.beatbounce.gui.screen;
 
 import cz.matysekxx.beatbounce.gui.RenderUtils;
-import cz.matysekxx.beatbounce.gui.Star;
+import cz.matysekxx.beatbounce.util.Time;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import cz.matysekxx.beatbounce.util.Time;
 
 public class IntroPanel extends JPanel implements Runnable {
     private float time = 0;
     private boolean running = false;
     private Thread animatorThread;
-    private final Collection<Star> stars = new ArrayList<>(STARS_COUNT);
-    private static final int STARS_COUNT = 400;
     private int currentFps = 0;
     private int frameCount = 0;
-    private long lastFpsTime = 0;
 
     public IntroPanel() {
         super();
-        initStars();
+        //initStars();
         this.setDoubleBuffered(true);
         this.setOpaque(true);
     }
@@ -44,12 +38,9 @@ public class IntroPanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
-        lastFpsTime = System.currentTimeMillis();
+        long lastFpsTime = System.currentTimeMillis();
         while (running) {
             time += 0.04f;
-            if (!stars.isEmpty()) {
-                for (Star s : stars) s.update();
-            }
             repaint();
 
             frameCount++;
@@ -60,10 +51,6 @@ public class IntroPanel extends JPanel implements Runnable {
             }
             Time.sleep(16);
         }
-    }
-
-    private void initStars() {
-        for (int i = 0; i < STARS_COUNT; i++) stars.add(new Star());
     }
 
     @Override
@@ -77,7 +64,6 @@ public class IntroPanel extends JPanel implements Runnable {
         final int horizonY = (h >> 1) + 50;
 
         RenderUtils.drawBackground(g2d, w, h);
-        RenderUtils.drawStars(g2d, stars, w, horizonY);
         RenderUtils.drawFloor(g2d, w, h, horizonY);
 
         drawIntroGrid(g2d, w, h, horizonY);

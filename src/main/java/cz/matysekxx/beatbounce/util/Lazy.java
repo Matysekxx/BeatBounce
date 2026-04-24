@@ -25,7 +25,7 @@ public class Lazy<T> {
         return value != null;
     }
 
-    public void initialize()  {
+    public void initialize() {
         if (!wasInitialized()) value = supplier.get();
     }
 }

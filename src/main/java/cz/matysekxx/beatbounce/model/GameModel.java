@@ -109,5 +109,7 @@ public class GameModel {
         sphere.startJump(currentTime, duration, height);
     }
 
-    public GameState getGameState() { return gameState; }
+    public GameState getGameState() {
+        return gameState;
+    }
 }

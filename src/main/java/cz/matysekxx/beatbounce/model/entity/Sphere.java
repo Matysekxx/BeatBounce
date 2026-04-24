@@ -69,6 +69,10 @@ public class Sphere extends Entity implements Paintable {
         return targetX;
     }
 
+    public void setTargetX(double targetX) {
+        this.targetX = targetX;
+    }
+
     public double getCurrentY() {
         return currentY;
     }
@@ -80,14 +84,14 @@ public class Sphere extends Entity implements Paintable {
     }
 
     public void reset() {
-        currentX = 0; targetX = 0;
-        currentY = 150; this.y = 150;
+        currentX = 0;
+        targetX = 0;
+        currentY = 150;
+        this.y = 150;
         this.z = 0;
-        isJumping = false; isFalling = false; fallSpeed = 0;
-    }
-
-    public void setTargetX(double targetX) {
-        this.targetX = targetX;
+        isJumping = false;
+        isFalling = false;
+        fallSpeed = 0;
     }
 
     public boolean isJumping() {

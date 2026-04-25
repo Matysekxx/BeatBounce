@@ -1,4 +1,4 @@
-package cz.matysekxx.beatbounce.gui.screen;
+package cz.matysekxx.beatbounce.gui.components;
 
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.util.Time;
@@ -15,7 +15,6 @@ public class IntroPanel extends JPanel implements Runnable {
 
     public IntroPanel() {
         super();
-        //initStars();
         this.setDoubleBuffered(true);
         this.setOpaque(true);
     }
@@ -71,9 +70,6 @@ public class IntroPanel extends JPanel implements Runnable {
         RenderUtils.drawHorizonLine(g2d, w, horizonY);
 
         drawTitle(g2d, w, h);
-
-        // RenderUtils.drawCRTScanlines(g2d, w, h);
-        // RenderUtils.drawVignette(g2d, w, h);
         drawFPS(g2d);
         g2d.dispose();
     }

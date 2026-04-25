@@ -1,4 +1,4 @@
-package cz.matysekxx.beatbounce.gui.screen;
+package cz.matysekxx.beatbounce.gui.components;
 
 import cz.matysekxx.beatbounce.controller.GameController;
 import cz.matysekxx.beatbounce.gui.Camera3D;
@@ -17,7 +17,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class GamePanel extends JPanel implements Runnable {
-    private static final int LANE_WIDTH = 120;
     private final Level level;
     private final Clip clip;
     private final Camera3D cam;
@@ -198,15 +197,7 @@ public class GamePanel extends JPanel implements Runnable {
         final int samplesPerBar = Math.max(1, windowSize / numBars);
 
         for (int i = 0; i < numBars; i++) {
-            long sum = 0;
-            for (int j = 0; j < samplesPerBar; j++) {
-                final int idx = startSample + i * samplesPerBar + j;
-                if (idx < audioSamples.length) {
-                    sum += Math.abs(audioSamples[idx]);
-                }
-            }
-            final double avgAmplitude = (double) sum / samplesPerBar;
-            final double normalized = avgAmplitude / 32768.0;
+            final double normalized = calculateBarAmplitude(startSample, samplesPerBar, i);
 
             final double normalizedX = (double) (i - (numBars >> 1)) / (numBars >> 1);
             final double bellCurve = Math.exp(-Math.pow(normalizedX, 2) * 3);
@@ -230,40 +221,48 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
+    private double calculateBarAmplitude(int startSample, int samplesPerBar, int barIndex) {
+        long sum = 0;
+        for (int j = 0; j < samplesPerBar; j++) {
+            final int idx = startSample + barIndex * samplesPerBar + j;
+            if (idx < audioSamples.length) {
+                sum += Math.abs(audioSamples[idx]);
+            }
+        }
+        return ((double) sum / samplesPerBar) / 32768.0;
+    }
+
+    private Point projectPoint(double x, double y, double z, int width, int horizonY) {
+        final double scale = cam.getScale(z);
+        if (scale <= 0) return null;
+        final int px = (int) (width / 2.0 + (x - cam.getX()) * scale);
+        final int py = (int) (horizonY + ((y - cam.getY()) * scale));
+        return new Point(px, py);
+    }
+
     private void drawNeonGrid(Graphics2D g2d, int width, int height, int horizonY) {
         for (int z = 0; z < 3000; z += 150) {
             final double distance = z - (cam.getZ() % 150);
             if (distance <= 0) continue;
-            final double scale = cam.getScale(cam.getZ() + distance);
-            final int screenY = (int) (horizonY + ((150 - cam.getY()) * scale));
+            Point p = projectPoint(0, 150, cam.getZ() + distance, width, horizonY);
 
-            if (screenY >= horizonY && screenY <= height) {
+            if (p != null && p.y >= horizonY && p.y <= height) {
                 final int alpha = (int) Math.max(0, Math.min(150, 255 - (distance / 3000.0 * 255)));
                 g2d.setColor(new Color(0, 255, 255, alpha));
-                g2d.drawLine(0, screenY, width, screenY);
+                g2d.drawLine(0, p.y, width, p.y);
             }
         }
 
         final int[] laneXs = {-300, -180, -60, 60, 180, 300};
         g2d.setStroke(new BasicStroke(2));
         for (int lx : laneXs) {
-            final double startScale = cam.getScale(cam.getZ() + 100);
-            final double endScale = cam.getScale(cam.getZ() + 3000);
+            Point start = projectPoint(lx, 150, cam.getZ() + 100, width, horizonY);
+            Point end = projectPoint(lx, 150, cam.getZ() + 3000, width, horizonY);
 
-            if (startScale <= 0) continue;
+            if (start == null || end == null) continue;
 
-            final int startScreenX = (int) (width / 2.0 + (lx - cam.getX()) * startScale);
-            final int startScreenY = (int) (horizonY + ((150 - cam.getY()) * startScale));
-
-            final int endScreenX = (int) (width / 2.0 + (lx - cam.getX()) * endScale);
-            final int endScreenY = (int) (horizonY + ((150 - cam.getY()) * endScale));
-
-            if (Math.abs(lx) > 180) {
-                g2d.setColor(new Color(255, 0, 255, 100));
-            } else {
-                g2d.setColor(new Color(0, 255, 255, 120));
-            }
-            g2d.drawLine(startScreenX, startScreenY, endScreenX, endScreenY);
+            g2d.setColor(Math.abs(lx) > 180 ? new Color(255, 0, 255, 100) : new Color(0, 255, 255, 120));
+            g2d.drawLine(start.x, start.y, end.x, end.y);
         }
         g2d.setStroke(new BasicStroke(1));
     }

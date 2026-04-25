@@ -36,7 +36,6 @@ class AudiusClientTest {
     @Test
     @SuppressWarnings("unchecked")
     void searchTracks_shouldReturnJsonAndBuildCorrectUri() throws ExecutionException, InterruptedException {
-        // Arrange (Příprava)
         String expectedJson = "{\"data\":[{\"id\":\"123\", \"title\":\"Test Track\"}]}";
         HttpResponse<String> mockResponse = Mockito.mock(HttpResponse.class);
         when(mockResponse.body()).thenReturn(expectedJson);

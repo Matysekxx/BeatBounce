@@ -38,6 +38,7 @@ public class AudiusClient {
         final HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .GET()
+                .timeout(Duration.ofSeconds(15))
                 .build();
 
         return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
@@ -60,6 +61,7 @@ public class AudiusClient {
         final HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .GET()
+                .timeout(Duration.ofSeconds(45))
                 .build();
 
         return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofFile(destination))

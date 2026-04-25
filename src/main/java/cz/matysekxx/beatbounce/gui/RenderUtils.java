@@ -1,6 +1,7 @@
 package cz.matysekxx.beatbounce.gui;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public final class RenderUtils {
     public final static Color cyan = new Color(0, 255, 220);
@@ -13,7 +14,75 @@ public final class RenderUtils {
     public static final Color NEON_MAGENTA = new Color(255, 0, 255);
     public static final Color CYBER_YELLOW = new Color(252, 226, 5);
 
+    private static BufferedImage noiseTexture;
+
     private RenderUtils() {
+    }
+
+    private static int[][] starCache = null;
+
+    public static void drawAuroraBackground(Graphics2D g2d, int w, int h, float time) {
+        g2d.setColor(new Color(8, 8, 12));
+        g2d.fillRect(0, 0, w, h);
+
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+        drawStars(g2d, w, h);
+        drawOrb(g2d, w, h,
+                w * 0.3f + (float) Math.sin(time * 0.18f) * (w * 0.42f),
+                h * 0.38f + (float) Math.cos(time * 0.31f) * (h * 0.32f),
+                w * 0.65f,
+                new Color(220, 0, 140, 45));
+
+        drawOrb(g2d, w, h,
+                w * 0.72f + (float) Math.cos(time * 0.22f) * (w * 0.28f),
+                h * 0.62f + (float) Math.sin(time * 0.41f) * (h * 0.38f),
+                w * 0.72f,
+                new Color(0, 230, 255, 28));
+
+        drawOrb(g2d, w, h,
+                w * 0.50f + (float) Math.sin(time * 0.09f) * (w * 0.22f),
+                h * 0.48f + (float) Math.cos(time * 0.13f) * (h * 0.22f),
+                w * 0.95f,
+                new Color(80, 0, 240, 22));
+
+        drawOrb(g2d, w, h,
+                w * 0.15f + (float) Math.cos(time * 0.14f) * (w * 0.18f),
+                h * 0.25f + (float) Math.sin(time * 0.28f) * (h * 0.20f),
+                w * 0.50f,
+                new Color(0, 200, 120, 30));
+        applyNoiseOverlay(g2d, 0, 0, w, h);
+    }
+
+    private static void drawOrb(Graphics2D g2d, int w, int h,
+                                float cx, float cy, float radius, Color innerColor) {
+        Color outerColor = new Color(0, 0, 0, 0);
+        RadialGradientPaint paint = new RadialGradientPaint(
+                cx, cy, radius,
+                new float[]{0f, 1f},
+                new Color[]{innerColor, outerColor}
+        );
+        g2d.setPaint(paint);
+        g2d.fillRect(0, 0, w, h);
+    }
+
+    private static void drawStars(Graphics2D g2d, int w, int h) {
+        if (starCache == null || starCache.length == 0) {
+            java.util.Random rng = new java.util.Random(0xABCDEF42L);
+            starCache = new int[120][3];
+            for (int i = 0; i < starCache.length; i++) {
+                starCache[i][0] = rng.nextInt(w > 0 ? w : 1920);
+                starCache[i][1] = rng.nextInt(h > 0 ? h : 1080);
+                starCache[i][2] = 80 + rng.nextInt(120);
+            }
+        }
+
+        for (int[] star : starCache) {
+            int alpha = star[2];
+            g2d.setColor(new Color(255, 255, 255, alpha));
+            g2d.fillRect(star[0] % w, star[1] % h, 1, 1);
+        }
     }
 
     public static void initGraphic2D(Graphics2D g2d) {
@@ -68,5 +137,25 @@ public final class RenderUtils {
         g2d.drawString(text, x + 1, y + 1);
         g2d.setColor(new Color(255, 230, 240));
         g2d.drawString(text, x, y);
+    }
+
+    public static void applyNoiseOverlay(Graphics2D g2, int x, int y, int w, int h) {
+        if (noiseTexture == null) {
+            noiseTexture = new java.awt.image.BufferedImage(256, 256, java.awt.image.BufferedImage.TYPE_INT_ARGB);
+            java.util.Random r = new java.util.Random(12345);
+            for (int ix = 0; ix < 256; ix++) {
+                for (int iy = 0; iy < 256; iy++) {
+                    noiseTexture.setRGB(ix, iy, new Color(255, 255, 255, r.nextInt(10)).getRGB());
+                }
+            }
+        }
+        Composite originalComposite = g2.getComposite();
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+        for (int ix = x; ix < x + w; ix += 256) {
+            for (int iy = y; iy < y + h; iy += 256) {
+                g2.drawImage(noiseTexture, ix, iy, null);
+            }
+        }
+        g2.setComposite(originalComposite);
     }
 }

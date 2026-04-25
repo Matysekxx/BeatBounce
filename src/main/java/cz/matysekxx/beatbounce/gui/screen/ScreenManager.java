@@ -14,7 +14,7 @@ public class ScreenManager {
 
     public ScreenManager() {
         registerScreen(IntroScreen.class, () -> new IntroScreen(this));
-        registerScreen(MainMenuScreen.class, MainMenuScreen::new);
+        registerScreen(MainMenuScreen.class, () -> new MainMenuScreen(this));
         registerScreen(GameScreen.class, GameScreen::new);
     }
 

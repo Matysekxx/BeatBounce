@@ -1,4 +1,4 @@
-package cz.matysekxx.beatbounce.gui;
+package cz.matysekxx.beatbounce.gui.components;
 
 public class Star {
     public double x;

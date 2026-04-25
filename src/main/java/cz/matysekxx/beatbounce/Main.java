@@ -18,7 +18,7 @@ public class Main {
 
     static void main() {
         setProperties();
-        setTestingProperties();
+        //setTestingProperties();
         SwingUtilities.invokeLater(Execute.getSingleton());
     }
 }

@@ -1,6 +1,7 @@
 package cz.matysekxx.beatbounce.gui.screen;
 
 
+import cz.matysekxx.beatbounce.gui.components.GamePanel;
 import cz.matysekxx.beatbounce.model.audio.AudioAnalyzer;
 import cz.matysekxx.beatbounce.model.audio.AudioData;
 import cz.matysekxx.beatbounce.model.level.Level;

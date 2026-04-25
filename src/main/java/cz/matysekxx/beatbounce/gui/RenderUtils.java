@@ -1,7 +1,6 @@
 package cz.matysekxx.beatbounce.gui;
 
 import java.awt.*;
-import java.util.Collection;
 
 public final class RenderUtils {
     public final static Color cyan = new Color(0, 255, 220);
@@ -9,6 +8,10 @@ public final class RenderUtils {
     public final static Color blue = new Color(0, 150, 255);
     public final static Color purple = new Color(191, 0, 255);
     public final static Color yellow = new Color(255, 215, 0);
+
+    public static final Color NEON_CYAN = new Color(0, 255, 255);
+    public static final Color NEON_MAGENTA = new Color(255, 0, 255);
+    public static final Color CYBER_YELLOW = new Color(252, 226, 5);
 
     private RenderUtils() {
     }
@@ -20,6 +23,7 @@ public final class RenderUtils {
         g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
     }
 
+
     public static void drawBackground(Graphics2D g2d, int width, int height) {
         final RadialGradientPaint bg = new RadialGradientPaint(
                 width / 2f, height / 2f, width,
@@ -28,20 +32,6 @@ public final class RenderUtils {
         );
         g2d.setPaint(bg);
         g2d.fillRect(0, 0, width, height);
-    }
-
-    public static void drawStars(Graphics2D g2d, Collection<Star> stars, int width, int horizonY) {
-        g2d.translate(width / 2, horizonY - 100);
-        for (Star s : stars) {
-            final double fov = 300.0;
-            final double projX = (s.x / s.z) * fov;
-            final double projY = (s.y / s.z) * fov;
-            final double size = Math.max(0.5, 4.0 - (s.z / 100.0));
-            final int alpha = (int) Math.min(255, Math.max(0, 255 - (s.z * 0.5)));
-            g2d.setColor(new Color(0, 255, 255, alpha));
-            g2d.fillOval((int) projX, (int) projY, (int) size, (int) size);
-        }
-        g2d.translate(-width / 2, -(horizonY - 100));
     }
 
     public static void drawFloor(Graphics2D g2d, int width, int height, int horizonY) {
@@ -56,23 +46,6 @@ public final class RenderUtils {
         g2d.setStroke(new BasicStroke(1));
         g2d.setColor(Color.WHITE);
         g2d.drawLine(0, horizonY, width, horizonY);
-    }
-
-    public static void drawCRTScanlines(Graphics2D g2d, int width, int height) {
-        g2d.setColor(new Color(0, 0, 0, 40));
-        for (int i = 0; i < height; i += 3) {
-            g2d.drawLine(0, i, width, i);
-        }
-    }
-
-    public static void drawVignette(Graphics2D g2d, int width, int height) {
-        final RadialGradientPaint vignette = new RadialGradientPaint(
-                width / 2f, height / 2f, width * 0.8f,
-                new float[]{0.4f, 1.0f},
-                new Color[]{new Color(0, 0, 0, 0), new Color(0, 0, 0, 220)}
-        );
-        g2d.setPaint(vignette);
-        g2d.fillRect(0, 0, width, height);
     }
 
     public static void drawText(Graphics2D g2d, String text, int x, int y, Color c) {

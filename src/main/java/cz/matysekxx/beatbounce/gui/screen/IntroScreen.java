@@ -1,6 +1,7 @@
 package cz.matysekxx.beatbounce.gui.screen;
 
 import cz.matysekxx.beatbounce.gui.ButtonFactory;
+import cz.matysekxx.beatbounce.gui.components.IntroPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,13 +32,13 @@ public class IntroScreen extends Screen {
             final SwingWorker<Void, Void> worker = new SwingWorker<>() {
                 @Override
                 protected Void doInBackground() {
-                    screenManager.initScreen(GameScreen.class);
+                    screenManager.initScreen(MainMenuScreen.class);
                     return null;
                 }
 
                 @Override
                 protected void done() {
-                    screenManager.showScreen(GameScreen.class);
+                    screenManager.showScreen(MainMenuScreen.class);
                 }
             };
             worker.execute();

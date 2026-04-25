@@ -8,6 +8,7 @@ import cz.matysekxx.beatbounce.gui.components.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.function.Consumer;
 
 public class MainMenuScreen extends Screen {
 
@@ -42,7 +43,7 @@ public class MainMenuScreen extends Screen {
         navLinks.setOpaque(false);
         navLinks.setBorder(new EmptyBorder(0, 15, 0, 15));
 
-        java.util.function.Consumer<String> cardSwitcher = target -> cardLayout.show(cardPanel, target);
+        final Consumer<String> cardSwitcher = target -> cardLayout.show(cardPanel, target);
 
         navLinks.add(new SidebarButton("Discover", "DISCOVER", true, cardSwitcher));
         navLinks.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -68,8 +69,7 @@ public class MainMenuScreen extends Screen {
         bottomSidebar.setBorder(new EmptyBorder(0, 15, 40, 15));
 
         final JButton profileBtn = new SidebarButton("Settings", null, false, null);
-        //TODO: pridat event  pro exitbutton
-        final JButton exitBtn = new SidebarButton("Exit", null, false, null, e -> {});
+        final JButton exitBtn = new SidebarButton("Exit", null, false, null, e -> screenManager.showScreen(IntroScreen.class));
         exitBtn.setForeground(new Color(255, 100, 100, 200));
 
         bottomSidebar.add(profileBtn);

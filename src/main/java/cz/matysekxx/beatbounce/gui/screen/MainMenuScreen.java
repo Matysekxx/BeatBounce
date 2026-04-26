@@ -50,9 +50,6 @@ public class MainMenuScreen extends Screen {
         // TODO: vytvorit LibaryPanel
         navLinks.add(new SidebarButton("Library", "LIBRARY", false, null));
         navLinks.add(Box.createRigidArea(new Dimension(0, 5)));
-        // TODO: vytvorit LeaderboardsPanel
-        navLinks.add(new SidebarButton("Leaderboards", "LEADERBOARDS", false, null));
-        navLinks.add(Box.createRigidArea(new Dimension(0, 5)));
         // TODO: vytvorit SkinsPanel
         navLinks.add(new SidebarButton("Skins", "SKINS", false, null));
         navLinks.add(Box.createRigidArea(new Dimension(0, 5)));

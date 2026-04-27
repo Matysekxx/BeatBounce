@@ -6,6 +6,7 @@ import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.TileFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -13,13 +14,13 @@ public class LevelGenerator {
     private static final double Z_UNITS_PER_SECOND = 1000.0;
     private static final int LANE_WIDTH = 120;
 
-    public static Level generateLevel(List<BeatEvent> events, String songName) {
+    public static Level generateLevel(Iterable<BeatEvent> events, String songName) {
         return new GenerationContext(events, songName).generate();
     }
 
     private static class GenerationContext {
         private final List<AbstractTile> tiles;
-        private final List<BeatEvent> events;
+        private final Iterable<BeatEvent> events;
         private final String songName;
         private final Random rng;
 
@@ -27,7 +28,7 @@ public class LevelGenerator {
         private int consecutiveInLane = 0;
         private int normalTilesSinceLong = 0;
 
-        public GenerationContext(List<BeatEvent> events, String songName) {
+        public GenerationContext(Iterable<BeatEvent> events, String songName) {
             this.events = events;
             this.songName = songName;
             this.tiles = new ArrayList<>();

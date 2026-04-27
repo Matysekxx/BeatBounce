@@ -22,13 +22,13 @@ public class LevelGeneratorTest {
 
         Level level = LevelGenerator.generateLevel(events, "Test Song");
 
-        assertEquals("Test Song", level.getSongName());
-        assertEquals(2, level.getTiles().size());
-        assertInstanceOf(NormalTile.class, level.getTiles().get(0));
-        assertInstanceOf(NormalTile.class, level.getTiles().get(1));
+        assertEquals("Test Song", level.songName());
+        assertEquals(2, level.tiles().size());
+        assertInstanceOf(NormalTile.class, level.tiles().get(0));
+        assertInstanceOf(NormalTile.class, level.tiles().get(1));
 
-        assertEquals(1000.0, level.getTiles().get(0).getZ(), 0.1);
-        assertEquals(2000.0, level.getTiles().get(1).getZ(), 0.1);
+        assertEquals(1000.0, level.tiles().get(0).getZ(), 0.1);
+        assertEquals(2000.0, level.tiles().get(1).getZ(), 0.1);
     }
 
     @Test
@@ -42,12 +42,12 @@ public class LevelGeneratorTest {
 
         Level level = LevelGenerator.generateLevel(events, "Test Long");
 
-        long longTileCount = level.getTiles().stream()
+        long longTileCount = level.tiles().stream()
                 .filter(t -> t instanceof LongTile)
                 .count();
 
         assertEquals(1, longTileCount);
-        AbstractTile longTile = level.getTiles().stream()
+        AbstractTile longTile = level.tiles().stream()
                 .filter(t -> t instanceof LongTile)
                 .findFirst()
                 .orElseThrow();
@@ -64,7 +64,7 @@ public class LevelGeneratorTest {
 
         Level level = LevelGenerator.generateLevel(events, "Test Cooldown");
 
-        assertEquals(1, level.getTiles().size());
+        assertEquals(1, level.tiles().size());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class LevelGeneratorTest {
 
         Level level = LevelGenerator.generateLevel(events, "Test Lanes");
 
-        long distinctLanes = level.getTiles().stream()
+        long distinctLanes = level.tiles().stream()
                 .map(AbstractTile::getX)
                 .distinct()
                 .count();

@@ -69,8 +69,8 @@ public class GameModel {
     public void handlePlaying(double currentTime) {
         sphere.setZ(gameZProgress);
         cam.setZ(gameZProgress - 500);
-        if (currentTileIndex + 1 < level.getTiles().size()) {
-            final AbstractTile nextTile = level.getTiles().get(currentTileIndex + 1);
+        if (currentTileIndex + 1 < level.tiles().size()) {
+            final AbstractTile nextTile = level.tiles().get(currentTileIndex + 1);
             if (gameZProgress >= nextTile.getZ()) {
                 final double tileMinX = nextTile.getX() - (LANE_WIDTH / 2.0) - sphere.getRadius();
                 final double tileMaxX = nextTile.getX() + (LANE_WIDTH / 2.0) + sphere.getRadius();
@@ -100,7 +100,7 @@ public class GameModel {
     }
 
     private void startNextJump(double currentTime) {
-        final var tiles = level.getTiles();
+        final var tiles = level.tiles();
         final int nextIndex = currentTileIndex + 1;
         if (nextIndex >= tiles.size()) return;
         final AbstractTile currentTile = nextIndex > 0 ? tiles.get(nextIndex - 1) : null;

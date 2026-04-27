@@ -4,20 +4,5 @@ import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 
 import java.util.List;
 
-public class Level {
-    private final List<AbstractTile> tiles;
-    private final String songName;
-
-    public Level(List<AbstractTile> tiles, String songName) {
-        this.tiles = tiles;
-        this.songName = songName;
-    }
-
-    public List<AbstractTile> getTiles() {
-        return tiles;
-    }
-
-    public String getSongName() {
-        return songName;
-    }
+public record Level(List<AbstractTile> tiles, String songName) {
 }

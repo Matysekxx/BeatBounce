@@ -5,13 +5,16 @@ import cz.matysekxx.beatbounce.event.BeatEvent;
 import java.awt.*;
 
 public class MovingTile extends AbstractTile {
-    private final int startX;
-    private final int amplitude;
-    private final double speed;
+    private int startX;
+    private int amplitude;
+    private double speed;
     private double time;
+    protected MovingTile() {
+        super();
+    }
 
     public MovingTile(BeatEvent beatEvent, Point point, double z, int amplitude, double speed) {
-        super(beatEvent, point, z);
+        super(beatEvent, point, z, 50.0);
         this.startX = point.x;
         this.amplitude = amplitude;
         this.speed = speed;

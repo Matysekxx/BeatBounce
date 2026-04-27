@@ -5,10 +5,13 @@ import cz.matysekxx.beatbounce.event.BeatEvent;
 import java.awt.*;
 
 public class NormalTile extends AbstractTile {
-    private final float hueOffset;
+    private float hueOffset;
+    protected NormalTile() {
+        super();
+    }
     
     public NormalTile(BeatEvent beatEvent, Point point, double z) {
-        super(beatEvent, point, z);
+        super(beatEvent, point, z, 50.0);
         this.hueOffset = (float) ((z % 5000) / 5000.0);
     }
 

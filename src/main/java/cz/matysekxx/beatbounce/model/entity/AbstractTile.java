@@ -1,5 +1,7 @@
 package cz.matysekxx.beatbounce.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import cz.matysekxx.beatbounce.event.BeatEvent;
 import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.gui.Paintable;
@@ -7,14 +9,35 @@ import cz.matysekxx.beatbounce.gui.WindowData;
 
 import java.awt.*;
 
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = NormalTile.class, name = "normal"),
+        @JsonSubTypes.Type(value = MovingTile.class, name = "moving"),
+        @JsonSubTypes.Type(value = LongTile.class, name = "long")
+})
 public abstract class AbstractTile extends Entity implements Paintable {
-    private final BeatEvent beatEvent;
+    private BeatEvent beatEvent;
     protected double z;
+    protected double lengthInZ;
 
-    public AbstractTile(BeatEvent beatEvent, Point point, double z) {
+    protected AbstractTile() {
+        super(0, 0);
+        this.lengthInZ = 50.0;
+    }
+
+    public AbstractTile(BeatEvent beatEvent, Point point, double z, double lengthInZ) {
         super(point.x, point.y);
         this.beatEvent = beatEvent;
         this.z = z;
+        this.lengthInZ = lengthInZ;
+    }
+
+    public BeatEvent getBeatEvent() {
+        return beatEvent;
     }
 
     public double getZ() {
@@ -22,7 +45,7 @@ public abstract class AbstractTile extends Entity implements Paintable {
     }
 
     public double getLengthInZ() {
-        return 50;
+        return lengthInZ;
     }
 
     @Override

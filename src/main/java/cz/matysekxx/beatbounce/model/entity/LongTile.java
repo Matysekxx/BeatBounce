@@ -5,17 +5,12 @@ import cz.matysekxx.beatbounce.event.BeatEvent;
 import java.awt.*;
 
 public class LongTile extends AbstractTile {
-
-    private final double lengthInZ;
-
-    public LongTile(BeatEvent beatEvent, Point point, double z, double lengthInZ) {
-        super(beatEvent, point, z);
-        this.lengthInZ = lengthInZ;
+    protected LongTile() {
+        super();
     }
 
-    @Override
-    public double getLengthInZ() {
-        return lengthInZ;
+    public LongTile(BeatEvent beatEvent, Point point, double z, double lengthInZ) {
+        super(beatEvent, point, z, lengthInZ);
     }
 
     @Override

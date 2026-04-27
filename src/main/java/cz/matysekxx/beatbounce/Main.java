@@ -12,13 +12,8 @@ public class Main {
         System.setProperty("swing.aatext", "true");
     }
 
-    static void setTestingProperties() {
-        System.setProperty("sun.java2d.trace", "count");
-    }
-
     static void main() {
         setProperties();
-        //setTestingProperties();
         SwingUtilities.invokeLater(Execute.getSingleton());
     }
 }

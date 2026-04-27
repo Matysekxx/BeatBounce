@@ -10,7 +10,9 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class TrackCard extends JPanel {
     private int hoverAlpha = 120;
@@ -18,7 +20,26 @@ public class TrackCard extends JPanel {
     private float animAlpha = 0f;
     private Timer enterTimer;
 
+    private final String id;
+    private final String title;
+    private final String artist;
+    private final AudiusClient audiusClient;
+    private final ScreenManager screenManager;
+
+
     public TrackCard(String id, String title, String artist, AudiusClient audiusClient, ScreenManager screenManager, int index) {
+        this.id = id;
+        this.title = title;
+        this.artist = artist;
+        this.audiusClient = audiusClient;
+        this.screenManager = screenManager;
+
+        setupLayout();
+        initAnimations(index);
+        initComponents();
+    }
+
+    private void setupLayout() {
         setLayout(new BorderLayout());
         setOpaque(false);
         setPreferredSize(new Dimension(1000, 85));
@@ -39,7 +60,9 @@ public class TrackCard extends JPanel {
                 repaint();
             }
         });
+    }
 
+    private void initAnimations(int index) {
         enterTimer = new Timer(16, e -> {
             animOffset = Math.max(0, animOffset - 2f);
             animAlpha = Math.min(1f, animAlpha + 0.05f);
@@ -48,17 +71,45 @@ public class TrackCard extends JPanel {
         });
         enterTimer.setInitialDelay(index * 40);
         enterTimer.start();
+    }
 
-
-        final JPanel textPanel = getJPanel(title, artist);
+    private void initComponents() {
+        add(getJPanel(title, artist), BorderLayout.CENTER);
 
         final JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 10));
         rightPanel.setOpaque(false);
 
-        final PrimaryButton playBtn = new PrimaryButton("DOWNLOAD");
-        playBtn.addActionListener(e -> {
-            playBtn.setEnabled(false);
-            playBtn.setText("WAIT...");
+        final Path existingPath = getDownloadedPath(title);
+        final PrimaryButton actionBtn = new PrimaryButton(existingPath != null ? "PLAY" : "DOWNLOAD");
+
+        if (existingPath != null) {
+            setupPlayAction(actionBtn, existingPath);
+        } else {
+            setupDownloadAction(actionBtn);
+        }
+
+        rightPanel.add(actionBtn);
+        add(rightPanel, BorderLayout.EAST);
+    }
+
+    private void setupPlayAction(PrimaryButton button, Path path) {
+        button.addActionListener(e -> {
+            screenManager.initScreen(GameScreen.class);
+            GameScreen gameScreen = screenManager.getScreen(GameScreen.class);
+            try {
+                gameScreen.setupGamePanel(path);
+                screenManager.showScreen(GameScreen.class);
+                gameScreen.start();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+    }
+
+    private void setupDownloadAction(PrimaryButton button) {
+        button.addActionListener(e -> {
+            button.setEnabled(false);
+            button.setText("WAIT...");
             new SwingWorker<Path, Void>() {
                 @Override
                 protected Path doInBackground() throws Exception {
@@ -67,26 +118,31 @@ public class TrackCard extends JPanel {
 
                 @Override
                 protected void done() {
-                    playBtn.setText("PLAY");
-                    playBtn.setEnabled(true);
-                    for (var al : playBtn.getActionListeners()) playBtn.removeActionListener(al);
-                    playBtn.addActionListener(playEvent -> {
-                        screenManager.initScreen(GameScreen.class);
-                        final GameScreen gameScreen = screenManager.getScreen(GameScreen.class);
-                        try {
-                            gameScreen.setupGamePanel(get());
-                            screenManager.showScreen(GameScreen.class);
-                            gameScreen.start();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    });
+                    try {
+                        Path downloadedPath = get();
+                        button.setText("PLAY");
+                        button.setEnabled(true);
+                        for (var al : button.getActionListeners()) button.removeActionListener(al);
+                        setupPlayAction(button, downloadedPath);
+
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        button.setText("ERROR");
+                    }
                 }
             }.execute();
         });
-        rightPanel.add(playBtn);
-        add(textPanel, BorderLayout.CENTER);
-        add(rightPanel, BorderLayout.EAST);
+    }
+    
+    private Path getDownloadedPath(String title) {
+        final String[] extensions = {".mp3", ".ogg", ".wav", ".flac"};
+        for (String ext : extensions) {
+            final Path path = Paths.get("music", title + ext);
+            if (Files.exists(path)) {
+                return path;
+            }
+        }
+        return null;
     }
 
     private static JPanel getJPanel(String title, String artist) {

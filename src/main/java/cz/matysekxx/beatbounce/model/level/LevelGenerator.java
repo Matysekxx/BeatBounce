@@ -7,11 +7,7 @@ import cz.matysekxx.beatbounce.model.audio.AudioData;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.TileFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class LevelGenerator {
@@ -32,6 +28,8 @@ public class LevelGenerator {
         if (levelCache.containsKey(key)) {
             return new Level(levelCache.get(key), audioData, audioData.file().getName());
         }
+
+        Level.clearCache(audioData.file(), speedMultiplier);
         final Optional<LevelCacheData> cachedLevelOpt = Level.fromFile(audioData.file(), speedMultiplier);
         if (cachedLevelOpt.isPresent()) {
             final LevelCacheData diskCachedLevel = cachedLevelOpt.get();
@@ -42,7 +40,7 @@ public class LevelGenerator {
 
         final AudioAnalyzer audioAnalyzer = new AudioAnalyzer(audioData, speedMultiplier);
         final Level generatedLevel = new GenerationContext(audioAnalyzer.analyze(), audioData.file().getName(), audioData).generate();
-        
+
         levelCache.put(key, generatedLevel.tiles());
         Level.toFile(generatedLevel, speedMultiplier);
 
@@ -68,26 +66,33 @@ public class LevelGenerator {
 
         public Level generate() {
             final List<BeatEvent> beats = new ArrayList<>();
+            double lastTileZ = -1000.0;
+            boolean isHighIntensity = false;
             for (BeatEvent e : events) {
-                if (e.type() == EventType.BEAT) {
-                    if (beats.isEmpty() || e.timestamp() - beats.getLast().timestamp() >= 0.15) {
+                switch (e.type()) {
+                    case INTENSITY_HIGH_START -> isHighIntensity = true;
+                    case INTENSITY_HIGH_END, INTENSITY_LOW_START -> isHighIntensity = false;
+                    case BEAT -> {
+                        if (!beats.isEmpty() && e.timestamp() - beats.getLast().timestamp() < 0.15) {
+                            continue;
+                        }
                         beats.add(e);
+                        final double zPos = e.timestamp() * Z_UNITS_PER_SECOND;
+                        final double zOffset = 50.0;
+                        final double tileZ = zPos - zOffset;
+                        if (tileZ - lastTileZ < 150.0) continue;
+                        currentLane = getNextLane(currentLane);
+                        if (isHighIntensity || rng.nextDouble() < 0.15) {
+                            int amplitude = (LANE_WIDTH / 2) + rng.nextInt(LANE_WIDTH / 2);
+                            double speed = 1.0 + rng.nextDouble() * 3.0;
+                            tiles.add(TileFactory.createMovingTile(e, currentLane * LANE_WIDTH, 0, tileZ, amplitude, speed));
+                        } else {
+                            tiles.add(TileFactory.createNormalTile(e, currentLane * LANE_WIDTH, 0, tileZ));
+                        }
+                        lastTileZ = tileZ;
                     }
                 }
             }
-
-            double lastTileZ = -1000.0;
-
-            for (final BeatEvent current : beats) {
-                final double zPos = current.timestamp() * Z_UNITS_PER_SECOND;
-                final double zOffset = 50.0;
-                if (zPos - lastTileZ < 150.0) continue;
-
-                currentLane = getNextLane(currentLane);
-                tiles.add(TileFactory.createNormalTile(current, currentLane * LANE_WIDTH, 0, zPos - zOffset));
-                lastTileZ = zPos;
-            }
-
             return new Level(tiles, audioData, songName);
         }
 

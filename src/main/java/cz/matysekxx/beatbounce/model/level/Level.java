@@ -52,6 +52,13 @@ public record Level(List<AbstractTile> tiles, @JsonIgnore AudioData audioData, S
         }
     }
 
+    public static void clearCache(File audioFile, float speedMultiplier) {
+        final File cacheFile = getCacheFile(audioFile, speedMultiplier);
+        if (cacheFile.exists()) {
+            cacheFile.delete();
+        }
+    }
+
     private static File getCacheFile(File audioFile, float speedMultiplier) {
         final String baseName = audioFile.getName();
         final String nameWithoutExt = baseName.contains(".") ? baseName.substring(0, baseName.lastIndexOf('.')) : baseName;

@@ -87,14 +87,15 @@ public class AudiusClient {
                     if (response.statusCode() != 200) {
                         throw new RuntimeException("Error: HTTP " + response.statusCode());
                     }
-                    String contentType = response.headers().firstValue("Content-Type").orElse("audio/mpeg");
+                    final String contentType = response.headers().firstValue("Content-Type").orElse("audio/mpeg");
                     String extension = ".mp3";
 
                     if (contentType.contains("ogg")) extension = ".ogg";
                     else if (contentType.contains("wav")) extension = ".wav";
                     else if (contentType.contains("flac")) extension = ".flac";
 
-                    final Path destination = downloadDirectory.resolve(fileName + extension);
+                    final String sanitizedFileName = fileName.replaceAll("[\\\\/:*?\"<>|]", "_");
+                    final Path destination = downloadDirectory.resolve(sanitizedFileName + extension);
 
                     try (var inputStream = response.body()) {
                         Files.copy(inputStream, destination, java.nio.file.StandardCopyOption.REPLACE_EXISTING);

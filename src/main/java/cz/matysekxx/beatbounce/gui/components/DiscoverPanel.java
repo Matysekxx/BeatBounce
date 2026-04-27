@@ -29,7 +29,7 @@ public class DiscoverPanel extends JPanel {
         headerPanel.setOpaque(false);
         headerPanel.setBorder(new EmptyBorder(40, 0, 30, 0));
         headerPanel.add(Box.createRigidArea(new Dimension(0, 25)));
-        final SearchField searchField = new SearchField("Search the database...");
+        final SearchField searchField = new SearchField("Search");
         searchField.addActionListener(e -> performSearch(searchField.getText()));
         searchField.setAlignmentX(Component.LEFT_ALIGNMENT);
         headerPanel.add(searchField);

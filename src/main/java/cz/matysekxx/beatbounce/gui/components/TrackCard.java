@@ -134,8 +134,11 @@ public class TrackCard extends JPanel {
     private Path getDownloadedPath(String title) {
         final String[] extensions = {".mp3", ".ogg", ".wav", ".flac"};
         final Path downloadDir = audiusClient.getDownloadDirectory();
+
+        final String sanitizedTitle = title.replaceAll("[\\\\/:*?\"<>|]", "_");
+        
         for (String ext : extensions) {
-            final Path path = downloadDir.resolve(title + ext);
+            final Path path = downloadDir.resolve(sanitizedTitle + ext);
             if (Files.exists(path)) {
                 return path;
             }

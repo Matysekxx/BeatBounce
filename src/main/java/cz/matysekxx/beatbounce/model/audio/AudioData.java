@@ -9,13 +9,14 @@ import java.util.concurrent.Executors;
 public record AudioData(
         short[] samples,
         AudioFormat format,
-        Clip clip
+        Clip clip,
+        File file
 ) {
 
-    private static AudioInputStream getConvertedStream(String fileName) {
+    private static AudioInputStream getConvertedStream(File file) {
         final AudioInputStream is;
         try {
-            is = AudioSystem.getAudioInputStream(new File(fileName));
+            is = AudioSystem.getAudioInputStream(file);
         } catch (UnsupportedAudioFileException e) {
             throw new RuntimeException("Unsupported audio file");
         } catch (IOException e) {
@@ -37,7 +38,8 @@ public record AudioData(
 
     public static AudioData create(String fileName) {
         try {
-            final AudioInputStream audioInputStream = getConvertedStream(fileName);
+            final File file = new File(fileName);
+            final AudioInputStream audioInputStream = getConvertedStream(file);
             final AudioFormat audioFormat = audioInputStream.getFormat();
             final byte[] allBytes = audioInputStream.readAllBytes();
             final short[] samples = bytesToShorts(allBytes, audioFormat.isBigEndian());
@@ -47,7 +49,7 @@ public record AudioData(
             audioInputStream.close();
 
             return new AudioData(
-                    samples, audioFormat, clip
+                    samples, audioFormat, clip, file
             );
         } catch (Exception e) {
             throw new RuntimeException(e);

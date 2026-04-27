@@ -23,7 +23,7 @@ public class GameScreen extends Screen {
     public void setupGamePanel(Path audioPath) {
         final String path = audioPath.toFile().getPath();
         final AudioData audioData = AudioData.create(path);
-        final Level level = LevelGenerator.generateLevel(new AudioAnalyzer(audioData, 1.f).analyze(), path);
+        final Level level = LevelGenerator.generateLevel(audioData, 1.f);
         gamePanel.init(level, audioData.clip(), audioData.samples(), audioData.format().getSampleRate());
     }
 

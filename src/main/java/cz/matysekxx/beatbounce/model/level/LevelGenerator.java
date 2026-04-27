@@ -2,6 +2,8 @@ package cz.matysekxx.beatbounce.model.level;
 
 import cz.matysekxx.beatbounce.event.BeatEvent;
 import cz.matysekxx.beatbounce.event.EventType;
+import cz.matysekxx.beatbounce.model.audio.AudioAnalyzer;
+import cz.matysekxx.beatbounce.model.audio.AudioData;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.TileFactory;
 
@@ -17,12 +19,16 @@ public class LevelGenerator {
         return new GenerationContext(events, songName).generate();
     }
 
+    public static Level generateLevel(AudioData audioData, float speedMultiplier) {
+        final AudioAnalyzer audioAnalyzer = new AudioAnalyzer(audioData, speedMultiplier);
+        return generateLevel(audioAnalyzer.analyze(), audioData.file().getName());
+    }
+
     private static class GenerationContext {
         private final List<AbstractTile> tiles;
         private final Iterable<BeatEvent> events;
         private final String songName;
         private final Random rng;
-
         private int currentLane = 0;
         private int consecutiveInLane = 0;
         private int normalTilesSinceLong = 0;

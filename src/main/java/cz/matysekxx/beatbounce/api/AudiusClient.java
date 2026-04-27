@@ -46,25 +46,40 @@ public class AudiusClient {
     }
     public CompletableFuture<Path> downloadMusic(String trackId, String fileName) {
         final String url = String.format("%s/v1/tracks/%s/stream?app_name=%s", DEFAULT_HOST, trackId, appName);
-        
-        final Path directory = Paths.get("songs");
-        if (!Files.exists(directory)) {
-            try {
+        final Path directory = Paths.get("music");
+        try {
+            if (!Files.exists(directory)) {
                 Files.createDirectories(directory);
-            } catch (IOException e) {
-                return CompletableFuture.failedFuture(e);
             }
+        } catch (IOException e) {
+            return CompletableFuture.failedFuture(e);
         }
-
-        final Path destination = directory.resolve(fileName + ".mp3");
-        
         final HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .GET()
-                .timeout(Duration.ofSeconds(45))
+                .timeout(Duration.ofSeconds(60))
                 .build();
 
-        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofFile(destination))
-                .thenApply(HttpResponse::body);
+        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofInputStream())
+                .thenApply(response -> {
+                    if (response.statusCode() != 200) {
+                        throw new RuntimeException("Error: HTTP " + response.statusCode());
+                    }
+                    String contentType = response.headers().firstValue("Content-Type").orElse("audio/mpeg");
+                    String extension = ".mp3";
+
+                    if (contentType.contains("ogg")) extension = ".ogg";
+                    else if (contentType.contains("wav")) extension = ".wav";
+                    else if (contentType.contains("flac")) extension = ".flac";
+
+                    final Path destination = directory.resolve(fileName + extension);
+
+                    try (var inputStream = response.body()) {
+                        Files.copy(inputStream, destination, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                        return destination;
+                    } catch (IOException e) {
+                        throw new RuntimeException("Error while downloading file", e);
+                    }
+                });
     }
 }

@@ -9,19 +9,44 @@ import cz.matysekxx.beatbounce.model.entity.TileFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class LevelGenerator {
     private static final double Z_UNITS_PER_SECOND = 1000.0;
     private static final int LANE_WIDTH = 120;
+
+    private static final Map<CacheKey, List<AbstractTile>> levelCache = new ConcurrentHashMap<>();
+
+    private record CacheKey(String filePath, float speedMultiplier) {}
 
     @Deprecated public static Level generateLevel(Iterable<BeatEvent> events, String songName) {
         return new GenerationContext(events, songName, null).generate();
     }
 
     public static Level generateLevel(AudioData audioData, float speedMultiplier) {
+        final CacheKey key = new CacheKey(audioData.file().getAbsolutePath(), speedMultiplier);
+
+        if (levelCache.containsKey(key)) {
+            return new Level(levelCache.get(key), audioData, audioData.file().getName());
+        }
+        final Optional<LevelCacheData> cachedLevelOpt = Level.fromFile(audioData.file(), speedMultiplier);
+        if (cachedLevelOpt.isPresent()) {
+            final LevelCacheData diskCachedLevel = cachedLevelOpt.get();
+            final Level loadedLevel = new Level(diskCachedLevel.tiles(), audioData, diskCachedLevel.songName());
+            levelCache.put(key, loadedLevel.tiles());
+            return loadedLevel;
+        }
+
         final AudioAnalyzer audioAnalyzer = new AudioAnalyzer(audioData, speedMultiplier);
-        return new GenerationContext(audioAnalyzer.analyze(), audioData.file().getName(), audioData).generate();
+        final Level generatedLevel = new GenerationContext(audioAnalyzer.analyze(), audioData.file().getName(), audioData).generate();
+        
+        levelCache.put(key, generatedLevel.tiles());
+        Level.toFile(generatedLevel, speedMultiplier);
+
+        return generatedLevel;
     }
 
     private static class GenerationContext {

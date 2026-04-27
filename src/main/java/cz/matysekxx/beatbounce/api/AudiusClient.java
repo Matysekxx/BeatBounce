@@ -17,6 +17,7 @@ public class AudiusClient {
     private static final String DEFAULT_HOST = "https://discoveryprovider.audius.co";
     private final HttpClient httpClient;
     private final String appName;
+    private final Path downloadDirectory;
 
     public AudiusClient() {
         this.appName = "BeatBounce";
@@ -25,11 +26,37 @@ public class AudiusClient {
                 .followRedirects(HttpClient.Redirect.NORMAL)
                 .connectTimeout(Duration.ofSeconds(20))
                 .build();
+
+        final String userHome = System.getProperty("user.home");
+        this.downloadDirectory = Paths.get(userHome, ".beatbounce", "music");
+        
+        try {
+            if (!Files.exists(this.downloadDirectory)) {
+                Files.createDirectories(this.downloadDirectory);
+            }
+        } catch (IOException e) {
+            System.err.println("Could not create download directory: " + e.getMessage());
+        }
     }
 
     public AudiusClient(HttpClient httpClient) {
         this.httpClient = httpClient;
         this.appName = "BeatBounce";
+
+        final String userHome = System.getProperty("user.home");
+        this.downloadDirectory = Paths.get(userHome, ".beatbounce", "music");
+        
+        try {
+            if (!Files.exists(this.downloadDirectory)) {
+                Files.createDirectories(this.downloadDirectory);
+            }
+        } catch (IOException e) {
+            System.err.println("Could not create download directory: " + e.getMessage());
+        }
+    }
+    
+    public Path getDownloadDirectory() {
+        return downloadDirectory;
     }
 
     public CompletableFuture<String> searchTracks(String query) {
@@ -48,14 +75,7 @@ public class AudiusClient {
 
     public CompletableFuture<Path> downloadMusic(String trackId, String fileName) {
         final String url = String.format("%s/v1/tracks/%s/stream?app_name=%s", DEFAULT_HOST, trackId, appName);
-        final Path directory = Paths.get("music");
-        try {
-            if (!Files.exists(directory)) {
-                Files.createDirectories(directory);
-            }
-        } catch (IOException e) {
-            return CompletableFuture.failedFuture(e);
-        }
+        
         final HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .GET()
@@ -74,7 +94,7 @@ public class AudiusClient {
                     else if (contentType.contains("wav")) extension = ".wav";
                     else if (contentType.contains("flac")) extension = ".flac";
 
-                    final Path destination = directory.resolve(fileName + extension);
+                    final Path destination = downloadDirectory.resolve(fileName + extension);
 
                     try (var inputStream = response.body()) {
                         Files.copy(inputStream, destination, java.nio.file.StandardCopyOption.REPLACE_EXISTING);

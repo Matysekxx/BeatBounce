@@ -111,13 +111,10 @@ public class TrackCard extends JPanel {
             button.setEnabled(false);
             button.setText("WAIT...");
             new SwingWorker<Path, Void>() {
-                @Override
-                protected Path doInBackground() throws Exception {
+                @Override protected Path doInBackground() throws Exception {
                     return audiusClient.downloadMusic(id, title).get();
                 }
-
-                @Override
-                protected void done() {
+                @Override protected void done() {
                     try {
                         Path downloadedPath = get();
                         button.setText("PLAY");

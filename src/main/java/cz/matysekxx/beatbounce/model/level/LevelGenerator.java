@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class LevelGenerator {
-    private static final double Z_UNITS_PER_SECOND = 1000.0;
+    private static final double Z_UNITS_PER_SECOND = 800.0;
     private static final int LANE_WIDTH = 120;
 
     private static final Map<CacheKey, List<AbstractTile>> levelCache = new ConcurrentHashMap<>();
@@ -55,6 +55,7 @@ public class LevelGenerator {
         private final AudioData audioData;
         private int currentLane = 0;
         private int consecutiveInLane = 0;
+        private int tilesGenerated = 0;
 
         public GenerationContext(Iterable<BeatEvent> events, String songName, AudioData audioData) {
             this.events = events;
@@ -66,30 +67,41 @@ public class LevelGenerator {
 
         public Level generate() {
             final List<BeatEvent> beats = new ArrayList<>();
-            double lastTileZ = -1000.0;
+            double lastTileZ = -800.0;
             boolean isHighIntensity = false;
             for (BeatEvent e : events) {
                 switch (e.type()) {
                     case INTENSITY_HIGH_START -> isHighIntensity = true;
                     case INTENSITY_HIGH_END, INTENSITY_LOW_START -> isHighIntensity = false;
                     case BEAT -> {
-                        if (!beats.isEmpty() && e.timestamp() - beats.getLast().timestamp() < 0.15) {
+                        if (!beats.isEmpty() && e.timestamp() - beats.getLast().timestamp() < 0.20) {
                             continue;
                         }
                         beats.add(e);
                         final double zPos = e.timestamp() * Z_UNITS_PER_SECOND;
                         final double zOffset = 50.0;
                         final double tileZ = zPos - zOffset;
-                        if (tileZ - lastTileZ < 150.0) continue;
+                        if (tileZ - lastTileZ < 180.0) continue;
                         currentLane = getNextLane(currentLane);
-                        if (isHighIntensity || rng.nextDouble() < 0.15) {
+
+                        boolean shouldMove = false;
+                        if (tilesGenerated > 5) {
+                            if (isHighIntensity) {
+                                shouldMove = rng.nextDouble() < 0.20;
+                            } else {
+                                shouldMove = rng.nextDouble() < 0.05;
+                            }
+                        }
+
+                        if (shouldMove) {
                             int amplitude = (LANE_WIDTH / 2) + rng.nextInt(LANE_WIDTH / 2);
-                            double speed = 1.0 + rng.nextDouble() * 3.0;
+                            double speed = 1.0 + rng.nextDouble() * 1.5;
                             tiles.add(TileFactory.createMovingTile(e, currentLane * LANE_WIDTH, 0, tileZ, amplitude, speed));
                         } else {
                             tiles.add(TileFactory.createNormalTile(e, currentLane * LANE_WIDTH, 0, tileZ));
                         }
                         lastTileZ = tileZ;
+                        tilesGenerated++;
                     }
                 }
             }
@@ -99,17 +111,21 @@ public class LevelGenerator {
         private int getNextLane(int lane) {
             int move;
             if (consecutiveInLane >= 2) {
-                move = (lane == 0) ? (rng.nextBoolean() ? 1 : -1) : (lane > 0 ? -1 : 1);
+                if (lane == 0) {
+                    move = rng.nextBoolean() ? 1 : -1;
+                } else {
+                    move = -lane;
+                }
             } else {
                 final double r = rng.nextDouble();
-                if (r < 0.2) move = 0;
-                else if (r < 0.6) move = 1;
+                if (r < 0.1) move = 0;
+                else if (r < 0.55) move = 1;
                 else move = -1;
             }
 
             int newLane = lane + move;
-            if (newLane > 1) newLane = 0;
-            if (newLane < -1) newLane = 0;
+            if (newLane > 1) newLane = 1;
+            if (newLane < -1) newLane = -1;
 
             if (newLane == lane) consecutiveInLane++;
             else consecutiveInLane = 1;

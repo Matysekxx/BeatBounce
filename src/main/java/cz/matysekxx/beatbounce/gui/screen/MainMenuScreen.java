@@ -2,8 +2,10 @@ package cz.matysekxx.beatbounce.gui.screen;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.matysekxx.beatbounce.api.AudiusClient;
-import cz.matysekxx.beatbounce.gui.RenderUtils;
-import cz.matysekxx.beatbounce.gui.components.*;
+import cz.matysekxx.beatbounce.gui.components.DiscoverPanel;
+import cz.matysekxx.beatbounce.gui.components.MainMenuPanel;
+import cz.matysekxx.beatbounce.gui.components.SidebarButton;
+import cz.matysekxx.beatbounce.gui.components.SidebarPanel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -15,9 +17,9 @@ public class MainMenuScreen extends Screen {
     private final MainMenuPanel backgroundPanel;
     private final AudiusClient audiusClient;
     private final ObjectMapper objectMapper;
+    private final ScreenManager screenManager;
     private CardLayout cardLayout;
     private JPanel cardPanel;
-    private final ScreenManager screenManager;
 
     public MainMenuScreen(ScreenManager screenManager) {
         super();
@@ -30,7 +32,7 @@ public class MainMenuScreen extends Screen {
         backgroundPanel = new MainMenuPanel();
         backgroundPanel.setLayout(new BorderLayout());
         this.setContentPane(backgroundPanel);
-        final JPanel sidebar = createSidebarPanel();
+        final JPanel sidebar = new SidebarPanel();
 
         final JLabel logo = new JLabel("BeatBounce");
         logo.setFont(new Font("SansSerif", Font.BOLD, 28));
@@ -79,28 +81,10 @@ public class MainMenuScreen extends Screen {
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
         cardPanel.setOpaque(false);
-        
+
         cardPanel.add(new DiscoverPanel(audiusClient, objectMapper, screenManager), "DISCOVER");
 
         backgroundPanel.add(cardPanel, BorderLayout.CENTER);
-    }
-
-    private static JPanel createSidebarPanel() {
-        final JPanel sidebar = new JPanel(new BorderLayout()) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                RenderUtils.initGraphic2D(g2);
-                g2.setColor(new Color(10, 10, 14, 210));
-                g2.fillRect(0, 0, getWidth(), getHeight());
-                g2.setColor(new Color(255, 255, 255, 20));
-                g2.drawLine(getWidth() - 1, 0, getWidth() - 1, getHeight());
-                g2.dispose();
-            }
-        };
-        sidebar.setPreferredSize(new Dimension(280, 0));
-        sidebar.setOpaque(false);
-        return sidebar;
     }
 
     @Override

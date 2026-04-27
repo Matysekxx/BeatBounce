@@ -31,10 +31,11 @@ public class AudiusClient {
         this.httpClient = httpClient;
         this.appName = "BeatBounce";
     }
+
     public CompletableFuture<String> searchTracks(String query) {
         final String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
         final String url = String.format("%s/v1/tracks/search?query=%s&app_name=%s", DEFAULT_HOST, encodedQuery, appName);
-        
+
         final HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .GET()
@@ -44,6 +45,7 @@ public class AudiusClient {
         return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::body);
     }
+
     public CompletableFuture<Path> downloadMusic(String trackId, String fileName) {
         final String url = String.format("%s/v1/tracks/%s/stream?app_name=%s", DEFAULT_HOST, trackId, appName);
         final Path directory = Paths.get("music");

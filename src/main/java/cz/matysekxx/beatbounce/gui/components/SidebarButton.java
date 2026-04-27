@@ -19,7 +19,7 @@ public class SidebarButton extends JButton {
         super(text);
         this.active = defaultActive;
         setupStyle();
-        
+
         addActionListener(e -> {
             if (targetCard != null) {
                 Container parent = getParent();
@@ -61,7 +61,7 @@ public class SidebarButton extends JButton {
             g2.setColor(new Color(255, 255, 255, active ? 25 : 10));
             g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
             if (active) {
-                g2.setColor(RenderUtils.NEON_CYAN);
+                g2.setColor(RenderUtils.cyan);
                 g2.fillRoundRect(0, 10, 4, getHeight() - 20, 4, 4);
             }
             g2.dispose();

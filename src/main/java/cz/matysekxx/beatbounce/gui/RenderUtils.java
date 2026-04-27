@@ -10,11 +10,10 @@ public final class RenderUtils {
     public final static Color purple = new Color(191, 0, 255);
     public final static Color yellow = new Color(255, 215, 0);
     private static BufferedImage noiseTexture;
+    private static int[][] starCache = null;
 
     private RenderUtils() {
     }
-
-    private static int[][] starCache = null;
 
     public static void drawAuroraBackground(Graphics2D g2d, int w, int h, float time) {
         g2d.setColor(new Color(8, 8, 12));

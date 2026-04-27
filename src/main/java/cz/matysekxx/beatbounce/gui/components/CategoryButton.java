@@ -16,6 +16,7 @@ public class CategoryButton extends JButton {
         setFocusPainted(false);
         setPreferredSize(new Dimension(100, 30));
     }
+
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();

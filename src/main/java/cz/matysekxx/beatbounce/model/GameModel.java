@@ -16,14 +16,12 @@ public class GameModel {
     private final Sphere sphere;
     private final Camera3D cam;
     private final Clip clip;
-
+    private final EnumMap<GameState, Consumer<Double>> stateHandlers = new EnumMap<>(GameState.class);
     private GameState gameState = GameState.PLAYING;
     private int currentTileIndex = -1;
     private double gameZProgress;
     private double fallStartZ = 0;
     private int score = 0;
-
-    private final EnumMap<GameState, Consumer<Double>> stateHandlers = new EnumMap<>(GameState.class);
 
     public GameModel(Level level, Sphere sphere, Camera3D cam, Clip clip) {
         this.level = level;
@@ -58,14 +56,19 @@ public class GameModel {
         }
     }
 
-    public Integer getScore() { return score; }
+    public Integer getScore() {
+        return score;
+    }
 
     public void update(double currentTime) {
         this.gameZProgress = currentTime * 1000.0;
         this.stateHandlers.get(gameState).accept(currentTime);
     }
 
-    public void handleGameOver(double currentTime) { cam.setZ(gameZProgress - 500); }
+    public void handleGameOver(double currentTime) {
+        cam.setZ(gameZProgress - 500);
+    }
+
     public void handlePlaying(double currentTime) {
         sphere.setZ(gameZProgress);
         cam.setZ(gameZProgress - 500);

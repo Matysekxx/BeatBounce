@@ -27,13 +27,13 @@ public class SearchField extends JTextField {
         RenderUtils.initGraphic2D(g2);
         g2.setColor(new Color(255, 255, 255, 15));
         g2.fillRoundRect(0, 0, getWidth(), getHeight(), getHeight(), getHeight());
-        
+
         g2.setColor(isFocusOwner() ? new Color(255, 255, 255, 50) : new Color(255, 255, 255, 20));
         g2.setStroke(new BasicStroke(1.0f));
         g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, getHeight(), getHeight());
-        
+
         super.paintComponent(g);
-        
+
         if (getText().isEmpty() && !isFocusOwner()) {
             g2.setColor(new Color(255, 255, 255, 100));
             FontMetrics fm = g.getFontMetrics();

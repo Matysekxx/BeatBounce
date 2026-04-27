@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.matysekxx.beatbounce.api.AudiusClient;
 import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
-import cz.matysekxx.beatbounce.model.Track;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -63,13 +62,6 @@ public class DiscoverPanel extends JPanel {
             categoriesPanel.add(catBtn);
         }
         return categoriesPanel;
-    }
-
-    private JLabel createHeroTitle(String text) {
-        final JLabel heroTitle = new JLabel(text);
-        heroTitle.setFont(new Font("SansSerif", Font.BOLD, 54));
-        heroTitle.setForeground(Color.WHITE);
-        return heroTitle;
     }
 
     private JScrollPane createTransparentScrollPane(JPanel listPanel) {
@@ -140,9 +132,7 @@ public class DiscoverPanel extends JPanel {
                     final String title = trackNode.path("title").asText();
                     final String artist = trackNode.path("user").path("name").asText("Unknown Artist");
 
-                    final Track track = Track.fromApi(id, title, artist);
-                    
-                    songListPanel.add(new TrackCard(track.id(), track.title(), track.artist(), audiusClient, screenManager, index++));
+                    songListPanel.add(new TrackCard(id, title, artist, audiusClient, screenManager, index++));
                     songListPanel.add(Box.createRigidArea(new Dimension(0, 10)));
                 }
             }

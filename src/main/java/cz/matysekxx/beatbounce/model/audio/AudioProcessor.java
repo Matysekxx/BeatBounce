@@ -45,12 +45,11 @@ public class AudioProcessor {
         this.format = format;
         this.onBeatDetected = onBeatDetected;
         this.sampleRate = format.getSampleRate();
-
         this.percussionDetector = new PercussionOnsetDetector(sampleRate, BUFFER_SIZE,
                 (time, salience) -> handleDetectedBeat(time, salience, speedMultiplier), 85.0, 5.0);
-
         this.complexDetector = new ComplexOnsetDetector(BUFFER_SIZE, 0.5);
-        this.complexDetector.setHandler((time, salience) -> handleDetectedBeat(time, salience, speedMultiplier));
+        this.complexDetector.setHandler(
+                (time, salience) -> handleDetectedBeat(time, salience, speedMultiplier));
     }
 
     private static AudioEvent createFromFormat(AudioFormat format) {

@@ -33,7 +33,8 @@ public class ScreenManager {
         }
     }
 
-    @SuppressWarnings("unchecked") public <T extends Screen> T getScreen(Class<T> screenClass) {
+    @SuppressWarnings("unchecked")
+    public <T extends Screen> T getScreen(Class<T> screenClass) {
         return (T) windows.get(screenClass).get();
     }
 

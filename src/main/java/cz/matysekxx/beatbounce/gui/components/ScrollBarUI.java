@@ -8,13 +8,27 @@ import java.awt.*;
 
 public class ScrollBarUI extends BasicScrollBarUI {
     @Override
-    protected void configureScrollBarColors() { 
-        this.thumbColor = new Color(255, 255, 255, 50); 
-        this.trackColor = new Color(0, 0, 0, 0); 
+    protected void configureScrollBarColors() {
+        this.thumbColor = new Color(255, 255, 255, 50);
+        this.trackColor = new Color(0, 0, 0, 0);
     }
-    @Override protected JButton createDecreaseButton(int orientation) { return createZeroButton(); }
-    @Override protected JButton createIncreaseButton(int orientation) { return createZeroButton(); }
-    private JButton createZeroButton() { JButton b = new JButton(); b.setPreferredSize(new Dimension(0, 0)); return b; }
+
+    @Override
+    protected JButton createDecreaseButton(int orientation) {
+        return createZeroButton();
+    }
+
+    @Override
+    protected JButton createIncreaseButton(int orientation) {
+        return createZeroButton();
+    }
+
+    private JButton createZeroButton() {
+        JButton b = new JButton();
+        b.setPreferredSize(new Dimension(0, 0));
+        return b;
+    }
+
     @Override
     protected void paintThumb(Graphics g, JComponent c, Rectangle bounds) {
         if (bounds.isEmpty() || !scrollbar.isEnabled()) return;
@@ -24,5 +38,8 @@ public class ScrollBarUI extends BasicScrollBarUI {
         g2.fillRoundRect(bounds.x, bounds.y, bounds.width, bounds.height, bounds.width, bounds.width);
         g2.dispose();
     }
-    @Override protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {}
+
+    @Override
+    protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
+    }
 }

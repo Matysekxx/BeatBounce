@@ -20,9 +20,16 @@ public class PrimaryButton extends JButton {
 
         addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseEntered(MouseEvent e) { if (isEnabled()) setForeground(Color.WHITE); repaint(); }
+            public void mouseEntered(MouseEvent e) {
+                if (isEnabled()) setForeground(Color.WHITE);
+                repaint();
+            }
+
             @Override
-            public void mouseExited(MouseEvent e) { if (isEnabled()) setForeground(Color.BLACK); repaint(); }
+            public void mouseExited(MouseEvent e) {
+                if (isEnabled()) setForeground(Color.BLACK);
+                repaint();
+            }
         });
     }
 
@@ -30,10 +37,10 @@ public class PrimaryButton extends JButton {
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();
         RenderUtils.initGraphic2D(g2);
-        
-        g2.setColor(!isEnabled() ? new Color(50, 50, 50) : RenderUtils.NEON_CYAN.darker());
+
+        g2.setColor(!isEnabled() ? new Color(50, 50, 50) : RenderUtils.cyan.darker());
         g2.fillRoundRect(0, 0, getWidth(), getHeight(), getHeight(), getHeight());
-        
+
         setForeground(!isEnabled() ? Color.GRAY : getForeground());
         g2.setColor(getForeground());
 
@@ -41,7 +48,7 @@ public class PrimaryButton extends JButton {
         final int x = (getWidth() - fm.stringWidth(getText())) / 2;
         final int y = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
         g2.drawString(getText(), x, y);
-        
+
         g2.dispose();
     }
 }

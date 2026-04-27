@@ -17,13 +17,13 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class GamePanel extends JPanel implements Runnable {
-    private Level level;
-    private Clip clip;
     private final Camera3D cam;
-    private short[] audioSamples;
-    private float sampleRate;
     private final Thread gameThread;
     private final Sphere sphere;
+    private Level level;
+    private Clip clip;
+    private short[] audioSamples;
+    private float sampleRate;
     private GameModel gameModel;
     private boolean running;
     private int currentFps = 0;
@@ -157,7 +157,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     private void drawGameObjects(Graphics2D g2d, int width, int height) {
         g2d.setColor(Color.GREEN);
-        final var tiles = level.getTiles();
+        final var tiles = level.tiles();
         for (int i = tiles.size() - 1; i >= 0; i--) {
             final AbstractTile tile = tiles.get(i);
             final double distance = cam.getDistanceTo(tile.getZ());

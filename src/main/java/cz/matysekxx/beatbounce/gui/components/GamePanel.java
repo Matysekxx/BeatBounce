@@ -17,24 +17,19 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class GamePanel extends JPanel implements Runnable {
-    private final Level level;
-    private final Clip clip;
+    private Level level;
+    private Clip clip;
     private final Camera3D cam;
-    private final short[] audioSamples;
-    private final float sampleRate;
+    private short[] audioSamples;
+    private float sampleRate;
     private final Thread gameThread;
     private final Sphere sphere;
-    private final GameModel gameModel;
+    private GameModel gameModel;
     private boolean running;
     private int currentFps = 0;
     private int frameCount = 0;
-    private long lastFpsTime = 0;
 
-    public GamePanel(Level level, Clip clip, short[] audioSamples, float sampleRate) {
-        this.level = level;
-        this.clip = clip;
-        this.audioSamples = audioSamples;
-        this.sampleRate = sampleRate;
+    public GamePanel() {
         this.running = false;
         this.setLayout(new BorderLayout());
         this.setFocusable(true);
@@ -48,14 +43,20 @@ public class GamePanel extends JPanel implements Runnable {
         gameThread = new Thread(this);
 
         final BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-
         final Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
                 cursorImg, new Point(0, 0), "blank cursor");
         this.setCursor(blankCursor);
-        this.gameModel = new GameModel(level, sphere, cam, clip);
         final GameController gameController = new GameController(cam, sphere);
         this.addKeyListener(gameController);
         this.addMouseMotionListener(gameController);
+    }
+
+    public void init(Level level, Clip clip, short[] audioSamples, float sampleRate) {
+        this.level = level;
+        this.clip = clip;
+        this.audioSamples = audioSamples;
+        this.sampleRate = sampleRate;
+        this.gameModel = new GameModel(level, sphere, cam, clip);
     }
 
     public void startGame() {
@@ -81,7 +82,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
-        lastFpsTime = System.currentTimeMillis();
+        long lastFpsTime = System.currentTimeMillis();
         while (running) {
             final double currentTime = clip.getMicrosecondPosition() / 1_000_000.0;
             gameModel.update(currentTime);

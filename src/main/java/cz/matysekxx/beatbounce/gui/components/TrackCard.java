@@ -10,6 +10,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.nio.file.Path;
 
 public class TrackCard extends JPanel {
     private int hoverAlpha = 120;
@@ -48,14 +49,8 @@ public class TrackCard extends JPanel {
         enterTimer.setInitialDelay(index * 40);
         enterTimer.start();
 
-        final JPanel leftPanel = new JPanel(new GridBagLayout());
-        leftPanel.setOpaque(false);
-        leftPanel.setPreferredSize(new Dimension(80, 70));
-        leftPanel.setBorder(new EmptyBorder(0, 5, 0, 20));
-        leftPanel.add(createAlbumArt(id));
 
-
-        final JPanel textPanel = getJPanel(id, title, artist);
+        final JPanel textPanel = getJPanel(title, artist);
 
         final JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 10));
         rightPanel.setOpaque(false);
@@ -64,12 +59,10 @@ public class TrackCard extends JPanel {
         playBtn.addActionListener(e -> {
             playBtn.setEnabled(false);
             playBtn.setText("WAIT...");
-            new SwingWorker<Void, Void>() {
+            new SwingWorker<Path, Void>() {
                 @Override
-                protected Void doInBackground() throws Exception {
-                    String safeName = title.replaceAll("[^a-zA-Z0-9.-]", "_");
-                    audiusClient.downloadMusic(id, safeName).get();
-                    return null;
+                protected Path doInBackground() throws Exception {
+                    return audiusClient.downloadMusic(id, title).get();
                 }
 
                 @Override
@@ -79,21 +72,27 @@ public class TrackCard extends JPanel {
                     for (var al : playBtn.getActionListeners()) playBtn.removeActionListener(al);
                     playBtn.addActionListener(playEvent -> {
                         screenManager.initScreen(GameScreen.class);
-                        screenManager.showScreen(GameScreen.class);
+                        final GameScreen gameScreen = screenManager.getScreen(GameScreen.class);
+                        try {
+                            gameScreen.setupGamePanel(get());
+                            screenManager.showScreen(GameScreen.class);
+                            gameScreen.start();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     });
                 }
             }.execute();
         });
         rightPanel.add(playBtn);
-        add(leftPanel, BorderLayout.WEST);
         add(textPanel, BorderLayout.CENTER);
         add(rightPanel, BorderLayout.EAST);
     }
 
-    private static JPanel getJPanel(String id, String title, String artist) {
+    private static JPanel getJPanel(String title, String artist) {
         final JPanel textPanel = new JPanel(new GridLayout(3, 1, 0, 0));
         textPanel.setOpaque(false);
-        textPanel.setBorder(new EmptyBorder(8, 0, 8, 0));
+        textPanel.setBorder(new EmptyBorder(4, 0, 4, 0));
 
         final JLabel titleLbl = new JLabel(title.length() > 70 ? title.substring(0, 67) + "..." : title);
         titleLbl.setFont(new Font("SansSerif", Font.BOLD, 18));
@@ -103,38 +102,9 @@ public class TrackCard extends JPanel {
         artistLbl.setFont(new Font("SansSerif", Font.PLAIN, 14));
         artistLbl.setForeground(new Color(180, 180, 180));
 
-        final int diffLevel = Math.abs(id.hashCode() % 3);
-        String diffText = diffLevel == 0 ? "EASY" : (diffLevel == 1 ? "NORMAL" : "HARD");
-        String diffColorHex = diffLevel == 0 ? "#4CAF50" : (diffLevel == 1 ? "#FFC107" : "#FF5252");
-
-        final JLabel tagsLbl = new JLabel("<html><font color='" + diffColorHex + "'><b>DIFFICULTY: " + diffText + "</b></font> &nbsp;&nbsp;<font color='#888888'>ELECTRONIC</font></html>");
-        tagsLbl.setFont(new Font("SansSerif", Font.PLAIN, 12));
-
         textPanel.add(titleLbl);
         textPanel.add(artistLbl);
-        textPanel.add(tagsLbl);
         return textPanel;
-    }
-
-    private JPanel createAlbumArt(String trackId) {
-        final int hash = trackId.hashCode();
-        final Color c1 = new Color((hash & 0xFF0000) >> 16, (hash & 0x00FF00) >> 8, (hash & 0x0000FF));
-        final Color c2 = new Color((hash & 0x0000FF) << 8 | 0xFF);
-        final JPanel albumArt = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                RenderUtils.initGraphic2D(g2);
-                g2.setPaint(new GradientPaint(0, 0, c1, getWidth(), getHeight(), c2));
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
-                g2.setColor(new Color(0, 0, 0, 40));
-                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 8, 8);
-                g2.dispose();
-            }
-        };
-        albumArt.setOpaque(false);
-        albumArt.setPreferredSize(new Dimension(55, 55));
-        return albumArt;
     }
 
     @Override

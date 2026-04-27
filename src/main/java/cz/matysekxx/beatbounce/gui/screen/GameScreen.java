@@ -6,9 +6,9 @@ import cz.matysekxx.beatbounce.model.audio.AudioAnalyzer;
 import cz.matysekxx.beatbounce.model.audio.AudioData;
 import cz.matysekxx.beatbounce.model.level.Level;
 import cz.matysekxx.beatbounce.model.level.LevelGenerator;
-import io.github.cdimascio.dotenv.Dotenv;
 
 import java.awt.*;
+import java.nio.file.Path;
 
 public class GameScreen extends Screen {
     private final GamePanel gamePanel;
@@ -16,12 +16,15 @@ public class GameScreen extends Screen {
     public GameScreen() {
         super();
         this.setLayout(new BorderLayout());
-        final Dotenv dotenv = Dotenv.load();
-        final AudioData audioData = AudioData.create(dotenv.get("AUDIO_FILE"));
-        final Level level = LevelGenerator.generateLevel(
-                new AudioAnalyzer(audioData, 1.f).analyze(), "ahoj svete");
-        gamePanel = new GamePanel(level, audioData.clip(), audioData.samples(), audioData.format().getSampleRate());
+        gamePanel = new GamePanel();
         this.add(gamePanel, BorderLayout.CENTER);
+    }
+
+    public void setupGamePanel(Path audioPath) {
+        final String path = audioPath.toFile().getPath();
+        final AudioData audioData = AudioData.create(path);
+        final Level level = LevelGenerator.generateLevel(new AudioAnalyzer(audioData, 1.f).analyze(), path);
+        gamePanel.init(level, audioData.clip(), audioData.samples(), audioData.format().getSampleRate());
     }
 
     @Override

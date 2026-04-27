@@ -46,9 +46,6 @@ public class GamePanel extends JPanel implements Runnable {
         final Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
                 cursorImg, new Point(0, 0), "blank cursor");
         this.setCursor(blankCursor);
-        final GameController gameController = new GameController(cam, sphere);
-        this.addKeyListener(gameController);
-        this.addMouseMotionListener(gameController);
     }
 
     public void init(Level level) {
@@ -57,6 +54,10 @@ public class GamePanel extends JPanel implements Runnable {
         this.audioSamples = level.audioData().samples();
         this.sampleRate = level.audioData().format().getSampleRate();
         this.gameModel = new GameModel(level, sphere, cam, clip);
+        
+        final GameController gameController = new GameController(cam, sphere);
+        this.addKeyListener(gameController);
+        this.addMouseMotionListener(gameController);
     }
 
     public void startGame() {
@@ -156,7 +157,6 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void drawGameObjects(Graphics2D g2d, int width, int height) {
-        g2d.setColor(Color.GREEN);
         final var tiles = level.tiles();
         for (int i = tiles.size() - 1; i >= 0; i--) {
             final AbstractTile tile = tiles.get(i);
@@ -166,7 +166,6 @@ public class GamePanel extends JPanel implements Runnable {
             tile.paint3D(g2d, cam, WindowData.of(width, height));
         }
 
-        g2d.setColor(Color.MAGENTA);
         sphere.paint3D(g2d, cam, WindowData.of(width, height));
 
     }

@@ -28,6 +28,7 @@ public class GamePanel extends JPanel implements Runnable {
     private boolean running;
     private int currentFps = 0;
     private int frameCount = 0;
+    private long lastFrameTime;
 
     public GamePanel() {
         this.running = false;
@@ -64,6 +65,7 @@ public class GamePanel extends JPanel implements Runnable {
         if (!this.running) {
             this.running = true;
             gameModel.init();
+            this.lastFrameTime = System.nanoTime();
             this.gameThread.start();
         }
     }
@@ -85,8 +87,12 @@ public class GamePanel extends JPanel implements Runnable {
     public void run() {
         long lastFpsTime = System.currentTimeMillis();
         while (running) {
+            long now = System.nanoTime();
+            double deltaTime = (now - lastFrameTime) / 1_000_000_000.0;
+            lastFrameTime = now;
+
             final double currentTime = clip.getMicrosecondPosition() / 1_000_000.0;
-            gameModel.update(currentTime);
+            gameModel.update(currentTime, deltaTime);
             repaint();
 
             frameCount++;

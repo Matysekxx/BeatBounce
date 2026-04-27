@@ -1,5 +1,7 @@
 package cz.matysekxx.beatbounce.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import cz.matysekxx.beatbounce.event.BeatEvent;
 
 import java.awt.*;
@@ -9,11 +11,18 @@ public class MovingTile extends AbstractTile {
     private int amplitude;
     private double speed;
     private double time;
+    
     protected MovingTile() {
         super();
     }
 
-    public MovingTile(BeatEvent beatEvent, Point point, double z, int amplitude, double speed) {
+    @JsonCreator
+    public MovingTile(
+            @JsonProperty("beatEvent") BeatEvent beatEvent,
+            @JsonProperty("point") Point point,
+            @JsonProperty("z") double z,
+            @JsonProperty("amplitude") int amplitude,
+            @JsonProperty("speed") double speed) {
         super(beatEvent, point, z, 50.0);
         this.startX = point.x;
         this.amplitude = amplitude;
@@ -25,6 +34,18 @@ public class MovingTile extends AbstractTile {
         this.time += deltaTime;
         int newX = startX + (int) (Math.sin(time * speed) * amplitude);
         this.setLocation(newX, this.getY());
+    }
+    
+    public int getStartX() {
+        return startX;
+    }
+
+    public int getAmplitude() {
+        return amplitude;
+    }
+
+    public double getSpeed() {
+        return speed;
     }
 
     @Override

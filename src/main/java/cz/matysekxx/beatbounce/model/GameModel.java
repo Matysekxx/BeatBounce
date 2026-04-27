@@ -2,7 +2,7 @@ package cz.matysekxx.beatbounce.model;
 
 import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
-import cz.matysekxx.beatbounce.model.entity.MovingTile;
+import cz.matysekxx.beatbounce.model.entity.NormalTile;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.level.Level;
 
@@ -23,7 +23,8 @@ public class GameModel {
     private double gameZProgress;
     private double fallStartZ = 0;
     private int score = 0;
-    private double lastUpdateTime = 0;
+    private boolean isHoldingSpace = false;
+    private double lastScoreTime = 0;
 
     public GameModel(Level level, Sphere sphere, Camera3D cam, Clip clip) {
         this.level = level;
@@ -40,7 +41,7 @@ public class GameModel {
         this.currentTileIndex = -1;
         this.gameZProgress = 0;
         this.fallStartZ = 0;
-        this.lastUpdateTime = 0;
+        this.score = 0;
         this.sphere.reset();
 
         cam.setX(0);
@@ -62,19 +63,12 @@ public class GameModel {
     public Integer getScore() {
         return score;
     }
+    
+    public void setHoldingSpace(boolean holding) {
+        this.isHoldingSpace = holding;
+    }
 
     public void update(double currentTime) {
-        double deltaTime = 0;
-        if (lastUpdateTime != 0) {
-            deltaTime = currentTime - lastUpdateTime;
-        }
-        lastUpdateTime = currentTime;
-        
-        for (AbstractTile tile : level.tiles()) {
-            if (tile instanceof MovingTile movingTile)
-                movingTile.update(deltaTime);
-        }
-        
         this.gameZProgress = currentTime * 1000.0;
         this.stateHandlers.get(gameState).accept(currentTime);
     }
@@ -88,12 +82,14 @@ public class GameModel {
         cam.setZ(gameZProgress - 500);
         if (currentTileIndex + 1 < level.tiles().size()) {
             final AbstractTile nextTile = level.tiles().get(currentTileIndex + 1);
+            
             if (gameZProgress >= nextTile.getZ()) {
                 final double tileMinX = nextTile.getX() - (LANE_WIDTH / 2.0) - sphere.getRadius();
                 final double tileMaxX = nextTile.getX() + (LANE_WIDTH / 2.0) + sphere.getRadius();
+
                 if (sphere.getX() >= tileMinX && sphere.getX() <= tileMaxX) {
                     currentTileIndex++;
-                    score++;
+                    score += 10;
                     startNextJump(currentTime);
                 } else {
                     gameState = GameState.FALLING;
@@ -103,6 +99,7 @@ public class GameModel {
                 }
             }
         }
+        
         sphere.update(currentTime);
     }
 
@@ -120,13 +117,20 @@ public class GameModel {
         final var tiles = level.tiles();
         final int nextIndex = currentTileIndex + 1;
         if (nextIndex >= tiles.size()) return;
-        final AbstractTile currentTile = nextIndex > 0 ? tiles.get(nextIndex - 1) : null;
+        
+        AbstractTile currentTile = null;
+        if (currentTileIndex >= 0) {
+            currentTile = tiles.get(currentTileIndex);
+        }
+        
         final AbstractTile nextTile = tiles.get(nextIndex);
-        final double startZ = (currentTile != null) ? currentTile.getZ() : 0;
+        
+        double startZ = currentTile != null ? currentTile.getZ() : 0;
         final double endZ = nextTile.getZ();
         final double distanceZ = endZ - startZ;
         double duration = distanceZ / 1000.0;
         if (duration <= 0) duration = 0.2;
+
         final double height = 50 + (distanceZ * 0.15);
         sphere.startJump(currentTime, duration, height);
     }

@@ -2,7 +2,6 @@ package cz.matysekxx.beatbounce.gui.screen;
 
 
 import cz.matysekxx.beatbounce.gui.components.GamePanel;
-import cz.matysekxx.beatbounce.model.audio.AudioAnalyzer;
 import cz.matysekxx.beatbounce.model.audio.AudioData;
 import cz.matysekxx.beatbounce.model.level.Level;
 import cz.matysekxx.beatbounce.model.level.LevelGenerator;
@@ -24,7 +23,7 @@ public class GameScreen extends Screen {
         final String path = audioPath.toFile().getPath();
         final AudioData audioData = AudioData.create(path);
         final Level level = LevelGenerator.generateLevel(audioData, 1.f);
-        gamePanel.init(level, audioData.clip(), audioData.samples(), audioData.format().getSampleRate());
+        gamePanel.init(level);
     }
 
     @Override

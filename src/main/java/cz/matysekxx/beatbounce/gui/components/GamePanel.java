@@ -51,11 +51,11 @@ public class GamePanel extends JPanel implements Runnable {
         this.addMouseMotionListener(gameController);
     }
 
-    public void init(Level level, Clip clip, short[] audioSamples, float sampleRate) {
+    public void init(Level level) {
         this.level = level;
-        this.clip = clip;
-        this.audioSamples = audioSamples;
-        this.sampleRate = sampleRate;
+        this.clip = level.audioData().clip();
+        this.audioSamples = level.audioData().samples();
+        this.sampleRate = level.audioData().format().getSampleRate();
         this.gameModel = new GameModel(level, sphere, cam, clip);
     }
 

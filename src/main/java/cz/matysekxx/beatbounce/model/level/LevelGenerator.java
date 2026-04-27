@@ -15,8 +15,8 @@ public class LevelGenerator {
     private static final double Z_UNITS_PER_SECOND = 1000.0;
     private static final int LANE_WIDTH = 120;
 
-    public static Level generateLevel(Iterable<BeatEvent> events, String songName) {
-        return new GenerationContext(events, songName).generate();
+    @Deprecated public static Level generateLevel(Iterable<BeatEvent> events, String songName) {
+        return new GenerationContext(events, songName, null).generate();
     }
 
     public static Level generateLevel(AudioData audioData, float speedMultiplier) {
@@ -29,15 +29,17 @@ public class LevelGenerator {
         private final Iterable<BeatEvent> events;
         private final String songName;
         private final Random rng;
+        private final AudioData audioData;
         private int currentLane = 0;
         private int consecutiveInLane = 0;
         private int normalTilesSinceLong = 0;
 
-        public GenerationContext(Iterable<BeatEvent> events, String songName) {
+        public GenerationContext(Iterable<BeatEvent> events, String songName, AudioData audioData) {
             this.events = events;
             this.songName = songName;
             this.tiles = new ArrayList<>();
             this.rng = new Random(songName.hashCode());
+            this.audioData = audioData;
         }
 
         public Level generate() {
@@ -87,7 +89,7 @@ public class LevelGenerator {
                 }
             }
 
-            return new Level(tiles, songName);
+            return new Level(tiles, audioData, songName);
         }
 
         private int getNextLane(int lane) {

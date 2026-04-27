@@ -72,6 +72,33 @@ public class AudiusClient {
         return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::body);
     }
+    
+    public CompletableFuture<String> getTrendingTracks(String time) {
+        final String url = String.format("%s/v1/tracks/trending?time=%s&limit=20&app_name=%s", DEFAULT_HOST, time, appName);
+
+        final HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .GET()
+                .timeout(Duration.ofSeconds(15))
+                .build();
+
+        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(HttpResponse::body);
+    }
+    
+    public CompletableFuture<String> getTrendingTracksByGenre(String genre, String time) {
+        final String encodedGenre = URLEncoder.encode(genre, StandardCharsets.UTF_8);
+        final String url = String.format("%s/v1/tracks/trending?genre=%s&time=%s&limit=20&app_name=%s", DEFAULT_HOST, encodedGenre, time, appName);
+
+        final HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .GET()
+                .timeout(Duration.ofSeconds(15))
+                .build();
+
+        return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(HttpResponse::body);
+    }
 
     public CompletableFuture<Path> downloadMusic(String trackId, String fileName) {
         final String url = String.format("%s/v1/tracks/%s/stream?app_name=%s", DEFAULT_HOST, trackId, appName);

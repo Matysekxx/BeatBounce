@@ -8,6 +8,7 @@ import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.concurrent.CompletableFuture;
 
 public class DiscoverPanel extends JPanel {
     private final JPanel songListPanel;
@@ -29,7 +30,8 @@ public class DiscoverPanel extends JPanel {
         headerPanel.setOpaque(false);
         headerPanel.setBorder(new EmptyBorder(40, 0, 30, 0));
         headerPanel.add(Box.createRigidArea(new Dimension(0, 25)));
-        final SearchField searchField = new SearchField("Search");
+        
+        final SearchField searchField = new SearchField("Search Tracks...");
         searchField.addActionListener(e -> performSearch(searchField.getText()));
         searchField.setAlignmentX(Component.LEFT_ALIGNMENT);
         headerPanel.add(searchField);
@@ -45,23 +47,50 @@ public class DiscoverPanel extends JPanel {
 
         this.add(createTransparentScrollPane(songListPanel), BorderLayout.CENTER);
 
-        performSearch("electronic");
+        performTrendingSearch("allTime", null);
     }
 
     private JPanel createCategoriesPanel(SearchField searchField) {
         final JPanel categoriesPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         categoriesPanel.setOpaque(false);
         categoriesPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        final String[] genres = {"Trending", "Electronic", "Synthwave", "Phonk", "Pop"};
-        for (String genre : genres) {
-            final JButton catBtn = new CategoryButton(genre);
-            catBtn.addActionListener(e -> {
-                searchField.setText(genre);
-                performSearch(genre);
-            });
-            categoriesPanel.add(catBtn);
-        }
+
+        addCategoryButton(categoriesPanel, "All-Time Hits", () -> {
+            searchField.setText("");
+            performTrendingSearch("allTime", null);
+        });
+        
+        addCategoryButton(categoriesPanel, "Trending Month", () -> {
+            searchField.setText("");
+            performTrendingSearch("month", null);
+        });
+
+        addCategoryButton(categoriesPanel, "Electronic", () -> {
+            searchField.setText("");
+            performTrendingSearch("allTime", "Electronic");
+        });
+
+        addCategoryButton(categoriesPanel, "Hip-Hop/Rap", () -> {
+            searchField.setText("");
+            performTrendingSearch("allTime", "Hip-Hop/Rap");
+        });
+        
+        addCategoryButton(categoriesPanel, "Pop", () -> {
+            searchField.setText("");
+            performTrendingSearch("allTime", "Pop");
+        });
+
+        addCategoryButton(categoriesPanel, "World", () -> {
+            searchField.setText("");
+            performTrendingSearch("allTime", "World");
+        });
         return categoriesPanel;
+    }
+    
+    private void addCategoryButton(JPanel panel, String title, Runnable action) {
+        final JButton catBtn = new CategoryButton(title);
+        catBtn.addActionListener(e -> action.run());
+        panel.add(catBtn);
     }
 
     private JScrollPane createTransparentScrollPane(JPanel listPanel) {
@@ -76,25 +105,44 @@ public class DiscoverPanel extends JPanel {
         scrollPane.getVerticalScrollBar().setUI(new ScrollBarUI());
         scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(8, 0));
         scrollPane.getVerticalScrollBar().setOpaque(false);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(25);
+        
         scrollPane.getHorizontalScrollBar().setPreferredSize(new Dimension(0, 0));
         return scrollPane;
     }
-
-    private void performSearch(String query) {
-        if (query == null || query.trim().isEmpty()) return;
-
+    
+    private void showLoading() {
         songListPanel.removeAll();
-        final JLabel loadingLabel = new JLabel("Searching tracks...", SwingConstants.LEFT);
+        final JLabel loadingLabel = new JLabel("Loading tracks...", SwingConstants.LEFT);
         loadingLabel.setFont(new Font("SansSerif", Font.PLAIN, 18));
         loadingLabel.setForeground(Color.GRAY);
         songListPanel.add(loadingLabel);
         songListPanel.revalidate();
         songListPanel.repaint();
-
+    }
+    private void performSearch(String query) {
+        if (query == null || query.trim().isEmpty()) return;
+        showLoading();
+        executeFuture(audiusClient.searchTracks(query));
+    }
+    private void performTrendingSearch(String time, String genre) {
+        showLoading();
+        
+        CompletableFuture<String> future;
+        if (genre != null) {
+            future = audiusClient.getTrendingTracksByGenre(genre, time);
+        } else {
+            future = audiusClient.getTrendingTracks(time);
+        }
+        
+        executeFuture(future);
+    }
+    
+    private void executeFuture(CompletableFuture<String> future) {
         new SwingWorker<String, Void>() {
             @Override
             protected String doInBackground() throws Exception {
-                return audiusClient.searchTracks(query).get();
+                return future.get();
             }
 
             @Override
@@ -121,7 +169,7 @@ public class DiscoverPanel extends JPanel {
             final JsonNode dataNode = rootNode.path("data");
 
             if (dataNode.isMissingNode() || dataNode.isEmpty()) {
-                final JLabel empty = new JLabel("No tracks found for this query.", SwingConstants.LEFT);
+                final JLabel empty = new JLabel("No tracks found.", SwingConstants.LEFT);
                 empty.setForeground(Color.GRAY);
                 empty.setFont(new Font("SansSerif", Font.PLAIN, 16));
                 songListPanel.add(empty);

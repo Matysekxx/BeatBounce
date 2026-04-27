@@ -9,6 +9,7 @@ public final class RenderUtils {
     public final static Color blue = new Color(0, 150, 255);
     public final static Color purple = new Color(191, 0, 255);
     public final static Color yellow = new Color(255, 215, 0);
+    public static final int ROAD_WIDTH = 300;
     private static BufferedImage noiseTexture;
     private static int[][] starCache = null;
 

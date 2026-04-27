@@ -1,7 +1,9 @@
 package cz.matysekxx.beatbounce.model;
 
 import cz.matysekxx.beatbounce.gui.Camera3D;
+import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
+import cz.matysekxx.beatbounce.model.entity.MovingTile;
 import cz.matysekxx.beatbounce.model.entity.NormalTile;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.level.Level;
@@ -23,8 +25,6 @@ public class GameModel {
     private double gameZProgress;
     private double fallStartZ = 0;
     private int score = 0;
-    private boolean isHoldingSpace = false;
-    private double lastScoreTime = 0;
 
     public GameModel(Level level, Sphere sphere, Camera3D cam, Clip clip) {
         this.level = level;
@@ -63,14 +63,23 @@ public class GameModel {
     public Integer getScore() {
         return score;
     }
-    
-    public void setHoldingSpace(boolean holding) {
-        this.isHoldingSpace = holding;
-    }
 
-    public void update(double currentTime) {
+    public void update(double currentTime, double deltaTime) {
         this.gameZProgress = currentTime * 1000.0;
         this.stateHandlers.get(gameState).accept(currentTime);
+
+        for (AbstractTile tile : level.tiles()) {
+            if (tile instanceof MovingTile movingTile) {
+                movingTile.update(deltaTime);
+                int newX = movingTile.getX();
+                if (newX < -RenderUtils.ROAD_WIDTH) {
+                    newX = -RenderUtils.ROAD_WIDTH;
+                } else if (newX > RenderUtils.ROAD_WIDTH) {
+                    newX = RenderUtils.ROAD_WIDTH;
+                }
+                movingTile.setLocation(newX, movingTile.getY());
+            }
+        }
     }
 
     public void handleGameOver(double currentTime) {
@@ -82,7 +91,6 @@ public class GameModel {
         cam.setZ(gameZProgress - 500);
         if (currentTileIndex + 1 < level.tiles().size()) {
             final AbstractTile nextTile = level.tiles().get(currentTileIndex + 1);
-            
             if (gameZProgress >= nextTile.getZ()) {
                 final double tileMinX = nextTile.getX() - (LANE_WIDTH / 2.0) - sphere.getRadius();
                 final double tileMaxX = nextTile.getX() + (LANE_WIDTH / 2.0) + sphere.getRadius();

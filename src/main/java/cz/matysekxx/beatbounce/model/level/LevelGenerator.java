@@ -21,7 +21,7 @@ public class LevelGenerator {
 
     public static Level generateLevel(AudioData audioData, float speedMultiplier) {
         final AudioAnalyzer audioAnalyzer = new AudioAnalyzer(audioData, speedMultiplier);
-        return generateLevel(audioAnalyzer.analyze(), audioData.file().getName());
+        return new GenerationContext(audioAnalyzer.analyze(), audioData.file().getName(), audioData).generate();
     }
 
     private static class GenerationContext {
@@ -83,7 +83,13 @@ public class LevelGenerator {
                     normalTilesSinceLong = 0;
                     lastTileZ = zPos + longTileLength;
                 } else {
-                    tiles.add(TileFactory.createNormalTile(current, currentLane * LANE_WIDTH, 0, zPos - zOffset));
+                    if (rng.nextDouble() < 0.15) {
+                        int amplitude = 60 + rng.nextInt(60);
+                        double speed = 1.0 + rng.nextDouble() * 2.0;
+                        tiles.add(TileFactory.createMovingTile(current, currentLane * LANE_WIDTH, 0, zPos - zOffset, amplitude, speed));
+                    } else {
+                        tiles.add(TileFactory.createNormalTile(current, currentLane * LANE_WIDTH, 0, zPos - zOffset));
+                    }
                     normalTilesSinceLong++;
                     lastTileZ = zPos;
                 }

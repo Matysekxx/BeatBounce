@@ -2,6 +2,7 @@ package cz.matysekxx.beatbounce.model;
 
 import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
+import cz.matysekxx.beatbounce.model.entity.MovingTile;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.level.Level;
 
@@ -22,6 +23,7 @@ public class GameModel {
     private double gameZProgress;
     private double fallStartZ = 0;
     private int score = 0;
+    private double lastUpdateTime = 0;
 
     public GameModel(Level level, Sphere sphere, Camera3D cam, Clip clip) {
         this.level = level;
@@ -38,6 +40,7 @@ public class GameModel {
         this.currentTileIndex = -1;
         this.gameZProgress = 0;
         this.fallStartZ = 0;
+        this.lastUpdateTime = 0;
         this.sphere.reset();
 
         cam.setX(0);
@@ -61,6 +64,17 @@ public class GameModel {
     }
 
     public void update(double currentTime) {
+        double deltaTime = 0;
+        if (lastUpdateTime != 0) {
+            deltaTime = currentTime - lastUpdateTime;
+        }
+        lastUpdateTime = currentTime;
+        
+        for (AbstractTile tile : level.tiles()) {
+            if (tile instanceof MovingTile movingTile)
+                movingTile.update(deltaTime);
+        }
+        
         this.gameZProgress = currentTime * 1000.0;
         this.stateHandlers.get(gameState).accept(currentTime);
     }

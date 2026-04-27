@@ -66,4 +66,9 @@ public abstract class AbstractTile extends Entity implements Paintable {
     private double calculateCenterScreen(AbstractTile tile, int camX, int width, double scale) {
         return ((double) width / 2) + ((tile.getX() - camX) * scale);
     }
+
+    public void setLocation(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
 }

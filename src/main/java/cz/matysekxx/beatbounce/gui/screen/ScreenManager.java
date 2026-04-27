@@ -33,6 +33,10 @@ public class ScreenManager {
         }
     }
 
+    @SuppressWarnings("unchecked") public <T extends Screen> T getScreen(Class<T> screenClass) {
+        return (T) windows.get(screenClass).get();
+    }
+
     public <T extends Screen> void showScreen(Class<T> screenClass) {
         final Screen nextScreen = windows.get(screenClass).get();
         if (nextScreen != null) {

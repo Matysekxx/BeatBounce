@@ -6,7 +6,7 @@ import java.awt.*;
 
 public class NormalTile extends AbstractTile {
     public NormalTile(BeatEvent beatEvent, Point point, double z) {
-        super(point, z);
+        super(beatEvent,point, z);
     }
 
     @Override

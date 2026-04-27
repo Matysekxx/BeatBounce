@@ -9,7 +9,7 @@ public class LongTile extends AbstractTile {
     private final double lengthInZ;
 
     public LongTile(BeatEvent beatEvent, Point point, double z, double lengthInZ) {
-        super(point, z);
+        super(beatEvent, point, z);
         this.lengthInZ = lengthInZ;
     }
 

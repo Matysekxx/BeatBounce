@@ -9,11 +9,6 @@ public final class RenderUtils {
     public final static Color blue = new Color(0, 150, 255);
     public final static Color purple = new Color(191, 0, 255);
     public final static Color yellow = new Color(255, 215, 0);
-
-    public static final Color NEON_CYAN = new Color(0, 255, 255);
-    public static final Color NEON_MAGENTA = new Color(255, 0, 255);
-    public static final Color CYBER_YELLOW = new Color(252, 226, 5);
-
     private static BufferedImage noiseTexture;
 
     private RenderUtils() {

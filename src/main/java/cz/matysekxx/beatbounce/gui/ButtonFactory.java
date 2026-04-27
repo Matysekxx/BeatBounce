@@ -28,7 +28,7 @@ public class ButtonFactory {
     }
 
     private static JButton createButton(String text, Color topFill, Color topGlow, Color frontSide, ActionListener listener) {
-        final IsometricNeonButton button = new IsometricNeonButton(
+        final IsometricButton button = new IsometricButton(
                 text, frontSide, topFill, topGlow, 10, 40, new Dimension(220, 80)
         );
         button.addActionListener(listener);

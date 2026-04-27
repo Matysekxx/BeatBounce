@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class IsometricNeonButton extends JButton {
+public class IsometricButton extends JButton {
     private final Color frontSide;
     private final Color topFill;
     private final Color topGlow;
@@ -13,7 +13,7 @@ public class IsometricNeonButton extends JButton {
     private final int arc;
     private int currentPressOffset = 0;
 
-    public IsometricNeonButton(String text, Color frontSide, Color topFill, Color topGlow, int depth, int arc, Dimension size) {
+    public IsometricButton(String text, Color frontSide, Color topFill, Color topGlow, int depth, int arc, Dimension size) {
         super(text);
         this.frontSide = frontSide;
         this.topFill = topFill;

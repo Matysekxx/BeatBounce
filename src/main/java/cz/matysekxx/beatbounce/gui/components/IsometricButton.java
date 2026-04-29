@@ -1,4 +1,6 @@
-package cz.matysekxx.beatbounce.gui;
+package cz.matysekxx.beatbounce.gui.components;
+
+import cz.matysekxx.beatbounce.gui.RenderUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,6 +14,8 @@ public class IsometricButton extends JButton {
     private final int depth;
     private final int arc;
     private int currentPressOffset = 0;
+    private float glowAlpha = 0f;
+    private Timer glowTimer;
 
     public IsometricButton(String text, Color frontSide, Color topFill, Color topGlow, int depth, int arc, Dimension size) {
         super(text);
@@ -35,12 +39,12 @@ public class IsometricButton extends JButton {
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                setBackground(topFill.brighter());
+                startGlowAnimation(true);
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                setBackground(topFill);
+                startGlowAnimation(false);
             }
 
             @Override
@@ -57,12 +61,48 @@ public class IsometricButton extends JButton {
         });
     }
 
+    private void startGlowAnimation(boolean fadeIn) {
+        if (glowTimer != null && glowTimer.isRunning()) glowTimer.stop();
+        glowTimer = new Timer(16, e -> {
+            if (fadeIn) {
+                glowAlpha += 0.1f;
+                if (glowAlpha >= 1f) {
+                    glowAlpha = 1f;
+                    glowTimer.stop();
+                }
+            } else {
+                glowAlpha -= 0.05f;
+                if (glowAlpha <= 0f) {
+                    glowAlpha = 0f;
+                    glowTimer.stop();
+                }
+            }
+            repaint();
+        });
+        glowTimer.start();
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         final Graphics2D g2 = (Graphics2D) g.create();
         RenderUtils.initGraphic2D(g2);
         final int w = getWidth();
         final int h = getHeight();
+
+        if (glowAlpha > 0) {
+            float radius = w * 0.6f;
+            RadialGradientPaint glowPaint = new RadialGradientPaint(
+                    w / 2f, h / 2f, radius,
+                    new float[]{0f, 1f},
+                    new Color[]{
+                            new Color(topFill.getRed(), topFill.getGreen(), topFill.getBlue(), (int) (120 * glowAlpha)),
+                            new Color(topFill.getRed(), topFill.getGreen(), topFill.getBlue(), 0)
+                    }
+            );
+            g2.setPaint(glowPaint);
+            g2.fillRect(0, 0, w, h);
+        }
+
         g2.setColor(frontSide);
         g2.fillRoundRect(0, depth, w, h - depth, arc, arc);
 

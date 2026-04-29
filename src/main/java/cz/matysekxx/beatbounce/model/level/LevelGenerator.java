@@ -1,7 +1,6 @@
 package cz.matysekxx.beatbounce.model.level;
 
 import cz.matysekxx.beatbounce.event.BeatEvent;
-import cz.matysekxx.beatbounce.event.EventType;
 import cz.matysekxx.beatbounce.model.audio.AudioAnalyzer;
 import cz.matysekxx.beatbounce.model.audio.AudioData;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
@@ -16,9 +15,8 @@ public class LevelGenerator {
 
     private static final Map<CacheKey, List<AbstractTile>> levelCache = new ConcurrentHashMap<>();
 
-    private record CacheKey(String filePath, float speedMultiplier) {}
-
-    @Deprecated public static Level generateLevel(Iterable<BeatEvent> events, String songName) {
+    @Deprecated
+    public static Level generateLevel(Iterable<BeatEvent> events, String songName) {
         return new GenerationContext(events, songName, null).generate();
     }
 
@@ -45,6 +43,9 @@ public class LevelGenerator {
         Level.toFile(generatedLevel, speedMultiplier);
 
         return generatedLevel;
+    }
+
+    private record CacheKey(String filePath, float speedMultiplier) {
     }
 
     private static class GenerationContext {

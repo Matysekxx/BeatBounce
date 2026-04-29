@@ -16,18 +16,6 @@ public class Camera3D {
         this.fieldOfView = fieldOfView;
     }
 
-    public void addToZ(double deltaZ) {
-        this.z += deltaZ;
-    }
-
-    public void addToX(double deltaX) {
-        this.x += deltaX;
-    }
-
-    public void addToY(double deltaY) {
-        this.y += deltaY;
-    }
-
     public double getX() {
         return x;
     }

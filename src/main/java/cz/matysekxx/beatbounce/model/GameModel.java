@@ -4,7 +4,6 @@ import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.MovingTile;
-import cz.matysekxx.beatbounce.model.entity.NormalTile;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.level.Level;
 
@@ -65,7 +64,7 @@ public class GameModel {
     }
 
     public void update(double currentTime, double deltaTime) {
-        this.gameZProgress = currentTime * 1000.0;
+        this.gameZProgress = currentTime * 800.0;
         this.stateHandlers.get(gameState).accept(currentTime);
 
         for (AbstractTile tile : level.tiles()) {
@@ -84,11 +83,15 @@ public class GameModel {
 
     public void handleGameOver(double currentTime) {
         cam.setZ(gameZProgress - 500);
+        ScoreManager.updateScore(level.songName(), score);
     }
 
     public void handlePlaying(double currentTime) {
         sphere.setZ(gameZProgress);
         cam.setZ(gameZProgress - 500);
+        double targetCamX = sphere.getX() * 0.2;
+        cam.setX(cam.getX() + (targetCamX - cam.getX()) * 0.05);
+
         if (currentTileIndex + 1 < level.tiles().size()) {
             final AbstractTile nextTile = level.tiles().get(currentTileIndex + 1);
             if (gameZProgress >= nextTile.getZ()) {
@@ -107,7 +110,7 @@ public class GameModel {
                 }
             }
         }
-        
+
         sphere.update(currentTime);
     }
 
@@ -125,18 +128,18 @@ public class GameModel {
         final var tiles = level.tiles();
         final int nextIndex = currentTileIndex + 1;
         if (nextIndex >= tiles.size()) return;
-        
+
         AbstractTile currentTile = null;
         if (currentTileIndex >= 0) {
             currentTile = tiles.get(currentTileIndex);
         }
-        
+
         final AbstractTile nextTile = tiles.get(nextIndex);
-        
+
         double startZ = currentTile != null ? currentTile.getZ() : 0;
         final double endZ = nextTile.getZ();
         final double distanceZ = endZ - startZ;
-        double duration = distanceZ / 1000.0;
+        double duration = distanceZ / 800.0;
         if (duration <= 0) duration = 0.2;
 
         final double height = 50 + (distanceZ * 0.15);

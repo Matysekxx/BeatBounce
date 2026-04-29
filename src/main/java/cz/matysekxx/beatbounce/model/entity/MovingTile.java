@@ -3,7 +3,6 @@ package cz.matysekxx.beatbounce.model.entity;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import cz.matysekxx.beatbounce.event.BeatEvent;
-import cz.matysekxx.beatbounce.gui.RenderUtils;
 
 import java.awt.*;
 
@@ -37,7 +36,7 @@ public class MovingTile extends AbstractTile {
         final int newX = (int) (Math.sin(time * speed) * sweepAmplitude);
         this.setLocation(newX, this.getY());
     }
-    
+
     public int getStartX() {
         return startX;
     }

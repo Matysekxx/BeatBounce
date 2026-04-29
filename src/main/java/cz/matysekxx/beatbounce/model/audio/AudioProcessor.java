@@ -11,22 +11,13 @@ import javax.sound.sampled.AudioFormat;
 import java.util.function.Consumer;
 
 public class AudioProcessor {
-    /**
-     * The RMS (volume) threshold that triggers the start of a high-intensity section (e.g., a drop or chorus).
-     */
+
     private static final double HIGH_INTENSITY_THRESHOLD = 0.15;
-    /**
-     * The RMS (volume) threshold that triggers the start of a low-intensity section.
-     */
+
     private static final double LOW_INTENSITY_THRESHOLD = 0.08;
-    /**
-     * Smoothing factor for RMS calculation to avoid jittery intensity toggles (0.0 to 1.0).
-     */
+
     private static final double SMOOTHING_FACTOR = 0.98;
-    /**
-     * The number of audio samples processed in a single chunk.
-     * Must be a power of 2 (e.g., 512, 1024, 2048) for the FFT algorithm to work correctly.
-     */
+
     private static final int BUFFER_SIZE = 2048;
     private static final int OVERLAP = 1024;
     private static final double MIN_BEAT_INTERVAL = 0.20;

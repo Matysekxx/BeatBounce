@@ -20,9 +20,9 @@ import java.awt.*;
         @JsonSubTypes.Type(value = LongTile.class, name = "long")
 })
 public abstract class AbstractTile extends Entity implements Paintable {
-    private BeatEvent beatEvent;
     protected double z;
     protected double lengthInZ;
+    private BeatEvent beatEvent;
 
     protected AbstractTile() {
         super(0, 0);

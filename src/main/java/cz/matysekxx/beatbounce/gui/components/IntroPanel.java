@@ -5,8 +5,12 @@ import cz.matysekxx.beatbounce.util.Time;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class IntroPanel extends JPanel implements Runnable {
+    private final List<Particle> particles = new ArrayList<>();
     private float time = 0;
     private boolean running = false;
     private Thread animatorThread;
@@ -17,6 +21,7 @@ public class IntroPanel extends JPanel implements Runnable {
         super();
         this.setDoubleBuffered(true);
         this.setOpaque(true);
+        for (int i = 0; i < 25; i++) particles.add(new Particle(1920, 540));
     }
 
     public void startAnimation() {
@@ -38,8 +43,18 @@ public class IntroPanel extends JPanel implements Runnable {
     @Override
     public void run() {
         long lastFpsTime = System.currentTimeMillis();
+        long lastTime = System.nanoTime();
         while (running) {
+            final long now = System.nanoTime();
+            final float dt = (now - lastTime) / 1_000_000_000f;
+            lastTime = now;
+
             time += 0.04f;
+
+            int w = getWidth() > 0 ? getWidth() : 1920;
+            int h = getHeight() > 0 ? (getHeight() / 2 + 100) : 540;
+            Particle.updateAll(particles, dt, w, h);
+
             repaint();
 
             frameCount++;
@@ -60,39 +75,40 @@ public class IntroPanel extends JPanel implements Runnable {
 
         final int w = getWidth();
         final int h = getHeight();
-        final int horizonY = (h >> 1) + 50;
+        final int horizonY = (h >> 1) + 100;
 
         RenderUtils.drawBackground(g2d, w, h);
+        Particle.drawAll(g2d, particles);
         RenderUtils.drawFloor(g2d, w, h, horizonY);
 
         drawIntroGrid(g2d, w, h, horizonY);
-
         RenderUtils.drawHorizonLine(g2d, w, horizonY);
-
         drawTitle(g2d, w, h);
-        drawFPS(g2d);
+
         g2d.dispose();
     }
 
-    private void drawFPS(Graphics2D g2d) {
-        g2d.setFont(new Font("Monospaced", Font.BOLD, 16));
-        g2d.setColor(Color.YELLOW);
-        g2d.drawString("FPS: " + currentFps, 10, 20);
-    }
-
     private void drawIntroGrid(Graphics2D g2d, int w, int h, int horizonY) {
-        g2d.setColor(new Color(0, 255, 255, 140));
         final int vanishingPointX = w >> 1;
-        for (int i = -30; i <= 30; i++) {
-            final int bottomX = vanishingPointX + i * 150;
+
+        g2d.setColor(new Color(0, 255, 255, 100));
+        for (int i = -40; i <= 40; i++) {
+            final int bottomX = vanishingPointX + i * 200;
             g2d.drawLine(vanishingPointX, horizonY, bottomX, h);
         }
 
-        final float gridOffset = time % 1.0f;
-        for (int z = 1; z <= 20; z++) {
-            final double depth = Math.pow((z + gridOffset) / 20.0, 2.5);
+        final float speed = 1.2f;
+        final double angularFreq = Math.PI / 2.0;
+        final double pos = speed * (time - (0.1 / angularFreq) * Math.cos(angularFreq * time));
+        final float gridOffset = (float) (pos - Math.floor(pos));
+
+        for (int z = 0; z <= 25; z++) {
+            final double depth = Math.pow((z + gridOffset) / 25.0, 2.8);
             final int lineY = horizonY + (int) ((h - horizonY) * depth);
+
             if (lineY > horizonY && lineY <= h) {
+                int alpha = (int) (100 * depth);
+                g2d.setColor(new Color(0, 255, 255, alpha));
                 g2d.drawLine(0, lineY, w, lineY);
             }
         }
@@ -100,11 +116,10 @@ public class IntroPanel extends JPanel implements Runnable {
 
     private void drawTitle(Graphics2D g2d, int w, int h) {
         final String text = "BEAT BOUNCE";
-        g2d.setFont(new Font("Monospaced", Font.BOLD | Font.ITALIC, 115));
+        g2d.setFont(new Font("Monospaced", Font.BOLD | Font.ITALIC, 130));
         final FontMetrics fm = g2d.getFontMetrics();
         final int x = (w - fm.stringWidth(text)) >> 1;
-        final int y = (h / 3);
-
-        RenderUtils.drawText(g2d, text, x, y, new Color(0, 255, 255));
+        final int y = h >> 2;
+        RenderUtils.drawText(g2d, text, x, y, RenderUtils.cyan);
     }
 }

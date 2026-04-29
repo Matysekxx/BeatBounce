@@ -5,6 +5,8 @@ import cz.matysekxx.beatbounce.gui.components.IntroPanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -18,17 +20,22 @@ public class IntroScreen extends Screen {
         super();
         this.setLayout(new BorderLayout());
         backgroundPanel = new IntroPanel();
-        backgroundPanel.setLayout(new BorderLayout());
+        backgroundPanel.setLayout(new GridBagLayout());
         this.setContentPane(backgroundPanel);
 
+        final JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        contentPanel.setOpaque(false);
+
         final JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 100));
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 40, 20));
         buttonPanel.setOpaque(false);
 
         final JButton startButton = ButtonFactory.createStartButton(e -> {
             sleep(200);
-            ((JButton) e.getSource()).setEnabled(false);
-            ((JButton) e.getSource()).setText("LOADING...");
+            final JButton source = (JButton) e.getSource();
+            source.setEnabled(false);
+            source.setText("LOADING...");
             final SwingWorker<Void, Void> worker = new SwingWorker<>() {
                 @Override
                 protected Void doInBackground() {
@@ -44,8 +51,6 @@ public class IntroScreen extends Screen {
             worker.execute();
         });
 
-        buttonPanel.add(startButton);
-
         final JButton creditButton = ButtonFactory.createCreditButton(e -> {
             sleep(200);
             Thread.ofVirtual().start(() -> {
@@ -57,15 +62,27 @@ public class IntroScreen extends Screen {
                 }
             });
         });
-        buttonPanel.add(creditButton);
 
         final JButton exitButton = ButtonFactory.createExitButton(e -> {
             sleep(200);
             System.exit(0);
         });
+
+        buttonPanel.add(startButton);
+        buttonPanel.add(creditButton);
         buttonPanel.add(exitButton);
 
-        this.add(buttonPanel, BorderLayout.SOUTH);
+        final GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weighty = 0.6;
+        backgroundPanel.add(Box.createVerticalGlue(), gbc);
+
+        gbc.gridy = 1;
+        gbc.weighty = 0.4;
+        backgroundPanel.add(buttonPanel, gbc);
+
+        this.setFocusable(true);
     }
 
     @Override

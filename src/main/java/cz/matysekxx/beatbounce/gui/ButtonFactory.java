@@ -1,5 +1,7 @@
 package cz.matysekxx.beatbounce.gui;
 
+import cz.matysekxx.beatbounce.gui.components.IsometricButton;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;

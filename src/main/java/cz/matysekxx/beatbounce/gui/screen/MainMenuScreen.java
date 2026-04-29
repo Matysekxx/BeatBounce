@@ -2,28 +2,22 @@ package cz.matysekxx.beatbounce.gui.screen;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.matysekxx.beatbounce.api.AudiusClient;
-import cz.matysekxx.beatbounce.gui.components.DiscoverPanel;
 import cz.matysekxx.beatbounce.gui.components.MainMenuPanel;
-import cz.matysekxx.beatbounce.gui.components.SidebarButton;
-import cz.matysekxx.beatbounce.gui.components.SidebarPanel;
+import cz.matysekxx.beatbounce.gui.components.SongSelectionPanel;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.util.function.Consumer;
 
 public class MainMenuScreen extends Screen {
 
     private final MainMenuPanel backgroundPanel;
     private final AudiusClient audiusClient;
     private final ObjectMapper objectMapper;
-    private final ScreenManager screenManager;
-    private CardLayout cardLayout;
-    private JPanel cardPanel;
+    private final CardLayout cardLayout;
+    private final JPanel cardPanel;
 
     public MainMenuScreen(ScreenManager screenManager) {
         super();
-        this.screenManager = screenManager;
         this.audiusClient = new AudiusClient();
         this.objectMapper = new ObjectMapper();
 
@@ -32,74 +26,33 @@ public class MainMenuScreen extends Screen {
         backgroundPanel = new MainMenuPanel();
         backgroundPanel.setLayout(new BorderLayout());
         this.setContentPane(backgroundPanel);
-        
-        final JPanel sidebar = new SidebarPanel();
-        sidebar.setLayout(new BorderLayout());
 
-        final JLabel logo = new JLabel("BeatBounce");
-        logo.setFont(new Font("SansSerif", Font.BOLD, 28));
-        logo.setForeground(Color.WHITE);
-        logo.setBorder(new EmptyBorder(40, 30, 50, 30));
-        sidebar.add(logo, BorderLayout.NORTH);
-
-        final JPanel navLinks = new JPanel();
-        navLinks.setLayout(new BoxLayout(navLinks, BoxLayout.Y_AXIS));
-        navLinks.setOpaque(false);
-        navLinks.setBorder(new EmptyBorder(0, 15, 0, 15));
+        JLayeredPane layeredPane = new JLayeredPane();
+        backgroundPanel.add(layeredPane, BorderLayout.CENTER);
+        layeredPane.setLayout(new OverlayLayout(layeredPane));
 
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
         cardPanel.setOpaque(false);
 
-        final Consumer<String> cardSwitcher = target -> cardLayout.show(cardPanel, target);
+        layeredPane.add(cardPanel, JLayeredPane.DEFAULT_LAYER);
 
-        navLinks.add(createAlignedButton(new SidebarButton("Discover", "DISCOVER", true, cardSwitcher)));
-        navLinks.add(Box.createRigidArea(new Dimension(0, 5)));
-        navLinks.add(createAlignedButton(new SidebarButton("Library", "LIBRARY", false, null)));
-        navLinks.add(Box.createRigidArea(new Dimension(0, 5)));
-        navLinks.add(createAlignedButton(new SidebarButton("Skins", "SKINS", false, null)));
-        navLinks.add(Box.createRigidArea(new Dimension(0, 5)));
-        navLinks.add(createAlignedButton(new SidebarButton("Achievements", "ACHIEVEMENTS", false, null)));
-        navLinks.add(Box.createRigidArea(new Dimension(0, 5)));
-        navLinks.add(createAlignedButton(new SidebarButton("Shop", "SHOP", false, null)));
-        
-        navLinks.add(Box.createVerticalGlue());
-        
-        sidebar.add(navLinks, BorderLayout.CENTER);
-
-        final JPanel bottomSidebar = new JPanel();
-        bottomSidebar.setLayout(new BoxLayout(bottomSidebar, BoxLayout.Y_AXIS));
-        bottomSidebar.setOpaque(false);
-        bottomSidebar.setBorder(new EmptyBorder(0, 15, 40, 15));
-
-        final JButton profileBtn = createAlignedButton(new SidebarButton("Settings", null, false, null));
-        final JButton exitBtn = createAlignedButton(new SidebarButton("Exit", null, false, null, e -> screenManager.showScreen(IntroScreen.class)));
-        exitBtn.setForeground(new Color(255, 100, 100, 200));
-
-        bottomSidebar.add(profileBtn);
-        bottomSidebar.add(Box.createRigidArea(new Dimension(0, 5)));
-        bottomSidebar.add(exitBtn);
-        
-        sidebar.add(bottomSidebar, BorderLayout.SOUTH);
-
-        backgroundPanel.add(sidebar, BorderLayout.WEST);
-
-        cardPanel.add(new DiscoverPanel(audiusClient, objectMapper, screenManager), "DISCOVER");
-
-        backgroundPanel.add(cardPanel, BorderLayout.CENTER);
-    }
-    private JButton createAlignedButton(SidebarButton button) {
-        button.setAlignmentX(Component.LEFT_ALIGNMENT);
-        return button;
+        cardPanel.add(new SongSelectionPanel(audiusClient, objectMapper, screenManager), "SONG_SELECTION");
     }
 
     @Override
     public void start() {
         backgroundPanel.startAnimation();
+        for (Component c : cardPanel.getComponents()) {
+            if (c instanceof SongSelectionPanel ssp) ssp.startAnimations();
+        }
     }
 
     @Override
     public void stop() {
         backgroundPanel.stopAnimation();
+        for (Component c : cardPanel.getComponents()) {
+            if (c instanceof SongSelectionPanel ssp) ssp.stopAnimations();
+        }
     }
 }

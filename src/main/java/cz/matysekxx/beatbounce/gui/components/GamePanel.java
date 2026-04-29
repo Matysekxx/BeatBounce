@@ -26,9 +26,8 @@ public class GamePanel extends JPanel implements Runnable {
     private float sampleRate;
     private GameModel gameModel;
     private boolean running;
-    private int currentFps = 0;
-    private int frameCount = 0;
     private long lastFrameTime;
+    private float flashAlpha = 0f;
 
     public GamePanel() {
         this.running = false;
@@ -55,7 +54,8 @@ public class GamePanel extends JPanel implements Runnable {
         this.audioSamples = level.audioData().samples();
         this.sampleRate = level.audioData().format().getSampleRate();
         this.gameModel = new GameModel(level, sphere, cam, clip);
-        
+        this.flashAlpha = 0f;
+
         final GameController gameController = new GameController(cam, sphere);
         this.addKeyListener(gameController);
         this.addMouseMotionListener(gameController);
@@ -92,20 +92,31 @@ public class GamePanel extends JPanel implements Runnable {
             lastFrameTime = now;
 
             final double currentTime = clip.getMicrosecondPosition() / 1_000_000.0;
+
+            final GameState oldState = gameModel.getGameState();
             gameModel.update(currentTime, deltaTime);
+            if (oldState == GameState.PLAYING && gameModel.getGameState() == GameState.FALLING) {
+                flashAlpha = 0.5f;
+            }
+
+            if (flashAlpha > 0) {
+                flashAlpha -= (float) (deltaTime * 2.0);
+                if (flashAlpha < 0) flashAlpha = 0;
+            }
+
             repaint();
 
-            frameCount++;
             if (System.currentTimeMillis() - lastFpsTime >= 1000) {
-                currentFps = frameCount;
-                frameCount = 0;
                 lastFpsTime = System.currentTimeMillis();
             }
 
             Time.sleep(16);
             if (gameModel.getGameState() == GameState.GAME_OVER) {
                 Time.sleep(500);
-                if (running) gameModel.init();
+                if (running) {
+                    gameModel.init();
+                    flashAlpha = 0f;
+                }
             }
         }
     }
@@ -123,15 +134,36 @@ public class GamePanel extends JPanel implements Runnable {
 
         drawEnvironment(g2d, width, height, horizonY);
         drawGameObjects(g2d, width, height);
-        //drawHUD(g2d, width, height);
+
         drawScore(g2d, width);
-        drawFPS(g2d);
+        drawProgressBar(g2d, width);
+
+        if (flashAlpha > 0) {
+            g2d.setColor(new Color(1f, 0f, 0f, flashAlpha));
+            g2d.fillRect(0, 0, width, height);
+        }
     }
 
-    private void drawFPS(Graphics2D g2d) {
-        g2d.setFont(new Font("Monospaced", Font.BOLD, 16));
-        g2d.setColor(Color.YELLOW);
-        g2d.drawString("FPS: " + currentFps, 10, 20);
+    private void drawProgressBar(Graphics2D g2d, int width) {
+        if (clip == null) return;
+
+        final double current = clip.getMicrosecondPosition() / 1_000_000.0;
+        final double total = clip.getMicrosecondLength() / 1_000_000.0;
+        final double progress = current / total;
+
+        final int barHeight = 8;
+        final int barY = 0;
+
+        g2d.setColor(new Color(255, 255, 255, 40));
+        g2d.fillRect(0, barY, width, barHeight);
+
+        g2d.setColor(RenderUtils.cyan);
+        g2d.fillRect(0, barY, (int) (width * progress), barHeight);
+
+        g2d.setFont(new Font("SansSerif", Font.BOLD, 12));
+        String timeText = String.format("%d:%02d / %d:%02d", (int) current / 60, (int) current % 60, (int) total / 60, (int) total % 60);
+        g2d.setColor(Color.WHITE);
+        g2d.drawString(timeText, 10, barY + 25);
     }
 
     private void drawEnvironment(Graphics2D g2d, int width, int height, int horizonY) {
@@ -145,11 +177,16 @@ public class GamePanel extends JPanel implements Runnable {
     private void drawScore(Graphics2D g2d, int width) {
         final Integer score = gameModel.getScore();
         final String text = Integer.toString(score);
-        g2d.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 60));
 
+        g2d.setFont(new Font("SansSerif", Font.BOLD, 14));
+        g2d.setColor(new Color(255, 255, 255, 180));
+        FontMetrics fmSmall = g2d.getFontMetrics();
+        g2d.drawString("SCORE", (width - fmSmall.stringWidth("SCORE")) / 2, 35);
+
+        g2d.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 60));
         final FontMetrics fm = g2d.getFontMetrics();
         final int x = (width - fm.stringWidth(text)) / 2;
-        final int y = 70;
+        final int y = 85;
         final Color c = switch (score) {
             case Integer i when i < 50 -> RenderUtils.cyan;
             case Integer i when i < 75 -> RenderUtils.green;
@@ -158,8 +195,6 @@ public class GamePanel extends JPanel implements Runnable {
             default -> RenderUtils.yellow;
         };
         RenderUtils.drawText(g2d, text, x, y, c);
-        g2d.setStroke(new BasicStroke(2));
-        g2d.drawLine(x - 20, y + 10, x + fm.stringWidth(text) + 20, y + 10);
     }
 
     private void drawGameObjects(Graphics2D g2d, int width, int height) {
@@ -174,20 +209,6 @@ public class GamePanel extends JPanel implements Runnable {
 
         sphere.paint3D(g2d, cam, WindowData.of(width, height));
 
-    }
-
-    private void drawHUD(Graphics2D g2d, int width, int height) {
-        if (gameModel.getGameState() == GameState.GAME_OVER)
-            drawGameOver(g2d, width, height);
-    }
-
-    private void drawGameOver(Graphics2D g2d, int width, int height) {
-        final String text = "GAME OVER";
-        g2d.setFont(new Font("Monospaced", Font.BOLD | Font.ITALIC, 90));
-        final FontMetrics fm = g2d.getFontMetrics();
-        final int x = (width - fm.stringWidth(text)) >> 1;
-        final int y = height >> 1;
-        RenderUtils.drawText(g2d, text, x, y, new Color(250, 96, 241));
     }
 
     private void drawHorizonEqualizer(Graphics2D g2d, int width, int horizonY) {
@@ -262,8 +283,8 @@ public class GamePanel extends JPanel implements Runnable {
         final int[] laneXs = {-300, -180, -60, 60, 180, 300};
         g2d.setStroke(new BasicStroke(2));
         for (int lx : laneXs) {
-            Point start = projectPoint(lx, 150, cam.getZ() + 100, width, horizonY);
-            Point end = projectPoint(lx, 150, cam.getZ() + 3000, width, horizonY);
+            final Point start = projectPoint(lx, 150, cam.getZ() + 100, width, horizonY);
+            final Point end = projectPoint(lx, 150, cam.getZ() + 3000, width, horizonY);
 
             if (start == null || end == null) continue;
 

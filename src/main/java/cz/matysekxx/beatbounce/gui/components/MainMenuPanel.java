@@ -10,9 +10,6 @@ public class MainMenuPanel extends JPanel implements Runnable {
     private boolean running = false;
     private Thread animatorThread;
     private float time = 0f;
-    private int currentFps = 0;
-    private int frameCount = 0;
-    private long lastFpsTime = 0;
 
 
     public MainMenuPanel() {
@@ -36,18 +33,13 @@ public class MainMenuPanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
-        lastFpsTime = System.currentTimeMillis();
+        long lastFpsTime = System.currentTimeMillis();
         while (running) {
             time += 0.01f;
             repaint();
-
-            frameCount++;
             if (System.currentTimeMillis() - lastFpsTime >= 1000) {
-                currentFps = frameCount;
-                frameCount = 0;
                 lastFpsTime = System.currentTimeMillis();
             }
-
             Time.sleep(16);
         }
     }
@@ -57,11 +49,6 @@ public class MainMenuPanel extends JPanel implements Runnable {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g.create();
         RenderUtils.drawAuroraBackground(g2d, getWidth(), getHeight(), time);
-
-        g2d.setFont(new Font("Monospaced", Font.BOLD, 16));
-        g2d.setColor(Color.YELLOW);
-        g2d.drawString("FPS: " + currentFps, 10, 20);
-
         g2d.dispose();
     }
 }

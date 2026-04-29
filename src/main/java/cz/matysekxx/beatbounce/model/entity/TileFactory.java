@@ -16,7 +16,7 @@ public class TileFactory {
     public static LongTile createLongTile(BeatEvent event, int x, int y, double z, double lengthInZ) {
         return new LongTile(event, new Point(x, y), z, lengthInZ);
     }
-    
+
     public static MovingTile createMovingTile(BeatEvent event, int x, int y, double z, int amplitude, double speed) {
         return new MovingTile(event, new Point(x, y), z, amplitude, speed);
     }

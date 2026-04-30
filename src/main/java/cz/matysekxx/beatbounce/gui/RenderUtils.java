@@ -153,4 +153,12 @@ public final class RenderUtils {
         }
         g2.setComposite(originalComposite);
     }
+
+    public static void drawTitle(Graphics2D g2d, int w, int h, String text) {
+        g2d.setFont(new Font("Monospaced", Font.BOLD | Font.ITALIC, 130));
+        final FontMetrics fm = g2d.getFontMetrics();
+        final int x = (w - fm.stringWidth(text)) >> 1;
+        final int y = h >> 2;
+        RenderUtils.drawText(g2d, text, x, y, RenderUtils.cyan);
+    }
 }

@@ -78,7 +78,7 @@ public class IntroPanel extends JPanel implements Runnable {
 
         drawIntroGrid(g2d, w, h, horizonY);
         RenderUtils.drawHorizonLine(g2d, w, horizonY);
-        drawTitle(g2d, w, h);
+        RenderUtils.drawTitle(g2d, w, h, "BEAT BOUNCE");
 
         g2d.dispose();
     }
@@ -107,14 +107,5 @@ public class IntroPanel extends JPanel implements Runnable {
                 g2d.drawLine(0, lineY, w, lineY);
             }
         }
-    }
-
-    private void drawTitle(Graphics2D g2d, int w, int h) {
-        final String text = "BEAT BOUNCE";
-        g2d.setFont(new Font("Monospaced", Font.BOLD | Font.ITALIC, 130));
-        final FontMetrics fm = g2d.getFontMetrics();
-        final int x = (w - fm.stringWidth(text)) >> 1;
-        final int y = h >> 2;
-        RenderUtils.drawText(g2d, text, x, y, RenderUtils.cyan);
     }
 }

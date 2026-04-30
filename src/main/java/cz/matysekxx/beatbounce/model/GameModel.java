@@ -19,7 +19,7 @@ public class GameModel {
     private final Camera3D cam;
     private final Clip clip;
     private final EnumMap<GameState, Consumer<Double>> stateHandlers = new EnumMap<>(GameState.class);
-    private GameState gameState = GameState.PLAYING;
+    private volatile GameState gameState = GameState.PLAYING;
     private int currentTileIndex = -1;
     private double gameZProgress;
     private double fallStartZ = 0;

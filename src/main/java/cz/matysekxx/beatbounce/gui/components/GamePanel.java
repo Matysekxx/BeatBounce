@@ -18,8 +18,8 @@ import java.awt.image.BufferedImage;
 
 public class GamePanel extends JPanel implements Runnable {
     private final Camera3D cam;
-    private final Thread gameThread;
-    private final Sphere sphere;
+    private Thread gameThread;
+    private Sphere sphere;
     private Level level;
     private Clip clip;
     private short[] audioSamples;
@@ -35,12 +35,8 @@ public class GamePanel extends JPanel implements Runnable {
         this.setFocusable(true);
         this.setBackground(Color.BLACK);
         this.cam = new Camera3D(0, 0, -500, 500.0);
-        this.sphere = new Sphere(0, 150, 0, 25);
-        this.setFocusable(true);
-        this.requestFocusInWindow();
         this.setDoubleBuffered(true);
         this.setOpaque(true);
-        gameThread = new Thread(this);
 
         final BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
         final Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
@@ -53,6 +49,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.clip = level.audioData().clip();
         this.audioSamples = level.audioData().samples();
         this.sampleRate = level.audioData().format().getSampleRate();
+        this.sphere = new Sphere(0, 150, 0, 25);
         this.gameModel = new GameModel(level, sphere, cam, clip);
         this.flashAlpha = 0f;
 
@@ -66,20 +63,26 @@ public class GamePanel extends JPanel implements Runnable {
             this.running = true;
             gameModel.init();
             this.lastFrameTime = System.nanoTime();
+            this.gameThread = new Thread(this);
             this.gameThread.start();
+            this.requestFocusInWindow();
         }
     }
 
     public void stopGame() {
         if (!this.running) return;
         this.running = false;
-        gameModel.stop();
-        gameThread.interrupt();
-        try {
-            gameThread.join();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            System.err.println("Game thread interrupted while stopping: " + e.getMessage());
+        if (gameModel != null) {
+            gameModel.stop();
+        }
+        if (gameThread != null) {
+            gameThread.interrupt();
+            try {
+                gameThread.join();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                System.err.println("Game thread interrupted while stopping: " + e.getMessage());
+            }
         }
     }
 

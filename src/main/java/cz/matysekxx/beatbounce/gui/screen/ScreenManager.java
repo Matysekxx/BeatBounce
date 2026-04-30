@@ -44,13 +44,13 @@ public class ScreenManager {
             nextScreen.setExtendedState(JFrame.MAXIMIZED_BOTH);
             nextScreen.setVisible(true);
             nextScreen.toFront();
-            nextScreen.start();
 
             if (activeWindow != null && activeWindow != nextScreen) {
                 activeWindow.stop();
                 activeWindow.setVisible(false);
             }
             activeWindow = nextScreen;
+            nextScreen.start();
         }
     }
 }

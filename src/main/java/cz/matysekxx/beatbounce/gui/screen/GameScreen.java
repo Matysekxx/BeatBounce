@@ -1,6 +1,7 @@
 package cz.matysekxx.beatbounce.gui.screen;
 
 import cz.matysekxx.beatbounce.gui.components.GamePanel;
+import cz.matysekxx.beatbounce.gui.components.LoadingPanel;
 import cz.matysekxx.beatbounce.model.audio.AudioData;
 import cz.matysekxx.beatbounce.model.level.LevelGenerator;
 
@@ -11,16 +12,13 @@ import java.util.concurrent.CompletableFuture;
 
 public class GameScreen extends Screen {
     private GamePanel gamePanel;
-    private final JLabel loadingLabel;
+    private final LoadingPanel loadingPanel;
 
     public GameScreen() {
         super();
         this.setLayout(new BorderLayout());
         this.setBackground(Color.BLACK);
-        
-        loadingLabel = new JLabel("Loading Level...", SwingConstants.CENTER);
-        loadingLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
-        loadingLabel.setForeground(Color.WHITE);
+        loadingPanel = new LoadingPanel();
     }
 
     public void setupGamePanel(Path audioPath) {
@@ -28,9 +26,11 @@ public class GameScreen extends Screen {
             gamePanel.stopGame();
             gamePanel = null;
         }
+        loadingPanel.setText("Loading Level...");
+        loadingPanel.startAnimation();
 
         this.getContentPane().removeAll();
-        this.getContentPane().add(loadingLabel, BorderLayout.CENTER);
+        this.getContentPane().add(loadingPanel, BorderLayout.CENTER);
         this.getContentPane().revalidate();
         this.getContentPane().repaint();
 
@@ -47,10 +47,11 @@ public class GameScreen extends Screen {
             this.getContentPane().repaint();
             gamePanel.startGame();
             gamePanel.requestFocusInWindow();
+            loadingPanel.stopAnimation();
         })).exceptionally(ex -> {
             System.err.println(ex.getMessage());
             SwingUtilities.invokeLater(() -> {
-                loadingLabel.setText("Failed to load level!");
+                loadingPanel.setText("Failed to load level!");
             });
             return null;
         });

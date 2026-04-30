@@ -19,8 +19,8 @@ public class ScrollBarUI extends BasicScrollBarUI {
     private boolean hovered = false;
 
     private static JButton zeroButton() {
-        JButton b = new JButton();
-        Dimension zero = new Dimension(0, 0);
+        final JButton b = new JButton();
+        final Dimension zero = new Dimension(0, 0);
         b.setPreferredSize(zero);
         b.setMinimumSize(zero);
         b.setMaximumSize(zero);
@@ -70,7 +70,7 @@ public class ScrollBarUI extends BasicScrollBarUI {
         Graphics2D g2 = (Graphics2D) g.create();
         RenderUtils.initGraphic2D(g2);
 
-        int x = bounds.x + bounds.width - THUMB_WIDTH - 2;
+        final int x = bounds.x + bounds.width - THUMB_WIDTH - 2;
         g2.setColor(TRACK_COLOR);
         g2.fillRoundRect(x, bounds.y, THUMB_WIDTH, bounds.height, THUMB_ARC, THUMB_ARC);
 
@@ -83,9 +83,9 @@ public class ScrollBarUI extends BasicScrollBarUI {
         Graphics2D g2 = (Graphics2D) g.create();
         RenderUtils.initGraphic2D(g2);
 
-        int x = bounds.x + bounds.width - THUMB_WIDTH - 2;
-        int y = bounds.y + 2;
-        int h = Math.max(bounds.height - 4, 10);
+        final int x = bounds.x + bounds.width - THUMB_WIDTH - 2;
+        final int y = bounds.y + 2;
+        final int h = Math.max(bounds.height - 4, 10);
 
         g2.setColor(hovered ? THUMB_HOVER_COLOR : THUMB_COLOR);
         g2.fillRoundRect(x, y, THUMB_WIDTH, h, THUMB_ARC, THUMB_ARC);

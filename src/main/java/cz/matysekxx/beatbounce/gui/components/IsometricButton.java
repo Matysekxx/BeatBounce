@@ -90,7 +90,7 @@ public class IsometricButton extends JButton {
         final int h = getHeight();
 
         if (glowAlpha > 0) {
-            float radius = w * 0.6f;
+            final float radius = w * 0.6f;
             RadialGradientPaint glowPaint = new RadialGradientPaint(
                     w / 2f, h / 2f, radius,
                     new float[]{0f, 1f},

@@ -14,8 +14,6 @@ public class IntroPanel extends JPanel implements Runnable {
     private float time = 0;
     private boolean running = false;
     private Thread animatorThread;
-    private int currentFps = 0;
-    private int frameCount = 0;
 
     public IntroPanel() {
         super();
@@ -51,16 +49,13 @@ public class IntroPanel extends JPanel implements Runnable {
 
             time += 0.04f;
 
-            int w = getWidth() > 0 ? getWidth() : 1920;
-            int h = getHeight() > 0 ? (getHeight() / 2 + 100) : 540;
+            final int w = getWidth() > 0 ? getWidth() : 1920;
+            final int h = getHeight() > 0 ? (getHeight() / 2 + 100) : 540;
             Particle.updateAll(particles, dt, w, h);
 
             repaint();
 
-            frameCount++;
             if (System.currentTimeMillis() - lastFpsTime >= 1000) {
-                currentFps = frameCount;
-                frameCount = 0;
                 lastFpsTime = System.currentTimeMillis();
             }
             Time.sleep(16);
@@ -107,7 +102,7 @@ public class IntroPanel extends JPanel implements Runnable {
             final int lineY = horizonY + (int) ((h - horizonY) * depth);
 
             if (lineY > horizonY && lineY <= h) {
-                int alpha = (int) (100 * depth);
+                final int alpha = (int) (100 * depth);
                 g2d.setColor(new Color(0, 255, 255, alpha));
                 g2d.drawLine(0, lineY, w, lineY);
             }

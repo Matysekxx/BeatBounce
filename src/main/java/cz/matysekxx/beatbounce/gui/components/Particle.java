@@ -3,7 +3,6 @@ package cz.matysekxx.beatbounce.gui.components;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 
 import java.awt.*;
-import java.util.List;
 
 
 public class Particle {

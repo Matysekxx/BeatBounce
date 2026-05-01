@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import cz.matysekxx.beatbounce.api.AudiusClient;
 import cz.matysekxx.beatbounce.model.ScoreManager;
 
-import java.awt.Color;
+import java.awt.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -25,7 +25,7 @@ public class TrackData {
         this.hash = id.hashCode();
         this.stars = 1 + (Math.abs(hash) % 5);
         this.best = ScoreManager.getBestScore(title);
-        
+
         int durationSeconds = node.path("duration").asInt(222);
         this.duration = String.format("%d:%02d", durationSeconds / 60, durationSeconds % 60);
     }

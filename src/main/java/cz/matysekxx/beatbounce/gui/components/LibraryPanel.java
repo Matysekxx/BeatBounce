@@ -28,7 +28,7 @@ public class LibraryPanel extends JPanel {
     public LibraryPanel(AudiusClient audiusClient, ScreenManager screenManager) {
         this.audiusClient = audiusClient;
         this.screenManager = screenManager;
-        
+
         setOpaque(true);
         setBackground(new Color(10, 10, 26));
         setLayout(new BorderLayout());
@@ -55,7 +55,7 @@ public class LibraryPanel extends JPanel {
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        
+
         final JScrollBar vsb = scrollPane.getVerticalScrollBar();
         vsb.setUI(new ScrollBarUI());
         vsb.setOpaque(false);
@@ -65,7 +65,7 @@ public class LibraryPanel extends JPanel {
         vsb.setBlockIncrement(120);
 
         add(scrollPane, BorderLayout.CENTER);
-        
+
         loadLibrary();
     }
 
@@ -121,7 +121,7 @@ public class LibraryPanel extends JPanel {
     public void loadLibrary() {
         listPanel.removeAll();
         final Path dir = audiusClient.getDownloadDirectory();
-        
+
         if (Files.exists(dir)) {
             try (final Stream<Path> stream = Files.list(dir)) {
                 stream.filter(p -> {
@@ -130,14 +130,18 @@ public class LibraryPanel extends JPanel {
                 }).sorted((p1, p2) -> {
                     try {
                         return Files.getLastModifiedTime(p2).compareTo(Files.getLastModifiedTime(p1));
-                    } catch (IOException e) { return 0; }
+                    } catch (IOException e) {
+                        return 0;
+                    }
                 }).forEach(p -> {
                     listPanel.add(new LocalTrackRow(p));
                     listPanel.add(Box.createRigidArea(new Dimension(0, 0)));
                 });
-            } catch (IOException e) { LOG.log(Level.SEVERE, "Failed to load library", e); }
+            } catch (IOException e) {
+                LOG.log(Level.SEVERE, "Failed to load library", e);
+            }
         }
-        
+
         if (listPanel.getComponentCount() == 0) {
             final JLabel empty = new JLabel("No songs downloaded yet.");
             empty.setForeground(Color.GRAY);
@@ -150,10 +154,22 @@ public class LibraryPanel extends JPanel {
         listPanel.repaint();
     }
 
+    private void launchGame(Path audioPath, int stars) {
+        if (audioPath == null) return;
+        try {
+            screenManager.initScreen(GameScreen.class);
+            final GameScreen gs = screenManager.getScreen(GameScreen.class);
+            screenManager.showScreen(GameScreen.class);
+            gs.setupGamePanel(audioPath, stars);
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Failed to launch game", ex);
+        }
+    }
+
     private class LocalTrackRow extends JPanel {
         private final Path path;
-        private boolean hovered = false;
         private final int stars;
+        private boolean hovered = false;
 
         public LocalTrackRow(Path path) {
             this.path = path;
@@ -165,9 +181,17 @@ public class LibraryPanel extends JPanel {
             this.setOpaque(false);
             this.addMouseListener(new MouseAdapter() {
                 @Override
-                public void mouseEntered(MouseEvent e) { hovered = true; repaint(); }
+                public void mouseEntered(MouseEvent e) {
+                    hovered = true;
+                    repaint();
+                }
+
                 @Override
-                public void mouseExited(MouseEvent e) { hovered = false; repaint(); }
+                public void mouseExited(MouseEvent e) {
+                    hovered = false;
+                    repaint();
+                }
+
                 @Override
                 public void mousePressed(MouseEvent e) {
                     final int btnW = 100, btnH = 32;
@@ -214,29 +238,17 @@ public class LibraryPanel extends JPanel {
             final int btnW = 100, btnH = 32;
             final int bx = w - 20 - btnW;
             final int by = (h - btnH) >> 1;
-            
+
             final Color acc = RenderUtils.purple;
             g2.setColor(acc);
             g2.fillRoundRect(bx, by, btnW, btnH, 8, 8);
             g2.setColor(new Color(10, 10, 26));
             g2.setFont(new Font("SansSerif", Font.BOLD, 13));
-            
+
             final String txt = "PLAY";
             final FontMetrics bfm = g2.getFontMetrics();
             g2.drawString(txt, bx + (btnW - bfm.stringWidth(txt)) / 2, by + 20);
             g2.dispose();
-        }
-    }
-
-    private void launchGame(Path audioPath, int stars) {
-        if (audioPath == null) return;
-        try {
-            screenManager.initScreen(GameScreen.class);
-            final GameScreen gs = screenManager.getScreen(GameScreen.class);
-            screenManager.showScreen(GameScreen.class);
-            gs.setupGamePanel(audioPath, stars);
-        } catch (Exception ex) {
-            LOG.log(Level.SEVERE, "Failed to launch game", ex);
         }
     }
 }

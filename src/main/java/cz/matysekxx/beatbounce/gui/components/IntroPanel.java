@@ -5,8 +5,6 @@ import cz.matysekxx.beatbounce.util.Time;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class IntroPanel extends JPanel implements Runnable {

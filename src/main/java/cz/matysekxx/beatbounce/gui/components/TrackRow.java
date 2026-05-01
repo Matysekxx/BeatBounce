@@ -52,7 +52,7 @@ public class TrackRow extends JPanel {
                     final int btnW = 110, btnH = 32;
                     final int bx = getWidth() - 20 - btnW;
                     final int by = 60;
-                    final  Rectangle playRect = new Rectangle(bx, by, btnW, btnH);
+                    final Rectangle playRect = new Rectangle(bx, by, btnW, btnH);
                     if (playRect.contains(e.getPoint()) && !data.downloading) {
                         handlePlay();
                     }

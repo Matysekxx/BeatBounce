@@ -25,9 +25,9 @@ public class SongSelectionPanel extends JPanel implements Runnable {
     private final ScreenManager screenManager;
     private final Particle[] particles = new Particle[30];
     private final JPanel songListPanel;
+    private final List<TrackData> allTracks = new ArrayList<>();
     private boolean running = false;
     private Thread animatorThread;
-    private final List<TrackData> allTracks = new ArrayList<>();
     private List<TrackData> filteredTracks = new ArrayList<>();
     private TrackData selectedTrack = null;
     private String searchQuery = "";
@@ -192,7 +192,9 @@ public class SongSelectionPanel extends JPanel implements Runnable {
             if (!filteredTracks.isEmpty()) {
                 selectTrack(filteredTracks.getFirst());
             }
-        } catch (Exception exception) { LOG.log(Level.WARNING, "Failed to load tracks", exception); }
+        } catch (Exception exception) {
+            LOG.log(Level.WARNING, "Failed to load tracks", exception);
+        }
     }
 
     private void filterTracks() {
@@ -256,7 +258,9 @@ public class SongSelectionPanel extends JPanel implements Runnable {
                 }
             }
 
-            if (needsRevalidate) { SwingUtilities.invokeLater(songListPanel::revalidate); }
+            if (needsRevalidate) {
+                SwingUtilities.invokeLater(songListPanel::revalidate);
+            }
 
             Particle.updateAll(particles, dt, getWidth() > 0 ? getWidth() : 1920, getHeight() > 0 ? getHeight() : 1080);
             repaint();

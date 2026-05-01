@@ -114,19 +114,24 @@ public class LevelGenerator {
             if (consecutiveInLane >= 2) {
                 if (lane == 0) {
                     move = rng.nextBoolean() ? 1 : -1;
+                } else if (lane > 0) {
+                    move = -1;
                 } else {
-                    move = -lane;
+                    move = 1;
                 }
             } else {
                 final double r = rng.nextDouble();
                 if (r < 0.1) move = 0;
                 else if (r < 0.55) move = 1;
                 else move = -1;
+                
+                if (lane + move > 2) move = -1;
+                if (lane + move < -2) move = 1;
             }
 
             int newLane = lane + move;
-            if (newLane > 1) newLane = 1;
-            if (newLane < -1) newLane = -1;
+            if (newLane > 2) newLane = 2;
+            if (newLane < -2) newLane = -2;
 
             if (newLane == lane) consecutiveInLane++;
             else consecutiveInLane = 1;

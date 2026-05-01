@@ -10,6 +10,8 @@ import java.awt.event.MouseMotionListener;
 
 public class GameController extends KeyAdapter implements MouseMotionListener {
     private final static int LANE_WIDTH = 120;
+    private final static int MAX_LANE_ABS = 2 * LANE_WIDTH;
+    
     private final Camera3D cam;
     private final Sphere sphere;
     private boolean lastInputWasMouse = false;
@@ -31,8 +33,8 @@ public class GameController extends KeyAdapter implements MouseMotionListener {
         final int width = e.getComponent().getWidth();
         final double scale = cam.getScale(sphere.getZ());
         if (scale <= 0) return;
-        final double newTargetX = cam.getX() + (mouseX - width / 2.0) / scale;
-        sphere.setTargetX(newTargetX);
+        final double rawTargetX = cam.getX() + (mouseX - width / 2.0) / scale;
+        sphere.setTargetX(Math.max(-MAX_LANE_ABS, Math.min(MAX_LANE_ABS, rawTargetX)));
     }
 
     @Override
@@ -42,12 +44,12 @@ public class GameController extends KeyAdapter implements MouseMotionListener {
             this.lastInputWasMouse = false;
         }
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_LEFT -> sphere.setTargetX(sphere.getTargetX() - LANE_WIDTH);
-            case KeyEvent.VK_RIGHT -> sphere.setTargetX(sphere.getTargetX() + LANE_WIDTH);
+            case KeyEvent.VK_LEFT -> sphere.setTargetX(Math.max(-MAX_LANE_ABS, sphere.getTargetX() - LANE_WIDTH));
+            case KeyEvent.VK_RIGHT -> sphere.setTargetX(Math.min(MAX_LANE_ABS, sphere.getTargetX() + LANE_WIDTH));
         }
     }
 
     private double snapToNearestLane(double x) {
-        return Math.round(x / LANE_WIDTH) * LANE_WIDTH;
+        return Math.max(-MAX_LANE_ABS, Math.min(MAX_LANE_ABS, Math.round(x / LANE_WIDTH) * LANE_WIDTH));
     }
 }

@@ -14,6 +14,8 @@ import cz.matysekxx.beatbounce.util.Time;
 import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 public class GamePanel extends JPanel implements Runnable {
@@ -28,8 +30,12 @@ public class GamePanel extends JPanel implements Runnable {
     private boolean running;
     private long lastFrameTime;
     private float flashAlpha = 0f;
+    private final Runnable onExit;
+    private final Cursor blankCursor;
+    private boolean isCursorHidden = false;
 
-    public GamePanel() {
+    public GamePanel(Runnable onExit) {
+        this.onExit = onExit;
         this.running = false;
         this.setLayout(new BorderLayout());
         this.setFocusable(true);
@@ -39,9 +45,8 @@ public class GamePanel extends JPanel implements Runnable {
         this.setOpaque(true);
 
         final BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-        final Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+        this.blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
                 cursorImg, new Point(0, 0), "blank cursor");
-        this.setCursor(blankCursor);
     }
 
     public void init(Level level) {
@@ -56,6 +61,30 @@ public class GamePanel extends JPanel implements Runnable {
         final GameController gameController = new GameController(cam, sphere);
         this.addKeyListener(gameController);
         this.addMouseMotionListener(gameController);
+        this.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (gameModel == null) return;
+                
+                final GameState state = gameModel.getGameState();
+                if (state == GameState.PLAYING || state == GameState.COUNTDOWN || state == GameState.PAUSED) {
+                    if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                        gameModel.togglePause();
+                    } else if (state == GameState.PAUSED && e.getKeyCode() == KeyEvent.VK_ENTER) {
+                        stopGame();
+                        if (onExit != null) onExit.run();
+                    }
+                } else if (state == GameState.GAME_OVER || state == GameState.FINISHED) {
+                    if (e.getKeyCode() == KeyEvent.VK_R) {
+                        gameModel.init();
+                        flashAlpha = 0f;
+                    } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_ENTER) {
+                        stopGame();
+                        if (onExit != null) onExit.run();
+                    }
+                }
+            }
+        });
     }
 
     public void startGame() {
@@ -72,55 +101,56 @@ public class GamePanel extends JPanel implements Runnable {
     public void stopGame() {
         if (!this.running) return;
         this.running = false;
+        
+        if (getCursor() == blankCursor) {
+            setCursor(Cursor.getDefaultCursor());
+        }
+        
         if (gameModel != null) {
             gameModel.stop();
         }
         if (gameThread != null) {
             gameThread.interrupt();
             try {
-                gameThread.join();
+                gameThread.join(500);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                System.err.println("Game thread interrupted while stopping: " + e.getMessage());
             }
+        }
+    }
+
+    private void updateCursorVisibility() {
+        if (gameModel == null) return;
+        final GameState state = gameModel.getGameState();
+        final boolean shouldHide = (state == GameState.PLAYING || state == GameState.FALLING);
+        if (shouldHide && !isCursorHidden) {
+            setCursor(blankCursor);
+            isCursorHidden = true;
+        } else if (!shouldHide && isCursorHidden) {
+            setCursor(Cursor.getDefaultCursor());
+            isCursorHidden = false;
         }
     }
 
     @Override
     public void run() {
-        long lastFpsTime = System.currentTimeMillis();
         while (running) {
-            long now = System.nanoTime();
-            double deltaTime = (now - lastFrameTime) / 1_000_000_000.0;
+            final long now = System.nanoTime();
+            final double deltaTime = (now - lastFrameTime) / 1_000_000_000.0;
             lastFrameTime = now;
 
-            final double currentTime = clip.getMicrosecondPosition() / 1_000_000.0;
-
+            final double currentTime = (clip != null && clip.isRunning()) ? clip.getMicrosecondPosition() / 1_000_000.0 : 0;
             final GameState oldState = gameModel.getGameState();
             gameModel.update(currentTime, deltaTime);
-            if (oldState == GameState.PLAYING && gameModel.getGameState() == GameState.FALLING) {
-                flashAlpha = 0.5f;
-            }
-
+            updateCursorVisibility();
+            
+            if (oldState == GameState.PLAYING && gameModel.getGameState() == GameState.FALLING) flashAlpha = 0.5f;
             if (flashAlpha > 0) {
                 flashAlpha -= (float) (deltaTime * 2.0);
                 if (flashAlpha < 0) flashAlpha = 0;
             }
-
             repaint();
-
-            if (System.currentTimeMillis() - lastFpsTime >= 1000) {
-                lastFpsTime = System.currentTimeMillis();
-            }
-
             Time.sleep(16);
-            if (gameModel.getGameState() == GameState.GAME_OVER) {
-                Time.sleep(500);
-                if (running) {
-                    gameModel.init();
-                    flashAlpha = 0f;
-                }
-            }
         }
     }
 
@@ -129,7 +159,6 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(g);
         final Graphics2D g2d = (Graphics2D) g;
         RenderUtils.initGraphic2D(g2d);
-
 
         final int width = getWidth();
         final int height = getHeight();
@@ -145,6 +174,100 @@ public class GamePanel extends JPanel implements Runnable {
             g2d.setColor(new Color(1f, 0f, 0f, flashAlpha));
             g2d.fillRect(0, 0, width, height);
         }
+        if (gameModel != null) {
+            switch (gameModel.getGameState()) {
+                case COUNTDOWN -> drawCountdown(g2d, width, height);
+                case PAUSED -> drawPauseScreen(g2d, width, height);
+                case FINISHED -> drawFinishedScreen(g2d, width, height);
+                case GAME_OVER -> drawGameOverScreen(g2d, width, height);
+                default -> {}
+            }
+        }
+    }
+    
+    private void drawCountdown(Graphics2D g2d, int width, int height) {
+        final int count = (int) Math.ceil(gameModel.getCountdownTime());
+        final String text = (count > 0) ? String.valueOf(count) : "GO!";
+        
+        g2d.setFont(new Font("SansSerif", Font.BOLD, 150));
+        final FontMetrics fm = g2d.getFontMetrics();
+        final int x = (width - fm.stringWidth(text)) / 2;
+        final int y = (height + fm.getAscent()) / 2;
+        RenderUtils.drawText(g2d, text, x, y, RenderUtils.cyan);
+    }
+    
+    private void drawPauseScreen(Graphics2D g2d, int width, int height) {
+        g2d.setColor(new Color(0, 0, 0, 150));
+        g2d.fillRect(0, 0, width, height);
+        
+        final String text = "PAUSED";
+        g2d.setFont(new Font("SansSerif", Font.BOLD, 80));
+        FontMetrics fm = g2d.getFontMetrics();
+        final int x = (width - fm.stringWidth(text)) / 2;
+        final int y = height / 2;
+        
+        RenderUtils.drawText(g2d, text, x, y, Color.WHITE);
+        
+        g2d.setFont(new Font("SansSerif", Font.PLAIN, 20));
+        final String resumeText = "Press ESC to Resume";
+        final String exitText = "Press ENTER to Quit to Menu";
+        
+        fm = g2d.getFontMetrics();
+        g2d.drawString(resumeText, (width - fm.stringWidth(resumeText)) / 2, y + 50);
+        g2d.drawString(exitText, (width - fm.stringWidth(exitText)) / 2, y + 90);
+    }
+
+    private void drawPostGameScore(Graphics2D g2d, int y, int width) {
+        final String scoreText = "Final Score: " + gameModel.getScore();
+        g2d.setFont(new Font("SansSerif", Font.BOLD, 40));
+        final FontMetrics fm = g2d.getFontMetrics();
+        final int x = (width - fm.stringWidth(scoreText)) / 2;
+        g2d.setColor(Color.WHITE);
+        g2d.drawString(scoreText, x, y + 100);
+    }
+    
+    private void drawFinishedScreen(Graphics2D g2d, int width, int height) {
+        g2d.setColor(new Color(0, 0, 0, 180));
+        g2d.fillRect(0, 0, width, height);
+        
+        final String text = "LEVEL COMPLETE";
+        g2d.setFont(new Font("SansSerif", Font.BOLD, 80));
+        FontMetrics fm = g2d.getFontMetrics();
+        final int x = (width - fm.stringWidth(text)) / 2;
+        final int y = height / 3;
+        
+        RenderUtils.drawText(g2d, text, x, y, RenderUtils.yellow);
+        
+        drawPostGameScore(g2d, y, width);
+        
+        final String restartText = "Press [R] to Restart";
+        final String continueText = "Press [ENTER] to Continue";
+        g2d.setFont(new Font("SansSerif", Font.PLAIN, 20));
+        fm = g2d.getFontMetrics();
+        g2d.drawString(restartText, (width - fm.stringWidth(restartText)) / 2, height - 120);
+        g2d.drawString(continueText, (width - fm.stringWidth(continueText)) / 2, height - 80);
+    }
+    
+    private void drawGameOverScreen(Graphics2D g2d, int width, int height) {
+        g2d.setColor(new Color(0, 0, 0, 180));
+        g2d.fillRect(0, 0, width, height);
+        
+        final String text = "GAME OVER";
+        g2d.setFont(new Font("SansSerif", Font.BOLD, 80));
+        FontMetrics fm = g2d.getFontMetrics();
+        final int x = (width - fm.stringWidth(text)) / 2;
+        final int y = height / 3;
+        
+        RenderUtils.drawText(g2d, text, x, y, Color.RED);
+
+        drawPostGameScore(g2d, y, width);
+        
+        final String restartText = "Press [R] to Restart";
+        final String exitText = "Press [ENTER] to Quit to Menu";
+        g2d.setFont(new Font("SansSerif", Font.PLAIN, 20));
+        fm = g2d.getFontMetrics();
+        g2d.drawString(restartText, (width - fm.stringWidth(restartText)) / 2, y + 180);
+        g2d.drawString(exitText, (width - fm.stringWidth(exitText)) / 2, y + 220);
     }
 
     private void drawProgressBar(Graphics2D g2d, int width) {
@@ -164,7 +287,7 @@ public class GamePanel extends JPanel implements Runnable {
         g2d.fillRect(0, barY, (int) (width * progress), barHeight);
 
         g2d.setFont(new Font("SansSerif", Font.BOLD, 12));
-        String timeText = String.format("%d:%02d / %d:%02d", (int) current / 60, (int) current % 60, (int) total / 60, (int) total % 60);
+        final String timeText = String.format("%d:%02d / %d:%02d", (int) current / 60, (int) current % 60, (int) total / 60, (int) total % 60);
         g2d.setColor(Color.WHITE);
         g2d.drawString(timeText, 10, barY + 25);
     }
@@ -274,7 +397,7 @@ public class GamePanel extends JPanel implements Runnable {
         for (int z = 0; z < 3000; z += 150) {
             final double distance = z - (cam.getZ() % 150);
             if (distance <= 0) continue;
-            Point p = projectPoint(0, 150, cam.getZ() + distance, width, horizonY);
+            final Point p = projectPoint(0, 150, cam.getZ() + distance, width, horizonY);
 
             if (p != null && p.y >= horizonY && p.y <= height) {
                 final int alpha = (int) Math.max(0, Math.min(150, 255 - (distance / 3000.0 * 255)));

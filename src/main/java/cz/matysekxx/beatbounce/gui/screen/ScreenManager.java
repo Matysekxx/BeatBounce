@@ -15,7 +15,7 @@ public class ScreenManager {
     public ScreenManager() {
         registerScreen(IntroScreen.class, () -> new IntroScreen(this));
         registerScreen(MainMenuScreen.class, () -> new MainMenuScreen(this));
-        registerScreen(GameScreen.class, GameScreen::new);
+        registerScreen(GameScreen.class, () -> new GameScreen(this));
     }
 
     public <T extends Screen> void registerScreen(Class<T> screenClass, Supplier<T> constructor) {

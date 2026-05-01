@@ -13,9 +13,11 @@ import java.util.concurrent.CompletableFuture;
 public class GameScreen extends Screen {
     private GamePanel gamePanel;
     private final LoadingPanel loadingPanel;
+    private final ScreenManager screenManager;
 
-    public GameScreen() {
+    public GameScreen(ScreenManager screenManager) {
         super();
+        this.screenManager = screenManager;
         this.setLayout(new BorderLayout());
         this.setBackground(Color.BLACK);
         loadingPanel = new LoadingPanel();
@@ -37,11 +39,14 @@ public class GameScreen extends Screen {
         CompletableFuture.supplyAsync(() -> {
             final String path = audioPath.toFile().getPath();
             final AudioData audioData = AudioData.create(path);
-            final float speedMultiplier = 1.0f + (stars - 1) * 0.15f;
+            final float speedMultiplier = 1.0f;
             return LevelGenerator.generateLevel(audioData, speedMultiplier, stars);
         }).thenAccept(level -> SwingUtilities.invokeLater(() -> {
             this.getContentPane().removeAll();
-            gamePanel = new GamePanel();
+            final Runnable onExit = () -> {
+                screenManager.showScreen(MainMenuScreen.class);
+            };
+            gamePanel = new GamePanel(onExit);
             gamePanel.init(level);
             this.getContentPane().add(gamePanel, BorderLayout.CENTER);
             this.getContentPane().revalidate();

@@ -9,8 +9,6 @@ import cz.matysekxx.beatbounce.model.level.Level;
 import cz.matysekxx.beatbounce.model.level.LevelGenerator;
 
 import javax.sound.sampled.Clip;
-import java.util.EnumMap;
-import java.util.function.Consumer;
 
 public class GameModel {
     private static final int LANE_WIDTH = 120;
@@ -19,12 +17,12 @@ public class GameModel {
     private final Sphere sphere;
     private final Camera3D cam;
     private final Clip clip;
-    private final EnumMap<GameState, Consumer<Double>> stateHandlers = new EnumMap<>(GameState.class);
-    private volatile GameState gameState = GameState.PLAYING;
+    private volatile GameState gameState = GameState.COUNTDOWN;
     private int currentTileIndex = -1;
     private double gameZProgress;
     private double fallStartZ = 0;
     private int score = 0;
+    private double countdownTime = 3.0;
     
     private final double zUnitsPerSecond;
 
@@ -34,14 +32,11 @@ public class GameModel {
         this.cam = cam;
         this.clip = clip;
         this.zUnitsPerSecond = LevelGenerator.getZSpeed(level.stars() > 0 ? level.stars() : 1);
-        
-        stateHandlers.put(GameState.PLAYING, this::handlePlaying);
-        stateHandlers.put(GameState.FALLING, this::handleFalling);
-        stateHandlers.put(GameState.GAME_OVER, this::handleGameOver);
     }
 
     public void init() {
-        this.gameState = GameState.PLAYING;
+        this.gameState = GameState.COUNTDOWN;
+        this.countdownTime = 3.99;
         this.currentTileIndex = -1;
         this.gameZProgress = 0;
         this.fallStartZ = 0;
@@ -53,9 +48,7 @@ public class GameModel {
         cam.setZ(-500);
 
         startNextJump(0);
-
         clip.setFramePosition(0);
-        clip.start();
     }
 
     public void stop() {
@@ -63,14 +56,52 @@ public class GameModel {
             clip.stop();
         }
     }
+    
+    public void togglePause() {
+        if (gameState == GameState.PLAYING) {
+            gameState = GameState.PAUSED;
+            clip.stop();
+        } else if (gameState == GameState.PAUSED) {
+            gameState = GameState.COUNTDOWN;
+            countdownTime = 3.99;
+        }
+    }
 
     public Integer getScore() {
         return score;
     }
+    
+    public double getCountdownTime() {
+        return countdownTime;
+    }
 
     public void update(double currentTime, double deltaTime) {
+        switch (gameState) {
+            case COUNTDOWN -> handleCountdown(deltaTime);
+            case PLAYING -> handlePlaying(currentTime, deltaTime);
+            case FALLING -> handleFalling(currentTime);
+            case PAUSED, FINISHED, GAME_OVER -> {
+            }
+        }
+    }
+    
+    private void handleCountdown(double deltaTime) {
+        countdownTime -= deltaTime;
+        if (countdownTime <= 0) {
+            gameState = GameState.PLAYING;
+            clip.start();
+        }
+    }
+
+    private void handlePlaying(double currentTime, double deltaTime) {
+        if (clip.getMicrosecondPosition() >= clip.getMicrosecondLength() - 50000) {
+            gameState = GameState.FINISHED;
+            clip.stop();
+            ScoreManager.updateScore(level.songName(), score);
+            return;
+        }
+
         this.gameZProgress = currentTime * zUnitsPerSecond;
-        this.stateHandlers.get(gameState).accept(currentTime);
 
         for (AbstractTile tile : level.tiles()) {
             if (tile instanceof MovingTile movingTile) {
@@ -84,14 +115,7 @@ public class GameModel {
                 movingTile.setLocation(newX, movingTile.getY());
             }
         }
-    }
 
-    public void handleGameOver(double currentTime) {
-        cam.setZ(gameZProgress - 500);
-        ScoreManager.updateScore(level.songName(), score);
-    }
-
-    public void handlePlaying(double currentTime) {
         sphere.setZ(gameZProgress);
         cam.setZ(gameZProgress - 500);
         double targetCamX = sphere.getX() * 0.2;
@@ -119,13 +143,13 @@ public class GameModel {
         sphere.update(currentTime);
     }
 
-    public void handleFalling(double currentTime) {
+    private void handleFalling(double currentTime) {
         sphere.update(currentTime);
         sphere.setZ(fallStartZ);
         cam.setZ(gameZProgress - 500);
         if (sphere.getCurrentY() > 500) {
             gameState = GameState.GAME_OVER;
-            score = 0;
+            ScoreManager.updateScore(level.songName(), score);
         }
     }
 

@@ -13,7 +13,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
-public record Level(List<AbstractTile> tiles, @JsonIgnore AudioData audioData, String songName) {
+public record Level(List<AbstractTile> tiles, @JsonIgnore AudioData audioData, String songName, int stars) {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final Path CACHE_DIR;
 
@@ -31,7 +31,7 @@ public record Level(List<AbstractTile> tiles, @JsonIgnore AudioData audioData, S
         try {
             final File cacheFile = getCacheFile(audioFile, speedMultiplier);
             if (cacheFile.exists()) {
-                LevelCacheData cacheData = objectMapper.readValue(cacheFile, LevelCacheData.class);
+                final LevelCacheData cacheData = objectMapper.readValue(cacheFile, LevelCacheData.class);
                 return Optional.of(cacheData);
             }
             return Optional.empty();
@@ -44,18 +44,11 @@ public record Level(List<AbstractTile> tiles, @JsonIgnore AudioData audioData, S
     public static void toFile(Level level, float speedMultiplier) {
         try {
             final File cacheFile = getCacheFile(level.audioData().file(), speedMultiplier);
-            final LevelCacheData cacheData = new LevelCacheData(level.tiles(), level.songName());
+            final LevelCacheData cacheData = new LevelCacheData(level.tiles(), level.songName(), level.stars());
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(cacheFile, cacheData);
             System.out.println("Level saved to cache: " + cacheFile.getAbsolutePath());
         } catch (IOException e) {
             System.err.println("Failed to save level to cache: " + e.getMessage());
-        }
-    }
-
-    public static void clearCache(File audioFile, float speedMultiplier) {
-        final File cacheFile = getCacheFile(audioFile, speedMultiplier);
-        if (cacheFile.exists()) {
-            cacheFile.delete();
         }
     }
 

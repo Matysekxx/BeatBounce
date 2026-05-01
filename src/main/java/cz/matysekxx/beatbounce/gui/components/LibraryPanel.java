@@ -153,9 +153,15 @@ public class LibraryPanel extends JPanel {
     private class LocalTrackRow extends JPanel {
         private final Path path;
         private boolean hovered = false;
+        private final int stars;
 
         public LocalTrackRow(Path path) {
             this.path = path;
+            String fileName = path.getFileName().toString();
+            int dot = fileName.lastIndexOf('.');
+            if (dot > 0) fileName = fileName.substring(0, dot);
+            this.stars = 1 + (Math.abs(fileName.hashCode()) % 5);
+
             this.setOpaque(false);
             this.addMouseListener(new MouseAdapter() {
                 @Override
@@ -168,7 +174,7 @@ public class LibraryPanel extends JPanel {
                     final int bx = getWidth() - 20 - btnW;
                     final int by = (getHeight() - btnH) / 2;
                     if (new Rectangle(bx, by, btnW, btnH).contains(e.getPoint())) {
-                        launchGame(path);
+                        launchGame(path, stars);
                     }
                 }
             });
@@ -199,6 +205,12 @@ public class LibraryPanel extends JPanel {
             if (dot > 0) fileName = fileName.substring(0, dot);
             g2.drawString(fileName, 50, 38);
 
+            final int rightX = w - 140;
+            g2.setFont(new Font("SansSerif", Font.PLAIN, 14));
+            final String starsStr = "★".repeat(stars) + "☆".repeat(5 - stars);
+            g2.setColor(RenderUtils.cyan);
+            g2.drawString(starsStr, rightX - g2.getFontMetrics().stringWidth(starsStr), 38);
+
             final int btnW = 100, btnH = 32;
             final int bx = w - 20 - btnW;
             final int by = (h - btnH) >> 1;
@@ -216,13 +228,13 @@ public class LibraryPanel extends JPanel {
         }
     }
 
-    private void launchGame(Path audioPath) {
+    private void launchGame(Path audioPath, int stars) {
         if (audioPath == null) return;
         try {
             screenManager.initScreen(GameScreen.class);
             final GameScreen gs = screenManager.getScreen(GameScreen.class);
             screenManager.showScreen(GameScreen.class);
-            gs.setupGamePanel(audioPath);
+            gs.setupGamePanel(audioPath, stars);
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "Failed to launch game", ex);
         }

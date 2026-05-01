@@ -146,14 +146,14 @@ public class TrackRow extends JPanel {
 
     private void handlePlay() {
         if (data.isDownloaded(audiusClient)) {
-            launchGame(data.findDownloadedPath(audiusClient));
+            launchGame(data.findDownloadedPath(audiusClient), data.stars);
         } else {
             data.downloading = true;
             data.downloadProgress = 0.1f;
             audiusClient.downloadMusic(data.id, data.title).thenAccept(downloadedPath -> {
                 data.downloading = false;
                 data.downloadProgress = 1f;
-                SwingUtilities.invokeLater(() -> launchGame(downloadedPath));
+                SwingUtilities.invokeLater(() -> launchGame(downloadedPath, data.stars));
             }).exceptionally(ex -> {
                 data.downloading = false;
                 LOG.log(Level.WARNING, "Download failed for " + data.title, ex);
@@ -162,13 +162,13 @@ public class TrackRow extends JPanel {
         }
     }
 
-    private void launchGame(Path audioPath) {
+    private void launchGame(Path audioPath, int stars) {
         if (audioPath == null) return;
         try {
             screenManager.initScreen(GameScreen.class);
             final GameScreen gs = screenManager.getScreen(GameScreen.class);
             screenManager.showScreen(GameScreen.class);
-            gs.setupGamePanel(audioPath);
+            gs.setupGamePanel(audioPath, stars);
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "Failed to launch game for " + data.title, ex);
         }

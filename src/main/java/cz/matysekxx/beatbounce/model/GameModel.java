@@ -6,6 +6,7 @@ import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.MovingTile;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.level.Level;
+import cz.matysekxx.beatbounce.model.level.LevelGenerator;
 
 import javax.sound.sampled.Clip;
 import java.util.EnumMap;
@@ -24,12 +25,16 @@ public class GameModel {
     private double gameZProgress;
     private double fallStartZ = 0;
     private int score = 0;
+    
+    private final double zUnitsPerSecond;
 
     public GameModel(Level level, Sphere sphere, Camera3D cam, Clip clip) {
         this.level = level;
         this.sphere = sphere;
         this.cam = cam;
         this.clip = clip;
+        this.zUnitsPerSecond = LevelGenerator.getZSpeed(level.stars() > 0 ? level.stars() : 1);
+        
         stateHandlers.put(GameState.PLAYING, this::handlePlaying);
         stateHandlers.put(GameState.FALLING, this::handleFalling);
         stateHandlers.put(GameState.GAME_OVER, this::handleGameOver);
@@ -64,7 +69,7 @@ public class GameModel {
     }
 
     public void update(double currentTime, double deltaTime) {
-        this.gameZProgress = currentTime * 800.0;
+        this.gameZProgress = currentTime * zUnitsPerSecond;
         this.stateHandlers.get(gameState).accept(currentTime);
 
         for (AbstractTile tile : level.tiles()) {
@@ -139,7 +144,7 @@ public class GameModel {
         double startZ = currentTile != null ? currentTile.getZ() : 0;
         final double endZ = nextTile.getZ();
         final double distanceZ = endZ - startZ;
-        double duration = distanceZ / 800.0;
+        double duration = distanceZ / zUnitsPerSecond;
         if (duration <= 0) duration = 0.2;
 
         final double height = 50 + (distanceZ * 0.15);

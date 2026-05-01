@@ -21,7 +21,7 @@ public class GameScreen extends Screen {
         loadingPanel = new LoadingPanel();
     }
 
-    public void setupGamePanel(Path audioPath) {
+    public void setupGamePanel(Path audioPath, int stars) {
         if (gamePanel != null) {
             gamePanel.stopGame();
             gamePanel = null;
@@ -37,7 +37,8 @@ public class GameScreen extends Screen {
         CompletableFuture.supplyAsync(() -> {
             final String path = audioPath.toFile().getPath();
             final AudioData audioData = AudioData.create(path);
-            return LevelGenerator.generateLevel(audioData, 1.f);
+            final float speedMultiplier = 1.0f + (stars - 1) * 0.15f;
+            return LevelGenerator.generateLevel(audioData, speedMultiplier, stars);
         }).thenAccept(level -> SwingUtilities.invokeLater(() -> {
             this.getContentPane().removeAll();
             gamePanel = new GamePanel();

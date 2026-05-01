@@ -71,7 +71,7 @@ public class MainMenuScreen extends Screen {
     }
 
     private static JPanel getJPanel() {
-        final JPanel bottomBar = new JPanel(new FlowLayout(FlowLayout.CENTER, 60, 15)) {
+        final JPanel bottomBar = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 15)) {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();

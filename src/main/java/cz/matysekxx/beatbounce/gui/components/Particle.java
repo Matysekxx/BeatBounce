@@ -14,14 +14,14 @@ public class Particle {
         reset(w, h, true);
     }
 
-    public static void drawAll(Graphics2D g2d, List<Particle> particles) {
+    public static void drawAll(Graphics2D g2d, Particle[] particles) {
         for (Particle p : particles) {
             g2d.setColor(new Color(p.color.getRed(), p.color.getGreen(), p.color.getBlue(), (int) (p.opacity * 255)));
             g2d.fillOval((int) p.x, (int) p.y, 3, 3);
         }
     }
 
-    public static void updateAll(List<Particle> particles, float dt, int w, int h) {
+    public static void updateAll(Particle[] particles, float dt, int w, int h) {
         for (Particle p : particles) {
             p.update(dt, w, h);
         }

@@ -87,12 +87,8 @@ public class IntroScreen extends Screen {
     }
 
     @Override
-    public void start() {
-        backgroundPanel.startAnimation();
-    }
+    public void start() { backgroundPanel.startAnimation(); }
 
     @Override
-    public void stop() {
-        backgroundPanel.stopAnimation();
-    }
+    public void stop() { backgroundPanel.stopAnimation(); }
 }

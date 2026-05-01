@@ -10,7 +10,7 @@ import java.util.List;
 
 
 public class IntroPanel extends JPanel implements Runnable {
-    private final List<Particle> particles = new ArrayList<>();
+    private final Particle[] particles = new Particle[30];
     private float time = 0;
     private boolean running = false;
     private Thread animatorThread;
@@ -19,7 +19,7 @@ public class IntroPanel extends JPanel implements Runnable {
         super();
         this.setDoubleBuffered(true);
         this.setOpaque(true);
-        for (int i = 0; i < 25; i++) particles.add(new Particle(1920, 540));
+        for (int i = 0; i < particles.length; i++) particles[i] = new Particle(1920, 540);
     }
 
     public void startAnimation() {

@@ -23,7 +23,7 @@ public class SongSelectionPanel extends JPanel implements Runnable {
     private final AudiusClient audiusClient;
     private final ObjectMapper objectMapper;
     private final ScreenManager screenManager;
-    private final List<Particle> particles = new ArrayList<>();
+    private final Particle[] particles = new Particle[30];
     private final JPanel songListPanel;
     private boolean running = false;
     private Thread animatorThread;
@@ -43,7 +43,7 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         setBackground(new Color(10, 10, 26));
         setLayout(new BorderLayout());
 
-        for (int i = 0; i < 30; i++) particles.add(new Particle(1920, 1080));
+        for (int i = 0; i < particles.length; i++) particles[i] = new Particle(1920, 1080);
 
         final JPanel topBar = createTopBar();
         add(topBar, BorderLayout.NORTH);

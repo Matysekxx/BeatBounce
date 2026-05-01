@@ -4,7 +4,7 @@ import javax.swing.*;
 
 public class Main {
     static void setProperties() {
-        System.setProperty("sun.java2d.opengl", "true");
+        //System.setProperty("sun.java2d.opengl", "true");
         System.setProperty("sun.java2d.noddraw", "true");
         System.setProperty("sun.awt.noerasebackground", "true");
         System.setProperty("sun.java2d.pmoffscreen", "false");

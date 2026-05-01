@@ -54,14 +54,14 @@ public abstract class AbstractTile extends Entity implements Paintable {
         final double scaleBack = cam.getScale(this.getZ() + getLengthInZ());
         this.paint3D(g2d, new Polygon(
                 createXPoints(
-                        cam, windowData.width(), scaleFront, scaleBack),
+                        cam, windowData.width(), scaleFront, scaleBack, this.getX()),
                 createYPoints(
                         cam, scaleFront, scaleBack, windowData.height() / 3),
                 4
         ));
     }
 
-    private int[] createYPoints(Camera3D cam, double scaleFront, double scaleBack, int horizonY) {
+    protected int[] createYPoints(Camera3D cam, double scaleFront, double scaleBack, int horizonY) {
         final int screenYFront = (int) (horizonY + ((150 - cam.getY()) * scaleFront));
         final int screenYBack = (int) (horizonY + ((150 - cam.getY()) * scaleBack));
         return new int[]{
@@ -69,11 +69,11 @@ public abstract class AbstractTile extends Entity implements Paintable {
         };
     }
 
-    private int[] createXPoints(Camera3D cam, int width, double scaleFront, double scaleBack) {
+    protected int[] createXPoints(Camera3D cam, int width, double scaleFront, double scaleBack, int targetX) {
         final double centerScreenFront = calculateCenterScreen(
-                this, (int) cam.getX(), width, scaleFront);
+                targetX, (int) cam.getX(), width, scaleFront);
         final double centerScreenBack = calculateCenterScreen(
-                this, (int) cam.getX(), width, scaleBack);
+                targetX, (int) cam.getX(), width, scaleBack);
 
         final double frontWidth = 100 * scaleFront;
         final double backWidth = 100 * scaleBack;
@@ -86,8 +86,8 @@ public abstract class AbstractTile extends Entity implements Paintable {
         };
     }
 
-    private double calculateCenterScreen(AbstractTile tile, int camX, int width, double scale) {
-        return ((double) width / 2) + ((tile.getX() - camX) * scale);
+    private double calculateCenterScreen(int targetX, int camX, int width, double scale) {
+        return ((double) width / 2) + ((targetX - camX) * scale);
     }
 
     public void setLocation(int x, int y) {

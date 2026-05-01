@@ -19,12 +19,13 @@ public class MovingTile extends AbstractTile {
     @JsonCreator
     public MovingTile(
             @JsonProperty("beatEvent") BeatEvent beatEvent,
-            @JsonProperty("point") Point point,
+            @JsonProperty("x") int x,
+            @JsonProperty("y") int y,
             @JsonProperty("z") double z,
             @JsonProperty("amplitude") int amplitude,
             @JsonProperty("speed") double speed) {
-        super(beatEvent, point, z, 50.0);
-        this.startX = point.x;
+        super(beatEvent, new Point(x, y), z, 50.0);
+        this.startX = x;
         this.amplitude = amplitude;
         this.speed = speed;
         this.time = 0;
@@ -32,8 +33,14 @@ public class MovingTile extends AbstractTile {
 
     public void update(double deltaTime) {
         this.time += deltaTime;
-        final int sweepAmplitude = 120;
-        final int newX = (int) (Math.sin(time * speed) * sweepAmplitude);
+        double phase = 0;
+        if (amplitude > 0) {
+            double ratio = startX / (double) amplitude;
+            ratio = Math.max(-1.0, Math.min(1.0, ratio));
+            phase = Math.asin(ratio);
+        }
+        
+        final int newX = (int) (Math.sin(time * speed + phase) * amplitude);
         this.setLocation(newX, this.getY());
     }
 

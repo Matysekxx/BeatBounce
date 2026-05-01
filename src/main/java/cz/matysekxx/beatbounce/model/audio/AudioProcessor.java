@@ -45,7 +45,7 @@ public class AudioProcessor {
         this.sampleRate = format.getSampleRate();
 
         this.percussionDetector = new PercussionOnsetDetector(sampleRate, BUFFER_SIZE,
-                (time, salience) -> handleDetectedBeat(time, salience, speedMultiplier), 70.0, 4.0);
+                (time, salience) -> handleDetectedBeat(time, salience, speedMultiplier), 55.0, 4.0);
                 
         this.complexDetector = new ComplexOnsetDetector(BUFFER_SIZE, 0.4);
         this.complexDetector.setHandler(

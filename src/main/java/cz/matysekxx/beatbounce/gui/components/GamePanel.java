@@ -191,10 +191,10 @@ public class GamePanel extends JPanel implements Runnable {
         final int x = (width - fm.stringWidth(text)) / 2;
         final int y = 85;
         final Color c = switch (score) {
-            case Integer i when i < 50 -> RenderUtils.cyan;
-            case Integer i when i < 75 -> RenderUtils.green;
-            case Integer i when i < 100 -> RenderUtils.blue;
-            case Integer i when i < 150 -> RenderUtils.purple;
+            case Integer i when i < 500 -> RenderUtils.cyan;
+            case Integer i when i < 750 -> RenderUtils.green;
+            case Integer i when i < 1000 -> RenderUtils.blue;
+            case Integer i when i < 1500 -> RenderUtils.purple;
             default -> RenderUtils.yellow;
         };
         RenderUtils.drawText(g2d, text, x, y, c);

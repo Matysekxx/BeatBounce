@@ -24,7 +24,7 @@ public class IsometricButton extends JButton {
         this.topGlow = topGlow;
         this.depth = depth;
         this.arc = arc;
-
+        this.setCursor(new Cursor(Cursor.HAND_CURSOR));
         this.setForeground(Color.WHITE);
         this.setFont(new Font("Monospaced", Font.BOLD | Font.ITALIC, 24));
         this.setPreferredSize(size);
@@ -91,7 +91,7 @@ public class IsometricButton extends JButton {
 
         if (glowAlpha > 0) {
             final float radius = w * 0.6f;
-            RadialGradientPaint glowPaint = new RadialGradientPaint(
+            final RadialGradientPaint glowPaint = new RadialGradientPaint(
                     w / 2f, h / 2f, radius,
                     new float[]{0f, 1f},
                     new Color[]{

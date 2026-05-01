@@ -55,9 +55,6 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         final JScrollPane scrollPane = buildScrollPane(songListPanel);
         add(scrollPane, BorderLayout.CENTER);
 
-        final JPanel bottomBar = createBottomBar();
-        add(bottomBar, BorderLayout.SOUTH);
-
         loadTracks("allTime", null);
     }
 
@@ -156,7 +153,7 @@ public class SongSelectionPanel extends JPanel implements Runnable {
                     g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, getHeight(), getHeight());
                     g2.setColor(new Color(200, 200, 200, 150));
                 }
-                FontMetrics fm = g2.getFontMetrics();
+                final FontMetrics fm = g2.getFontMetrics();
                 g2.drawString(getText(), (getWidth() - fm.stringWidth(getText())) / 2, getHeight() / 2 + 5);
                 g2.dispose();
             }
@@ -174,47 +171,6 @@ public class SongSelectionPanel extends JPanel implements Runnable {
             loadTracks(time, genre);
             repaint();
         });
-        return btn;
-    }
-
-    private JPanel createBottomBar() {
-        final JPanel bottomBar = new JPanel(new FlowLayout(FlowLayout.CENTER, 60, 15)) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setColor(new Color(10, 10, 26, 242));
-                g2.fillRect(0, 0, getWidth(), getHeight());
-                g2.setColor(new Color(0, 255, 255, 51));
-                g2.drawLine(0, 0, getWidth(), 0);
-                g2.dispose();
-            }
-        };
-        bottomBar.setPreferredSize(new Dimension(0, 52));
-        final String[] navs = {"SETTINGS", "SHOP", "SKINS", "ACHIEVEMENTS"};
-        for (String n : navs) {
-            bottomBar.add(createNavButton(n));
-        }
-        return bottomBar;
-    }
-
-    private JButton createNavButton(String text) {
-        final JButton btn = new JButton(text) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                RenderUtils.initGraphic2D(g2);
-                Color c = getModel().isRollover() ? RenderUtils.cyan : new Color(0, 255, 255, 128);
-                g2.setColor(c);
-                FontMetrics fm = g2.getFontMetrics();
-                g2.drawString(getText(), 0, fm.getAscent());
-                g2.dispose();
-            }
-        };
-        btn.setFont(new Font("SansSerif", Font.BOLD, 14));
-        btn.setContentAreaFilled(false);
-        btn.setBorderPainted(false);
-        btn.setFocusPainted(false);
-        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         return btn;
     }
 
@@ -241,7 +197,9 @@ public class SongSelectionPanel extends JPanel implements Runnable {
 
     private void filterTracks() {
         filteredTracks = allTracks.stream()
-                .filter(t -> searchQuery.isEmpty() || t.title.toLowerCase().contains(searchQuery.toLowerCase()) || t.artist.toLowerCase().contains(searchQuery.toLowerCase()))
+                .filter(t -> searchQuery.isEmpty() ||
+                        t.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
+                        t.artist.toLowerCase().contains(searchQuery.toLowerCase()))
                 .collect(Collectors.toList());
         updateSongList();
     }
@@ -298,9 +256,7 @@ public class SongSelectionPanel extends JPanel implements Runnable {
                 }
             }
 
-            if (needsRevalidate) {
-                SwingUtilities.invokeLater(songListPanel::revalidate);
-            }
+            if (needsRevalidate) { SwingUtilities.invokeLater(songListPanel::revalidate); }
 
             Particle.updateAll(particles, dt, getWidth() > 0 ? getWidth() : 1920, getHeight() > 0 ? getHeight() : 1080);
             repaint();

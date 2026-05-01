@@ -35,7 +35,6 @@ public class IntroScreen extends Screen {
             sleep(200);
             final JButton source = (JButton) e.getSource();
             source.setEnabled(false);
-            source.setText("LOADING...");
             final SwingWorker<Void, Void> worker = new SwingWorker<>() {
                 @Override
                 protected Void doInBackground() {
@@ -46,6 +45,8 @@ public class IntroScreen extends Screen {
                 @Override
                 protected void done() {
                     screenManager.showScreen(MainMenuScreen.class);
+                    source.setText("START");
+                    source.setEnabled(true);
                 }
             };
             worker.execute();

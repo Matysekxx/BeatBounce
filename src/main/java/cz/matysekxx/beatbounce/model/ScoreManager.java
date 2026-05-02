@@ -12,18 +12,23 @@ import java.util.Map;
 
 public class ScoreManager {
     private static final String SAVE_FILE = "save_data.json";
+    private static final String CURRENCY_FILE = "currency.json";
     private static final ObjectMapper mapper = new ObjectMapper();
     private static final Path savePath;
+    private static final Path currencyPath;
     private static Map<String, Integer> scores = new HashMap<>();
+    private static int totalCurrency = 0;
 
     static {
-        String userHome = System.getProperty("user.home");
+        final String userHome = System.getProperty("user.home");
         savePath = Paths.get(userHome, ".beatbounce", SAVE_FILE);
+        currencyPath = Paths.get(userHome, ".beatbounce", CURRENCY_FILE);
         loadScores();
+        loadCurrency();
     }
 
     public static void loadScores() {
-        File file = savePath.toFile();
+        final File file = savePath.toFile();
         if (file.exists()) {
             try {
                 scores = mapper.readValue(file, new TypeReference<HashMap<String, Integer>>() {
@@ -67,5 +72,46 @@ public class ScoreManager {
 
     public static int getSongsPlayedCount() {
         return scores.size();
+    }
+
+    public static void loadCurrency() {
+        final File file = currencyPath.toFile();
+        if (file.exists()) {
+            try {
+                Map<String, Integer> data = mapper.readValue(file, new TypeReference<HashMap<String, Integer>>() {});
+                totalCurrency = data.getOrDefault("currency", 0);
+            } catch (IOException e) {
+                System.err.println("Failed to load currency: " + e.getMessage());
+                totalCurrency = 0;
+            }
+        } else {
+            totalCurrency = 0;
+            saveCurrency();
+        }
+    }
+
+    public static void saveCurrency() {
+        try {
+            final File file = currencyPath.toFile();
+            if (!file.getParentFile().exists()) {
+                file.getParentFile().mkdirs();
+            }
+            final Map<String, Integer> data = new HashMap<>();
+            data.put("currency", totalCurrency);
+            mapper.writeValue(file, data);
+        } catch (IOException e) {
+            System.err.println("Failed to save currency: " + e.getMessage());
+        }
+    }
+
+    public static int getCurrency() {
+        return totalCurrency;
+    }
+
+    public static void addCurrency(int amount) {
+        if (amount > 0) {
+            totalCurrency += amount;
+            saveCurrency();
+        }
     }
 }

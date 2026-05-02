@@ -65,6 +65,8 @@ public class LevelGenerator {
         private final AudioData audioData;
         private final int stars;
         private final double zUnitsPerSecond;
+        private final double songDurationSeconds;
+        private final double maxZ;
         private final double baseFakeChance;
         private final double allLaneFakeChance;
         private final double baseMoveChance;
@@ -83,6 +85,13 @@ public class LevelGenerator {
             this.stars = stars;
             this.zUnitsPerSecond = getZSpeed();
 
+            if (audioData != null && audioData.clip() != null) {
+                this.songDurationSeconds = audioData.clip().getMicrosecondLength() / 1_000_000.0;
+            } else {
+                this.songDurationSeconds = Double.MAX_VALUE;
+            }
+            this.maxZ = songDurationSeconds * zUnitsPerSecond;
+
             this.baseFakeChance = 0.15 + (stars * 0.08);
             this.allLaneFakeChance = (stars >= 2) ? 0.05 + (stars * 0.05) : 0.0;
             this.baseMoveChance = 0.05 + (stars * 0.05);
@@ -96,6 +105,7 @@ public class LevelGenerator {
             for (PlacedBeat beat : filled) {
                 placeTile(beat);
             }
+            tiles.removeIf(t -> t.getZ() >= maxZ);
             return new Level(tiles, audioData, songName, stars);
         }
 
@@ -111,6 +121,7 @@ public class LevelGenerator {
                     case INTENSITY_HIGH_START -> isHighIntensity = true;
                     case INTENSITY_HIGH_END, INTENSITY_LOW_START -> isHighIntensity = false;
                     case BEAT -> {
+                        if (e.timestamp() >= songDurationSeconds) continue;
                         if (e.timestamp() - lastTileTimestamp < minTimeBetweenTiles) continue;
                         final double tileZ = e.timestamp() * zUnitsPerSecond;
                         final double lastTileZ = lastTileTimestamp >= 0
@@ -144,6 +155,7 @@ public class LevelGenerator {
                 int fills = 0;
 
                 while (t < gapEnd - safeInterval * 0.5 && fills < maxFillsPerGap) {
+                    if (t >= songDurationSeconds) break;
                     result.add(PlacedBeat.of(t, 0.0, false, true));
                     t += safeInterval;
                     fills++;

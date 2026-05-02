@@ -7,6 +7,7 @@ import cz.matysekxx.beatbounce.gui.WindowData;
 import cz.matysekxx.beatbounce.model.GameModel;
 import cz.matysekxx.beatbounce.model.GameState;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
+import cz.matysekxx.beatbounce.model.entity.Orb;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.level.Level;
 import cz.matysekxx.beatbounce.util.Time;
@@ -179,10 +180,12 @@ public class GamePanel extends JPanel implements Runnable {
         final int horizonY = h / 3;
         final long time = System.currentTimeMillis();
 
-        drawEnvironment(g2d, w, h, horizonY, time);
-        drawGameObjects(g2d, w, h);
-        uiRenderer.drawScore(g2d, w, scorePopAlpha);
-        uiRenderer.drawProgressBar(g2d, w, h);
+        if (gameModel.getGameState() != GameState.FINISHED) {
+            drawEnvironment(g2d, w, h, horizonY, time);
+            drawGameObjects(g2d, w, h);
+            uiRenderer.drawProgressBar(g2d, w, h);
+            uiRenderer.drawScore(g2d, w, scorePopAlpha);
+        }
         if (flashAlpha > 0) {
             final RadialGradientPaint flashVignette = new RadialGradientPaint(
                     w / 2f, h / 2f, w * 0.7f,
@@ -191,6 +194,12 @@ public class GamePanel extends JPanel implements Runnable {
                             new Color(1f, 0f, 0f, flashAlpha)}
             );
             g2d.setPaint(flashVignette);
+            g2d.fillRect(0, 0, w, h);
+        }
+
+        if (gameModel != null && gameModel.getNeonFlashAlpha() > 0) {
+            float alpha = Math.min(1f, gameModel.getNeonFlashAlpha());
+            g2d.setColor(new Color(0f, 0f, 0f, alpha));
             g2d.fillRect(0, 0, w, h);
         }
         drawByGameState(g2d, w, h);
@@ -271,6 +280,15 @@ public class GamePanel extends JPanel implements Runnable {
                 final double tileDepth = distance + tile.getLengthInZ();
                 if (tileDepth <= 0 || distance > 3000) continue;
                 tile.paint3D(g2d, cam, WindowData.of(width, height));
+            }
+
+            if (gameModel != null) {
+                for (Orb orb : gameModel.getOrbs()) {
+                    final double distance = cam.getDistanceTo(orb.getZ());
+                    if (distance > 0 && distance < 3000) {
+                        orb.paint3D(g2d, cam, WindowData.of(width, height));
+                    }
+                }
             }
         }
         sphere.paint3D(g2d, cam, WindowData.of(width, height));

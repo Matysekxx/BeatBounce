@@ -2,6 +2,7 @@ package cz.matysekxx.beatbounce.gui.components;
 
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.model.GameModel;
+import cz.matysekxx.beatbounce.model.ScoreManager;
 
 import javax.sound.sampled.Clip;
 import java.awt.*;
@@ -161,10 +162,20 @@ public class GameUIRenderer {
 
         g2d.setFont(new Font("Monospaced", Font.BOLD, 12));
         g2d.setColor(new Color(180, 180, 180, 180));
-        g2d.drawString(label, (width - g2d.getFontMetrics().stringWidth(label)) / 2, cardY + 22);
+        g2d.drawString(label, (width - g2d.getFontMetrics().stringWidth(label)) / 2, cardY + 12);
 
         g2d.setFont(new Font("Monospaced", Font.BOLD | Font.ITALIC, 48));
-        RenderUtils.drawText(g2d, scoreText, (width - g2d.getFontMetrics().stringWidth(scoreText)) / 2, cardY + 65, accentColor);
+        RenderUtils.drawText(g2d, scoreText, (width - g2d.getFontMetrics().stringWidth(scoreText)) / 2, cardY + 55, accentColor);
+
+        final String orbsLabel = "ORBS COLLECTED: " + gameModel.getCollectedOrbs();
+        g2d.setFont(new Font("Monospaced", Font.BOLD, 16));
+        g2d.setColor(new Color(255, 200, 0));
+        g2d.drawString(orbsLabel, (width - g2d.getFontMetrics().stringWidth(orbsLabel)) / 2, cardY + 85);
+        
+        final String totalOrbsLabel = "TOTAL CURRENCY: " + ScoreManager.getCurrency();
+        g2d.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        g2d.setColor(new Color(200, 200, 200));
+        g2d.drawString(totalOrbsLabel, (width - g2d.getFontMetrics().stringWidth(totalOrbsLabel)) / 2, cardY + 105);
     }
 
     public void drawScore(Graphics2D g2d, int width, float scorePopAlpha) {
@@ -199,6 +210,11 @@ public class GameUIRenderer {
         final String text = Integer.toString(score);
         g2d.setFont(new Font("Monospaced", Font.BOLD | Font.ITALIC, 60));
         RenderUtils.drawText(g2d, text, (width - g2d.getFontMetrics().stringWidth(text)) / 2, 88, c);
+
+        final String orbsText = "Orbs: " + gameModel.getCollectedOrbs();
+        g2d.setFont(new Font("Monospaced", Font.BOLD, 20));
+        g2d.setColor(new Color(255, 200, 0, 200));
+        g2d.drawString(orbsText, 20, 40);
     }
 
     public void drawProgressBar(Graphics2D g2d, int width, int height) {

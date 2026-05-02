@@ -6,5 +6,6 @@ public enum GameState {
     PAUSED,
     FALLING,
     GAME_OVER,
+    LEVEL_END_ANIMATION,
     FINISHED
 }

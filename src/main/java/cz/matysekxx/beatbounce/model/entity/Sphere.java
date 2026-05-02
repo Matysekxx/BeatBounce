@@ -18,6 +18,10 @@ public class Sphere extends Entity implements Paintable {
     private boolean isJumping;
     private boolean isFalling = false;
     private double fallSpeed = 0;
+    private float alpha = 1.0f;
+    private float scaleMultiplier = 1.0f;
+    private float vibration = 0.0f;
+    private float stretch = 1.0f;
 
     public Sphere(int x, int y, int z, int radius) {
         super(x, y);
@@ -77,6 +81,11 @@ public class Sphere extends Entity implements Paintable {
         return currentY;
     }
 
+    public void setCurrentY(double y) {
+        this.currentY = y;
+        this.y = (int) y;
+    }
+
     public void startFalling() {
         isFalling = true;
         isJumping = false;
@@ -92,6 +101,10 @@ public class Sphere extends Entity implements Paintable {
         isJumping = false;
         isFalling = false;
         fallSpeed = 0;
+        alpha = 1.0f;
+        scaleMultiplier = 1.0f;
+        vibration = 0.0f;
+        stretch = 1.0f;
     }
 
     public boolean isJumping() {
@@ -110,6 +123,38 @@ public class Sphere extends Entity implements Paintable {
         this.z = z;
     }
 
+    public float getAlpha() {
+        return alpha;
+    }
+
+    public void setAlpha(float alpha) {
+        this.alpha = alpha;
+    }
+
+    public float getScaleMultiplier() {
+        return scaleMultiplier;
+    }
+
+    public void setScaleMultiplier(float scaleMultiplier) {
+        this.scaleMultiplier = scaleMultiplier;
+    }
+
+    public float getVibration() {
+        return vibration;
+    }
+
+    public void setVibration(float vibration) {
+        this.vibration = vibration;
+    }
+
+    public float getStretch() {
+        return stretch;
+    }
+
+    public void setStretch(float stretch) {
+        this.stretch = stretch;
+    }
+
     public int getRadius() {
         return radius;
     }
@@ -119,12 +164,33 @@ public class Sphere extends Entity implements Paintable {
         final double scale = cam.getScale(z);
         if (scale <= 0) return;
 
-        final int screenX = (int) (windowData.width() / 2. + (currentX - cam.getX()) * scale);
-        final int screenY = (int) (windowData.height() / 3. + (currentY - radius - cam.getY()) * scale);
-        final int scaledRadius = (int) (radius * scale);
+        final double vx;
+        final double vy;
+        if (vibration > 0) {
+            vx = (Math.random() - 0.5) * vibration * 15;
+            vy = (Math.random() - 0.5) * vibration * 15;
+        } else {
+            vx = 0;
+            vy = 0;
+        }
 
-        g2d.setColor(Color.MAGENTA);
-        g2d.fillOval(screenX - scaledRadius, screenY - scaledRadius, scaledRadius * 2, scaledRadius * 2);
+        final int screenX = (int) (windowData.width() / 2. + (currentX + vx - cam.getX()) * scale);
+        final int screenY = (int) (windowData.height() / 3. + (currentY + vy - radius - cam.getY()) * scale);
+        final int scaledRadiusX = (int) (radius * scale * scaleMultiplier);
+        final int scaledRadiusY = (int) (radius * scale * scaleMultiplier * stretch);
+
+        final int a = (int)(255 * Math.max(0, Math.min(1.0f, alpha)));
+        if (a <= 0 || scaledRadiusX <= 0 || scaledRadiusY <= 0) return;
+
+        g2d.setColor(new Color(255, 0, 255, a));
+        g2d.fillOval(screenX - scaledRadiusX, screenY - scaledRadiusY, scaledRadiusX * 2, scaledRadiusY * 2);
+
+        if (stretch > 1.2) {
+            g2d.setColor(new Color(255, 200, 255, (int)(a * 0.6)));
+            final int innerW = (int)(scaledRadiusX * 0.6);
+            final int innerH = (int)(scaledRadiusY * 0.9);
+            g2d.fillOval(screenX - innerW, screenY - innerH, innerW * 2, innerH * 2);
+        }
     }
 
     @Override

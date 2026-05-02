@@ -4,11 +4,16 @@ import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.MovingTile;
+import cz.matysekxx.beatbounce.model.entity.Orb;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.level.Level;
 import cz.matysekxx.beatbounce.model.level.LevelGenerator;
 
 import javax.sound.sampled.Clip;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 public class GameModel {
     private static final int LANE_WIDTH = 120;
@@ -24,6 +29,10 @@ public class GameModel {
     private double fallStartZ = 0;
     private int score = 0;
     private double countdownTime = 3.0;
+    private double endAnimationTimer = 0;
+    private float neonFlashAlpha = 0f;
+    private final List<Orb> orbs = new ArrayList<>();
+    private int collectedOrbs = 0;
 
     public GameModel(Level level, Sphere sphere, Camera3D cam, Clip clip) {
         this.level = level;
@@ -45,6 +54,39 @@ public class GameModel {
         cam.setX(0);
         cam.setY(0);
         cam.setZ(-500);
+
+        orbs.clear();
+        collectedOrbs = 0;
+
+        final double totalSeconds = clip.getMicrosecondLength() / 1_000_000.0;
+        final int numOrbs;
+        if (totalSeconds < 30) {
+            numOrbs = 1;
+        } else if (totalSeconds < 60) {
+            numOrbs = 2;
+        } else {
+            final double roll = new Random().nextDouble();
+            if (roll < 0.7) numOrbs = 3;
+            else if (roll < 0.9) numOrbs = 4;
+            else numOrbs = 5;
+        }
+
+        final double maxOrbZ = clip.getMicrosecondLength() / 1_000_000.0 * zUnitsPerSecond;
+        final List<AbstractTile> validTiles = new ArrayList<>();
+        for (AbstractTile t : level.tiles()) {
+            if (t instanceof cz.matysekxx.beatbounce.model.entity.NormalTile && t.getZ() > 2000 && t.getZ() < maxOrbZ) {
+                validTiles.add(t);
+            }
+        }
+        
+        int toSpawn = Math.min(numOrbs, validTiles.size());
+        if (toSpawn > 0) {
+            Collections.shuffle(validTiles, new Random());
+            for (int i = 0; i < toSpawn; i++) {
+                AbstractTile t = validTiles.get(i);
+                orbs.add(new Orb(t.getX(), 110, t.getZ(), 20));
+            }
+        }
 
         startNextJump(0);
         clip.setFramePosition(0);
@@ -70,14 +112,27 @@ public class GameModel {
         return score;
     }
 
+    public int getCollectedOrbs() {
+        return collectedOrbs;
+    }
+
+    public List<Orb> getOrbs() {
+        return orbs;
+    }
+
     public double getCountdownTime() {
         return countdownTime;
+    }
+
+    public float getNeonFlashAlpha() {
+        return neonFlashAlpha;
     }
 
     public void update(double currentTime, double deltaTime) {
         switch (gameState) {
             case COUNTDOWN -> handleCountdown(deltaTime);
             case PLAYING -> handlePlaying(deltaTime);
+            case LEVEL_END_ANIMATION -> handleLevelEndAnimation(deltaTime);
             case FALLING -> handleFalling(currentTime);
             case PAUSED, FINISHED, GAME_OVER -> {
             }
@@ -94,9 +149,8 @@ public class GameModel {
 
     private void handlePlaying(double deltaTime) {
         if (clip.getMicrosecondPosition() >= clip.getMicrosecondLength() - 50000) {
-            gameState = GameState.FINISHED;
-            clip.stop();
-            ScoreManager.updateScore(level.songName(), score);
+            gameState = GameState.LEVEL_END_ANIMATION;
+            endAnimationTimer = 3.0;
             return;
         }
 
@@ -118,7 +172,7 @@ public class GameModel {
 
         sphere.setZ(gameZProgress);
         cam.setZ(gameZProgress - 500);
-        double targetCamX = sphere.getX() * 0.2;
+        final double targetCamX = sphere.getX() * 0.2;
         cam.setX(cam.getX() + (targetCamX - cam.getX()) * 0.05);
 
         if (currentTileIndex + 1 < level.tiles().size()) {
@@ -140,7 +194,55 @@ public class GameModel {
             }
         }
 
+        for (Orb orb : orbs) {
+            if (!orb.isCollected()) {
+                final double dz = orb.getZ() - sphere.getZ();
+                final double dx = orb.getX() - sphere.getX();
+                final double dy = orb.getY() - sphere.getCurrentY();
+                if (dz * dz + dx * dx + dy * dy < 6400) {
+                    orb.setCollected(true);
+                    collectedOrbs++;
+                }
+            }
+        }
+
         sphere.update(audioTimeInSeconds);
+    }
+
+    private void handleLevelEndAnimation(double deltaTime) {
+        endAnimationTimer -= deltaTime;
+        final double totalDuration = 3.0;
+        final double progress = Math.min(1.0, 1.0 - (endAnimationTimer / totalDuration));
+        final double eased;
+        if (progress < 0.5) eased = 2 * progress * progress;
+        else eased = 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+        gameZProgress += zUnitsPerSecond * deltaTime;
+        sphere.setZ(gameZProgress);
+        sphere.setStretch(1.0f);
+        sphere.setVibration(0f);
+        sphere.setScaleMultiplier(1.0f);
+        sphere.setAlpha(1.0f);
+
+        final double cameraLag = 500 + eased * 1500;
+        cam.setZ(gameZProgress - cameraLag);
+        cam.setY(-eased * 300);
+        cam.setX(cam.getX() * (1.0 - deltaTime * 2));
+
+        if (progress > 0.7) {
+            neonFlashAlpha = (float) ((progress - 0.7) / 0.3);
+        } else {
+            neonFlashAlpha = 0f;
+        }
+
+        if (endAnimationTimer <= 0) {
+            gameState = GameState.FINISHED;
+            neonFlashAlpha = 0f;
+            cam.setY(0);
+            clip.stop();
+            ScoreManager.updateScore(level.songName(), score);
+            ScoreManager.addCurrency(collectedOrbs);
+        }
     }
 
     private void handleFalling(double currentTime) {

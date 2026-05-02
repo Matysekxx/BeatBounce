@@ -54,7 +54,8 @@ public class LevelGenerator {
         return generatedLevel;
     }
 
-    private record CacheKey(String filePath, float speedMultiplier) {}
+    private record CacheKey(String filePath, float speedMultiplier) {
+    }
 
     private static class GenerationContext {
         private final List<AbstractTile> tiles;
@@ -64,15 +65,14 @@ public class LevelGenerator {
         private final AudioData audioData;
         private final int stars;
         private final double zUnitsPerSecond;
-
-        private int currentLane = 0;
-        private int consecutiveInLane = 0;
-        private int tilesGenerated = 0;
         private final double baseFakeChance;
         private final double allLaneFakeChance;
         private final double baseMoveChance;
         private final double highIntensityMoveChance;
         private final int maxLane;
+        private int currentLane = 0;
+        private int consecutiveInLane = 0;
+        private int tilesGenerated = 0;
 
         public GenerationContext(Iterable<BeatEvent> events, String songName, AudioData audioData, int stars) {
             this.events = events;

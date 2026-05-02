@@ -94,7 +94,7 @@ public class NormalTile extends AbstractTile {
         g2d.setStroke(new BasicStroke(4.0f));
         g2d.setColor(new Color(neonColor.getRed(), neonColor.getGreen(), neonColor.getBlue(), 100));
         g2d.drawPolygon(polygon);
-        
+
         g2d.setStroke(new BasicStroke(2.0f));
         g2d.setColor(new Color(neonColor.getRed(), neonColor.getGreen(), neonColor.getBlue(), 180));
         g2d.drawPolygon(polygon);

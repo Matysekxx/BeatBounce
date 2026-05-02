@@ -66,20 +66,22 @@ public class GamePanel extends JPanel implements Runnable {
             public void keyPressed(KeyEvent e) {
                 if (gameModel == null) return;
                 final GameState state = gameModel.getGameState();
-                if (state == GameState.PLAYING || state == GameState.COUNTDOWN || state == GameState.PAUSED) {
-                    if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                        gameModel.togglePause();
-                    } else if (state == GameState.PAUSED && e.getKeyCode() == KeyEvent.VK_ENTER) {
-                        stopGame();
-                        if (onExit != null) onExit.run();
+                switch (state) {
+                    case PLAYING, COUNTDOWN, PAUSED -> {
+                        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) gameModel.togglePause();
+                        else if (state == GameState.PAUSED && e.getKeyCode() == KeyEvent.VK_ENTER) {
+                            stopGame();
+                            if (onExit != null) onExit.run();
+                        }
                     }
-                } else if (state == GameState.GAME_OVER || state == GameState.FINISHED) {
-                    if (e.getKeyCode() == KeyEvent.VK_R) {
-                        gameModel.init();
-                        flashAlpha = 0f;
-                    } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_ENTER) {
-                        stopGame();
-                        if (onExit != null) onExit.run();
+                    case GAME_OVER, FINISHED -> {
+                        if (e.getKeyCode() == KeyEvent.VK_R) {
+                            gameModel.init();
+                            flashAlpha = 0f;
+                        } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_ENTER) {
+                            stopGame();
+                            if (onExit != null) onExit.run();
+                        }
                     }
                 }
             }
@@ -191,14 +193,17 @@ public class GamePanel extends JPanel implements Runnable {
             g2d.setPaint(flashVignette);
             g2d.fillRect(0, 0, w, h);
         }
+        drawByGameState(g2d, w, h);
+        g2d.dispose();
+    }
 
+    private void drawByGameState(Graphics2D g2d, int w, int h) {
         switch (gameModel.getGameState()) {
             case COUNTDOWN -> uiRenderer.drawCountdown(g2d, w, h);
             case PAUSED -> uiRenderer.drawPauseScreen(g2d, w, h);
             case FINISHED -> uiRenderer.drawFinishedScreen(g2d, w, h);
             case GAME_OVER -> uiRenderer.drawGameOverScreen(g2d, w, h);
         }
-        g2d.dispose();
     }
 
     private void drawEnvironment(Graphics2D g2d, int width, int height, int horizonY, long time) {

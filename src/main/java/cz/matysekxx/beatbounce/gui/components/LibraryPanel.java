@@ -95,7 +95,7 @@ public class LibraryPanel extends JPanel {
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btn.addActionListener(e -> addLocalSong());
+        btn.addActionListener(_ -> addLocalSong());
         return btn;
     }
 

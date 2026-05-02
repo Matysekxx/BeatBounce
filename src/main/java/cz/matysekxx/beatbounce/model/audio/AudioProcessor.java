@@ -12,33 +12,30 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 
 public class AudioProcessor {
+    public static final int BUFFER_SIZE = 2048;
+    public static final int OVERLAP = 1024;
     private static final double HIGH_INTENSITY_THRESHOLD = 0.15;
     private static final double LOW_INTENSITY_THRESHOLD = 0.08;
     private static final double SMOOTHING_FACTOR = 0.98;
-    public static final int BUFFER_SIZE = 2048;
-    public static final int OVERLAP = 1024;
     private static final double MIN_BEAT_INTERVAL = 0.08;
     private static final double DEDUP_WINDOW = 0.025;
     private static final double MAX_GAP_SECONDS = 1.2;
     private static final double SILENCE_THRESHOLD = 0.015;
     private static final int MAX_CONSECUTIVE_FALLBACKS = 8;
-
+    private static final int BPM_HISTORY_SIZE = 8;
     private final PercussionOnsetDetector percussionDetector;
     private final ComplexOnsetDetector complexDetector;
     private final TarsosDSPAudioFormat tarsosFormat;
     private final Consumer<BeatEvent> onBeatDetected;
-
     private final float sampleRate;
     private final int channels;
+    private final double[] beatHistory = new double[BPM_HISTORY_SIZE];
     private double currentTime = 0.0;
     private double smoothedRms = 0.0;
     private boolean inHighIntensity = false;
     private boolean inLowIntensity = false;
-
     private double lastAcceptedBeatTime = -1.0;
     private double lastRawBeatTime = -1.0;
-    private static final int BPM_HISTORY_SIZE = 8;
-    private final double[] beatHistory = new double[BPM_HISTORY_SIZE];
     private int beatHistoryCount = 0;
     private double nextFallbackBeatTime = -1.0;
     private int consecutiveFallbacks = 0;
@@ -140,6 +137,7 @@ public class AudioProcessor {
         framesProcessed += stepSize;
         currentTime = (double) framesProcessed / sampleRate;
     }
+
     private synchronized void checkFallbackBeat(double rms) {
         if (nextFallbackBeatTime < 0) return;
         if (currentTime < nextFallbackBeatTime) return;

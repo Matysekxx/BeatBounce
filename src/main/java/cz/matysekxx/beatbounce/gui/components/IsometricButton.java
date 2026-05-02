@@ -63,7 +63,7 @@ public class IsometricButton extends JButton {
 
     private void startGlowAnimation(boolean fadeIn) {
         if (glowTimer != null && glowTimer.isRunning()) glowTimer.stop();
-        glowTimer = new Timer(16, e -> {
+        glowTimer = new Timer(16, _ -> {
             if (fadeIn) {
                 glowAlpha += 0.1f;
                 if (glowAlpha >= 1f) {

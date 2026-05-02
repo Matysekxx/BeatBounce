@@ -163,7 +163,7 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btn.addActionListener(e -> {
+        btn.addActionListener(_ -> {
             activeGenre = name;
             final String time = name.equals("Trending") ? "month" : "allTime";
             String genre = (name.equals("All-Time") || name.equals("Trending")) ? null : name;

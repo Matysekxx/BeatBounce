@@ -30,7 +30,7 @@ public class GameModel {
         this.sphere = sphere;
         this.cam = cam;
         this.clip = clip;
-        this.zUnitsPerSecond = LevelGenerator.getZSpeed(level.stars() > 0 ? level.stars() : 1);
+        this.zUnitsPerSecond = LevelGenerator.getZSpeed();
     }
 
     public void init() {
@@ -77,7 +77,7 @@ public class GameModel {
     public void update(double currentTime, double deltaTime) {
         switch (gameState) {
             case COUNTDOWN -> handleCountdown(deltaTime);
-            case PLAYING -> handlePlaying(currentTime, deltaTime);
+            case PLAYING -> handlePlaying(deltaTime);
             case FALLING -> handleFalling(currentTime);
             case PAUSED, FINISHED, GAME_OVER -> {
             }
@@ -92,7 +92,7 @@ public class GameModel {
         }
     }
 
-    private void handlePlaying(double currentTime, double deltaTime) {
+    private void handlePlaying(double deltaTime) {
         if (clip.getMicrosecondPosition() >= clip.getMicrosecondLength() - 50000) {
             gameState = GameState.FINISHED;
             clip.stop();
@@ -100,7 +100,8 @@ public class GameModel {
             return;
         }
 
-        this.gameZProgress = currentTime * zUnitsPerSecond;
+        final double audioTimeInSeconds = clip.getMicrosecondPosition() / 1_000_000.0;
+        this.gameZProgress = audioTimeInSeconds * zUnitsPerSecond;
 
         for (AbstractTile tile : level.tiles()) {
             if (tile instanceof MovingTile movingTile) {
@@ -129,7 +130,7 @@ public class GameModel {
                 if (sphere.getX() >= tileMinX && sphere.getX() <= tileMaxX) {
                     currentTileIndex++;
                     score += 10;
-                    startNextJump(currentTime);
+                    startNextJump(audioTimeInSeconds);
                 } else {
                     gameState = GameState.FALLING;
                     sphere.startFalling();
@@ -139,7 +140,7 @@ public class GameModel {
             }
         }
 
-        sphere.update(currentTime);
+        sphere.update(audioTimeInSeconds);
     }
 
     private void handleFalling(double currentTime) {

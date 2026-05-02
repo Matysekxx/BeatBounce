@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-
 public class AudioAnalyzer {
     private final AudioData audioData;
     private final float speedMultiplier;
@@ -27,8 +26,8 @@ public class AudioAnalyzer {
         );
 
         final short[] samples = audioData.samples();
-        final int bufferSize = 2048;
-        final int overlap = 1024;
+        final int bufferSize = AudioProcessor.BUFFER_SIZE;
+        final int overlap = AudioProcessor.OVERLAP;
         final int stepSize = bufferSize - overlap;
 
         for (int i = 0; i <= samples.length - bufferSize; i += stepSize) {

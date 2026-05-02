@@ -3,6 +3,7 @@ package cz.matysekxx.beatbounce.model.entity;
 import cz.matysekxx.beatbounce.event.BeatEvent;
 
 import java.awt.*;
+import java.util.List;
 
 public class TileFactory {
 
@@ -13,8 +14,8 @@ public class TileFactory {
         return new NormalTile(event, new Point(x, y), z);
     }
 
-    public static NormalTile createFakeNormalTile(BeatEvent event, int x, int y, double z, int fakeDirection) {
-        return new NormalTile(event, new Point(x, y), z, fakeDirection);
+    public static NormalTile createNormalTileWithFakes(BeatEvent event, int x, int y, double z, List<Integer> fakeLaneOffsets) {
+        return new NormalTile(event, new Point(x, y), z, fakeLaneOffsets);
     }
 
     public static MovingTile createMovingTile(BeatEvent event, int x, int y, double z, int amplitude, double speed) {

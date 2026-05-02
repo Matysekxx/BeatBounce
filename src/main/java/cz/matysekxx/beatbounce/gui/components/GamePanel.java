@@ -17,22 +17,27 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 public class GamePanel extends JPanel implements Runnable {
     private final Camera3D cam;
+    private final Runnable onExit;
+    private final Cursor blankCursor;
     private Thread gameThread;
     private Sphere sphere;
     private Level level;
     private Clip clip;
-    private short[] audioSamples;
-    private float sampleRate;
     private GameModel gameModel;
     private boolean running;
     private long lastFrameTime;
     private float flashAlpha = 0f;
-    private final Runnable onExit;
-    private final Cursor blankCursor;
     private boolean isCursorHidden = false;
+    private int lastScore = 0;
+    private float scorePopAlpha = 0f;
+    private GameUIRenderer uiRenderer;
+    private BufferedImage bgCache;
+    private int cachedW = -1;
+    private int cachedH = -1;
 
     public GamePanel(Runnable onExit) {
         this.onExit = onExit;
@@ -43,29 +48,23 @@ public class GamePanel extends JPanel implements Runnable {
         this.cam = new Camera3D(0, 0, -500, 500.0);
         this.setDoubleBuffered(true);
         this.setOpaque(true);
-
-        final BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-        this.blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
-                cursorImg, new Point(0, 0), "blank cursor");
+        this.blankCursor = RenderUtils.blankCursor;
     }
 
     public void init(Level level) {
         this.level = level;
         this.clip = level.audioData().clip();
-        this.audioSamples = level.audioData().samples();
-        this.sampleRate = level.audioData().format().getSampleRate();
         this.sphere = new Sphere(0, 150, 0, 25);
         this.gameModel = new GameModel(level, sphere, cam, clip);
         this.flashAlpha = 0f;
-
-        final GameController gameController = new GameController(cam, sphere);
-        this.addKeyListener(gameController);
-        this.addMouseMotionListener(gameController);
+        this.lastScore = 0;
+        this.scorePopAlpha = 0f;
+        this.uiRenderer = new GameUIRenderer(gameModel, clip);
+        this.addMouseMotionListener(new GameController(cam, sphere));
         this.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (gameModel == null) return;
-                
                 final GameState state = gameModel.getGameState();
                 if (state == GameState.PLAYING || state == GameState.COUNTDOWN || state == GameState.PAUSED) {
                     if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
@@ -101,11 +100,11 @@ public class GamePanel extends JPanel implements Runnable {
     public void stopGame() {
         if (!this.running) return;
         this.running = false;
-        
+
         if (getCursor() == blankCursor) {
             setCursor(Cursor.getDefaultCursor());
         }
-        
+
         if (gameModel != null) {
             gameModel.stop();
         }
@@ -143,12 +142,26 @@ public class GamePanel extends JPanel implements Runnable {
             final GameState oldState = gameModel.getGameState();
             gameModel.update(currentTime, deltaTime);
             updateCursorVisibility();
-            
-            if (oldState == GameState.PLAYING && gameModel.getGameState() == GameState.FALLING) flashAlpha = 0.5f;
+
+            if (oldState == GameState.PLAYING && gameModel.getGameState() == GameState.FALLING) {
+                flashAlpha = 0.5f;
+            }
+
             if (flashAlpha > 0) {
                 flashAlpha -= (float) (deltaTime * 2.0);
                 if (flashAlpha < 0) flashAlpha = 0;
             }
+
+            final int currentScore = gameModel.getScore();
+            if (currentScore != lastScore) {
+                scorePopAlpha = 1.0f;
+                lastScore = currentScore;
+            }
+            if (scorePopAlpha > 0) {
+                scorePopAlpha -= (float) (deltaTime * 3.0);
+                if (scorePopAlpha < 0) scorePopAlpha = 0;
+            }
+
             repaint();
             Time.sleep(16);
         }
@@ -157,232 +170,103 @@ public class GamePanel extends JPanel implements Runnable {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        final Graphics2D g2d = (Graphics2D) g;
-        RenderUtils.initGraphic2D(g2d);
+        Graphics2D g2d = (Graphics2D) g;
+        RenderUtils.initGraphics2D(g2d);
+        final int w = getWidth();
+        final int h = getHeight();
+        final int horizonY = h / 3;
+        final long time = System.currentTimeMillis();
 
-        final int width = getWidth();
-        final int height = getHeight();
-        final int horizonY = height / 3;
-
-        drawEnvironment(g2d, width, height, horizonY);
-        drawGameObjects(g2d, width, height);
-
-        drawScore(g2d, width);
-        drawProgressBar(g2d, width);
-
+        drawEnvironment(g2d, w, h, horizonY, time);
+        drawGameObjects(g2d, w, h);
+        uiRenderer.drawScore(g2d, w, scorePopAlpha);
+        uiRenderer.drawProgressBar(g2d, w, h);
         if (flashAlpha > 0) {
-            g2d.setColor(new Color(1f, 0f, 0f, flashAlpha));
-            g2d.fillRect(0, 0, width, height);
+            final RadialGradientPaint flashVignette = new RadialGradientPaint(
+                    w / 2f, h / 2f, w * 0.7f,
+                    new float[]{0f, 1f},
+                    new Color[]{new Color(1f, 0f, 0f, flashAlpha * 0.3f),
+                            new Color(1f, 0f, 0f, flashAlpha)}
+            );
+            g2d.setPaint(flashVignette);
+            g2d.fillRect(0, 0, w, h);
         }
-        if (gameModel != null) {
-            switch (gameModel.getGameState()) {
-                case COUNTDOWN -> drawCountdown(g2d, width, height);
-                case PAUSED -> drawPauseScreen(g2d, width, height);
-                case FINISHED -> drawFinishedScreen(g2d, width, height);
-                case GAME_OVER -> drawGameOverScreen(g2d, width, height);
-                default -> {}
-            }
+
+        switch (gameModel.getGameState()) {
+            case COUNTDOWN -> uiRenderer.drawCountdown(g2d, w, h);
+            case PAUSED -> uiRenderer.drawPauseScreen(g2d, w, h);
+            case FINISHED -> uiRenderer.drawFinishedScreen(g2d, w, h);
+            case GAME_OVER -> uiRenderer.drawGameOverScreen(g2d, w, h);
         }
-    }
-    
-    private void drawCountdown(Graphics2D g2d, int width, int height) {
-        final int count = (int) Math.ceil(gameModel.getCountdownTime());
-        final String text = (count > 0) ? String.valueOf(count) : "GO!";
-        
-        g2d.setFont(new Font("SansSerif", Font.BOLD, 150));
-        final FontMetrics fm = g2d.getFontMetrics();
-        final int x = (width - fm.stringWidth(text)) / 2;
-        final int y = (height + fm.getAscent()) / 2;
-        RenderUtils.drawText(g2d, text, x, y, RenderUtils.cyan);
-    }
-    
-    private void drawPauseScreen(Graphics2D g2d, int width, int height) {
-        g2d.setColor(new Color(0, 0, 0, 150));
-        g2d.fillRect(0, 0, width, height);
-        
-        final String text = "PAUSED";
-        g2d.setFont(new Font("SansSerif", Font.BOLD, 80));
-        FontMetrics fm = g2d.getFontMetrics();
-        final int x = (width - fm.stringWidth(text)) / 2;
-        final int y = height / 2;
-        
-        RenderUtils.drawText(g2d, text, x, y, Color.WHITE);
-        
-        g2d.setFont(new Font("SansSerif", Font.PLAIN, 20));
-        final String resumeText = "Press ESC to Resume";
-        final String exitText = "Press ENTER to Quit to Menu";
-        
-        fm = g2d.getFontMetrics();
-        g2d.drawString(resumeText, (width - fm.stringWidth(resumeText)) / 2, y + 50);
-        g2d.drawString(exitText, (width - fm.stringWidth(exitText)) / 2, y + 90);
+        g2d.dispose();
     }
 
-    private void drawPostGameScore(Graphics2D g2d, int y, int width) {
-        final String scoreText = "Final Score: " + gameModel.getScore();
-        g2d.setFont(new Font("SansSerif", Font.BOLD, 40));
-        final FontMetrics fm = g2d.getFontMetrics();
-        final int x = (width - fm.stringWidth(scoreText)) / 2;
-        g2d.setColor(Color.WHITE);
-        g2d.drawString(scoreText, x, y + 100);
-    }
-    
-    private void drawFinishedScreen(Graphics2D g2d, int width, int height) {
-        g2d.setColor(new Color(0, 0, 0, 180));
-        g2d.fillRect(0, 0, width, height);
-        
-        final String text = "LEVEL COMPLETE";
-        g2d.setFont(new Font("SansSerif", Font.BOLD, 80));
-        FontMetrics fm = g2d.getFontMetrics();
-        final int x = (width - fm.stringWidth(text)) / 2;
-        final int y = height / 3;
-        
-        RenderUtils.drawText(g2d, text, x, y, RenderUtils.yellow);
-        
-        drawPostGameScore(g2d, y, width);
-        
-        final String restartText = "Press [R] to Restart";
-        final String continueText = "Press [ENTER] to Continue";
-        g2d.setFont(new Font("SansSerif", Font.PLAIN, 20));
-        fm = g2d.getFontMetrics();
-        g2d.drawString(restartText, (width - fm.stringWidth(restartText)) / 2, height - 120);
-        g2d.drawString(continueText, (width - fm.stringWidth(continueText)) / 2, height - 80);
-    }
-    
-    private void drawGameOverScreen(Graphics2D g2d, int width, int height) {
-        g2d.setColor(new Color(0, 0, 0, 180));
-        g2d.fillRect(0, 0, width, height);
-        
-        final String text = "GAME OVER";
-        g2d.setFont(new Font("SansSerif", Font.BOLD, 80));
-        FontMetrics fm = g2d.getFontMetrics();
-        final int x = (width - fm.stringWidth(text)) / 2;
-        final int y = height / 3;
-        
-        RenderUtils.drawText(g2d, text, x, y, Color.RED);
+    private void drawEnvironment(Graphics2D g2d, int width, int height, int horizonY, long time) {
+        if (bgCache == null || cachedW != width || cachedH != height) {
+            this.cachedW = width;
+            this.cachedH = height;
+            this.bgCache = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            final Graphics2D cg = bgCache.createGraphics();
+            RenderUtils.initGraphics2D(cg);
+            RenderUtils.drawBackground(cg, width, height);
+            RenderUtils.drawFloor(cg, width, height, horizonY);
+            cg.dispose();
+        }
+        g2d.drawImage(bgCache, 0, 0, null);
 
-        drawPostGameScore(g2d, y, width);
-        
-        final String restartText = "Press [R] to Restart";
-        final String exitText = "Press [ENTER] to Quit to Menu";
-        g2d.setFont(new Font("SansSerif", Font.PLAIN, 20));
-        fm = g2d.getFontMetrics();
-        g2d.drawString(restartText, (width - fm.stringWidth(restartText)) / 2, y + 180);
-        g2d.drawString(exitText, (width - fm.stringWidth(exitText)) / 2, y + 220);
-    }
-
-    private void drawProgressBar(Graphics2D g2d, int width) {
-        if (clip == null) return;
-
-        final double current = clip.getMicrosecondPosition() / 1_000_000.0;
-        final double total = clip.getMicrosecondLength() / 1_000_000.0;
-        final double progress = current / total;
-
-        final int barHeight = 8;
-        final int barY = 0;
-
-        g2d.setColor(new Color(255, 255, 255, 40));
-        g2d.fillRect(0, barY, width, barHeight);
-
-        g2d.setColor(RenderUtils.cyan);
-        g2d.fillRect(0, barY, (int) (width * progress), barHeight);
-
-        g2d.setFont(new Font("SansSerif", Font.BOLD, 12));
-        final String timeText = String.format("%d:%02d / %d:%02d", (int) current / 60, (int) current % 60, (int) total / 60, (int) total % 60);
-        g2d.setColor(Color.WHITE);
-        g2d.drawString(timeText, 10, barY + 25);
-    }
-
-    private void drawEnvironment(Graphics2D g2d, int width, int height, int horizonY) {
-        RenderUtils.drawBackground(g2d, width, height);
-        RenderUtils.drawFloor(g2d, width, height, horizonY);
-        drawHorizonEqualizer(g2d, width, horizonY);
+        drawPlanet(g2d, width, horizonY, time);
         RenderUtils.drawHorizonLine(g2d, width, horizonY);
         drawNeonGrid(g2d, width, height, horizonY);
     }
 
-    private void drawScore(Graphics2D g2d, int width) {
-        final Integer score = gameModel.getScore();
-        final String text = Integer.toString(score);
+    private void drawPlanet(Graphics2D g2d, int width, int horizonY, long time) {
+        final int cx = width / 2;
+        final int cy = horizonY - 150;
+        final int r = 100;
+        final float t = time / 1000.0f;
+        final float pulse = (float) ((Math.sin(t * 1.5) + 1.0) / 2.0);
 
-        g2d.setFont(new Font("SansSerif", Font.BOLD, 14));
-        g2d.setColor(new Color(255, 255, 255, 180));
-        FontMetrics fmSmall = g2d.getFontMetrics();
-        g2d.drawString("SCORE", (width - fmSmall.stringWidth("SCORE")) / 2, 35);
+        final int glowR = (int) (r * (2.f + pulse * 0.15f));
+        g2d.setPaint(new RadialGradientPaint(cx, cy, glowR, new float[]{0f, 1f}, new Color[]{new Color(0, 200, 255, (int) (15 + pulse * 30)), new Color(0, 200, 255, 0)}));
+        g2d.fillOval(cx - glowR, cy - glowR, glowR * 2, glowR * 2);
 
-        g2d.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 60));
-        final FontMetrics fm = g2d.getFontMetrics();
-        final int x = (width - fm.stringWidth(text)) / 2;
-        final int y = 85;
-        final Color c = switch (score) {
-            case Integer i when i < 500 -> RenderUtils.cyan;
-            case Integer i when i < 750 -> RenderUtils.green;
-            case Integer i when i < 1000 -> RenderUtils.blue;
-            case Integer i when i < 1500 -> RenderUtils.purple;
-            default -> RenderUtils.yellow;
-        };
-        RenderUtils.drawText(g2d, text, x, y, c);
+        final int ry = cy + (int) (Math.sin(t * 0.4) * 8);
+        
+        drawRing(g2d, cx, ry, r * 1.8f, 28, 0, 180, new Color(200, 0, 255, 60), 1f);
+        drawRing(g2d, cx, ry, r * 1.4f, 18, 0, 180, new Color(0, 255, 255, 40), 1f);
+
+        g2d.setPaint(new RadialGradientPaint(cx - r / 2.5f, cy - r / 2.5f, r * 1.5f, new float[]{0f, 1f}, new Color[]{new Color(45, 15, 80), new Color(10, 0, 25)}));
+        g2d.fillOval(cx - r, cy - r, r * 2, r * 2);
+
+        g2d.setColor(new Color(0, 255, 255, 120));
+        g2d.setStroke(new BasicStroke(2.5f));
+        g2d.drawOval(cx - r, cy - r, r * 2, r * 2);
+
+        drawRing(g2d, cx, ry, r * 1.4f, 18, 180, 180, new Color(0, 255, 255, (int)(180 + 75 * pulse)), 2f);
+        drawRing(g2d, cx, ry, r * 1.8f, 28, 180, 180, new Color(255, 50, 255, (int)(140 + 60 * pulse)), 2.5f);
+        drawRing(g2d, cx, ry, r * 1.8f, 28, 180, 180, new Color(255, 200, 255, 200), 1f);
+        
+        g2d.setStroke(new BasicStroke(1f));
+    }
+
+    private void drawRing(Graphics2D g2d, int cx, int cy, float rx, int ry, int startAngle, int arcAngle, Color color, float stroke) {
+        g2d.setColor(color);
+        g2d.setStroke(new BasicStroke(stroke));
+        g2d.drawArc(cx - (int)rx, cy - ry, (int)(rx * 2), ry * 2, startAngle, arcAngle);
     }
 
     private void drawGameObjects(Graphics2D g2d, int width, int height) {
-        final var tiles = level.tiles();
-        for (int i = tiles.size() - 1; i >= 0; i--) {
-            final AbstractTile tile = tiles.get(i);
-            final double distance = cam.getDistanceTo(tile.getZ());
-            final double tileDepth = distance + tile.getLengthInZ();
-            if (tileDepth <= 0 || distance > 3000) continue;
-            tile.paint3D(g2d, cam, WindowData.of(width, height));
-        }
-
-        sphere.paint3D(g2d, cam, WindowData.of(width, height));
-
-    }
-
-    private void drawHorizonEqualizer(Graphics2D g2d, int width, int horizonY) {
-        final int numBars = 64;
-        final int barWidth = width / numBars;
-        final long currentSample = (long) (clip.getMicrosecondPosition() / 1_000_000.0 * sampleRate);
-
-        int windowSize = 512;
-        final int startSample = Math.max(0, (int) currentSample);
-        if (startSample + windowSize > audioSamples.length) windowSize = audioSamples.length - startSample;
-        if (windowSize <= 0) return;
-
-        final int samplesPerBar = Math.max(1, windowSize / numBars);
-
-        for (int i = 0; i < numBars; i++) {
-            final double normalized = calculateBarAmplitude(startSample, samplesPerBar, i);
-
-            final double normalizedX = (double) (i - (numBars >> 1)) / (numBars >> 1);
-            final double bellCurve = Math.exp(-Math.pow(normalizedX, 2) * 3);
-
-            final int maxBarHeight = getHeight() / 4;
-            final int barHeight = (int) (5 + (maxBarHeight * normalized * 2.5 * bellCurve));
-            final int barX = i * barWidth;
-            final int barY = horizonY - barHeight;
-
-            final int r = (int) Math.min(255, Math.max(0, 255 * bellCurve));
-            final int g = (int) Math.min(255, Math.max(0, 255 * (1 - bellCurve)));
-
-            g2d.setColor(new Color(r, g, 255, 180));
-            g2d.fillRect(barX + 2, barY, barWidth - 4, barHeight);
-
-            g2d.setColor(new Color(255, 255, 255, 220));
-            g2d.fillRect(barX + 2, barY, barWidth - 4, 3);
-
-            g2d.setColor(new Color(r, g, 255, 30));
-            g2d.fillRect(barX + 2, horizonY, barWidth - 4, barHeight / 2);
-        }
-    }
-
-    private double calculateBarAmplitude(int startSample, int samplesPerBar, int barIndex) {
-        long sum = 0;
-        for (int j = 0; j < samplesPerBar; j++) {
-            final int idx = startSample + barIndex * samplesPerBar + j;
-            if (idx < audioSamples.length) {
-                sum += Math.abs(audioSamples[idx]);
+        if (gameModel == null || gameModel.getGameState() != GameState.FINISHED) {
+            final List<AbstractTile> tiles = level.tiles();
+            for (int i = tiles.size() - 1; i >= 0; i--) {
+                final AbstractTile tile = tiles.get(i);
+                final double distance = cam.getDistanceTo(tile.getZ());
+                final double tileDepth = distance + tile.getLengthInZ();
+                if (tileDepth <= 0 || distance > 3000) continue;
+                tile.paint3D(g2d, cam, WindowData.of(width, height));
             }
         }
-        return ((double) sum / samplesPerBar) / 32768.0;
+        sphere.paint3D(g2d, cam, WindowData.of(width, height));
     }
 
     private Point projectPoint(double x, double y, double z, int width, int horizonY) {
@@ -400,7 +284,7 @@ public class GamePanel extends JPanel implements Runnable {
             final Point p = projectPoint(0, 150, cam.getZ() + distance, width, horizonY);
 
             if (p != null && p.y >= horizonY && p.y <= height) {
-                final int alpha = (int) Math.max(0, Math.min(150, 255 - (distance / 3000.0 * 255)));
+                final int alpha = (int) Math.max(0, Math.min(120, 255 - (distance / 3000.0 * 255)));
                 g2d.setColor(new Color(0, 255, 255, alpha));
                 g2d.drawLine(0, p.y, width, p.y);
             }
@@ -409,14 +293,16 @@ public class GamePanel extends JPanel implements Runnable {
         final int[] laneXs = {-300, -180, -60, 60, 180, 300};
         g2d.setStroke(new BasicStroke(2));
         for (int lx : laneXs) {
+
             final Point start = projectPoint(lx, 150, cam.getZ() + 100, width, horizonY);
             final Point end = projectPoint(lx, 150, cam.getZ() + 3000, width, horizonY);
 
             if (start == null || end == null) continue;
 
-            g2d.setColor(Math.abs(lx) > 180 ? new Color(255, 0, 255, 100) : new Color(0, 255, 255, 120));
+            if (Math.abs(lx) > 180) g2d.setColor(new Color(255, 0, 255, 90));
+            else g2d.setColor(new Color(0, 255, 255, 110));
             g2d.drawLine(start.x, start.y, end.x, end.y);
         }
-        g2d.setStroke(new BasicStroke(1));
+        g2d.setStroke(new BasicStroke(1f));
     }
 }

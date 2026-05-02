@@ -4,6 +4,7 @@ import cz.matysekxx.beatbounce.api.AudiusClient;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.screen.GameScreen;
 import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
+import cz.matysekxx.beatbounce.model.ScoreManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -106,7 +107,8 @@ public class TrackRow extends JPanel {
 
         final int rightX = w - 20;
         g2.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        final String info = String.format("%s  •  Best: %d", data.duration, data.best);
+        final String sanitizedTitle = data.title.replaceAll("[\\\\/:*?\"<>|]", "_");
+        final String info = String.format("%s  •  Best: %d", data.duration, ScoreManager.getBestScore(sanitizedTitle));
         final FontMetrics fm = g2.getFontMetrics();
         g2.setColor(new Color(200, 200, 200));
         g2.drawString(info, rightX - fm.stringWidth(info), 38);

@@ -4,6 +4,7 @@ import cz.matysekxx.beatbounce.api.AudiusClient;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.screen.GameScreen;
 import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
+import cz.matysekxx.beatbounce.model.ScoreManager;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -231,9 +232,15 @@ public class LibraryPanel extends JPanel {
 
             final int rightX = w - 140;
             g2.setFont(new Font("SansSerif", Font.PLAIN, 14));
+            
+            final String info = String.format("Best: %d", ScoreManager.getBestScore(fileName));
+            final FontMetrics fm = g2.getFontMetrics();
+            g2.setColor(new Color(200, 200, 200));
+            g2.drawString(info, rightX - fm.stringWidth(info), 38);
+
             final String starsStr = "★".repeat(stars) + "☆".repeat(5 - stars);
             g2.setColor(RenderUtils.cyan);
-            g2.drawString(starsStr, rightX - g2.getFontMetrics().stringWidth(starsStr), 38);
+            g2.drawString(starsStr, rightX - fm.stringWidth(info) - fm.stringWidth(starsStr) - 15, 38);
 
             final int btnW = 100, btnH = 32;
             final int bx = w - 20 - btnW;

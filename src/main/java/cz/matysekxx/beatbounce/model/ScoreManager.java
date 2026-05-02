@@ -67,7 +67,10 @@ public class ScoreManager {
     }
 
     public static int getGlobalHighScore() {
-        return scores.values().stream().mapToInt(Integer::intValue).max().orElse(0);
+        return scores.values().stream()
+                .mapToInt(Integer::intValue)
+                .max()
+                .orElse(0);
     }
 
     public static int getSongsPlayedCount() {
@@ -78,7 +81,7 @@ public class ScoreManager {
         final File file = currencyPath.toFile();
         if (file.exists()) {
             try {
-                Map<String, Integer> data = mapper.readValue(file, new TypeReference<HashMap<String, Integer>>() {});
+                final var data = mapper.readValue(file, new TypeReference<HashMap<String, Integer>>() {});
                 totalCurrency = data.getOrDefault("currency", 0);
             } catch (IOException e) {
                 System.err.println("Failed to load currency: " + e.getMessage());

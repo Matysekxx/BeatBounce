@@ -240,7 +240,7 @@ public class GameModel {
             neonFlashAlpha = 0f;
             cam.setY(0);
             clip.stop();
-            ScoreManager.updateScore(level.songName(), score);
+            ScoreManager.updateScore(getCleanSongName(), score);
             ScoreManager.addCurrency(collectedOrbs);
         }
     }
@@ -251,8 +251,15 @@ public class GameModel {
         cam.setZ(gameZProgress - 500);
         if (sphere.getCurrentY() > 500) {
             gameState = GameState.GAME_OVER;
-            ScoreManager.updateScore(level.songName(), score);
+            ScoreManager.updateScore(getCleanSongName(), score);
         }
+    }
+
+    private String getCleanSongName() {
+        final String name = level.songName();
+        final int dot = name.lastIndexOf('.');
+        if (dot > 0) return name.substring(0, dot);
+        return name;
     }
 
     private void startNextJump(double currentTime) {

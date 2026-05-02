@@ -7,18 +7,11 @@ import javax.swing.*;
 import java.awt.*;
 
 public class LoadingPanel extends JPanel implements Runnable {
-    private float time = 0.f;
-    private float progress = 0.f;
-    private Thread animationThread;
-    private volatile boolean running = false;
-    private String text = "Loading Level...";
-
     private static final Font TITLE_FONT = new Font("Monospaced", Font.BOLD | Font.ITALIC, 72);
     private static final Font PERCENT_FONT = new Font("Monospaced", Font.BOLD, 16);
     private static final Font FOOTER_FONT = new Font("SansSerif", Font.PLAIN, 20);
     private static final Stroke BAR_STROKE = new BasicStroke(1.5f);
     private static final int BAR_HEIGHT = 20;
-
     private static final Color FILL_GLOW_COLOR = new Color(
             RenderUtils.cyan.getRed(), RenderUtils.cyan.getGreen(), RenderUtils.cyan.getBlue(), 40
     );
@@ -26,6 +19,11 @@ public class LoadingPanel extends JPanel implements Runnable {
     private static final Color PERCENT_SHADOW_COLOR = new Color(0, 255, 220, 30);
     private static final Color PERCENT_TEXT_COLOR = new Color(255, 255, 255, 200);
     private static final Color FOOTER_COLOR = new Color(180, 180, 200, 120);
+    private float time = 0.f;
+    private float progress = 0.f;
+    private Thread animationThread;
+    private volatile boolean running = false;
+    private String text = "Loading Level...";
 
     public LoadingPanel() {
         setOpaque(true);
@@ -52,7 +50,8 @@ public class LoadingPanel extends JPanel implements Runnable {
             animationThread.interrupt();
             try {
                 animationThread.join(200);
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException ignored) {
+            }
             animationThread = null;
         }
     }

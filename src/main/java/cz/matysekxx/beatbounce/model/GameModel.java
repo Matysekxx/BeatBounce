@@ -17,14 +17,13 @@ public class GameModel {
     private final Sphere sphere;
     private final Camera3D cam;
     private final Clip clip;
+    private final double zUnitsPerSecond;
     private volatile GameState gameState = GameState.COUNTDOWN;
     private int currentTileIndex = -1;
     private double gameZProgress;
     private double fallStartZ = 0;
     private int score = 0;
     private double countdownTime = 3.0;
-    
-    private final double zUnitsPerSecond;
 
     public GameModel(Level level, Sphere sphere, Camera3D cam, Clip clip) {
         this.level = level;
@@ -56,7 +55,7 @@ public class GameModel {
             clip.stop();
         }
     }
-    
+
     public void togglePause() {
         if (gameState == GameState.PLAYING) {
             gameState = GameState.PAUSED;
@@ -70,7 +69,7 @@ public class GameModel {
     public Integer getScore() {
         return score;
     }
-    
+
     public double getCountdownTime() {
         return countdownTime;
     }
@@ -84,7 +83,7 @@ public class GameModel {
             }
         }
     }
-    
+
     private void handleCountdown(double deltaTime) {
         countdownTime -= deltaTime;
         if (countdownTime <= 0) {

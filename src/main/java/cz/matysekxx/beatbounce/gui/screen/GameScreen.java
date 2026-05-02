@@ -11,9 +11,9 @@ import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 
 public class GameScreen extends Screen {
-    private GamePanel gamePanel;
     private final LoadingPanel loadingPanel;
     private final ScreenManager screenManager;
+    private GamePanel gamePanel;
 
     public GameScreen(ScreenManager screenManager) {
         super();
@@ -69,7 +69,7 @@ public class GameScreen extends Screen {
             gamePanel.startGame();
         }
     }
-    
+
     @Override
     public void stop() {
         if (gamePanel != null) {

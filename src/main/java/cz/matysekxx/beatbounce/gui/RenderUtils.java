@@ -11,9 +11,9 @@ public final class RenderUtils {
     public final static Color purple = new Color(191, 0, 255);
     public final static Color yellow = new Color(255, 215, 0);
     public static final int ROAD_WIDTH = 300;
+    public static final Cursor blankCursor;
     private static BufferedImage noiseTexture;
     private static int[][] starCache = null;
-    public static final Cursor blankCursor;
 
     static {
         final var cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);

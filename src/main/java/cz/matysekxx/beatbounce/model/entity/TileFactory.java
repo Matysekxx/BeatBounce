@@ -12,7 +12,7 @@ public class TileFactory {
     public static NormalTile createNormalTile(BeatEvent event, int x, int y, double z) {
         return new NormalTile(event, new Point(x, y), z);
     }
-    
+
     public static NormalTile createFakeNormalTile(BeatEvent event, int x, int y, double z, int fakeDirection) {
         return new NormalTile(event, new Point(x, y), z, fakeDirection);
     }

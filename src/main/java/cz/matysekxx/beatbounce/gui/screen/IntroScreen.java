@@ -5,8 +5,6 @@ import cz.matysekxx.beatbounce.gui.components.IntroPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -87,8 +85,12 @@ public class IntroScreen extends Screen {
     }
 
     @Override
-    public void start() { backgroundPanel.startAnimation(); }
+    public void start() {
+        backgroundPanel.startAnimation();
+    }
 
     @Override
-    public void stop() { backgroundPanel.stopAnimation(); }
+    public void stop() {
+        backgroundPanel.stopAnimation();
+    }
 }

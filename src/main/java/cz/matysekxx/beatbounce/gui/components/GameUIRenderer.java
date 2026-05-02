@@ -5,11 +5,11 @@ import cz.matysekxx.beatbounce.model.GameModel;
 
 import javax.sound.sampled.Clip;
 import java.awt.*;
-import java.util.Random;
 
 public class GameUIRenderer {
     private final GameModel gameModel;
     private final Clip clip;
+
     public GameUIRenderer(GameModel gameModel, Clip clip) {
         this.gameModel = gameModel;
         this.clip = clip;
@@ -141,7 +141,7 @@ public class GameUIRenderer {
         g2d.drawString(text, x + glitchOffset, y - 1);
 
         RenderUtils.drawText(g2d, text, x, y, new Color(255, 40, 40));
-        
+
         g2d.setColor(new Color(255, 40, 40, (int) (70 + 50 * pulse)));
         g2d.setStroke(new BasicStroke(2f));
         g2d.drawLine((width - cardW) / 2 + 40, cardY + 140, (width + cardW) / 2 - 40, cardY + 140);
@@ -155,7 +155,7 @@ public class GameUIRenderer {
     }
 
     private void drawPostGameScore(Graphics2D g2d, int titleY, int width, Color accentColor) {
-        final  String label = "F I N A L   S C O R E";
+        final String label = "F I N A L   S C O R E";
         final String scoreText = String.format("%,d", gameModel.getScore());
         final int cardY = titleY + 55;
 

@@ -231,7 +231,7 @@ public class GamePanel extends JPanel implements Runnable {
         g2d.fillOval(cx - glowR, cy - glowR, glowR * 2, glowR * 2);
 
         final int ry = cy + (int) (Math.sin(t * 0.4) * 8);
-        
+
         drawRing(g2d, cx, ry, r * 1.8f, 28, 0, 180, new Color(200, 0, 255, 60), 1f);
         drawRing(g2d, cx, ry, r * 1.4f, 18, 0, 180, new Color(0, 255, 255, 40), 1f);
 
@@ -242,17 +242,19 @@ public class GamePanel extends JPanel implements Runnable {
         g2d.setStroke(new BasicStroke(2.5f));
         g2d.drawOval(cx - r, cy - r, r * 2, r * 2);
 
-        drawRing(g2d, cx, ry, r * 1.4f, 18, 180, 180, new Color(0, 255, 255, (int)(180 + 75 * pulse)), 2f);
-        drawRing(g2d, cx, ry, r * 1.8f, 28, 180, 180, new Color(255, 50, 255, (int)(140 + 60 * pulse)), 2.5f);
+        drawRing(g2d, cx, ry, r * 1.4f, 18, 180, 180, new Color(0, 255, 255, (int) (180 + 75 * pulse)), 2f);
+        drawRing(g2d, cx, ry, r * 1.8f, 28, 180, 180, new Color(255, 50, 255, (int) (140 + 60 * pulse)), 2.5f);
         drawRing(g2d, cx, ry, r * 1.8f, 28, 180, 180, new Color(255, 200, 255, 200), 1f);
-        
+
         g2d.setStroke(new BasicStroke(1f));
     }
 
-    private void drawRing(Graphics2D g2d, int cx, int cy, float rx, int ry, int startAngle, int arcAngle, Color color, float stroke) {
+    private void drawRing(
+            Graphics2D g2d, int cx, int cy, float rx, int ry, int startAngle, int arcAngle, Color color, float stroke
+    ) {
         g2d.setColor(color);
         g2d.setStroke(new BasicStroke(stroke));
-        g2d.drawArc(cx - (int)rx, cy - ry, (int)(rx * 2), ry * 2, startAngle, arcAngle);
+        g2d.drawArc(cx - (int) rx, cy - ry, (int) (rx * 2), ry * 2, startAngle, arcAngle);
     }
 
     private void drawGameObjects(Graphics2D g2d, int width, int height) {

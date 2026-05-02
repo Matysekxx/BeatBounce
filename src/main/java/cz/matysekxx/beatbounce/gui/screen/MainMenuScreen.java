@@ -16,10 +16,13 @@ public class MainMenuScreen extends Screen {
     private final ObjectMapper objectMapper;
     private final CardLayout cardLayout;
     private final JPanel cardPanel;
-    
+
     private final SongSelectionPanel songSelectionPanel;
     private final LibraryPanel libraryPanel;
     private final ScreenManager screenManager;
+    private final String[] buttonsTitles = {
+            "SONGS", "LIBRARY", "SKINS", "SHOP", "SETTINGS"
+    };
 
     public MainMenuScreen(ScreenManager screenManager) {
         super();
@@ -58,18 +61,6 @@ public class MainMenuScreen extends Screen {
         backgroundPanel.add(bottomBar, BorderLayout.SOUTH);
     }
 
-    private final String[] buttonsTitles = {
-            "SONGS", "LIBRARY", "SKINS", "SHOP", "SETTINGS"
-    };
-    private JPanel createBottomBar() {
-        final JPanel bottomBar = getJPanel();
-        for (String name : buttonsTitles) {
-            bottomBar.add(createNavButton(name, _ -> showPanel(name)));
-        }
-        bottomBar.add(createNavButton("BACK", _ -> screenManager.showScreen(IntroScreen.class)));
-        return bottomBar;
-    }
-
     private static JPanel getJPanel() {
         final JPanel bottomBar = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 15)) {
             @Override
@@ -84,6 +75,15 @@ public class MainMenuScreen extends Screen {
             }
         };
         bottomBar.setPreferredSize(new Dimension(0, 52));
+        return bottomBar;
+    }
+
+    private JPanel createBottomBar() {
+        final JPanel bottomBar = getJPanel();
+        for (String name : buttonsTitles) {
+            bottomBar.add(createNavButton(name, _ -> showPanel(name)));
+        }
+        bottomBar.add(createNavButton("BACK", _ -> screenManager.showScreen(IntroScreen.class)));
         return bottomBar;
     }
 

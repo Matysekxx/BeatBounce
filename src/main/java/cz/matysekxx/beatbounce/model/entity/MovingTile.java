@@ -39,7 +39,7 @@ public class MovingTile extends AbstractTile {
             ratio = Math.max(-1.0, Math.min(1.0, ratio));
             phase = Math.asin(ratio);
         }
-        
+
         final int newX = (int) (Math.sin(time * speed + phase) * amplitude);
         this.setLocation(newX, this.getY());
     }

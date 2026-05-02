@@ -79,9 +79,9 @@ public class LevelGenerator {
             final double minTimeBetweenBeats = Math.max(0.12, 0.30 - (stars * 0.05));
             final double baseMoveChance = 0.05 + (stars * 0.05);
             final double highIntensityMoveChance = 0.20 + (stars * 0.10);
-            
+
             final double baseFakeChance = 0.05 + (stars * 0.08);
-            
+
             for (BeatEvent e : events) {
                 switch (e.type()) {
                     case INTENSITY_HIGH_START -> isHighIntensity = true;
@@ -99,14 +99,14 @@ public class LevelGenerator {
 
                         boolean shouldMove = false;
                         boolean shouldHaveFakes = false;
-                        
+
                         if (tilesGenerated > 5) {
                             if (isHighIntensity) {
                                 shouldMove = rng.nextDouble() < highIntensityMoveChance;
                             } else {
                                 shouldMove = rng.nextDouble() < baseMoveChance;
                             }
-                            
+
                             if (!shouldMove && rng.nextDouble() < baseFakeChance) {
                                 shouldHaveFakes = true;
                             }
@@ -153,13 +153,13 @@ public class LevelGenerator {
             } else {
                 final double r = rng.nextDouble();
                 double stayChance = Math.max(0.02, 0.15 - (stars * 0.03));
-                
+
                 if (r < stayChance) {
                     move = 0;
                 } else {
                     move = rng.nextBoolean() ? 1 : -1;
                 }
-                
+
                 final int maxLane = (stars >= 4) ? 2 : 1;
 
                 if (lane + move > maxLane) move = -1;

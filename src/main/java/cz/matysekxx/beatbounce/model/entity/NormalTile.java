@@ -56,7 +56,7 @@ public class NormalTile extends AbstractTile {
                 );
                 drawFakePolygon(g2d, fakePolyLeft);
             }
-            
+
             if (fakeDirection == 1 || fakeDirection == 2) {
                 final Polygon fakePolyRight = new Polygon(
                         createXPoints(cam, windowData.width(), scaleFront, scaleBack, this.getX() + LANE_WIDTH),

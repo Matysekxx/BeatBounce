@@ -18,14 +18,14 @@ public class AudioProcessor {
 
     private static final int BUFFER_SIZE = 2048;
     private static final int OVERLAP = 1024;
-    private static final double MIN_BEAT_INTERVAL = 0.10; 
+    private static final double MIN_BEAT_INTERVAL = 0.10;
 
     private final PercussionOnsetDetector percussionDetector;
     private final ComplexOnsetDetector complexDetector;
     private final TarsosDSPAudioFormat tarsosFormat;
     private final Consumer<BeatEvent> onBeatDetected;
     private final float sampleRate;
-    
+
     private double currentTime = 0.0;
     private double smoothedRms = 0.0;
     private boolean inHighIntensity = false;
@@ -46,7 +46,7 @@ public class AudioProcessor {
 
         this.percussionDetector = new PercussionOnsetDetector(sampleRate, BUFFER_SIZE,
                 (time, salience) -> handleDetectedBeat(time, salience, speedMultiplier), 55.0, 4.0);
-                
+
         this.complexDetector = new ComplexOnsetDetector(BUFFER_SIZE, 0.4);
         this.complexDetector.setHandler(
                 (time, salience) -> handleDetectedBeat(time, salience, speedMultiplier));

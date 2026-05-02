@@ -9,7 +9,7 @@ import java.awt.event.MouseMotionListener;
 public class GameController implements MouseMotionListener {
     private final static int LANE_WIDTH = 120;
     private final static int MAX_LANE_ABS = 2 * LANE_WIDTH;
-    
+
     private final Camera3D cam;
     private final Sphere sphere;
 

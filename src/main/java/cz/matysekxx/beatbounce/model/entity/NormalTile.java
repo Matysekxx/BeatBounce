@@ -54,7 +54,7 @@ public class NormalTile extends AbstractTile {
                         createYPoints(cam, scaleFront, scaleBack, windowData.height() / 3),
                         4
                 );
-                drawFakePolygon(g2d, fakePolyLeft);
+                drawFakePolygon(g2d, fakePolyLeft, -0.15f);
             }
 
             if (fakeDirection == 1 || fakeDirection == 2) {
@@ -63,18 +63,24 @@ public class NormalTile extends AbstractTile {
                         createYPoints(cam, scaleFront, scaleBack, windowData.height() / 3),
                         4
                 );
-                drawFakePolygon(g2d, fakePolyRight);
+                drawFakePolygon(g2d, fakePolyRight, 0.15f);
             }
         }
     }
 
-    private void drawFakePolygon(Graphics2D g2d, Polygon polygon) {
-        final float h = 0.33f + (hueOffset * 0.1f);
+    private void drawFakePolygon(Graphics2D g2d, Polygon polygon, float extraHueOffset) {
+        float h = 0.33f + (hueOffset * 0.1f) + extraHueOffset;
+        h = h - (float) Math.floor(h);
+
         final float s = 0.6f;
         final float b = 0.8f;
 
         final Color baseColor = Color.getHSBColor(h, s, b);
-        final Color neonColor = new Color(0, 200, 255);
+        final Color neonColor = Color.getHSBColor(h, 1.0f, 1.0f);
+
+        g2d.setStroke(new BasicStroke(4.0f));
+        g2d.setColor(new Color(neonColor.getRed(), neonColor.getGreen(), neonColor.getBlue(), 30));
+        g2d.drawPolygon(polygon);
 
         g2d.setStroke(new BasicStroke(2.0f));
         g2d.setColor(new Color(neonColor.getRed(), neonColor.getGreen(), neonColor.getBlue(), 60));
@@ -84,7 +90,7 @@ public class NormalTile extends AbstractTile {
         g2d.fillPolygon(polygon);
 
         g2d.setStroke(new BasicStroke(1.0f));
-        g2d.setColor(new Color(255, 255, 255, 90));
+        g2d.setColor(new Color(255, 255, 255, 120));
         g2d.drawPolygon(polygon);
     }
 
@@ -97,18 +103,22 @@ public class NormalTile extends AbstractTile {
         final Color baseColor = Color.getHSBColor(h, s, b);
         final Color neonColor = new Color(0, 255, 255);
 
-        g2d.setStroke(new BasicStroke(6.0f));
-        g2d.setColor(new Color(neonColor.getRed(), neonColor.getGreen(), neonColor.getBlue(), 60));
+        g2d.setStroke(new BasicStroke(8.0f));
+        g2d.setColor(new Color(neonColor.getRed(), neonColor.getGreen(), neonColor.getBlue(), 40));
         g2d.drawPolygon(polygon);
 
-        g2d.setStroke(new BasicStroke(3.0f));
-        g2d.setColor(new Color(neonColor.getRed(), neonColor.getGreen(), neonColor.getBlue(), 120));
+        g2d.setStroke(new BasicStroke(4.0f));
+        g2d.setColor(new Color(neonColor.getRed(), neonColor.getGreen(), neonColor.getBlue(), 100));
+        g2d.drawPolygon(polygon);
+        
+        g2d.setStroke(new BasicStroke(2.0f));
+        g2d.setColor(new Color(neonColor.getRed(), neonColor.getGreen(), neonColor.getBlue(), 180));
         g2d.drawPolygon(polygon);
 
-        g2d.setColor(new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), 220));
+        g2d.setColor(new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), 230));
         g2d.fillPolygon(polygon);
 
-        g2d.setStroke(new BasicStroke(2.0f));
+        g2d.setStroke(new BasicStroke(1.5f));
         g2d.setColor(Color.WHITE);
         g2d.drawPolygon(polygon);
 

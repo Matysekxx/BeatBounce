@@ -75,7 +75,7 @@ public class MainMenuScreen extends Screen {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
-                RenderUtils.initGraphic2D(g2);
+                RenderUtils.initGraphics2D(g2);
                 g2.setColor(new Color(10, 10, 26, 242));
                 g2.fillRect(0, 0, getWidth(), getHeight());
                 g2.setColor(new Color(0, 255, 255, 51));
@@ -99,7 +99,7 @@ public class MainMenuScreen extends Screen {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
-                RenderUtils.initGraphic2D(g2);
+                RenderUtils.initGraphics2D(g2);
                 g2.setColor(RenderUtils.cyan);
                 final FontMetrics fm = g2.getFontMetrics();
                 g2.drawString(getText(), 0, fm.getAscent());

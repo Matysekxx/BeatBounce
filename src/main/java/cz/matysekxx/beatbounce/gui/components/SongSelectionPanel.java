@@ -100,7 +100,7 @@ public class SongSelectionPanel extends JPanel implements Runnable {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
-                RenderUtils.initGraphic2D(g2);
+                RenderUtils.initGraphics2D(g2);
                 g2.setColor(new Color(20, 20, 40));
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), getHeight(), getHeight());
                 g2.dispose();
@@ -142,7 +142,7 @@ public class SongSelectionPanel extends JPanel implements Runnable {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
-                RenderUtils.initGraphic2D(g2);
+                RenderUtils.initGraphics2D(g2);
                 boolean active = activeGenre.equals(getText());
                 if (active) {
                     g2.setColor(RenderUtils.cyan);
@@ -276,7 +276,7 @@ public class SongSelectionPanel extends JPanel implements Runnable {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g.create();
-        RenderUtils.initGraphic2D(g2d);
+        RenderUtils.initGraphics2D(g2d);
         g2d.setColor(new Color(10, 10, 26));
         g2d.fillRect(0, 0, getWidth(), getHeight());
         Particle.drawAll(g2d, particles);

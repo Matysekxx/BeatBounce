@@ -74,7 +74,7 @@ public class LibraryPanel extends JPanel {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
-                RenderUtils.initGraphic2D(g2);
+                RenderUtils.initGraphics2D(g2);
                 if (getModel().isRollover()) {
                     g2.setColor(RenderUtils.cyan);
                     g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
@@ -207,7 +207,7 @@ public class LibraryPanel extends JPanel {
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
-            RenderUtils.initGraphic2D(g2);
+            RenderUtils.initGraphics2D(g2);
             final int w = getWidth();
             final int h = getHeight();
 

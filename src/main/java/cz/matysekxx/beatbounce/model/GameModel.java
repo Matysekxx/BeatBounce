@@ -36,7 +36,7 @@ public class GameModel {
 
     public void init() {
         this.gameState = GameState.COUNTDOWN;
-        this.countdownTime = 3.99;
+        this.countdownTime = 2.99;
         this.currentTileIndex = -1;
         this.gameZProgress = 0;
         this.fallStartZ = 0;

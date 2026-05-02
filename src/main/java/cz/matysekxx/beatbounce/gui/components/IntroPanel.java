@@ -64,7 +64,7 @@ public class IntroPanel extends JPanel implements Runnable {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         final Graphics2D g2d = (Graphics2D) g.create();
-        RenderUtils.initGraphic2D(g2d);
+        RenderUtils.initGraphics2D(g2d);
 
         final int w = getWidth();
         final int h = getHeight();

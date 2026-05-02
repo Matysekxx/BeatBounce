@@ -74,7 +74,7 @@ public class TrackRow extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();
-        RenderUtils.initGraphic2D(g2);
+        RenderUtils.initGraphics2D(g2);
         final int w = getWidth();
         final int h = getHeight();
 

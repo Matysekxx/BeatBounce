@@ -9,7 +9,6 @@ import java.awt.*;
 public class MainMenuPanel extends JPanel implements Runnable {
     private boolean running = false;
     private Thread animatorThread;
-    private float time = 0f;
 
 
     public MainMenuPanel() {
@@ -35,7 +34,6 @@ public class MainMenuPanel extends JPanel implements Runnable {
     public void run() {
         long lastFpsTime = System.currentTimeMillis();
         while (running) {
-            time += 0.01f;
             repaint();
             if (System.currentTimeMillis() - lastFpsTime >= 1000) {
                 lastFpsTime = System.currentTimeMillis();
@@ -48,7 +46,7 @@ public class MainMenuPanel extends JPanel implements Runnable {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g.create();
-        RenderUtils.drawAuroraBackground(g2d, getWidth(), getHeight(), time);
+        RenderUtils.drawBackground(g2d, getWidth(), getHeight());
         g2d.dispose();
     }
 }

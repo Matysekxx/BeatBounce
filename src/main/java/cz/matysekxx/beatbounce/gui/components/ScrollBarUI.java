@@ -68,7 +68,7 @@ public class ScrollBarUI extends BasicScrollBarUI {
     @Override
     protected void paintTrack(Graphics g, JComponent c, Rectangle bounds) {
         Graphics2D g2 = (Graphics2D) g.create();
-        RenderUtils.initGraphic2D(g2);
+        RenderUtils.initGraphics2D(g2);
 
         final int x = bounds.x + bounds.width - THUMB_WIDTH - 2;
         g2.setColor(TRACK_COLOR);
@@ -81,7 +81,7 @@ public class ScrollBarUI extends BasicScrollBarUI {
     protected void paintThumb(Graphics g, JComponent c, Rectangle bounds) {
         if (bounds.isEmpty() || !scrollbar.isEnabled()) return;
         Graphics2D g2 = (Graphics2D) g.create();
-        RenderUtils.initGraphic2D(g2);
+        RenderUtils.initGraphics2D(g2);
 
         final int x = bounds.x + bounds.width - THUMB_WIDTH - 2;
         final int y = bounds.y + 2;

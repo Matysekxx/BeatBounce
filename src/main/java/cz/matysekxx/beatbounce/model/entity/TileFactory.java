@@ -17,10 +17,6 @@ public class TileFactory {
         return new NormalTile(event, new Point(x, y), z, fakeDirection);
     }
 
-    public static LongTile createLongTile(BeatEvent event, int x, int y, double z, double lengthInZ) {
-        return new LongTile(event, new Point(x, y), z, lengthInZ);
-    }
-
     public static MovingTile createMovingTile(BeatEvent event, int x, int y, double z, int amplitude, double speed) {
         return new MovingTile(event, x, y, z, amplitude, speed);
     }

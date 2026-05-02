@@ -13,6 +13,16 @@ public final class RenderUtils {
     public static final int ROAD_WIDTH = 300;
     private static BufferedImage noiseTexture;
     private static int[][] starCache = null;
+    public static final Cursor blankCursor;
+
+    static {
+        final var cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+        blankCursor = Toolkit.getDefaultToolkit()
+                .createCustomCursor(
+                        cursorImg, new Point(0, 0), "blank cursor"
+                );
+    }
+
 
     private RenderUtils() {
     }

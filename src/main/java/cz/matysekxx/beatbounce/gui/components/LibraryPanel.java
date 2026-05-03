@@ -235,7 +235,7 @@ public class LibraryPanel extends JPanel {
 
             final int rightX = w - 140;
             g2.setFont(RenderCache.SANS_PLAIN_14);
-            
+
             final String info = String.format("Best: %d", ScoreManager.getBestScore(fileName));
             final FontMetrics fm = g2.getFontMetrics();
             g2.setColor(RenderUtils.TEXT_GRAY);

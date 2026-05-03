@@ -3,9 +3,9 @@ package cz.matysekxx.beatbounce.gui.components;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.matysekxx.beatbounce.api.AudiusClient;
+import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
-import cz.matysekxx.beatbounce.configuration.Settings;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -24,9 +24,9 @@ public class SongSelectionPanel extends JPanel implements Runnable {
     private final AudiusClient audiusClient;
     private final ObjectMapper objectMapper;
     private final ScreenManager screenManager;
-    private Particle[] particles = new Particle[0];
     private final JPanel songListPanel;
     private final List<TrackData> allTracks = new ArrayList<>();
+    private Particle[] particles = new Particle[0];
     private boolean running = false;
     private Thread animatorThread;
     private List<TrackData> filteredTracks = new ArrayList<>();
@@ -59,20 +59,6 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         loadTracks("allTime", null);
     }
 
-    private void updateParticleCount() {
-        int count = switch (Settings.graphicsQuality) {
-            case "LOW" -> 0;
-            case "MEDIUM" -> 15;
-            default -> 30;
-        };
-        if (particles.length != count) {
-            particles = new Particle[count];
-            for (int i = 0; i < count; i++) {
-                particles[i] = new Particle(1920, 1080);
-            }
-        }
-    }
-
     private static JScrollPane buildScrollPane(JPanel content) {
         final JScrollPane sp = new JScrollPane(content);
 
@@ -96,6 +82,20 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         return sp;
+    }
+
+    private void updateParticleCount() {
+        int count = switch (Settings.graphicsQuality) {
+            case "LOW" -> 0;
+            case "MEDIUM" -> 15;
+            default -> 30;
+        };
+        if (particles.length != count) {
+            particles = new Particle[count];
+            for (int i = 0; i < count; i++) {
+                particles[i] = new Particle(1920, 1080);
+            }
+        }
     }
 
     private JPanel createTopBar() {

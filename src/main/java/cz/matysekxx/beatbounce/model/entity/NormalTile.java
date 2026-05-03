@@ -2,11 +2,11 @@ package cz.matysekxx.beatbounce.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.event.BeatEvent;
 import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.WindowData;
-import cz.matysekxx.beatbounce.configuration.Settings;
 
 import java.awt.*;
 import java.util.Collections;
@@ -37,6 +37,14 @@ public class NormalTile extends AbstractTile {
         calculateColors();
     }
 
+    public NormalTile(BeatEvent beatEvent, Point point, double z) {
+        this(beatEvent, point.x, point.y, z, Collections.emptyList());
+    }
+
+    public NormalTile(BeatEvent beatEvent, Point point, double z, List<Integer> fakeLaneOffsets) {
+        this(beatEvent, point.x, point.y, z, fakeLaneOffsets);
+    }
+
     private void calculateColors() {
         final float h = 0.33f + (hueOffset * 0.1f);
         this.baseColor = Color.getHSBColor(h, 1.0f, 1.0f);
@@ -44,14 +52,6 @@ public class NormalTile extends AbstractTile {
         this.baseColorAlpha120 = RenderCache.customColorWithAlpha(baseDimColor, 120);
         this.baseColorAlpha180 = RenderCache.customColorWithAlpha(baseDimColor, 180);
         this.baseColorAlpha230 = RenderCache.customColorWithAlpha(baseColor, 230);
-    }
-
-    public NormalTile(BeatEvent beatEvent, Point point, double z) {
-        this(beatEvent, point.x, point.y, z, Collections.emptyList());
-    }
-
-    public NormalTile(BeatEvent beatEvent, Point point, double z, List<Integer> fakeLaneOffsets) {
-        this(beatEvent, point.x, point.y, z, fakeLaneOffsets);
     }
 
     public List<Integer> getFakeLaneOffsets() {

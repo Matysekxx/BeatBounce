@@ -81,7 +81,8 @@ public class ScoreManager {
         final File file = currencyPath.toFile();
         if (file.exists()) {
             try {
-                final var data = mapper.readValue(file, new TypeReference<HashMap<String, Integer>>() {});
+                final var data = mapper.readValue(file, new TypeReference<HashMap<String, Integer>>() {
+                });
                 totalCurrency = data.getOrDefault("currency", 0);
             } catch (IOException e) {
                 System.err.println("Failed to load currency: " + e.getMessage());

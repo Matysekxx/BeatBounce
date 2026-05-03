@@ -1,7 +1,7 @@
 package cz.matysekxx.beatbounce.gui.screen;
 
-import cz.matysekxx.beatbounce.util.Lazy;
 import cz.matysekxx.beatbounce.configuration.Settings;
+import cz.matysekxx.beatbounce.util.Lazy;
 
 import javax.swing.*;
 import java.awt.*;

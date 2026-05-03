@@ -9,6 +9,7 @@ public class SwingConfiguration {
     private static final Color lightText = new Color(220, 220, 220);
     private static final Color accentBlue = new Color(97, 175, 239);
     private static final Color buttonBg = new Color(60, 65, 75);
+
     public static void setup() {
         try {
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());

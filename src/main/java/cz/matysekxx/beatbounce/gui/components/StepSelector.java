@@ -49,10 +49,10 @@ public class StepSelector extends javax.swing.JComponent {
         for (int i = 0; i < values.length; i++) {
             int x = i * w + margin;
             int itemW = w - margin * 2;
-            
+
             g2.setColor(i == selectedIndex ? RenderUtils.cyan : new Color(40, 40, 45));
             g2.fillRoundRect(x, 4, itemW, 24, 12, 12);
-            
+
             if (i == selectedIndex) {
                 g2.setColor(new Color(0, 255, 255, 40));
                 g2.fillRoundRect(x - 2, 2, itemW + 4, 28, 14, 14);

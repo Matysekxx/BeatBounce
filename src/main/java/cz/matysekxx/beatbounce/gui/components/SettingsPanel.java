@@ -1,8 +1,8 @@
 package cz.matysekxx.beatbounce.gui.components;
 
+import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
-import cz.matysekxx.beatbounce.configuration.Settings;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,8 +10,6 @@ import java.awt.*;
 public class SettingsPanel extends JPanel {
 
     private final ScreenManager screenManager;
-    private JLabel infoLabel;
-
     private final JCheckBox fullscreenCheck;
     private final JCheckBox openglCheck;
     private final JCheckBox showFpsCheck;
@@ -22,6 +20,7 @@ public class SettingsPanel extends JPanel {
     private final CycleButton monitorCycle;
     private final StepSelector fpsSelector;
     private final CustomSlider soundSlider;
+    private JLabel infoLabel;
 
     public SettingsPanel(ScreenManager screenManager) {
         this.screenManager = screenManager;
@@ -48,7 +47,7 @@ public class SettingsPanel extends JPanel {
         leftColumn.setOpaque(false);
 
         final JPanel displayGroup = createGroupPanel("DISPLAY & GRAPHICS");
-        
+
         final GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
         final String[] monitorNames = new String[devices.length];
         for (int i = 0; i < devices.length; i++) {
@@ -65,7 +64,7 @@ public class SettingsPanel extends JPanel {
         displayGroup.add(fullscreenCheck = new CustomCheckBox("Fullscreen (Borderless)", Settings.fullscreen));
         displayGroup.add(openglCheck = new CustomCheckBox("OpenGL Hardware Acceleration", Settings.opengl));
         displayGroup.add(showFpsCheck = new CustomCheckBox("Show FPS Overlay", Settings.showFps));
-        
+
         leftColumn.add(displayGroup);
         leftColumn.add(Box.createVerticalGlue());
 
@@ -90,8 +89,10 @@ public class SettingsPanel extends JPanel {
         rightColumn.add(gameplayGroup);
         rightColumn.add(Box.createVerticalGlue());
 
-        gbc.gridx = 0; mainContent.add(leftColumn, gbc);
-        gbc.gridx = 1; mainContent.add(rightColumn, gbc);
+        gbc.gridx = 0;
+        mainContent.add(leftColumn, gbc);
+        gbc.gridx = 1;
+        mainContent.add(rightColumn, gbc);
 
         final JPanel centerWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         centerWrapper.setOpaque(false);
@@ -117,7 +118,7 @@ public class SettingsPanel extends JPanel {
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
         p.setOpaque(false);
         p.setBorder(BorderFactory.createEmptyBorder(20, 25, 20, 25));
-        
+
         final JLabel t = new JLabel(title);
         t.setFont(new Font("SansSerif", Font.BOLD, 20));
         t.setForeground(RenderUtils.cyan);
@@ -172,12 +173,18 @@ public class SettingsPanel extends JPanel {
 
     private void resetToDefaults() {
         if (JOptionPane.showConfirmDialog(this, "Reset all settings to defaults?", "Reset", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            fullscreenCheck.setSelected(true); openglCheck.setSelected(true); showFpsCheck.setSelected(false);
-            qualityCycle.currentIndex = 2; qualityCycle.setText("HIGH");
-            monitorCycle.currentIndex = 0; monitorCycle.setText(monitorCycle.options[0]);
+            fullscreenCheck.setSelected(true);
+            openglCheck.setSelected(true);
+            showFpsCheck.setSelected(false);
+            qualityCycle.currentIndex = 2;
+            qualityCycle.setText("HIGH");
+            monitorCycle.currentIndex = 0;
+            monitorCycle.setText(monitorCycle.options[0]);
             fpsSelector.setSelectedIndexByValue(60);
             soundSlider.setValue(100);
-            particlesCheck.setSelected(true); bloomCheck.setSelected(true); focusLossCheck.setSelected(false);
+            particlesCheck.setSelected(true);
+            bloomCheck.setSelected(true);
+            focusLossCheck.setSelected(false);
             infoLabel.setText("Defaults restored. Click SAVE to apply.");
             infoLabel.setForeground(Color.WHITE);
         }

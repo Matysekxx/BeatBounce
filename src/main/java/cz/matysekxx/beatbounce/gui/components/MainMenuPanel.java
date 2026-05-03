@@ -1,12 +1,11 @@
 package cz.matysekxx.beatbounce.gui.components;
 
+import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.util.Time;
 
 import javax.swing.*;
 import java.awt.*;
-
-import cz.matysekxx.beatbounce.configuration.Settings;
 import java.awt.image.BufferedImage;
 
 public class MainMenuPanel extends JPanel implements Runnable {
@@ -55,7 +54,7 @@ public class MainMenuPanel extends JPanel implements Runnable {
         super.paintComponent(g);
         final int w = getWidth();
         final int h = getHeight();
-        
+
         if (bgCache == null || cachedW != w || cachedH != h) {
             cachedW = w;
             cachedH = h;

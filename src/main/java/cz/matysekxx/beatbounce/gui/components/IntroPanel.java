@@ -1,8 +1,8 @@
 package cz.matysekxx.beatbounce.gui.components;
 
+import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
-import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.util.Time;
 
 import javax.swing.*;
@@ -88,11 +88,11 @@ public class IntroPanel extends JPanel implements Runnable {
 
         final int w = getWidth();
         final int h = getHeight();
-        
+
         final Rectangle clipBounds = g2d.getClipBounds();
         if (clipBounds != null && (clipBounds.width == 0 || clipBounds.height == 0)) {
-             g2d.dispose();
-             return;
+            g2d.dispose();
+            return;
         }
         final int horizonY = (h >> 1) + 100;
 

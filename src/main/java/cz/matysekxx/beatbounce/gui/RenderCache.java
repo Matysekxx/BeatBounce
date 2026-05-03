@@ -55,6 +55,9 @@ public final class RenderCache {
         }
     }
 
+    private RenderCache() {
+    }
+
     public static Color cyanWithAlpha(int alpha) {
         return CYAN_ALPHA[Math.max(0, Math.min(255, alpha))];
     }
@@ -81,8 +84,5 @@ public final class RenderCache {
 
     public static Color customColorWithAlpha(Color color, int alpha) {
         return new Color(color.getRed(), color.getGreen(), color.getBlue(), Math.max(0, Math.min(255, alpha)));
-    }
-
-    private RenderCache() {
     }
 }

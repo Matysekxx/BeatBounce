@@ -28,10 +28,16 @@ public class CustomCheckBox extends JCheckBox {
                 g2.fillOval(knobX, y + 4, 16, 16);
                 g2.dispose();
             }
+
             @Override
-            public int getIconWidth() { return 55; }
+            public int getIconWidth() {
+                return 55;
+            }
+
             @Override
-            public int getIconHeight() { return 26; }
+            public int getIconHeight() {
+                return 26;
+            }
         });
     }
 }

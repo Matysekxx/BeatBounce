@@ -1,5 +1,6 @@
 package cz.matysekxx.beatbounce.gui.components;
 
+import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.controller.GameController;
 import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.gui.RenderCache;
@@ -11,7 +12,6 @@ import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.Orb;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.level.Level;
-import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.util.Time;
 
 import javax.sound.sampled.Clip;
@@ -23,6 +23,10 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 
 public class GamePanel extends JPanel implements Runnable {
+    private static final Color FPS_COLOR = Color.YELLOW;
+    private static final Color GRID_MAGENTA_90 = new Color(255, 0, 255, 90);
+    private static final Color GRID_CYAN_110 = new Color(0, 255, 255, 110);
+    private static final Color GRID_CYAN_120 = new Color(0, 255, 255, 120);
     private final Camera3D cam;
     private final Runnable onExit;
     private final Cursor blankCursor;
@@ -45,11 +49,6 @@ public class GamePanel extends JPanel implements Runnable {
     private long lastFpsTime = 0;
     private int currentFps = 0;
     private WindowData frameWindowData;
-
-    private static final Color FPS_COLOR = Color.YELLOW;
-    private static final Color GRID_MAGENTA_90 = new Color(255, 0, 255, 90);
-    private static final Color GRID_CYAN_110 = new Color(0, 255, 255, 110);
-    private static final Color GRID_CYAN_120 = new Color(0, 255, 255, 120);
 
     public GamePanel(Runnable onExit) {
         this.onExit = onExit;
@@ -215,7 +214,7 @@ public class GamePanel extends JPanel implements Runnable {
             g2d.fillRect(0, 0, w, h);
         }
         drawByGameState(g2d, w, h);
-        
+
         if (Settings.showFps) {
             frames++;
             final long nowTime = System.currentTimeMillis();

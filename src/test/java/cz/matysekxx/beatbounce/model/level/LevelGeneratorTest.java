@@ -1,7 +1,6 @@
 package cz.matysekxx.beatbounce.model.level;
 
 import cz.matysekxx.beatbounce.event.BeatEvent;
-import cz.matysekxx.beatbounce.event.EventType;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.NormalTile;
 import org.junit.jupiter.api.Test;

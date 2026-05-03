@@ -179,16 +179,16 @@ public class Sphere extends Entity implements Paintable {
         final int scaledRadiusX = (int) (radius * scale * scaleMultiplier);
         final int scaledRadiusY = (int) (radius * scale * scaleMultiplier * stretch);
 
-        final int a = (int)(255 * Math.max(0, Math.min(1.0f, alpha)));
+        final int a = (int) (255 * Math.max(0, Math.min(1.0f, alpha)));
         if (a <= 0 || scaledRadiusX <= 0 || scaledRadiusY <= 0) return;
 
         g2d.setColor(new Color(255, 0, 255, a));
         g2d.fillOval(screenX - scaledRadiusX, screenY - scaledRadiusY, scaledRadiusX * 2, scaledRadiusY * 2);
 
         if (stretch > 1.2) {
-            g2d.setColor(new Color(255, 200, 255, (int)(a * 0.6)));
-            final int innerW = (int)(scaledRadiusX * 0.6);
-            final int innerH = (int)(scaledRadiusY * 0.9);
+            g2d.setColor(new Color(255, 200, 255, (int) (a * 0.6)));
+            final int innerW = (int) (scaledRadiusX * 0.6);
+            final int innerH = (int) (scaledRadiusY * 0.9);
             g2d.fillOval(screenX - innerW, screenY - innerH, innerW * 2, innerH * 2);
         }
     }

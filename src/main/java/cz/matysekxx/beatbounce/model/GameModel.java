@@ -1,5 +1,6 @@
 package cz.matysekxx.beatbounce.model;
 
+import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
@@ -8,7 +9,6 @@ import cz.matysekxx.beatbounce.model.entity.Orb;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.level.Level;
 import cz.matysekxx.beatbounce.model.level.LevelGenerator;
-import cz.matysekxx.beatbounce.configuration.Settings;
 
 import javax.sound.sampled.Clip;
 import java.util.ArrayList;
@@ -24,6 +24,7 @@ public class GameModel {
     private final Camera3D cam;
     private final Clip clip;
     private final double zUnitsPerSecond;
+    private final List<Orb> orbs = new ArrayList<>();
     private volatile GameState gameState = GameState.COUNTDOWN;
     private int currentTileIndex = -1;
     private double gameZProgress;
@@ -32,7 +33,6 @@ public class GameModel {
     private double countdownTime = 3.0;
     private double endAnimationTimer = 0;
     private float neonFlashAlpha = 0f;
-    private final List<Orb> orbs = new ArrayList<>();
     private int collectedOrbs = 0;
     private double smoothedAudioTime = 0;
 
@@ -81,7 +81,7 @@ public class GameModel {
                 validTiles.add(t);
             }
         }
-        
+
         int toSpawn = Math.min(numOrbs, validTiles.size());
         if (toSpawn > 0) {
             Collections.shuffle(validTiles, new Random());
@@ -162,11 +162,11 @@ public class GameModel {
         }
 
         final double rawAudioTime = clip.getMicrosecondPosition() / 1_000_000.0;
-        
+
         if (smoothedAudioTime == 0 && rawAudioTime > 0) {
             smoothedAudioTime = rawAudioTime;
         }
-        
+
         smoothedAudioTime += deltaTime;
         final double diff = rawAudioTime - smoothedAudioTime;
         if (Math.abs(diff) > 0.05) {

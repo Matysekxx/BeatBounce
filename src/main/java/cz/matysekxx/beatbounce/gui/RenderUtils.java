@@ -14,9 +14,6 @@ public final class RenderUtils {
     public final static Color yellow = new Color(255, 215, 0);
     public static final int ROAD_WIDTH = 300;
     public static final Cursor blankCursor;
-    private static BufferedImage noiseTexture;
-    private static int[][] starCache = null;
-
     public static final Color BG_DARK = new Color(10, 10, 26);
     public static final Color TEXT_GRAY = new Color(160, 160, 170);
     private static final Color BG_COLOR = new Color(8, 8, 12);
@@ -26,7 +23,8 @@ public final class RenderUtils {
     private static final AlphaComposite NOISE_COMPOSITE = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f);
     private static final Color SHADOW_COLOR = new Color(0, 0, 0, 100);
     private static final Color TITLE_COLOR = new Color(255, 230, 240);
-
+    private static BufferedImage noiseTexture;
+    private static int[][] starCache = null;
     private static int bgCachedW = -1;
     private static int bgCachedH = -1;
     private static RadialGradientPaint bgOrb1;
@@ -52,7 +50,7 @@ public final class RenderUtils {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         if (Settings.particlesEnabled) drawStars(g2d, w, h);
-        
+
         if (bgCachedW != w || bgCachedH != h || bgOrb1 == null) {
             bgCachedW = w;
             bgCachedH = h;
@@ -98,7 +96,7 @@ public final class RenderUtils {
         g2d.setColor(FLOOR_COLOR);
         g2d.fillRect(0, horizonY, width, height - horizonY);
         if (bgCachedW != width || bgCachedH != height || floorGradient == null) {
-             floorGradient = new GradientPaint(0, horizonY, new Color(8, 0, 20, 0), 0, height, new Color(15, 0, 35, 100));
+            floorGradient = new GradientPaint(0, horizonY, new Color(8, 0, 20, 0), 0, height, new Color(15, 0, 35, 100));
         }
         g2d.setPaint(floorGradient);
         g2d.fillRect(0, horizonY, width, height - horizonY);

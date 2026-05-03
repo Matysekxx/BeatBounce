@@ -9,8 +9,6 @@ import javax.sound.sampled.Clip;
 import java.awt.*;
 
 public class GameUIRenderer {
-    private final GameModel gameModel;
-    private final Clip clip;
     private static final Color PAUSE_BG = new Color(0, 0, 8, 170);
     private static final Color PAUSE_LINE = new Color(0, 255, 220, 55);
     private static final Color FINISHED_BG = new Color(0, 0, 0, 160);
@@ -31,6 +29,8 @@ public class GameUIRenderer {
     private static final Color HINT_BORDER = new Color(255, 255, 255, 30);
     private static final Color HINT_KEY_BG = new Color(0, 255, 220, 20);
     private static final Color HINT_LABEL = new Color(220, 220, 220);
+    private final GameModel gameModel;
+    private final Clip clip;
 
     public GameUIRenderer(GameModel gameModel, Clip clip) {
         this.gameModel = gameModel;
@@ -192,7 +192,7 @@ public class GameUIRenderer {
         g2d.setFont(RenderCache.MONO_BOLD_16);
         g2d.setColor(ORBS_COLOR);
         g2d.drawString(orbsLabel, (width - g2d.getFontMetrics().stringWidth(orbsLabel)) / 2, cardY + 85);
-        
+
         final String totalOrbsLabel = "TOTAL CURRENCY: " + ScoreManager.getCurrency();
         g2d.setFont(RenderCache.SANS_PLAIN_14);
         g2d.setColor(TOTAL_ORBS_COLOR);

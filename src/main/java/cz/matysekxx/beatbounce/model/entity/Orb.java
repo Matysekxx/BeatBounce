@@ -1,9 +1,8 @@
 package cz.matysekxx.beatbounce.model.entity;
 
+import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.gui.Paintable;
-import cz.matysekxx.beatbounce.gui.RenderCache;
-import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.WindowData;
 
 import java.awt.*;
@@ -14,10 +13,10 @@ public class Orb implements Paintable {
     private final double y;
     private final double z;
     private final double radius;
-    private boolean collected;
     private final Ellipse2D.Double glowEllipse;
     private final Ellipse2D.Double mainEllipse;
     private final Ellipse2D.Double highlightEllipse;
+    private boolean collected;
 
     public Orb(double x, double y, double z, double radius) {
         this.x = x;

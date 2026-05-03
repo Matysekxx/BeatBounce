@@ -1,5 +1,7 @@
 package cz.matysekxx.beatbounce.gui;
 
+import cz.matysekxx.beatbounce.configuration.Settings;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Random;
@@ -88,13 +90,15 @@ public final class RenderUtils {
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
         final double pulse = (Math.sin(System.currentTimeMillis() / 400.0) + 1.0) / 2.0;
 
-        for (float i = 6f; i >= 1f; i -= 1.5f) {
-            final float alpha = Math.min(1.0f, (float) (0.1 + (0.2 * pulse) / (i * 0.5)));
-            g2d.setColor(new Color(c.getRed() / 255f, c.getGreen() / 255f, c.getBlue() / 255f, alpha));
-            g2d.drawString(text, x - i, y);
-            g2d.drawString(text, x + i, y);
-            g2d.drawString(text, x, y - i);
-            g2d.drawString(text, x, y + i);
+        if (Settings.bloomEnabled) {
+            for (float i = 6f; i >= 1f; i -= 1.5f) {
+                final float alpha = Math.min(1.0f, (float) (0.1 + (0.2 * pulse) / (i * 0.5)));
+                g2d.setColor(new Color(c.getRed() / 255f, c.getGreen() / 255f, c.getBlue() / 255f, alpha));
+                g2d.drawString(text, x - i, y);
+                g2d.drawString(text, x + i, y);
+                g2d.drawString(text, x, y - i);
+                g2d.drawString(text, x, y + i);
+            }
         }
         g2d.setColor(new Color(0, 0, 0, 100));
         g2d.drawString(text, x + 1, y + 1);

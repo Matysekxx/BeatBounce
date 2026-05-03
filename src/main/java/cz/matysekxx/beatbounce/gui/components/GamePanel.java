@@ -2,6 +2,7 @@ package cz.matysekxx.beatbounce.gui.components;
 
 import cz.matysekxx.beatbounce.controller.GameController;
 import cz.matysekxx.beatbounce.gui.Camera3D;
+import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.WindowData;
 import cz.matysekxx.beatbounce.model.GameModel;
@@ -43,6 +44,12 @@ public class GamePanel extends JPanel implements Runnable {
     private int frames = 0;
     private long lastFpsTime = 0;
     private int currentFps = 0;
+    private WindowData frameWindowData;
+
+    private static final Color FPS_COLOR = Color.YELLOW;
+    private static final Color GRID_MAGENTA_90 = new Color(255, 0, 255, 90);
+    private static final Color GRID_CYAN_110 = new Color(0, 255, 255, 110);
+    private static final Color GRID_CYAN_120 = new Color(0, 255, 255, 120);
 
     public GamePanel(Runnable onExit) {
         this.onExit = onExit;
@@ -177,13 +184,13 @@ public class GamePanel extends JPanel implements Runnable {
 
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         RenderUtils.initGraphics2D(g2d);
         final int w = getWidth();
         final int h = getHeight();
         final int horizonY = h / 3;
         final long time = System.currentTimeMillis();
+        frameWindowData = WindowData.of(w, h);
 
         if (gameModel.getGameState() != GameState.FINISHED) {
             drawEnvironment(g2d, w, h, horizonY, time);
@@ -217,8 +224,8 @@ public class GamePanel extends JPanel implements Runnable {
                 frames = 0;
                 lastFpsTime = nowTime;
             }
-            g2d.setColor(Color.YELLOW);
-            g2d.setFont(new Font("Monospaced", Font.BOLD, 16));
+            g2d.setColor(FPS_COLOR);
+            g2d.setFont(RenderCache.MONO_BOLD_16);
             g2d.drawString("FPS: " + currentFps, 10, 20);
         }
 
@@ -271,15 +278,17 @@ public class GamePanel extends JPanel implements Runnable {
         g2d.setPaint(new RadialGradientPaint(cx - r / 2.5f, cy - r / 2.5f, r * 1.5f, new float[]{0f, 1f}, new Color[]{new Color(45, 15, 80), new Color(10, 0, 25)}));
         g2d.fillOval(cx - r, cy - r, r * 2, r * 2);
 
-        g2d.setColor(new Color(0, 255, 255, 120));
-        g2d.setStroke(new BasicStroke(2.5f));
-        g2d.drawOval(cx - r, cy - r, r * 2, r * 2);
+        if (!Settings.graphicsQuality.equals("LOW")) {
+            g2d.setColor(GRID_CYAN_120);
+            g2d.setStroke(RenderCache.STROKE_2_5);
+            g2d.drawOval(cx - r, cy - r, r * 2, r * 2);
 
-        drawRing(g2d, cx, ry, r * 1.4f, 18, 180, 180, new Color(0, 255, 255, (int) (180 + 75 * pulse)), 2f);
-        drawRing(g2d, cx, ry, r * 1.8f, 28, 180, 180, new Color(255, 50, 255, (int) (140 + 60 * pulse)), 2.5f);
-        drawRing(g2d, cx, ry, r * 1.8f, 28, 180, 180, new Color(255, 200, 255, 200), 1f);
+            drawRing(g2d, cx, ry, r * 1.4f, 18, 180, 180, RenderCache.cyanWithAlpha((int) (180 + 75 * pulse)), 2f);
+            drawRing(g2d, cx, ry, r * 1.8f, 28, 180, 180, RenderCache.magentaWithAlpha((int) (140 + 60 * pulse)), 2.5f);
+            drawRing(g2d, cx, ry, r * 1.8f, 28, 180, 180, new Color(255, 200, 255, 200), 1f);
+        }
 
-        g2d.setStroke(new BasicStroke(1f));
+        g2d.setStroke(RenderCache.STROKE_1);
     }
 
     private void drawRing(
@@ -298,19 +307,19 @@ public class GamePanel extends JPanel implements Runnable {
                 final double distance = cam.getDistanceTo(tile.getZ());
                 final double tileDepth = distance + tile.getLengthInZ();
                 if (tileDepth <= 0 || distance > 3000) continue;
-                tile.paint3D(g2d, cam, WindowData.of(width, height));
+                tile.paint3D(g2d, cam, frameWindowData);
             }
 
             if (gameModel != null) {
                 for (Orb orb : gameModel.getOrbs()) {
                     final double distance = cam.getDistanceTo(orb.getZ());
                     if (distance > 0 && distance < 3000) {
-                        orb.paint3D(g2d, cam, WindowData.of(width, height));
+                        orb.paint3D(g2d, cam, frameWindowData);
                     }
                 }
             }
         }
-        sphere.paint3D(g2d, cam, WindowData.of(width, height));
+        sphere.paint3D(g2d, cam, frameWindowData);
     }
 
     private Point projectPoint(double x, double y, double z, int width, int horizonY) {
@@ -329,13 +338,13 @@ public class GamePanel extends JPanel implements Runnable {
 
             if (p != null && p.y >= horizonY && p.y <= height) {
                 final int alpha = (int) Math.max(0, Math.min(120, 255 - (distance / 3000.0 * 255)));
-                g2d.setColor(new Color(0, 255, 255, alpha));
+                g2d.setColor(RenderCache.cyanWithAlpha(alpha));
                 g2d.drawLine(0, p.y, width, p.y);
             }
         }
 
         final int[] laneXs = {-300, -180, -60, 60, 180, 300};
-        g2d.setStroke(new BasicStroke(2));
+        g2d.setStroke(RenderCache.STROKE_2);
         for (int lx : laneXs) {
 
             final Point start = projectPoint(lx, 150, cam.getZ() + 100, width, horizonY);
@@ -343,10 +352,10 @@ public class GamePanel extends JPanel implements Runnable {
 
             if (start == null || end == null) continue;
 
-            if (Math.abs(lx) > 180) g2d.setColor(new Color(255, 0, 255, 90));
-            else g2d.setColor(new Color(0, 255, 255, 110));
+            if (Math.abs(lx) > 180) g2d.setColor(GRID_MAGENTA_90);
+            else g2d.setColor(GRID_CYAN_110);
             g2d.drawLine(start.x, start.y, end.x, end.y);
         }
-        g2d.setStroke(new BasicStroke(1f));
+        g2d.setStroke(RenderCache.STROKE_1);
     }
 }

@@ -1,5 +1,6 @@
 package cz.matysekxx.beatbounce.gui.components;
 
+import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.util.Time;
@@ -9,7 +10,7 @@ import java.awt.*;
 
 
 public class IntroPanel extends JPanel implements Runnable {
-    private final Particle[] particles = new Particle[30];
+    private Particle[] particles = new Particle[0];
     private float time = 0;
     private boolean running = false;
     private Thread animatorThread;
@@ -18,7 +19,21 @@ public class IntroPanel extends JPanel implements Runnable {
         super();
         this.setDoubleBuffered(true);
         this.setOpaque(true);
-        for (int i = 0; i < particles.length; i++) particles[i] = new Particle(1920, 540);
+        updateParticleCount();
+    }
+
+    private void updateParticleCount() {
+        final int count = switch (Settings.graphicsQuality) {
+            case "LOW" -> 0;
+            case "MEDIUM" -> 15;
+            default -> 30;
+        };
+        if (particles.length != count) {
+            particles = new Particle[count];
+            for (int i = 0; i < count; i++) {
+                particles[i] = new Particle(1920, 540);
+            }
+        }
     }
 
     public void startAnimation() {
@@ -42,11 +57,12 @@ public class IntroPanel extends JPanel implements Runnable {
         long lastFpsTime = System.currentTimeMillis();
         long lastTime = System.nanoTime();
         while (running) {
+            updateParticleCount();
             final long now = System.nanoTime();
             final float dt = (now - lastTime) / 1_000_000_000f;
             lastTime = now;
 
-            time += 0.04f;
+            time += dt;
 
             final int w = getWidth() > 0 ? getWidth() : 1920;
             final int h = getHeight() > 0 ? (getHeight() / 2 + 100) : 540;
@@ -59,7 +75,8 @@ public class IntroPanel extends JPanel implements Runnable {
             if (System.currentTimeMillis() - lastFpsTime >= 1000) {
                 lastFpsTime = System.currentTimeMillis();
             }
-            Time.sleep(16);
+            final long frameTimeMs = (long) (1000.0 / Settings.targetFps);
+            Time.sleep(frameTimeMs);
         }
     }
 
@@ -71,6 +88,12 @@ public class IntroPanel extends JPanel implements Runnable {
 
         final int w = getWidth();
         final int h = getHeight();
+        
+        final Rectangle clipBounds = g2d.getClipBounds();
+        if (clipBounds != null && (clipBounds.width == 0 || clipBounds.height == 0)) {
+             g2d.dispose();
+             return;
+        }
         final int horizonY = (h >> 1) + 100;
 
         RenderUtils.drawBackground(g2d, w, h);
@@ -89,7 +112,7 @@ public class IntroPanel extends JPanel implements Runnable {
     private void drawIntroGrid(Graphics2D g2d, int w, int h, int horizonY) {
         final int vanishingPointX = w >> 1;
 
-        g2d.setColor(new Color(0, 255, 255, 100));
+        g2d.setColor(RenderCache.cyanWithAlpha(100));
         for (int i = -40; i <= 40; i++) {
             final int bottomX = vanishingPointX + i * 200;
             g2d.drawLine(vanishingPointX, horizonY, bottomX, h);
@@ -106,7 +129,7 @@ public class IntroPanel extends JPanel implements Runnable {
 
             if (lineY > horizonY && lineY <= h) {
                 final int alpha = (int) (100 * depth);
-                g2d.setColor(new Color(0, 255, 255, alpha));
+                g2d.setColor(RenderCache.cyanWithAlpha(alpha));
                 g2d.drawLine(0, lineY, w, lineY);
             }
         }

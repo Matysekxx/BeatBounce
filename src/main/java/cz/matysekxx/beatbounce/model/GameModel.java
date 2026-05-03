@@ -8,6 +8,7 @@ import cz.matysekxx.beatbounce.model.entity.Orb;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.level.Level;
 import cz.matysekxx.beatbounce.model.level.LevelGenerator;
+import cz.matysekxx.beatbounce.configuration.Settings;
 
 import javax.sound.sampled.Clip;
 import java.util.ArrayList;
@@ -131,7 +132,10 @@ public class GameModel {
     public void update(double currentTime, double deltaTime) {
         switch (gameState) {
             case COUNTDOWN -> handleCountdown(deltaTime);
-            case PLAYING -> handlePlaying(deltaTime);
+            case PLAYING -> {
+                Settings.applyMusicVolume(clip);
+                handlePlaying(deltaTime);
+            }
             case LEVEL_END_ANIMATION -> handleLevelEndAnimation(deltaTime);
             case FALLING -> handleFalling(currentTime);
             case PAUSED, FINISHED, GAME_OVER -> {
@@ -143,6 +147,7 @@ public class GameModel {
         countdownTime -= deltaTime;
         if (countdownTime <= 0) {
             gameState = GameState.PLAYING;
+            Settings.applyMusicVolume(clip);
             clip.start();
         }
     }

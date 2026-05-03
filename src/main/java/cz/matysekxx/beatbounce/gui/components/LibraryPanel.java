@@ -1,6 +1,7 @@
 package cz.matysekxx.beatbounce.gui.components;
 
 import cz.matysekxx.beatbounce.api.AudiusClient;
+import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.screen.GameScreen;
 import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
@@ -31,7 +32,7 @@ public class LibraryPanel extends JPanel {
         this.screenManager = screenManager;
 
         setOpaque(true);
-        setBackground(new Color(10, 10, 26));
+        setBackground(RenderUtils.BG_DARK);
         setLayout(new BorderLayout());
 
         final JPanel topBar = new JPanel(new BorderLayout());
@@ -39,7 +40,7 @@ public class LibraryPanel extends JPanel {
         topBar.setBorder(new EmptyBorder(15, 30, 15, 30));
 
         final JLabel title = new JLabel("Your Library");
-        title.setFont(new Font("SansSerif", Font.BOLD, 28));
+        title.setFont(RenderCache.SANS_BOLD_28);
         title.setForeground(Color.WHITE);
         topBar.add(title, BorderLayout.WEST);
 
@@ -79,9 +80,9 @@ public class LibraryPanel extends JPanel {
                 if (getModel().isRollover()) {
                     g2.setColor(RenderUtils.cyan);
                     g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
-                    g2.setColor(new Color(10, 10, 26));
+                    g2.setColor(RenderUtils.BG_DARK);
                 } else {
-                    g2.setColor(new Color(255, 255, 255, 40));
+                    g2.setColor(RenderCache.whiteWithAlpha(40));
                     g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 8, 8);
                     g2.setColor(Color.WHITE);
                 }
@@ -91,7 +92,7 @@ public class LibraryPanel extends JPanel {
             }
         };
         btn.setPreferredSize(new Dimension(160, 36));
-        btn.setFont(new Font("SansSerif", Font.BOLD, 13));
+        btn.setFont(RenderCache.SANS_BOLD_13);
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);
@@ -215,17 +216,17 @@ public class LibraryPanel extends JPanel {
             final int h = getHeight();
 
             if (hovered) {
-                g2.setColor(new Color(255, 255, 255, (int) (0.04 * 255)));
+                g2.setColor(RenderCache.whiteWithAlpha(15));
                 g2.fillRect(0, 0, w, h);
             }
 
-            g2.setColor(new Color(255, 255, 255, 15));
+            g2.setColor(RenderCache.whiteWithAlpha(15));
             g2.drawLine(0, h - 1, w, h - 1);
-            g2.setFont(new Font("SansSerif", Font.BOLD, 16));
+            g2.setFont(RenderCache.SANS_BOLD_16);
             g2.setColor(RenderUtils.cyan);
             g2.drawString("🎵", 20, 38);
             g2.setColor(Color.WHITE);
-            g2.setFont(new Font("SansSerif", Font.BOLD, 15));
+            g2.setFont(RenderCache.SANS_BOLD_15);
             String fileName = path.getFileName().toString();
 
             final int dot = fileName.lastIndexOf('.');
@@ -233,11 +234,11 @@ public class LibraryPanel extends JPanel {
             g2.drawString(fileName, 50, 38);
 
             final int rightX = w - 140;
-            g2.setFont(new Font("SansSerif", Font.PLAIN, 14));
+            g2.setFont(RenderCache.SANS_PLAIN_14);
             
             final String info = String.format("Best: %d", ScoreManager.getBestScore(fileName));
             final FontMetrics fm = g2.getFontMetrics();
-            g2.setColor(new Color(200, 200, 200));
+            g2.setColor(RenderUtils.TEXT_GRAY);
             g2.drawString(info, rightX - fm.stringWidth(info), 38);
 
             final String starsStr = "★".repeat(stars) + "☆".repeat(5 - stars);
@@ -251,8 +252,8 @@ public class LibraryPanel extends JPanel {
             final Color acc = RenderUtils.purple;
             g2.setColor(acc);
             g2.fillRoundRect(bx, by, btnW, btnH, 8, 8);
-            g2.setColor(new Color(10, 10, 26));
-            g2.setFont(new Font("SansSerif", Font.BOLD, 13));
+            g2.setColor(RenderUtils.BG_DARK);
+            g2.setFont(RenderCache.SANS_BOLD_13);
 
             final String txt = "PLAY";
             final FontMetrics bfm = g2.getFontMetrics();

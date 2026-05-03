@@ -6,12 +6,19 @@ import cz.matysekxx.beatbounce.util.Time;
 import javax.swing.*;
 import java.awt.*;
 
+import cz.matysekxx.beatbounce.configuration.Settings;
+import java.awt.image.BufferedImage;
+
 public class MainMenuPanel extends JPanel implements Runnable {
     private boolean running = false;
     private Thread animatorThread;
-
+    private BufferedImage bgCache;
+    private int cachedW = -1;
+    private int cachedH = -1;
 
     public MainMenuPanel() {
+        this.setDoubleBuffered(true);
+        this.setOpaque(true);
     }
 
     public void startAnimation() {
@@ -38,15 +45,26 @@ public class MainMenuPanel extends JPanel implements Runnable {
             if (System.currentTimeMillis() - lastFpsTime >= 1000) {
                 lastFpsTime = System.currentTimeMillis();
             }
-            Time.sleep(16);
+            long frameTimeMs = (long) (1000.0 / Settings.targetFps);
+            Time.sleep(frameTimeMs);
         }
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D) g.create();
-        RenderUtils.drawBackground(g2d, getWidth(), getHeight());
-        g2d.dispose();
+        final int w = getWidth();
+        final int h = getHeight();
+        
+        if (bgCache == null || cachedW != w || cachedH != h) {
+            cachedW = w;
+            cachedH = h;
+            bgCache = new BufferedImage(Math.max(1, w), Math.max(1, h), BufferedImage.TYPE_INT_RGB);
+            final Graphics2D cg = bgCache.createGraphics();
+            RenderUtils.initGraphics2D(cg);
+            RenderUtils.drawBackground(cg, w, h);
+            cg.dispose();
+        }
+        g.drawImage(bgCache, 0, 0, null);
     }
 }

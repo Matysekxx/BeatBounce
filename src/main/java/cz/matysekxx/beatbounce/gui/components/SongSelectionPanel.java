@@ -24,7 +24,7 @@ public class SongSelectionPanel extends JPanel implements Runnable {
     private final AudiusClient audiusClient;
     private final ObjectMapper objectMapper;
     private final ScreenManager screenManager;
-    private final Particle[] particles = new Particle[30];
+    private Particle[] particles = new Particle[0];
     private final JPanel songListPanel;
     private final List<TrackData> allTracks = new ArrayList<>();
     private boolean running = false;
@@ -44,7 +44,7 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         setBackground(new Color(10, 10, 26));
         setLayout(new BorderLayout());
 
-        for (int i = 0; i < particles.length; i++) particles[i] = new Particle(1920, 1080);
+        updateParticleCount();
 
         final JPanel topBar = createTopBar();
         add(topBar, BorderLayout.NORTH);
@@ -57,6 +57,20 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         add(scrollPane, BorderLayout.CENTER);
 
         loadTracks("allTime", null);
+    }
+
+    private void updateParticleCount() {
+        int count = switch (Settings.graphicsQuality) {
+            case "LOW" -> 0;
+            case "MEDIUM" -> 15;
+            default -> 30;
+        };
+        if (particles.length != count) {
+            particles = new Particle[count];
+            for (int i = 0; i < count; i++) {
+                particles[i] = new Particle(1920, 1080);
+            }
+        }
     }
 
     private static JScrollPane buildScrollPane(JPanel content) {
@@ -264,11 +278,13 @@ public class SongSelectionPanel extends JPanel implements Runnable {
             }
 
             if (Settings.particlesEnabled) {
+                updateParticleCount();
                 Particle.updateAll(particles, dt, getWidth() > 0 ? getWidth() : 1920, getHeight() > 0 ? getHeight() : 1080);
             }
             repaint();
             try {
-                Thread.sleep(16);
+                final long frameTimeMs = (long) (1000.0 / Settings.targetFps);
+                Thread.sleep(frameTimeMs);
             } catch (InterruptedException e) {
                 break;
             }

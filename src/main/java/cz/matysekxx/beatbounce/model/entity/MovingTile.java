@@ -3,6 +3,8 @@ package cz.matysekxx.beatbounce.model.entity;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import cz.matysekxx.beatbounce.event.BeatEvent;
+import cz.matysekxx.beatbounce.gui.RenderCache;
+import cz.matysekxx.beatbounce.configuration.Settings;
 
 import java.awt.*;
 
@@ -12,6 +14,7 @@ public class MovingTile extends AbstractTile {
     private double speed;
     private double time;
     private float hueOffset;
+    private Color baseColorAlpha220;
 
     protected MovingTile() {
         super();
@@ -31,6 +34,13 @@ public class MovingTile extends AbstractTile {
         this.speed = speed;
         this.time = 0;
         this.hueOffset = (float) ((z % 5000) / 5000.0);
+        calculateColors();
+    }
+
+    private void calculateColors() {
+        final float h = 0.1f + (hueOffset * 0.1f);
+        final Color baseColor = Color.getHSBColor(h, 1.0f, 1.0f);
+        this.baseColorAlpha220 = RenderCache.customColorWithAlpha(baseColor, 220);
     }
 
     public void update(double deltaTime) {
@@ -60,28 +70,27 @@ public class MovingTile extends AbstractTile {
 
     @Override
     public void paint3D(Graphics2D g2d, Polygon polygon) {
-        final float h = 0.1f + (hueOffset * 0.1f);
-        final float s = 1.0f;
-        final float b = 1.0f;
+        if (!Settings.graphicsQuality.equals("LOW")) {
+            final Color neonColor = new Color(255, 165, 0);
 
-        final Color baseColor = Color.getHSBColor(h, s, b);
-        final Color neonColor = new Color(255, 165, 0);
+            g2d.setStroke(RenderCache.STROKE_6);
+            g2d.setColor(RenderCache.customColorWithAlpha(neonColor, 60));
+            g2d.drawPolygon(polygon);
 
-        g2d.setStroke(new BasicStroke(6.0f));
-        g2d.setColor(new Color(neonColor.getRed(), neonColor.getGreen(), neonColor.getBlue(), 60));
-        g2d.drawPolygon(polygon);
+            if (Settings.graphicsQuality.equals("HIGH")) {
+                g2d.setStroke(RenderCache.STROKE_3);
+                g2d.setColor(RenderCache.customColorWithAlpha(neonColor, 120));
+                g2d.drawPolygon(polygon);
+            }
+        }
 
-        g2d.setStroke(new BasicStroke(3.0f));
-        g2d.setColor(new Color(neonColor.getRed(), neonColor.getGreen(), neonColor.getBlue(), 120));
-        g2d.drawPolygon(polygon);
-
-        g2d.setColor(new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), 220));
+        g2d.setColor(baseColorAlpha220);
         g2d.fillPolygon(polygon);
 
-        g2d.setStroke(new BasicStroke(2.0f));
+        g2d.setStroke(RenderCache.STROKE_2);
         g2d.setColor(Color.WHITE);
         g2d.drawPolygon(polygon);
 
-        g2d.setStroke(new BasicStroke(1.0f));
+        g2d.setStroke(RenderCache.STROKE_1);
     }
 }

@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import cz.matysekxx.beatbounce.event.BeatEvent;
 import cz.matysekxx.beatbounce.gui.Camera3D;
+import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.WindowData;
+import cz.matysekxx.beatbounce.configuration.Settings;
 
 import java.awt.*;
 import java.util.Collections;
@@ -13,6 +15,10 @@ import java.util.List;
 public class NormalTile extends AbstractTile {
     private float hueOffset;
     private List<Integer> fakeLaneOffsets;
+    private Color baseColor;
+    private Color baseColorAlpha120;
+    private Color baseColorAlpha180;
+    private Color baseColorAlpha230;
 
     protected NormalTile() {
         super();
@@ -28,6 +34,16 @@ public class NormalTile extends AbstractTile {
         super(beatEvent, new Point(x, y), z, 50.0);
         this.hueOffset = (float) ((z % 5000) / 5000.0);
         this.fakeLaneOffsets = fakeLaneOffsets != null ? fakeLaneOffsets : Collections.emptyList();
+        calculateColors();
+    }
+
+    private void calculateColors() {
+        final float h = 0.33f + (hueOffset * 0.1f);
+        this.baseColor = Color.getHSBColor(h, 1.0f, 1.0f);
+        final Color baseDimColor = Color.getHSBColor(h, 0.8f, 0.4f);
+        this.baseColorAlpha120 = RenderCache.customColorWithAlpha(baseDimColor, 120);
+        this.baseColorAlpha180 = RenderCache.customColorWithAlpha(baseDimColor, 180);
+        this.baseColorAlpha230 = RenderCache.customColorWithAlpha(baseColor, 230);
     }
 
     public NormalTile(BeatEvent beatEvent, Point point, double z) {
@@ -62,50 +78,43 @@ public class NormalTile extends AbstractTile {
     }
 
     private void drawFakePolygon(Graphics2D g2d, Polygon polygon) {
-        final float h = 0.33f + (hueOffset * 0.1f);
-        final float s = 0.8f;
-        final float b = 0.4f;
-
-        final Color baseColor = Color.getHSBColor(h, s, b);
-
-        g2d.setColor(new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), 120));
+        g2d.setColor(baseColorAlpha120);
         g2d.fillPolygon(polygon);
 
-        g2d.setStroke(new BasicStroke(1.5f));
-        g2d.setColor(new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), 180));
-        g2d.drawPolygon(polygon);
+        if (!Settings.graphicsQuality.equals("LOW")) {
+            g2d.setStroke(RenderCache.STROKE_1_5);
+            g2d.setColor(baseColorAlpha180);
+            g2d.drawPolygon(polygon);
+        }
 
-        g2d.setStroke(new BasicStroke(1.0f));
+        g2d.setStroke(RenderCache.STROKE_1);
     }
 
     @Override
     public void paint3D(Graphics2D g2d, Polygon polygon) {
-        final float h = 0.33f + (hueOffset * 0.1f);
-        final float s = 1.0f;
-        final float b = 1.0f;
+        if (!Settings.graphicsQuality.equals("LOW")) {
+            g2d.setStroke(RenderCache.STROKE_8);
+            g2d.setColor(RenderCache.cyanWithAlpha(40));
+            g2d.drawPolygon(polygon);
 
-        final Color baseColor = Color.getHSBColor(h, s, b);
-        final Color neonColor = new Color(0, 255, 255);
+            if (Settings.graphicsQuality.equals("HIGH")) {
+                g2d.setStroke(RenderCache.STROKE_4);
+                g2d.setColor(RenderCache.cyanWithAlpha(100));
+                g2d.drawPolygon(polygon);
+            }
 
-        g2d.setStroke(new BasicStroke(8.0f));
-        g2d.setColor(new Color(neonColor.getRed(), neonColor.getGreen(), neonColor.getBlue(), 40));
-        g2d.drawPolygon(polygon);
+            g2d.setStroke(RenderCache.STROKE_2);
+            g2d.setColor(RenderCache.cyanWithAlpha(180));
+            g2d.drawPolygon(polygon);
+        }
 
-        g2d.setStroke(new BasicStroke(4.0f));
-        g2d.setColor(new Color(neonColor.getRed(), neonColor.getGreen(), neonColor.getBlue(), 100));
-        g2d.drawPolygon(polygon);
-
-        g2d.setStroke(new BasicStroke(2.0f));
-        g2d.setColor(new Color(neonColor.getRed(), neonColor.getGreen(), neonColor.getBlue(), 180));
-        g2d.drawPolygon(polygon);
-
-        g2d.setColor(new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), 230));
+        g2d.setColor(baseColorAlpha230);
         g2d.fillPolygon(polygon);
 
-        g2d.setStroke(new BasicStroke(1.5f));
+        g2d.setStroke(RenderCache.STROKE_1_5);
         g2d.setColor(Color.WHITE);
         g2d.drawPolygon(polygon);
 
-        g2d.setStroke(new BasicStroke(1.0f));
+        g2d.setStroke(RenderCache.STROKE_1);
     }
 }

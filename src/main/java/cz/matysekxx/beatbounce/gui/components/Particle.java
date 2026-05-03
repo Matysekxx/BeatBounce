@@ -8,6 +8,7 @@ import java.awt.*;
 public class Particle {
     float x, y, speed, opacity;
     Color color;
+    Color renderedColor;
 
     public Particle(int w, int h) {
         reset(w, h, true);
@@ -15,8 +16,10 @@ public class Particle {
 
     public static void drawAll(Graphics2D g2d, Particle[] particles) {
         for (Particle p : particles) {
-            g2d.setColor(new Color(p.color.getRed(), p.color.getGreen(), p.color.getBlue(), (int) (p.opacity * 255)));
-            g2d.fillOval((int) p.x, (int) p.y, 3, 3);
+            if (p.renderedColor != null) {
+                g2d.setColor(p.renderedColor);
+                g2d.fillOval((int) p.x, (int) p.y, 3, 3);
+            }
         }
     }
 
@@ -32,6 +35,7 @@ public class Particle {
         speed = 10f + (float) (Math.random() * 20f);
         opacity = 0.3f + (float) (Math.random() * 0.5f);
         color = Math.random() > 0.5 ? RenderUtils.cyan : new Color(255, 0, 255);
+        renderedColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), (int) (opacity * 255));
     }
 
     public void update(float dt, int w, int h) {

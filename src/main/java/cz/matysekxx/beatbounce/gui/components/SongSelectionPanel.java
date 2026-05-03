@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.matysekxx.beatbounce.api.AudiusClient;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
+import cz.matysekxx.beatbounce.configuration.Settings;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -262,7 +263,9 @@ public class SongSelectionPanel extends JPanel implements Runnable {
                 SwingUtilities.invokeLater(songListPanel::revalidate);
             }
 
-            Particle.updateAll(particles, dt, getWidth() > 0 ? getWidth() : 1920, getHeight() > 0 ? getHeight() : 1080);
+            if (Settings.particlesEnabled) {
+                Particle.updateAll(particles, dt, getWidth() > 0 ? getWidth() : 1920, getHeight() > 0 ? getHeight() : 1080);
+            }
             repaint();
             try {
                 Thread.sleep(16);
@@ -279,7 +282,9 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         RenderUtils.initGraphics2D(g2d);
         g2d.setColor(new Color(10, 10, 26));
         g2d.fillRect(0, 0, getWidth(), getHeight());
-        Particle.drawAll(g2d, particles);
+        if (Settings.particlesEnabled) {
+            Particle.drawAll(g2d, particles);
+        }
         g2d.dispose();
     }
 }

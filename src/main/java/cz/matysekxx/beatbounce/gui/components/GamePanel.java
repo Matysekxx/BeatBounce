@@ -10,6 +10,7 @@ import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.Orb;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.level.Level;
+import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.util.Time;
 
 import javax.sound.sampled.Clip;
@@ -39,6 +40,9 @@ public class GamePanel extends JPanel implements Runnable {
     private BufferedImage bgCache;
     private int cachedW = -1;
     private int cachedH = -1;
+    private int frames = 0;
+    private long lastFpsTime = 0;
+    private int currentFps = 0;
 
     public GamePanel(Runnable onExit) {
         this.onExit = onExit;
@@ -166,7 +170,8 @@ public class GamePanel extends JPanel implements Runnable {
             }
 
             repaint();
-            Time.sleep(16);
+            long frameTimeMs = (long) (1000.0 / Settings.targetFps);
+            Time.sleep(frameTimeMs);
         }
     }
 
@@ -203,6 +208,20 @@ public class GamePanel extends JPanel implements Runnable {
             g2d.fillRect(0, 0, w, h);
         }
         drawByGameState(g2d, w, h);
+        
+        if (Settings.showFps) {
+            frames++;
+            final long nowTime = System.currentTimeMillis();
+            if (nowTime - lastFpsTime >= 1000) {
+                currentFps = frames;
+                frames = 0;
+                lastFpsTime = nowTime;
+            }
+            g2d.setColor(Color.YELLOW);
+            g2d.setFont(new Font("Monospaced", Font.BOLD, 16));
+            g2d.drawString("FPS: " + currentFps, 10, 20);
+        }
+
         g2d.dispose();
     }
 

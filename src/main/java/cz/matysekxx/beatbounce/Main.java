@@ -1,6 +1,7 @@
 package cz.matysekxx.beatbounce;
 
 import cz.matysekxx.beatbounce.configuration.Settings;
+import cz.matysekxx.beatbounce.configuration.SwingConfiguration;
 
 import javax.swing.*;
 
@@ -15,6 +16,7 @@ public class Main {
     }
 
     static void main() {
+        SwingConfiguration.setup();
         Settings.load();
         setProperties();
         SwingUtilities.invokeLater(Execute.getSingleton());

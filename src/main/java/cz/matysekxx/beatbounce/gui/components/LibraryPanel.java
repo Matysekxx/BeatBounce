@@ -102,6 +102,8 @@ public class LibraryPanel extends JPanel {
 
     private void addLocalSong() {
         final JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setMinimumSize(new Dimension(800, 600));
+        fileChooser.setPreferredSize(new Dimension(800, 600));
         fileChooser.setDialogTitle("Select Audio File");
         fileChooser.setAcceptAllFileFilterUsed(false);
         fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Audio Files (*.mp3, *.wav, *.ogg, *.flac)", "mp3", "wav", "ogg", "flac"));

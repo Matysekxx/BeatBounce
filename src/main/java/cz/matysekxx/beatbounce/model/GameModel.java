@@ -34,6 +34,7 @@ public class GameModel {
     private float neonFlashAlpha = 0f;
     private final List<Orb> orbs = new ArrayList<>();
     private int collectedOrbs = 0;
+    private double smoothedAudioTime = 0;
 
     public GameModel(Level level, Sphere sphere, Camera3D cam, Clip clip) {
         this.level = level;
@@ -50,6 +51,7 @@ public class GameModel {
         this.gameZProgress = 0;
         this.fallStartZ = 0;
         this.score = 0;
+        this.smoothedAudioTime = 0;
         this.sphere.reset();
 
         cam.setX(0);
@@ -159,8 +161,21 @@ public class GameModel {
             return;
         }
 
-        final double audioTimeInSeconds = clip.getMicrosecondPosition() / 1_000_000.0;
-        this.gameZProgress = audioTimeInSeconds * zUnitsPerSecond;
+        final double rawAudioTime = clip.getMicrosecondPosition() / 1_000_000.0;
+        
+        if (smoothedAudioTime == 0 && rawAudioTime > 0) {
+            smoothedAudioTime = rawAudioTime;
+        }
+        
+        smoothedAudioTime += deltaTime;
+        final double diff = rawAudioTime - smoothedAudioTime;
+        if (Math.abs(diff) > 0.05) {
+            smoothedAudioTime = rawAudioTime;
+        } else {
+            smoothedAudioTime += diff * 0.1;
+        }
+
+        this.gameZProgress = smoothedAudioTime * zUnitsPerSecond;
 
         for (AbstractTile tile : level.tiles()) {
             if (tile instanceof MovingTile movingTile) {
@@ -189,7 +204,7 @@ public class GameModel {
                 if (sphere.getX() >= tileMinX && sphere.getX() <= tileMaxX) {
                     currentTileIndex++;
                     score += 10;
-                    startNextJump(audioTimeInSeconds);
+                    startNextJump(smoothedAudioTime);
                 } else {
                     gameState = GameState.FALLING;
                     sphere.startFalling();
@@ -211,7 +226,7 @@ public class GameModel {
             }
         }
 
-        sphere.update(audioTimeInSeconds);
+        sphere.update(smoothedAudioTime);
     }
 
     private void handleLevelEndAnimation(double deltaTime) {

@@ -1,6 +1,7 @@
 package cz.matysekxx.beatbounce.gui.components;
 
 import cz.matysekxx.beatbounce.gui.RenderUtils;
+import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.util.Time;
 
 import javax.swing.*;
@@ -49,7 +50,9 @@ public class IntroPanel extends JPanel implements Runnable {
 
             final int w = getWidth() > 0 ? getWidth() : 1920;
             final int h = getHeight() > 0 ? (getHeight() / 2 + 100) : 540;
-            Particle.updateAll(particles, dt, w, h);
+            if (Settings.particlesEnabled) {
+                Particle.updateAll(particles, dt, w, h);
+            }
 
             repaint();
 
@@ -71,7 +74,9 @@ public class IntroPanel extends JPanel implements Runnable {
         final int horizonY = (h >> 1) + 100;
 
         RenderUtils.drawBackground(g2d, w, h);
-        Particle.drawAll(g2d, particles);
+        if (Settings.particlesEnabled) {
+            Particle.drawAll(g2d, particles);
+        }
         RenderUtils.drawFloor(g2d, w, h, horizonY);
 
         drawIntroGrid(g2d, w, h, horizonY);

@@ -2,6 +2,8 @@ package cz.matysekxx.beatbounce.model.entity;
 
 import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.gui.Paintable;
+import cz.matysekxx.beatbounce.gui.RenderCache;
+import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.WindowData;
 
 import java.awt.*;
@@ -13,6 +15,9 @@ public class Orb implements Paintable {
     private final double z;
     private final double radius;
     private boolean collected;
+    private final Ellipse2D.Double glowEllipse;
+    private final Ellipse2D.Double mainEllipse;
+    private final Ellipse2D.Double highlightEllipse;
 
     public Orb(double x, double y, double z, double radius) {
         this.x = x;
@@ -20,6 +25,9 @@ public class Orb implements Paintable {
         this.z = z;
         this.radius = radius;
         this.collected = false;
+        this.glowEllipse = new Ellipse2D.Double();
+        this.mainEllipse = new Ellipse2D.Double();
+        this.highlightEllipse = new Ellipse2D.Double();
     }
 
     public double getX() {
@@ -62,20 +70,25 @@ public class Orb implements Paintable {
         final long t = System.currentTimeMillis();
         final float pulse = (float) ((Math.sin(t / 200.0) + 1.0) / 2.0);
 
-        final int glowR = (int) (pr * (1.5f + pulse * 0.5f));
-        g2d.setPaint(new RadialGradientPaint(
-                px, py, glowR,
-                new float[]{0f, 1f},
-                new Color[]{new Color(255, 200, 0, 150), new Color(255, 200, 0, 0)}
-        ));
-        g2d.fill(new Ellipse2D.Double(px - glowR, py - glowR, glowR * 2, glowR * 2));
+        if (!Settings.graphicsQuality.equals("LOW")) {
+            final int glowR = (int) (pr * (1.5f + pulse * 0.5f));
+            g2d.setPaint(new RadialGradientPaint(
+                    px, py, glowR,
+                    new float[]{0f, 1f},
+                    new Color[]{new Color(255, 200, 0, 150), new Color(255, 200, 0, 0)}
+            ));
+            glowEllipse.setFrame(px - glowR, py - glowR, glowR * 2, glowR * 2);
+            g2d.fill(glowEllipse);
+        }
 
         g2d.setColor(new Color(255, 255, 100));
-        g2d.fill(new Ellipse2D.Double(px - pr, py - pr, pr * 2, pr * 2));
+        mainEllipse.setFrame(px - pr, py - pr, pr * 2, pr * 2);
+        g2d.fill(mainEllipse);
 
         g2d.setColor(Color.WHITE);
         final int highlightR = (int) (pr * 0.4);
-        g2d.fill(new Ellipse2D.Double(px - pr * 0.3, py - pr * 0.3, highlightR, highlightR));
+        highlightEllipse.setFrame(px - pr * 0.3, py - pr * 0.3, highlightR, highlightR);
+        g2d.fill(highlightEllipse);
     }
 
     @Override

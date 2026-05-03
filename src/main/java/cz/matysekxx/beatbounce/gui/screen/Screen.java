@@ -1,18 +1,49 @@
 package cz.matysekxx.beatbounce.gui.screen;
 
+import cz.matysekxx.beatbounce.configuration.Settings;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 
 public abstract class Screen extends JFrame {
 
     public Screen() {
-        //this.setUndecorated(true);
+        this.setUndecorated(Settings.fullscreen);
         this.setTitle("BeatBounce");
         this.getContentPane().setBackground(Color.BLACK);
-        this.setSize(800, 600);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        this.setLocationRelativeTo(null);
+        if (Settings.fullscreen) {
+            GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+            GraphicsDevice device = (Settings.monitorIndex >= 0 && Settings.monitorIndex < devices.length) ? devices[Settings.monitorIndex] : devices[0];
+            final Rectangle bounds = device.getDefaultConfiguration().getBounds();
+            bounds.height += 1;
+            this.setBounds(bounds);
+        } else {
+            this.setSize(1024, 768);
+            this.setMinimumSize(new Dimension(1024, 768));
+            final GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+            final GraphicsDevice device = (Settings.monitorIndex >= 0 && Settings.monitorIndex < devices.length) ? devices[Settings.monitorIndex] : devices[0];
+            final Rectangle bounds = device.getDefaultConfiguration().getBounds();
+            this.setLocation(bounds.x + (bounds.width - 1024) / 2, bounds.y + (bounds.height - 768) / 2);
+        }
+
+        this.addWindowFocusListener(new WindowFocusListener() {
+            @Override
+            public void windowGainedFocus(WindowEvent e) {
+                if (Settings.muteOnFocusLoss) {
+                    Settings.isMuted = false;
+                }
+            }
+
+            @Override
+            public void windowLostFocus(WindowEvent e) {
+                if (Settings.muteOnFocusLoss) {
+                    Settings.isMuted = true;
+                }
+            }
+        });
     }
 
     public void start() {

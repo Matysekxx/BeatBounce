@@ -1,8 +1,10 @@
 package cz.matysekxx.beatbounce.gui.screen;
 
 import cz.matysekxx.beatbounce.util.Lazy;
+import cz.matysekxx.beatbounce.configuration.Settings;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -41,7 +43,9 @@ public class ScreenManager {
     public <T extends Screen> void showScreen(Class<T> screenClass) {
         final Screen nextScreen = windows.get(screenClass).get();
         if (nextScreen != null) {
-            nextScreen.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            if (Settings.fullscreen) {
+                applyFullscreen(nextScreen);
+            }
             nextScreen.setVisible(true);
             nextScreen.toFront();
 
@@ -52,5 +56,37 @@ public class ScreenManager {
             activeWindow = nextScreen;
             nextScreen.start();
         }
+    }
+
+    public void applySettings() {
+        for (Lazy<Screen> lazyScreen : windows.values()) {
+            if (lazyScreen.wasInitialized()) {
+                final Screen screen = lazyScreen.get();
+                final boolean isActive = (screen == activeWindow);
+                screen.dispose();
+                screen.setUndecorated(Settings.fullscreen);
+                if (Settings.fullscreen) {
+                    applyFullscreen(screen);
+                } else {
+                    screen.setExtendedState(JFrame.NORMAL);
+                    screen.setSize(1024, 768);
+                    final GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+                    final GraphicsDevice device = (Settings.monitorIndex >= 0 && Settings.monitorIndex < devices.length) ? devices[Settings.monitorIndex] : devices[0];
+                    final Rectangle bounds = device.getDefaultConfiguration().getBounds();
+                    screen.setLocation(bounds.x + (bounds.width - 1024) / 2, bounds.y + (bounds.height - 768) / 2);
+                }
+                if (isActive) {
+                    screen.setVisible(true);
+                }
+            }
+        }
+    }
+
+    private void applyFullscreen(Screen screen) {
+        final GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+        final GraphicsDevice device = (Settings.monitorIndex >= 0 && Settings.monitorIndex < devices.length) ? devices[Settings.monitorIndex] : devices[0];
+        final Rectangle bounds = device.getDefaultConfiguration().getBounds();
+        bounds.height += 1;
+        screen.setBounds(bounds);
     }
 }

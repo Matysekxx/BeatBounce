@@ -5,8 +5,25 @@ import cz.matysekxx.beatbounce.configuration.SwingConfiguration;
 
 import javax.swing.*;
 
+/// The entry point of the BeatBounce application.
+///
+/// This class handles the initial bootstrapping of the application, including
+/// loading configurations, setting up low-level JVM rendering properties,
+/// and launching the UI on the Event Dispatch Thread (EDT).
 public class Main {
-    static void setProperties() {
+
+    /// Configures low-level JVM system properties to optimize rendering.
+    ///
+    /// The properties are set based on the current [Settings], specifically
+    /// affecting OpenGL acceleration and text anti-aliasing.
+    ///
+    /// | Property | Description |
+    /// | :--- | :--- |
+    /// | `sun.java2d.opengl` | Enables/Disables OpenGL hardware acceleration. |
+    /// | `sun.java2d.noddraw` | Disables DirectDraw to avoid conflicts with OpenGL. |
+    /// | `sun.awt.noerasebackground` | Prevents flickering by not clearing the background. |
+    /// | `awt.useSystemAAFontSettings` | Controls system-level font anti-aliasing. |
+    static void setupProperties() {
         System.setProperty("sun.java2d.opengl", Settings.opengl ? "true" : "false");
         System.setProperty("sun.java2d.noddraw", Settings.opengl ? "true" : "false");
         System.setProperty("sun.awt.noerasebackground", "true");
@@ -15,10 +32,17 @@ public class Main {
         System.setProperty("swing.aatext", Settings.graphicsQuality.equals("LOW") ? "false" : "true");
     }
 
+    /// The main entry method that starts the application.
+    ///
+    /// The startup sequence is as follows:
+    /// 1. Initialize Swing Look and Feel via [SwingConfiguration].
+    /// 2. Load user settings from [Settings].
+    /// 3. Apply JVM rendering properties via [setupProperties].
+    /// 4. Hand over execution to [Execute] on the Swing Event Dispatch Thread.
     static void main() {
         SwingConfiguration.setup();
         Settings.load();
-        setProperties();
+        setupProperties();
         SwingUtilities.invokeLater(Execute.getSingleton());
     }
 }

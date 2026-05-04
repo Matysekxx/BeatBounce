@@ -3,13 +3,36 @@ package cz.matysekxx.beatbounce.configuration;
 import javax.swing.*;
 import java.awt.*;
 
+/// Global UI configuration class for the Swing-based interface.
+///
+/// This class handles the initialization of the **Look and Feel** and
+/// overrides standard [UIManager] properties to create a cohesive dark theme
+/// across all application components.
 public class SwingConfiguration {
+
+    /// Primary background color (Dark Slate) used for panels and main windows.
     private static final Color mainBg = new Color(40, 44, 52);
+
+    /// Secondary background color (Deep Charcoal) used for input fields and lists.
     private static final Color listBg = new Color(33, 37, 43);
+
+    /// Primary text color (Light Grey) to ensure high readability on dark backgrounds.
     private static final Color lightText = new Color(220, 220, 220);
+
+    /// Accent color (Soft Blue) used for selection highlights and focus indicators.
     private static final Color accentBlue = new Color(97, 175, 239);
+
+    /// Default background color for button components.
     private static final Color buttonBg = new Color(60, 65, 75);
 
+    /// Initializes the application's look and feel and applies theme overrides.
+    ///
+    /// This method sets the Cross-Platform Look and Feel (Metal) as a base
+    /// and then applies custom color properties to the [UIManager] for:
+    /// - Panels and Labels
+    /// - Buttons and Text Fields
+    /// - Lists and Combo Boxes
+    /// - File Chooser dialogs
     public static void setup() {
         try {
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
@@ -25,17 +48,20 @@ public class SwingConfiguration {
         setupFileChooserProperties();
     }
 
+    /// Configures standard button colors.
     private static void setupButtonProperties() {
         UIManager.put("Button.background", buttonBg);
         UIManager.put("Button.foreground", Color.WHITE);
     }
 
+    /// Configures text input fields, including caret visibility.
     private static void setupTextFieldProperties() {
         UIManager.put("TextField.background", listBg);
         UIManager.put("TextField.foreground", lightText);
         UIManager.put("TextField.caretForeground", lightText);
     }
 
+    /// Configures JList appearance and selection highlight colors.
     private static void setupListProperties() {
         UIManager.put("List.background", listBg);
         UIManager.put("List.foreground", lightText);
@@ -43,6 +69,7 @@ public class SwingConfiguration {
         UIManager.put("List.selectionForeground", Color.WHITE);
     }
 
+    /// Configures JComboBox and its dropdown selection colors.
     private static void setupComboBoxProperties() {
         UIManager.put("ComboBox.background", buttonBg);
         UIManager.put("ComboBox.foreground", lightText);
@@ -50,6 +77,10 @@ public class SwingConfiguration {
         UIManager.put("ComboBox.selectionForeground", Color.WHITE);
     }
 
+    /// Configures the localized text and theme for [JFileChooser] dialogs.
+    ///
+    /// This ensures that file dialogs remain consistent with the dark theme
+    /// and provides explicit labels for navigation tooltips and buttons.
     private static void setupFileChooserProperties() {
         UIManager.put("FileChooser.background", mainBg);
         UIManager.put("FileChooser.foreground", lightText);

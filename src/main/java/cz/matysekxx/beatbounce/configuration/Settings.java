@@ -11,7 +11,7 @@ import java.util.Properties;
 public class Settings {
     private static final String CONFIG_FILE = "config.properties";
     private static final Properties properties = new Properties();
-
+    public static boolean vsync = false;
     public static boolean opengl = true;
     public static boolean fullscreen = true;
     public static int soundVolume = 100;
@@ -47,6 +47,7 @@ public class Settings {
         if (file.exists()) {
             try (FileInputStream fis = new FileInputStream(file)) {
                 properties.load(fis);
+                vsync = Boolean.parseBoolean(properties.getProperty("vsync", "false"));
                 opengl = Boolean.parseBoolean(properties.getProperty("opengl", "true"));
                 fullscreen = Boolean.parseBoolean(properties.getProperty("fullscreen", "true"));
                 soundVolume = Integer.parseInt(properties.getProperty("soundVolume", "100"));
@@ -66,6 +67,7 @@ public class Settings {
     }
 
     public static void save() {
+        properties.setProperty("vsync", Boolean.toString(vsync));
         properties.setProperty("opengl", String.valueOf(opengl));
         properties.setProperty("fullscreen", String.valueOf(fullscreen));
         properties.setProperty("soundVolume", String.valueOf(soundVolume));

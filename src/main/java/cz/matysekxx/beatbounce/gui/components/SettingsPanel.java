@@ -6,6 +6,8 @@ import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class SettingsPanel extends JPanel {
 
@@ -170,8 +172,77 @@ public class SettingsPanel extends JPanel {
         Settings.muteOnFocusLoss = focusLossCheck.isSelected();
         Settings.save();
         screenManager.applySettings();
-        infoLabel.setText(restartReq ? "Changes saved. Restart for full effect!" : "Settings applied successfully!");
-        infoLabel.setForeground(restartReq ? Color.ORANGE : RenderUtils.green);
+
+        if (restartReq) {
+            showRestartDialog();
+        } else {
+            infoLabel.setText("Settings applied successfully!");
+            infoLabel.setForeground(RenderUtils.green);
+        }
+    }
+
+    private void showRestartDialog() {
+        final JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Restart Required", true);
+        dialog.setUndecorated(true);
+        dialog.setBackground(new Color(0, 0, 0, 0));
+
+        final JPanel contentPane = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g.create();
+                RenderUtils.initGraphics2D(g2d);
+                g2d.setColor(new Color(15, 15, 25, 240));
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+                g2d.setColor(RenderUtils.cyan);
+                g2d.setStroke(new BasicStroke(2));
+                g2d.drawRoundRect(1, 1, getWidth() - 3, getHeight() - 3, 20, 20);
+                g2d.dispose();
+            }
+        };
+        contentPane.setOpaque(false);
+        contentPane.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
+
+        final JLabel titleLabel = new JLabel("Restart Required");
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 28));
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+        contentPane.add(titleLabel, BorderLayout.NORTH);
+
+        final JLabel messageLabel = new JLabel("<html><center>Some settings require a restart<br>to take full effect.</center></html>");
+        messageLabel.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        messageLabel.setForeground(new Color(200, 200, 200));
+        messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        contentPane.add(messageLabel, BorderLayout.CENTER);
+
+        final JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+        buttonPanel.setOpaque(false);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
+
+        final JButton laterBtn = getStyledButton("LATER", Color.DARK_GRAY, Color.WHITE);
+        laterBtn.setPreferredSize(new Dimension(150, 45));
+        laterBtn.addActionListener(_ -> {
+            dialog.dispose();
+            infoLabel.setText("Changes saved. Restart for full effect!");
+            infoLabel.setForeground(Color.ORANGE);
+        });
+
+        final JButton restartBtn = getStyledButton("RESTART NOW", RenderUtils.cyan, Color.BLACK);
+        restartBtn.setPreferredSize(new Dimension(180, 45));
+        restartBtn.addActionListener(_ -> {
+            dialog.dispose();
+            //TODO: pridat restart aplikace pres cmd
+        });
+
+        buttonPanel.add(laterBtn);
+        buttonPanel.add(restartBtn);
+        contentPane.add(buttonPanel, BorderLayout.SOUTH);
+
+        dialog.setContentPane(contentPane);
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
     }
 
     private void resetToDefaults() {

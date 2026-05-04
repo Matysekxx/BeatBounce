@@ -3,10 +3,7 @@ package cz.matysekxx.beatbounce.model;
 import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
-import cz.matysekxx.beatbounce.model.entity.AbstractTile;
-import cz.matysekxx.beatbounce.model.entity.MovingTile;
-import cz.matysekxx.beatbounce.model.entity.Orb;
-import cz.matysekxx.beatbounce.model.entity.Sphere;
+import cz.matysekxx.beatbounce.model.entity.*;
 import cz.matysekxx.beatbounce.model.level.Level;
 import cz.matysekxx.beatbounce.model.level.LevelGenerator;
 
@@ -77,7 +74,7 @@ public class GameModel {
         final double maxOrbZ = clip.getMicrosecondLength() / 1_000_000.0 * zUnitsPerSecond;
         final List<AbstractTile> validTiles = new ArrayList<>();
         for (AbstractTile t : level.tiles()) {
-            if (t instanceof cz.matysekxx.beatbounce.model.entity.NormalTile && t.getZ() > 2000 && t.getZ() < maxOrbZ) {
+            if (t instanceof NormalTile && t.getZ() > 2000 && t.getZ() < maxOrbZ) {
                 validTiles.add(t);
             }
         }
@@ -179,6 +176,9 @@ public class GameModel {
 
         for (AbstractTile tile : level.tiles()) {
             if (tile instanceof MovingTile movingTile) {
+                final double distance = cam.getDistanceTo(tile.getZ());
+                final double tileDepth = distance + tile.getLengthInZ();
+                if (tileDepth <= 0 || distance > 3000) continue;
                 movingTile.update(deltaTime);
                 int newX = movingTile.getX();
                 if (newX < -RenderUtils.ROAD_WIDTH) {

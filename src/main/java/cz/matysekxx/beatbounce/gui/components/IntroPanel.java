@@ -131,7 +131,7 @@ public class IntroPanel extends JPanel implements Runnable {
         g2d.drawImage(bgImage, 0, 0, null);
         g2.dispose();
         g2d.dispose();
-        //Toolkit.getDefaultToolkit().sync();
+        if (Settings.vsync) Toolkit.getDefaultToolkit().sync();
     }
 
     private void drawIntroGrid(Graphics2D g2d, int w, int h, int horizonY) {

@@ -263,7 +263,7 @@ public class GamePanel extends JPanel implements Runnable {
         RenderUtils.initGraphics2D(g2);
         g2.drawImage(backBuffer, 0, 0, null);
         g2.dispose();
-        //Toolkit.getDefaultToolkit().sync();
+        if (Settings.vsync) Toolkit.getDefaultToolkit().sync();
     }
 
     private void drawByGameState(Graphics2D g2d, int w, int h) {

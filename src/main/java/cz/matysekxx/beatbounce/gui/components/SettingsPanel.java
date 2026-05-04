@@ -6,10 +6,6 @@ import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.util.List;
 
 public class SettingsPanel extends JPanel {
 
@@ -183,54 +179,13 @@ public class SettingsPanel extends JPanel {
         }
     }
 
-    private JPanel createDialogContentPane(String titleText, String htmlMessage, Color borderColor) {
-        final JPanel contentPane = new JPanel(new BorderLayout()) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g.create();
-                RenderUtils.initGraphics2D(g2d);
-                g2d.setColor(new Color(15, 15, 25, 240));
-                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
-                g2d.setColor(borderColor);
-                g2d.setStroke(new BasicStroke(2));
-                g2d.drawRoundRect(1, 1, getWidth() - 3, getHeight() - 3, 20, 20);
-                g2d.dispose();
-            }
-        };
-        contentPane.setOpaque(false);
-        contentPane.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
-
-        final JLabel titleLabel = new JLabel(titleText);
-        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 28));
-        titleLabel.setForeground(Color.WHITE);
-        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
-        contentPane.add(titleLabel, BorderLayout.NORTH);
-
-        final JLabel messageLabel = new JLabel(htmlMessage);
-        messageLabel.setFont(new Font("SansSerif", Font.PLAIN, 18));
-        messageLabel.setForeground(new Color(200, 200, 200));
-        messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        contentPane.add(messageLabel, BorderLayout.CENTER);
-
-        return contentPane;
-    }
-
     private void showRestartDialog() {
-        final JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Restart Required", true);
-        dialog.setUndecorated(true);
-        dialog.setBackground(new Color(0, 0, 0, 0));
-
-        final JPanel contentPane = createDialogContentPane(
+        final CustomDialog dialog = new CustomDialog(
+                (Frame) SwingUtilities.getWindowAncestor(this),
                 "Restart Required",
                 "<html><center>Some settings require a restart<br>to take full effect.</center></html>",
                 RenderUtils.cyan
         );
-
-        final JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
-        buttonPanel.setOpaque(false);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
 
         final JButton laterBtn = getStyledButton("LATER", Color.DARK_GRAY, Color.WHITE);
         laterBtn.setPreferredSize(new Dimension(150, 45));
@@ -248,30 +203,20 @@ public class SettingsPanel extends JPanel {
             System.exit(0);
         });
 
-        buttonPanel.add(laterBtn);
-        buttonPanel.add(restartBtn);
-        contentPane.add(buttonPanel, BorderLayout.SOUTH);
-
-        dialog.setContentPane(contentPane);
+        dialog.addButton(laterBtn);
+        dialog.addButton(restartBtn);
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
 
     private void showResetDialog() {
-        final JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Reset to Defaults", true);
-        dialog.setUndecorated(true);
-        dialog.setBackground(new Color(0, 0, 0, 0));
-
-        final JPanel contentPane = createDialogContentPane(
+        final CustomDialog dialog = new CustomDialog(
+                (Frame) SwingUtilities.getWindowAncestor(this),
                 "Reset to Defaults",
                 "<html><center>Are you sure you want to reset all<br>settings to their defaults?</center></html>",
                 Color.RED
         );
-
-        final JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
-        buttonPanel.setOpaque(false);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
 
         final JButton cancelBtn = getStyledButton("CANCEL", Color.DARK_GRAY, Color.WHITE);
         cancelBtn.setPreferredSize(new Dimension(150, 45));
@@ -284,11 +229,8 @@ public class SettingsPanel extends JPanel {
             resetToDefaults();
         });
 
-        buttonPanel.add(cancelBtn);
-        buttonPanel.add(resetConfirmBtn);
-        contentPane.add(buttonPanel, BorderLayout.SOUTH);
-
-        dialog.setContentPane(contentPane);
+        dialog.addButton(cancelBtn);
+        dialog.addButton(resetConfirmBtn);
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);

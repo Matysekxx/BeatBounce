@@ -37,7 +37,6 @@ public class GamePanel extends JPanel implements Runnable {
     private GameModel gameModel;
     private boolean running;
     private long lastFrameTime;
-    private float flashAlpha = 0f;
     private boolean isCursorHidden = false;
     private int lastScore = 0;
     private float scorePopAlpha = 0f;
@@ -67,7 +66,6 @@ public class GamePanel extends JPanel implements Runnable {
         this.clip = level.audioData().clip();
         this.sphere = new Sphere(0, 150, 0, 25);
         this.gameModel = new GameModel(level, sphere, cam, clip);
-        this.flashAlpha = 0f;
         this.lastScore = 0;
         this.scorePopAlpha = 0f;
         this.uiRenderer = new GameUIRenderer(gameModel, clip);
@@ -88,7 +86,6 @@ public class GamePanel extends JPanel implements Runnable {
                     case GAME_OVER, FINISHED -> {
                         if (e.getKeyCode() == KeyEvent.VK_R) {
                             gameModel.init();
-                            flashAlpha = 0f;
                         } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_ENTER) {
                             stopGame();
                             if (onExit != null) onExit.run();
@@ -146,38 +143,34 @@ public class GamePanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
+        final long optimalTimeNanos = 1_000_000_000 / Settings.targetFps;
         while (running) {
-            final long now = System.nanoTime();
-            final double deltaTime = (now - lastFrameTime) / 1_000_000_000.0;
-            lastFrameTime = now;
+            final long loopStartTime = System.nanoTime();
+            final double deltaTime = (loopStartTime - lastFrameTime) / 1_000_000_000.0;
+            lastFrameTime = loopStartTime;
 
             final double currentTime = (clip != null && clip.isRunning()) ? clip.getMicrosecondPosition() / 1_000_000.0 : 0;
-            final GameState oldState = gameModel.getGameState();
             gameModel.update(currentTime, deltaTime);
             updateCursorVisibility();
-
-            if (oldState == GameState.PLAYING && gameModel.getGameState() == GameState.FALLING) {
-                flashAlpha = 0.5f;
-            }
-
-            if (flashAlpha > 0) {
-                flashAlpha -= (float) (deltaTime * 2.0);
-                if (flashAlpha < 0) flashAlpha = 0;
-            }
 
             final int currentScore = gameModel.getScore();
             if (currentScore != lastScore) {
                 scorePopAlpha = 1.0f;
                 lastScore = currentScore;
             }
+
             if (scorePopAlpha > 0) {
                 scorePopAlpha -= (float) (deltaTime * 3.0);
                 if (scorePopAlpha < 0) scorePopAlpha = 0;
             }
 
             repaint();
-            long frameTimeMs = (long) (1000.0 / Settings.targetFps);
-            Time.sleep(frameTimeMs);
+            final long timeTakenNanos = System.nanoTime() - loopStartTime;
+            final long sleepTimeMillis = (optimalTimeNanos - timeTakenNanos) / 1_000_000;
+
+            if (sleepTimeMillis > 0) {
+                Time.sleep(sleepTimeMillis);
+            }
         }
     }
 
@@ -196,16 +189,6 @@ public class GamePanel extends JPanel implements Runnable {
             drawGameObjects(g2d, w, h);
             uiRenderer.drawProgressBar(g2d, w, h);
             uiRenderer.drawScore(g2d, w, scorePopAlpha);
-        }
-        if (flashAlpha > 0) {
-            final RadialGradientPaint flashVignette = new RadialGradientPaint(
-                    w / 2f, h / 2f, w * 0.7f,
-                    new float[]{0f, 1f},
-                    new Color[]{new Color(1f, 0f, 0f, flashAlpha * 0.3f),
-                            new Color(1f, 0f, 0f, flashAlpha)}
-            );
-            g2d.setPaint(flashVignette);
-            g2d.fillRect(0, 0, w, h);
         }
 
         if (gameModel != null && gameModel.getNeonFlashAlpha() > 0) {

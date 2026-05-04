@@ -42,7 +42,7 @@ public class LibraryPanel extends JPanel {
         final JLabel title = new JLabel("Your Library");
         title.setFont(RenderCache.SANS_BOLD_28);
         title.setForeground(Color.WHITE);
-        topBar.add(title, BorderLayout.WEST);
+        topBar.add(title, BorderLayout.CENTER);
 
         final JButton addBtn = createAddButton();
         topBar.add(addBtn, BorderLayout.EAST);

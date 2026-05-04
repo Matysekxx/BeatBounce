@@ -7,6 +7,10 @@ import cz.matysekxx.beatbounce.util.Time;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.image.BufferedImage;
+import java.awt.image.VolatileImage;
 
 
 public class IntroPanel extends JPanel implements Runnable {
@@ -14,12 +18,25 @@ public class IntroPanel extends JPanel implements Runnable {
     private float time = 0;
     private boolean running = false;
     private Thread animatorThread;
+    private int cachedW = -1;
+    private int cachedH = -1;
+    private BufferedImage bgImage;
 
     public IntroPanel() {
         super();
         this.setDoubleBuffered(true);
         this.setOpaque(true);
+        this.setIgnoreRepaint(true);
         updateParticleCount();
+        this.addComponentListener(new ComponentAdapter() {
+            @Override public void componentResized(ComponentEvent e) {
+                final int w = e.getComponent().getWidth();
+                final int h = e.getComponent().getHeight();
+                cachedW = w;
+                cachedH = h;
+                bgImage = null;
+            }
+        });
     }
 
     private void updateParticleCount() {
@@ -54,6 +71,8 @@ public class IntroPanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
+        this.cachedH = getHeight();
+        this.cachedW = getWidth();
         long lastFpsTime = System.currentTimeMillis();
         long lastTime = System.nanoTime();
         while (running) {
@@ -64,10 +83,8 @@ public class IntroPanel extends JPanel implements Runnable {
 
             time += dt;
 
-            final int w = getWidth() > 0 ? getWidth() : 1920;
-            final int h = getHeight() > 0 ? (getHeight() / 2 + 100) : 540;
             if (Settings.particlesEnabled) {
-                Particle.updateAll(particles, dt, w, h);
+                Particle.updateAll(particles, dt, cachedW, cachedH);
             }
 
             repaint();
@@ -86,8 +103,8 @@ public class IntroPanel extends JPanel implements Runnable {
         final Graphics2D g2d = (Graphics2D) g.create();
         RenderUtils.initGraphics2D(g2d);
 
-        final int w = getWidth();
-        final int h = getHeight();
+        final int w = cachedW;
+        final int h = cachedH;
 
         final Rectangle clipBounds = g2d.getClipBounds();
         if (clipBounds != null && (clipBounds.width == 0 || clipBounds.height == 0)) {
@@ -95,18 +112,26 @@ public class IntroPanel extends JPanel implements Runnable {
             return;
         }
         final int horizonY = (h >> 1) + 100;
-
-        RenderUtils.drawBackground(g2d, w, h);
-        if (Settings.particlesEnabled) {
-            Particle.drawAll(g2d, particles);
+        if (bgImage == null || bgImage.getWidth() != w || bgImage.getHeight() != h) {
+            final GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment()
+                    .getDefaultScreenDevice().getDefaultConfiguration();
+            bgImage = gc.createCompatibleImage(w, h, Transparency.OPAQUE);
         }
-        RenderUtils.drawFloor(g2d, w, h, horizonY);
+        final Graphics2D g2 = (Graphics2D) bgImage.getGraphics();
+        RenderUtils.drawBackground(g2, w, h);
+        if (Settings.particlesEnabled) {
+            Particle.drawAll(g2, particles);
+        }
+        RenderUtils.drawFloor(g2, w, h, horizonY);
 
-        drawIntroGrid(g2d, w, h, horizonY);
-        RenderUtils.drawHorizonLine(g2d, w, horizonY);
-        RenderUtils.drawTitle(g2d, w, h, "BEAT BOUNCE");
+        drawIntroGrid(g2, w, h, horizonY);
+        RenderUtils.drawHorizonLine(g2, w, horizonY);
+        RenderUtils.drawTitle(g2, w, h, "BEAT BOUNCE");
 
+        g2d.drawImage(bgImage, 0, 0, null);
+        g2.dispose();
         g2d.dispose();
+        //Toolkit.getDefaultToolkit().sync();
     }
 
     private void drawIntroGrid(Graphics2D g2d, int w, int h, int horizonY) {

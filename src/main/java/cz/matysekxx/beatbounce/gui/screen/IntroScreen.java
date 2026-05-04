@@ -21,10 +21,6 @@ public class IntroScreen extends Screen {
         backgroundPanel.setLayout(new GridBagLayout());
         this.setContentPane(backgroundPanel);
 
-        final JPanel contentPanel = new JPanel();
-        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
-        contentPanel.setOpaque(false);
-
         final JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 40, 20));
         buttonPanel.setOpaque(false);
@@ -50,7 +46,7 @@ public class IntroScreen extends Screen {
             worker.execute();
         });
 
-        final JButton creditButton = ButtonFactory.createCreditButton(e -> {
+        final JButton creditButton = ButtonFactory.createCreditButton(_ -> {
             sleep(200);
             Thread.ofVirtual().start(() -> {
                 try {
@@ -62,7 +58,7 @@ public class IntroScreen extends Screen {
             });
         });
 
-        final JButton exitButton = ButtonFactory.createExitButton(e -> {
+        final JButton exitButton = ButtonFactory.createExitButton(_ -> {
             sleep(200);
             System.exit(0);
         });

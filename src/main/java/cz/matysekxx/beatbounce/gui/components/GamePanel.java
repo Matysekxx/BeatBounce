@@ -41,12 +41,15 @@ public class GamePanel extends JPanel implements Runnable {
     private int lastScore = 0;
     private float scorePopAlpha = 0f;
     private GameUIRenderer uiRenderer;
+    
     private BufferedImage bgCache;
     private int cachedW = -1;
     private int cachedH = -1;
+    
     private int frames = 0;
     private long lastFpsTime = 0;
-    private int currentFps = 0;
+    private int currentUpdateFps = 0;
+    
     private WindowData frameWindowData;
 
     public GamePanel(Runnable onExit) {
@@ -56,7 +59,8 @@ public class GamePanel extends JPanel implements Runnable {
         this.setFocusable(true);
         this.setBackground(Color.BLACK);
         this.cam = new Camera3D(0, 0, -500, 500.0);
-        this.setDoubleBuffered(true);
+        this.setDoubleBuffered(false);
+        this.setIgnoreRepaint(true);
         this.setOpaque(true);
         this.blankCursor = RenderUtils.blankCursor;
     }
@@ -101,7 +105,11 @@ public class GamePanel extends JPanel implements Runnable {
             this.running = true;
             gameModel.init();
             this.lastFrameTime = System.nanoTime();
+            this.lastFpsTime = System.currentTimeMillis();
+            this.frames = 0;
+            this.currentUpdateFps = 0;
             this.gameThread = new Thread(this);
+            this.gameThread.setPriority(Thread.MAX_PRIORITY);
             this.gameThread.start();
             this.requestFocusInWindow();
         }
@@ -143,7 +151,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
-        final long optimalTimeNanos = 1_000_000_000 / Settings.targetFps;
+        final long optimalTimeNanos = 1_000_000_000L / Settings.targetFps;
         while (running) {
             final long loopStartTime = System.nanoTime();
             final double deltaTime = (loopStartTime - lastFrameTime) / 1_000_000_000.0;
@@ -164,22 +172,50 @@ public class GamePanel extends JPanel implements Runnable {
                 if (scorePopAlpha < 0) scorePopAlpha = 0;
             }
 
-            repaint();
-            final long timeTakenNanos = System.nanoTime() - loopStartTime;
-            final long sleepTimeMillis = (optimalTimeNanos - timeTakenNanos) / 1_000_000;
+            if (Settings.showFps) {
+                frames++;
+                final long nowTime = System.currentTimeMillis();
+                if (nowTime - lastFpsTime >= 1000) {
+                    currentUpdateFps = frames;
+                    frames = 0;
+                    lastFpsTime = nowTime;
+                }
+            }
+            renderGame();
 
-            if (sleepTimeMillis > 0) {
-                Time.sleep(sleepTimeMillis);
+            final long timeTakenNanos = System.nanoTime() - loopStartTime;
+            final long remainingTimeNanos = optimalTimeNanos - timeTakenNanos;
+
+            if (remainingTimeNanos > 0) {
+                long sleepTimeMillis = remainingTimeNanos / 1_000_000L;
+                if (sleepTimeMillis > 2) {
+                    Time.sleep(sleepTimeMillis - 2);
+                }
+                while (System.nanoTime() - loopStartTime < optimalTimeNanos) {
+                    Thread.yield();
+                }
             }
         }
     }
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        Graphics2D g2d = (Graphics2D) g;
-        RenderUtils.initGraphics2D(g2d);
+    private void renderGame() {
+        final Graphics g = getGraphics();
+        if (g == null) return;
+
         final int w = getWidth();
         final int h = getHeight();
+        if (w <= 0 || h <= 0) return;
+
+        final Image doubleBuffer = createImage(w, h);
+        if (doubleBuffer == null) return;
+        
+        final Graphics2D g2d = (Graphics2D) doubleBuffer.getGraphics();
+
+        g2d.setColor(Color.BLACK);
+        g2d.fillRect(0, 0, w, h);
+
+        RenderUtils.initGraphics2D(g2d);
+
         final int horizonY = h / 3;
         final long time = System.currentTimeMillis();
         frameWindowData = WindowData.of(w, h);
@@ -192,26 +228,25 @@ public class GamePanel extends JPanel implements Runnable {
         }
 
         if (gameModel != null && gameModel.getNeonFlashAlpha() > 0) {
-            float alpha = Math.min(1f, gameModel.getNeonFlashAlpha());
+            final float alpha = Math.min(1f, gameModel.getNeonFlashAlpha());
             g2d.setColor(new Color(0f, 0f, 0f, alpha));
             g2d.fillRect(0, 0, w, h);
         }
         drawByGameState(g2d, w, h);
 
         if (Settings.showFps) {
-            frames++;
-            final long nowTime = System.currentTimeMillis();
-            if (nowTime - lastFpsTime >= 1000) {
-                currentFps = frames;
-                frames = 0;
-                lastFpsTime = nowTime;
-            }
             g2d.setColor(FPS_COLOR);
             g2d.setFont(RenderCache.MONO_BOLD_16);
-            g2d.drawString("FPS: " + currentFps, 10, 20);
+            g2d.drawString("FPS: " + currentUpdateFps, 10, 20);
         }
 
         g2d.dispose();
+
+        final Graphics2D g2 = (Graphics2D) g.create();
+        RenderUtils.initGraphics2D(g2);
+        g2.drawImage(doubleBuffer, 0, 0, null);
+        g2.dispose();
+        Toolkit.getDefaultToolkit().sync();
     }
 
     private void drawByGameState(Graphics2D g2d, int w, int h) {
@@ -227,7 +262,9 @@ public class GamePanel extends JPanel implements Runnable {
         if (bgCache == null || cachedW != width || cachedH != height) {
             this.cachedW = width;
             this.cachedH = height;
-            this.bgCache = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            this.bgCache = GraphicsEnvironment.getLocalGraphicsEnvironment()
+                    .getDefaultScreenDevice().getDefaultConfiguration()
+                    .createCompatibleImage(width, height, Transparency.OPAQUE);
             final Graphics2D cg = bgCache.createGraphics();
             RenderUtils.initGraphics2D(cg);
             RenderUtils.drawBackground(cg, width, height);

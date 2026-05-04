@@ -17,10 +17,13 @@ import cz.matysekxx.beatbounce.util.Time;
 import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.concurrent.locks.LockSupport;
 
 public class GamePanel extends JPanel implements Runnable {
     private static final Color FPS_COLOR = Color.YELLOW;
@@ -41,16 +44,17 @@ public class GamePanel extends JPanel implements Runnable {
     private int lastScore = 0;
     private float scorePopAlpha = 0f;
     private GameUIRenderer uiRenderer;
-    
+
     private BufferedImage bgCache;
     private int cachedW = -1;
     private int cachedH = -1;
-    
+
     private int frames = 0;
     private long lastFpsTime = 0;
     private int currentUpdateFps = 0;
-    
+
     private WindowData frameWindowData;
+    private BufferedImage backBuffer;
 
     public GamePanel(Runnable onExit) {
         this.onExit = onExit;
@@ -95,6 +99,21 @@ public class GamePanel extends JPanel implements Runnable {
                             if (onExit != null) onExit.run();
                         }
                     }
+                }
+            }
+        });
+        this.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                final int w = e.getComponent().getWidth();
+                final int h = e.getComponent().getHeight();
+                if (w != cachedW) cachedW = w;
+                if (h != cachedH) cachedH = h;
+                if (backBuffer == null || backBuffer.getWidth(null) != w || backBuffer.getHeight(null) != h) {
+                    final GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment()
+                            .getDefaultScreenDevice().getDefaultConfiguration();
+                    backBuffer = gc.createCompatibleImage(w, h, Transparency.OPAQUE);
+
                 }
             }
         });
@@ -184,16 +203,14 @@ public class GamePanel extends JPanel implements Runnable {
             renderGame();
 
             final long timeTakenNanos = System.nanoTime() - loopStartTime;
-            final long remainingTimeNanos = optimalTimeNanos - timeTakenNanos;
+            final long sleepNanos = optimalTimeNanos - timeTakenNanos;
 
-            if (remainingTimeNanos > 0) {
-                long sleepTimeMillis = remainingTimeNanos / 1_000_000L;
-                if (sleepTimeMillis > 2) {
-                    Time.sleep(sleepTimeMillis - 2);
+            if (sleepNanos > 0) {
+                final long targetTime = System.nanoTime() + sleepNanos;
+                if (sleepNanos > 2_000_000L) {
+                    LockSupport.parkNanos(sleepNanos - 2_000_000L);
                 }
-                while (System.nanoTime() - loopStartTime < optimalTimeNanos) {
-                    Thread.yield();
-                }
+                while (System.nanoTime() < targetTime);
             }
         }
     }
@@ -202,19 +219,19 @@ public class GamePanel extends JPanel implements Runnable {
         final Graphics g = getGraphics();
         if (g == null) return;
 
-        final int w = getWidth();
-        final int h = getHeight();
+        final int w = cachedW;
+        final int h = cachedH;
         if (w <= 0 || h <= 0) return;
+        if (backBuffer == null || backBuffer.getWidth(null) != w || backBuffer.getHeight(null) != h) {
+            final GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment()
+                    .getDefaultScreenDevice().getDefaultConfiguration();
+            backBuffer = gc.createCompatibleImage(w, h, Transparency.OPAQUE);
+        }
 
-        final Image doubleBuffer = createImage(w, h);
-        if (doubleBuffer == null) return;
-        
-        final Graphics2D g2d = (Graphics2D) doubleBuffer.getGraphics();
-
+        final Graphics2D g2d = backBuffer.createGraphics();
+        RenderUtils.initGraphics2D(g2d);
         g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, w, h);
-
-        RenderUtils.initGraphics2D(g2d);
 
         final int horizonY = h / 3;
         final long time = System.currentTimeMillis();
@@ -244,9 +261,9 @@ public class GamePanel extends JPanel implements Runnable {
 
         final Graphics2D g2 = (Graphics2D) g.create();
         RenderUtils.initGraphics2D(g2);
-        g2.drawImage(doubleBuffer, 0, 0, null);
+        g2.drawImage(backBuffer, 0, 0, null);
         g2.dispose();
-        Toolkit.getDefaultToolkit().sync();
+        //Toolkit.getDefaultToolkit().sync();
     }
 
     private void drawByGameState(Graphics2D g2d, int w, int h) {

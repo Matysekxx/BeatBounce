@@ -262,14 +262,16 @@ public class SongSelectionPanel extends JPanel implements Runnable {
             lastTime = now;
 
             boolean needsRevalidate = false;
-            for (TrackData t : allTracks) {
-                final float expansionTime = 0.2f;
-                if (t.expanded && t.expansion < 1f) {
-                    t.expansion = Math.min(1f, t.expansion + dt / expansionTime);
-                    needsRevalidate = true;
-                } else if (!t.expanded && t.expansion > 0f) {
-                    t.expansion = Math.max(0f, t.expansion - dt / expansionTime);
-                    needsRevalidate = true;
+            if (allTracks != null) {
+                for (TrackData t : allTracks) {
+                    final float expansionTime = 0.2f;
+                    if (t.expanded && t.expansion < 1f) {
+                        t.expansion = Math.min(1f, t.expansion + dt / expansionTime);
+                        needsRevalidate = true;
+                    } else if (!t.expanded && t.expansion > 0f) {
+                        t.expansion = Math.max(0f, t.expansion - dt / expansionTime);
+                        needsRevalidate = true;
+                    }
                 }
             }
 

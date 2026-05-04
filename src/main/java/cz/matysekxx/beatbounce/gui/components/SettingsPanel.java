@@ -6,8 +6,10 @@ import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.util.List;
 
 public class SettingsPanel extends JPanel {
 
@@ -80,7 +82,7 @@ public class SettingsPanel extends JPanel {
         final JLabel soundLabel = new JLabel("Music Volume: " + Settings.soundVolume + "%");
         styleLabel(soundLabel);
         soundSlider = new CustomSlider(0, 100, Settings.soundVolume);
-        soundSlider.addChangeListener(e -> soundLabel.setText("Music Volume: " + soundSlider.getValue() + "%"));
+        soundSlider.addChangeListener(_ -> soundLabel.setText("Music Volume: " + soundSlider.getValue() + "%"));
         audioGroup.add(createLabeledComponent(soundLabel, soundSlider));
         audioGroup.add(focusLossCheck = new CustomCheckBox("Mute on Focus Loss", Settings.muteOnFocusLoss));
 
@@ -144,7 +146,7 @@ public class SettingsPanel extends JPanel {
         final JButton resetBtn = getStyledButton("RESET DEFAULTS", Color.DARK_GRAY, Color.WHITE);
 
         saveBtn.addActionListener(_ -> saveSettings());
-        resetBtn.addActionListener(_ -> resetToDefaults());
+        resetBtn.addActionListener(_ -> showResetDialog());
 
         buttonsPanel.add(resetBtn);
         buttonsPanel.add(saveBtn);
@@ -181,11 +183,7 @@ public class SettingsPanel extends JPanel {
         }
     }
 
-    private void showRestartDialog() {
-        final JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Restart Required", true);
-        dialog.setUndecorated(true);
-        dialog.setBackground(new Color(0, 0, 0, 0));
-
+    private JPanel createDialogContentPane(String titleText, String htmlMessage, Color borderColor) {
         final JPanel contentPane = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -194,7 +192,7 @@ public class SettingsPanel extends JPanel {
                 RenderUtils.initGraphics2D(g2d);
                 g2d.setColor(new Color(15, 15, 25, 240));
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
-                g2d.setColor(RenderUtils.cyan);
+                g2d.setColor(borderColor);
                 g2d.setStroke(new BasicStroke(2));
                 g2d.drawRoundRect(1, 1, getWidth() - 3, getHeight() - 3, 20, 20);
                 g2d.dispose();
@@ -203,18 +201,32 @@ public class SettingsPanel extends JPanel {
         contentPane.setOpaque(false);
         contentPane.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
 
-        final JLabel titleLabel = new JLabel("Restart Required");
+        final JLabel titleLabel = new JLabel(titleText);
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 28));
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
         contentPane.add(titleLabel, BorderLayout.NORTH);
 
-        final JLabel messageLabel = new JLabel("<html><center>Some settings require a restart<br>to take full effect.</center></html>");
+        final JLabel messageLabel = new JLabel(htmlMessage);
         messageLabel.setFont(new Font("SansSerif", Font.PLAIN, 18));
         messageLabel.setForeground(new Color(200, 200, 200));
         messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         contentPane.add(messageLabel, BorderLayout.CENTER);
+
+        return contentPane;
+    }
+
+    private void showRestartDialog() {
+        final JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Restart Required", true);
+        dialog.setUndecorated(true);
+        dialog.setBackground(new Color(0, 0, 0, 0));
+
+        final JPanel contentPane = createDialogContentPane(
+                "Restart Required",
+                "<html><center>Some settings require a restart<br>to take full effect.</center></html>",
+                RenderUtils.cyan
+        );
 
         final JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         buttonPanel.setOpaque(false);
@@ -245,23 +257,79 @@ public class SettingsPanel extends JPanel {
         dialog.setVisible(true);
     }
 
+    private void showResetDialog() {
+        final JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Reset to Defaults", true);
+        dialog.setUndecorated(true);
+        dialog.setBackground(new Color(0, 0, 0, 0));
+
+        final JPanel contentPane = createDialogContentPane(
+                "Reset to Defaults",
+                "<html><center>Are you sure you want to reset all<br>settings to their defaults?</center></html>",
+                Color.RED
+        );
+
+        final JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+        buttonPanel.setOpaque(false);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
+
+        final JButton cancelBtn = getStyledButton("CANCEL", Color.DARK_GRAY, Color.WHITE);
+        cancelBtn.setPreferredSize(new Dimension(150, 45));
+        cancelBtn.addActionListener(_ -> dialog.dispose());
+
+        final JButton resetConfirmBtn = getStyledButton("RESET", new Color(220, 50, 50), Color.WHITE);
+        resetConfirmBtn.setPreferredSize(new Dimension(150, 45));
+        resetConfirmBtn.addActionListener(_ -> {
+            dialog.dispose();
+            resetToDefaults();
+        });
+
+        buttonPanel.add(cancelBtn);
+        buttonPanel.add(resetConfirmBtn);
+        contentPane.add(buttonPanel, BorderLayout.SOUTH);
+
+        dialog.setContentPane(contentPane);
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
+
     private void resetToDefaults() {
-        if (JOptionPane.showConfirmDialog(this, "Reset all settings to defaults?", "Reset", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            fullscreenCheck.setSelected(true);
-            vsyncCheck.setSelected(false);
-            openglCheck.setSelected(true);
-            showFpsCheck.setSelected(false);
-            qualityCycle.currentIndex = 2;
-            qualityCycle.setText("HIGH");
-            monitorCycle.currentIndex = 0;
-            monitorCycle.setText(monitorCycle.options[0]);
-            fpsSelector.setSelectedIndexByValue(60);
-            soundSlider.setValue(100);
-            particlesCheck.setSelected(true);
-            bloomCheck.setSelected(true);
-            focusLossCheck.setSelected(false);
-            infoLabel.setText("Defaults restored. Click SAVE to apply.");
-            infoLabel.setForeground(Color.WHITE);
+        final boolean restartReq = (!Settings.opengl) || !Settings.graphicsQuality.equals("HIGH");
+
+        fullscreenCheck.setSelected(true);
+        vsyncCheck.setSelected(false);
+        openglCheck.setSelected(true);
+        showFpsCheck.setSelected(false);
+        qualityCycle.currentIndex = 2;
+        qualityCycle.setText("HIGH");
+        monitorCycle.currentIndex = 0;
+        monitorCycle.setText(monitorCycle.options[0]);
+        fpsSelector.setSelectedIndexByValue(60);
+        soundSlider.setValue(100);
+        particlesCheck.setSelected(true);
+        bloomCheck.setSelected(true);
+        focusLossCheck.setSelected(false);
+
+        Settings.fullscreen = true;
+        Settings.vsync = false;
+        Settings.opengl = true;
+        Settings.showFps = false;
+        Settings.graphicsQuality = "HIGH";
+        Settings.monitorIndex = 0;
+        Settings.targetFps = 60;
+        Settings.soundVolume = 100;
+        Settings.particlesEnabled = true;
+        Settings.bloomEnabled = true;
+        Settings.muteOnFocusLoss = false;
+        Settings.save();
+
+        screenManager.applySettings();
+
+        if (restartReq) {
+            showRestartDialog();
+        } else {
+            infoLabel.setText("Defaults restored and saved.");
+            infoLabel.setForeground(RenderUtils.green);
         }
     }
 

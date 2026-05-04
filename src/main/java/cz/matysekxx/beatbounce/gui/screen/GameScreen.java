@@ -36,9 +36,7 @@ public class GameScreen extends Screen {
         this.getContentPane().revalidate();
         this.getContentPane().repaint();
 
-        CompletableFuture.supplyAsync(() -> {
-            final String path = audioPath.toFile().getPath();
-            final AudioData audioData = AudioData.create(path);
+        AudioData.createAsync(audioPath.toFile().getPath()).thenApply(audioData -> {
             final float speedMultiplier = 1.0f;
             return LevelGenerator.generateLevel(audioData, speedMultiplier, stars);
         }).thenAccept(level -> SwingUtilities.invokeLater(() -> {

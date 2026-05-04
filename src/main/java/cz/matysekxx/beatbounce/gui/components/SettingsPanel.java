@@ -12,6 +12,7 @@ public class SettingsPanel extends JPanel {
     private final ScreenManager screenManager;
     private final JCheckBox fullscreenCheck;
     private final JCheckBox openglCheck;
+    private final JCheckBox vsyncCheck;
     private final JCheckBox showFpsCheck;
     private final JCheckBox particlesCheck;
     private final JCheckBox bloomCheck;
@@ -63,6 +64,7 @@ public class SettingsPanel extends JPanel {
         displayGroup.add(Box.createRigidArea(new Dimension(0, 10)));
         displayGroup.add(fullscreenCheck = new CustomCheckBox("Fullscreen (Borderless)", Settings.fullscreen));
         displayGroup.add(openglCheck = new CustomCheckBox("OpenGL Hardware Acceleration", Settings.opengl));
+        displayGroup.add(vsyncCheck = new CustomCheckBox("V-Sync", Settings.vsync));
         displayGroup.add(showFpsCheck = new CustomCheckBox("Show FPS Overlay", Settings.showFps));
 
         leftColumn.add(displayGroup);
@@ -139,8 +141,8 @@ public class SettingsPanel extends JPanel {
         final JButton saveBtn = getStyledButton("SAVE & APPLY", RenderUtils.cyan, Color.BLACK);
         final JButton resetBtn = getStyledButton("RESET DEFAULTS", Color.DARK_GRAY, Color.WHITE);
 
-        saveBtn.addActionListener(e -> saveSettings());
-        resetBtn.addActionListener(e -> resetToDefaults());
+        saveBtn.addActionListener(_ -> saveSettings());
+        resetBtn.addActionListener(_ -> resetToDefaults());
 
         buttonsPanel.add(resetBtn);
         buttonsPanel.add(saveBtn);
@@ -156,6 +158,7 @@ public class SettingsPanel extends JPanel {
     private void saveSettings() {
         final boolean restartReq = (Settings.opengl != openglCheck.isSelected()) || !Settings.graphicsQuality.equals(qualityCycle.getSelectedOption());
         Settings.fullscreen = fullscreenCheck.isSelected();
+        Settings.vsync = vsyncCheck.isSelected();
         Settings.opengl = openglCheck.isSelected();
         Settings.showFps = showFpsCheck.isSelected();
         Settings.graphicsQuality = qualityCycle.getSelectedOption();
@@ -174,6 +177,7 @@ public class SettingsPanel extends JPanel {
     private void resetToDefaults() {
         if (JOptionPane.showConfirmDialog(this, "Reset all settings to defaults?", "Reset", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             fullscreenCheck.setSelected(true);
+            vsyncCheck.setSelected(false);
             openglCheck.setSelected(true);
             showFpsCheck.setSelected(false);
             qualityCycle.currentIndex = 2;

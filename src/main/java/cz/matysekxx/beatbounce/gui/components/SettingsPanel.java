@@ -55,7 +55,7 @@ public class SettingsPanel extends JPanel {
         }
         monitorCycle = new CycleButton(monitorNames, Math.min(Settings.monitorIndex, monitorNames.length - 1));
         qualityCycle = new CycleButton(new String[]{"LOW", "MEDIUM", "HIGH"}, getQualityIndex());
-        fpsSelector = new StepSelector(new int[]{30, 60, 90, 120}, Settings.targetFps);
+        fpsSelector = new StepSelector(new int[]{30, 60, 90, 120, 165, 240}, Settings.targetFps);
 
         displayGroup.add(createLabeledComponent("Monitor:", monitorCycle));
         displayGroup.add(createLabeledComponent("Quality:", qualityCycle));

@@ -245,6 +245,7 @@ public class SettingsPanel extends JPanel {
         restartBtn.addActionListener(_ -> {
             dialog.dispose();
             //TODO: pridat restart aplikace pres cmd
+            System.exit(0);
         });
 
         buttonPanel.add(laterBtn);

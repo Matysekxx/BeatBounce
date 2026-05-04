@@ -37,7 +37,7 @@ public class Main {
     /// The startup sequence is as follows:
     /// 1. Initialize Swing Look and Feel via [SwingConfiguration].
     /// 2. Load user settings from [Settings].
-    /// 3. Apply JVM rendering properties via [setupProperties].
+    /// 3. Apply JVM rendering properties.
     /// 4. Hand over execution to [Execute] on the Swing Event Dispatch Thread.
     static void main() {
         SwingConfiguration.setup();

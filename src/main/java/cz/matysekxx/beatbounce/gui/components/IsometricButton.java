@@ -1,5 +1,6 @@
 package cz.matysekxx.beatbounce.gui.components;
 
+import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 
 import javax.swing.*;
@@ -110,7 +111,7 @@ public class IsometricButton extends JButton {
         g2.fillRoundRect(0, currentPressOffset, w, h - depth, arc, arc);
 
         g2.setColor(topGlow);
-        g2.setStroke(new BasicStroke(3.5f));
+        g2.setStroke(RenderCache.STROKE_3_5);
         g2.drawRoundRect(2, 2 + currentPressOffset, w - 4, h - depth - 4, arc, arc);
 
         g2.setFont(getFont());

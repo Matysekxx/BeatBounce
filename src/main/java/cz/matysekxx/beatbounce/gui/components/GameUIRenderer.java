@@ -193,7 +193,7 @@ public class GameUIRenderer {
         g2d.setColor(ORBS_COLOR);
         g2d.drawString(orbsLabel, (width - g2d.getFontMetrics().stringWidth(orbsLabel)) / 2, cardY + 85);
 
-        final String totalOrbsLabel = "TOTAL CURRENCY: " + ScoreManager.getCurrency();
+        final String totalOrbsLabel = "TOTAL ORBS: " + ScoreManager.getCurrency();
         g2d.setFont(RenderCache.SANS_PLAIN_14);
         g2d.setColor(TOTAL_ORBS_COLOR);
         g2d.drawString(totalOrbsLabel, (width - g2d.getFontMetrics().stringWidth(totalOrbsLabel)) / 2, cardY + 105);

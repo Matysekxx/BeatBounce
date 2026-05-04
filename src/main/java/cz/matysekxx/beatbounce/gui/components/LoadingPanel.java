@@ -1,5 +1,6 @@
 package cz.matysekxx.beatbounce.gui.components;
 
+import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.util.Time;
 
@@ -7,9 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class LoadingPanel extends JPanel implements Runnable {
-    private static final Font TITLE_FONT = new Font("Monospaced", Font.BOLD | Font.ITALIC, 72);
     private static final Font PERCENT_FONT = new Font("Monospaced", Font.BOLD, 16);
-    private static final Font FOOTER_FONT = new Font("SansSerif", Font.PLAIN, 20);
     private static final Stroke BAR_STROKE = new BasicStroke(1.5f);
     private static final int BAR_HEIGHT = 20;
     private static final Color FILL_GLOW_COLOR = new Color(
@@ -108,7 +107,7 @@ public class LoadingPanel extends JPanel implements Runnable {
             drawText = drawText.substring(0, drawText.length() - 3) + ".".repeat(dotsCount);
         }
 
-        g2.setFont(TITLE_FONT);
+        g2.setFont(RenderCache.MONO_ITALIC_BOLD_78);
         final FontMetrics fm = g2.getFontMetrics();
         final int x = (w - fm.stringWidth(drawText)) / 2;
         final int y = h / 3;
@@ -183,7 +182,7 @@ public class LoadingPanel extends JPanel implements Runnable {
     }
 
     private void drawFooter(Graphics2D g2, int w, int h) {
-        g2.setFont(FOOTER_FONT);
+        g2.setFont(RenderCache.SANS_PLAIN_20);
         g2.setColor(FOOTER_COLOR);
         final String hint = "Press ESC to cancel";
         final FontMetrics hintFm = g2.getFontMetrics();

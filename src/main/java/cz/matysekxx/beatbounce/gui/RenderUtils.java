@@ -80,7 +80,7 @@ public final class RenderUtils {
             }
         }
         for (int[] star : starCache) {
-            g2d.setColor(new Color(255, 255, 255, star[2]));
+            g2d.setColor(RenderCache.whiteWithAlpha(star[2]));
             g2d.fillRect(star[0] % w, star[1] % h, 1, 1);
         }
     }

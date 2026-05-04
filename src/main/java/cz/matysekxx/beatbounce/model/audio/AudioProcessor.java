@@ -11,6 +11,11 @@ import javax.sound.sampled.AudioFormat;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
+/// Core Digital Signal Processing (DSP) engine for real-time audio chunk analysis.
+///
+/// Uses the TarsosDSP library to detect percussive onsets and complex pitch changes.
+/// It also tracks the Root Mean Square (RMS) volume of the track to trigger high/low
+/// intensity shifts, and can inject "fallback" beats if the track goes silent for too long.
 public class AudioProcessor {
     public static final int BUFFER_SIZE = 2048;
     public static final int OVERLAP = 1024;
@@ -42,6 +47,11 @@ public class AudioProcessor {
 
     private long framesProcessed = 0;
 
+    /// Initializes a new AudioProcessor.
+    ///
+    /// @param format          The audio format (sample rate, channels, etc.).
+    /// @param speedMultiplier Current game speed multiplier to scale timestamps.
+    /// @param onBeatDetected  Callback invoked whenever a valid beat or intensity event is detected.
     public AudioProcessor(AudioFormat format, float speedMultiplier, Consumer<BeatEvent> onBeatDetected) {
         this.sampleRate = format.getSampleRate();
         this.channels = format.getChannels();
@@ -67,6 +77,8 @@ public class AudioProcessor {
         );
     }
 
+    /// Handles raw beats reported by the underlying Tarsos detectors.
+    /// Deduplicates nearby triggers and enforces a minimum beat interval.
     private synchronized void handleRawBeat(double time, double salience, float speedMultiplier) {
         final double adjustedTime = time / speedMultiplier;
 
@@ -83,6 +95,7 @@ public class AudioProcessor {
         acceptBeat(adjustedTime, salience);
     }
 
+    /// Accepts a valid beat, emits it via callback, and updates history for fallback calculation.
     private void acceptBeat(double time, double salience) {
         onBeatDetected.accept(BeatEvent.of(time, salience));
         lastAcceptedBeatTime = time;
@@ -96,6 +109,7 @@ public class AudioProcessor {
         beatHistoryCount++;
     }
 
+    /// Estimates the current BPM (interval) based on recently detected valid beats.
     private double getEstimatedBeatInterval() {
         if (beatHistoryCount < 2) return 0.5;
 
@@ -116,6 +130,12 @@ public class AudioProcessor {
         return sumIntervals / pairs;
     }
 
+    /// Processes a single chunk (window) of 16-bit audio samples.
+    ///
+    /// This runs the data through the percussive and complex detectors,
+    /// tracks RMS for intensity changes, and verifies if a fallback beat is needed.
+    ///
+    /// @param chunk Array of short values representing the raw PCM sample chunk.
     public void processChunk(short[] chunk) {
         final float[] floatBuffer = convertToFloatBuffer(chunk);
         final double rms = calculateRMS(floatBuffer);
@@ -138,6 +158,8 @@ public class AudioProcessor {
         currentTime = (double) framesProcessed / sampleRate;
     }
 
+    /// Injects a synthesized fallback beat if no actual beats were detected
+    /// for a prolonged period, provided the audio track isn't completely silent.
     private synchronized void checkFallbackBeat(double rms) {
         if (nextFallbackBeatTime < 0) return;
         if (currentTime < nextFallbackBeatTime) return;
@@ -173,6 +195,8 @@ public class AudioProcessor {
         return Math.sqrt(sumOfSquares / buffer.length);
     }
 
+    /// Emits events when the track's smoothed volume (RMS) enters or exits
+    /// defined high and low thresholds.
     private void checkIntensityChanges(double rms) {
         smoothedRms = (smoothedRms * SMOOTHING_FACTOR) + (rms * (1.0 - SMOOTHING_FACTOR));
 

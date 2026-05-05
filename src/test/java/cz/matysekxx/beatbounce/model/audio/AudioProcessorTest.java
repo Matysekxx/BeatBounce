@@ -12,8 +12,16 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 
+/**
+ * Test class for {@link AudioProcessor}.
+ * Verifies that audio chunks are correctly processed to detect intensity changes and beats.
+ */
 public class AudioProcessorTest {
 
+    /**
+     * Tests the intensity detection logic of {@link AudioProcessor}.
+     * Verifies that low intensity is detected for silence and high intensity is detected for noise.
+     */
     @Test
     public void testIntensityDetection() {
         AudioFormat format = new AudioFormat(44100, 16, 1, true, false);
@@ -44,6 +52,9 @@ public class AudioProcessorTest {
         assertTrue("Should detect high intensity for loud noise", foundHighIntensity);
     }
 
+    /**
+     * Tests that {@link AudioProcessor} correctly filters consecutive beats or empty chunks.
+     */
     @Test
     public void testBeatFiltering() {
         AudioFormat format = new AudioFormat(44100, 16, 1, true, false);

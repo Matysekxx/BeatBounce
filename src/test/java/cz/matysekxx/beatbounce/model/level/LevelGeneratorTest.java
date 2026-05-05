@@ -10,8 +10,15 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Test class for {@link LevelGenerator}.
+ * Verifies that levels are correctly generated from beat events.
+ */
 public class LevelGeneratorTest {
 
+    /**
+     * Tests that {@link LevelGenerator} correctly generates normal tiles from beat events.
+     */
     @Test
     public void testNormalTileGeneration() {
         List<BeatEvent> events = new ArrayList<>();
@@ -29,6 +36,9 @@ public class LevelGeneratorTest {
         assertEquals(2000.0, level.tiles().get(1).getZ(), 0.1);
     }
 
+    /**
+     * Tests that {@link LevelGenerator} respects the beat cooldown to avoid generating overlapping tiles.
+     */
     @Test
     public void testBeatCooldown() {
         List<BeatEvent> events = new ArrayList<>();
@@ -40,6 +50,9 @@ public class LevelGeneratorTest {
         assertEquals(1, level.tiles().size());
     }
 
+    /**
+     * Tests that {@link LevelGenerator} generates tiles in multiple lanes for variety.
+     */
     @Test
     public void testLaneVariety() {
         List<BeatEvent> events = new ArrayList<>();

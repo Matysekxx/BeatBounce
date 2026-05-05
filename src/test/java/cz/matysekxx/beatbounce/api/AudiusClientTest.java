@@ -19,6 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+/**
+ * Test class for {@link AudiusClient}.
+ * Verifies that tracks can be searched and music can be downloaded.
+ */
 class AudiusClientTest {
     static {
         System.setProperty("net.bytebuddy.experimental", "true");
@@ -33,6 +37,13 @@ class AudiusClientTest {
         audiusClient = new AudiusClient(mockHttpClient);
     }
 
+    /**
+     * Tests that {@link AudiusClient#searchTracks(String)} correctly builds the search URI
+     * and returns the expected JSON response.
+     *
+     * @throws ExecutionException if the future completed exceptionally.
+     * @throws InterruptedException if the current thread was interrupted while waiting.
+     */
     @Test
     @SuppressWarnings("unchecked")
     void searchTracks_shouldReturnJsonAndBuildCorrectUri() throws ExecutionException, InterruptedException {
@@ -52,6 +63,13 @@ class AudiusClientTest {
         assertTrue(requestCaptor.getValue().uri().toString().contains("query=synthwave"));
     }
 
+    /**
+     * Tests that {@link AudiusClient#downloadMusic(String, String)} correctly downloads music
+     * and ensures the destination directory exists.
+     *
+     * @throws ExecutionException if the future completed exceptionally.
+     * @throws InterruptedException if the current thread was interrupted while waiting.
+     */
     @Test
     @SuppressWarnings("unchecked")
     void downloadMusic_shouldReturnPathAndEnsureDirectoryExists() throws ExecutionException, InterruptedException {
@@ -65,6 +83,6 @@ class AudiusClientTest {
         Path result = audiusClient.downloadMusic("98765", "myTrack").get();
 
         assertEquals(expectedPath, result);
-        assertTrue(Files.exists(Paths.get("songs")), "Složka 'songs' by měla být vytvořena.");
+        assertTrue(Files.exists(Paths.get("songs")), "The 'songs' directory should be created.");
     }
 }

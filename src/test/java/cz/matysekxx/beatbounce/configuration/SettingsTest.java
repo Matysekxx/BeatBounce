@@ -10,6 +10,10 @@ import java.nio.file.Files;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Test class for {@link Settings}.
+ * Verifies that application settings can be saved, loaded, and initialized with default values.
+ */
 class SettingsTest {
 
     private static final String CONFIG_FILE = "config.properties";
@@ -36,6 +40,9 @@ class SettingsTest {
         }
     }
 
+    /**
+     * Tests that settings are correctly saved to and loaded from the configuration file.
+     */
     @Test
     void testSaveAndLoad() {
         Settings.opengl = false;
@@ -64,6 +71,9 @@ class SettingsTest {
         assertTrue(Settings.muteOnFocusLoss);
     }
 
+    /**
+     * Tests that default values are used when the configuration file does not exist.
+     */
     @Test
     void testDefaultValues() {
         final File file = new File(CONFIG_FILE);

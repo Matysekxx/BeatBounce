@@ -10,6 +10,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
+/**
+ * The main menu screen of the BeatBounce application.
+ * It provides navigation to various sections of the game such as song selection,
+ * library, skins, shop, and settings.
+ */
 public class MainMenuScreen extends Screen {
 
     private final MainMenuPanel backgroundPanel;
@@ -28,6 +33,11 @@ public class MainMenuScreen extends Screen {
     private String activePanel = "SONGS";
     private final JPanel sidebar;
 
+    /**
+     * Constructs a new MainMenuScreen.
+     *
+     * @param screenManager the screen manager used for navigation
+     */
     public MainMenuScreen(ScreenManager screenManager) {
         super();
         this.audiusClient = new AudiusClient();
@@ -39,7 +49,6 @@ public class MainMenuScreen extends Screen {
         backgroundPanel.setLayout(new BorderLayout());
         this.setContentPane(backgroundPanel);
 
-        // Sidebar Navigation
         sidebar = createSidebar();
         backgroundPanel.add(sidebar, BorderLayout.WEST);
 
@@ -169,12 +178,18 @@ public class MainMenuScreen extends Screen {
         cardLayout.show(cardPanel, name);
     }
 
+    /**
+     * Starts the animations for the main menu screen.
+     */
     @Override
     public void start() {
         backgroundPanel.startAnimation();
         songSelectionPanel.startAnimations();
     }
 
+    /**
+     * Stops the animations for the main menu screen.
+     */
     @Override
     public void stop() {
         backgroundPanel.stopAnimation();

@@ -9,11 +9,20 @@ import javax.swing.*;
 import java.awt.*;
 import java.nio.file.Path;
 
+/**
+ * The screen where the actual gameplay takes place.
+ * It manages the loading of the level and the game panel.
+ */
 public class GameScreen extends Screen {
     private final LoadingPanel loadingPanel;
     private final ScreenManager screenManager;
     private GamePanel gamePanel;
 
+    /**
+     * Constructs a new GameScreen.
+     *
+     * @param screenManager the screen manager used for navigation
+     */
     public GameScreen(ScreenManager screenManager) {
         super();
         this.screenManager = screenManager;
@@ -22,6 +31,13 @@ public class GameScreen extends Screen {
         loadingPanel = new LoadingPanel();
     }
 
+    /**
+     * Sets up the game panel with the specified audio file and difficulty (stars).
+     * It loads the level asynchronously and shows a loading panel in the meantime.
+     *
+     * @param audioPath the path to the audio file
+     * @param stars     the difficulty level represented by stars
+     */
     public void setupGamePanel(Path audioPath, int stars) {
         if (gamePanel != null) {
             gamePanel.stopGame();
@@ -60,6 +76,9 @@ public class GameScreen extends Screen {
         });
     }
 
+    /**
+     * Starts the game if the game panel is initialized.
+     */
     @Override
     public void start() {
         if (gamePanel != null) {
@@ -67,6 +86,9 @@ public class GameScreen extends Screen {
         }
     }
 
+    /**
+     * Stops the game if the game panel is initialized.
+     */
     @Override
     public void stop() {
         if (gamePanel != null) {

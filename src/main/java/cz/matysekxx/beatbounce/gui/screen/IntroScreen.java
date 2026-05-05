@@ -11,9 +11,17 @@ import java.net.URISyntaxException;
 
 import static cz.matysekxx.beatbounce.util.Time.sleep;
 
+/**
+ * The initial screen of the game, featuring the game title and navigation buttons.
+ */
 public class IntroScreen extends Screen {
     private final IntroPanel backgroundPanel;
 
+    /**
+     * Constructs a new IntroScreen.
+     *
+     * @param screenManager the screen manager used for navigation
+     */
     public IntroScreen(ScreenManager screenManager) {
         super();
         this.setLayout(new BorderLayout());
@@ -80,12 +88,18 @@ public class IntroScreen extends Screen {
         this.setFocusable(true);
     }
 
+    /**
+     * Starts the intro screen animations and requests focus.
+     */
     @Override
     public void start() {
         backgroundPanel.startAnimation();
         this.requestFocusInWindow();
     }
 
+    /**
+     * Stops the intro screen animations.
+     */
     @Override
     public void stop() {
         backgroundPanel.stopAnimation();

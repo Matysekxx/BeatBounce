@@ -21,12 +21,26 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
+/**
+ * A panel that displays the user's local song library.
+ * It allows users to view downloaded songs and add new local audio files.
+ */
 public class LibraryPanel extends JPanel {
+    /** Logger for this class. */
     private static final Logger LOG = Logger.getLogger(LibraryPanel.class.getName());
+    /** Client used to interact with the Audius API. */
     private final AudiusClient audiusClient;
+    /** Manager used to switch between different screens. */
     private final ScreenManager screenManager;
+    /** Panel that contains the list of song rows. */
     private final JPanel listPanel;
 
+    /**
+     * Constructs a new LibraryPanel.
+     *
+     * @param audiusClient  the client used for audio operations
+     * @param screenManager the screen manager used for navigation
+     */
     public LibraryPanel(AudiusClient audiusClient, ScreenManager screenManager) {
         this.audiusClient = audiusClient;
         this.screenManager = screenManager;
@@ -84,6 +98,11 @@ public class LibraryPanel extends JPanel {
         super.paintComponent(g);
     }
 
+    /**
+     * Creates the "ADD LOCAL SONG" button with custom rendering.
+     *
+     * @return a styled JButton for adding local songs
+     */
     private JButton createAddButton() {
         final JButton btn = new JButton("+ ADD LOCAL SONG") {
             @Override
@@ -116,6 +135,10 @@ public class LibraryPanel extends JPanel {
         return btn;
     }
 
+    /**
+     * Opens a file chooser to select a local audio file and copies it to the download directory.
+     * Supported formats: .mp3, .wav, .ogg, .flac.
+     */
     private void addLocalSong() {
         final JFileChooser fileChooser = new JFileChooser();
         fileChooser.setMinimumSize(new Dimension(800, 600));
@@ -137,6 +160,11 @@ public class LibraryPanel extends JPanel {
         }
     }
 
+    /**
+     * Loads the song library from the download directory.
+     * It clears the current list and repopulates it with audio files (.mp3, .wav, .ogg, .flac)
+     * found in the directory, sorted by last modified time.
+     */
     public void loadLibrary() {
         listPanel.removeAll();
         listPanel.setBorder(new EmptyBorder(10, 40, 20, 40));
@@ -174,6 +202,12 @@ public class LibraryPanel extends JPanel {
         listPanel.repaint();
     }
 
+    /**
+     * Switches the screen to the game screen and starts the game with the selected song.
+     *
+     * @param audioPath the path to the selected audio file
+     * @param stars     the difficulty level represented by stars
+     */
     private void launchGame(Path audioPath, int stars) {
         if (audioPath == null) return;
         try {
@@ -186,12 +220,24 @@ public class LibraryPanel extends JPanel {
         }
     }
 
+    /**
+     * A UI component representing a single song in the library.
+     */
     private class LocalTrackRow extends JPanel {
+        /** The difficulty level of the song (1-5). */
         private final int stars;
+        /** Whether the mouse is currently hovering over this row. */
         private boolean hovered = false;
+        /** The display name of the song file (without extension). */
         private final String fileName;
+        /** The best score achieved by the user on this song. */
         private final String bestScore;
 
+        /**
+         * Constructs a LocalTrackRow for the given song path.
+         *
+         * @param path the path to the audio file
+         */
         public LocalTrackRow(Path path) {
             final String rawName = path.getFileName().toString();
             int dot = rawName.lastIndexOf('.');

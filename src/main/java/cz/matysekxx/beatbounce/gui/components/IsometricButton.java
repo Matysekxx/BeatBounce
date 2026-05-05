@@ -8,6 +8,10 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+/**
+ * A custom {@link JButton} with a 3D isometric look and feel.
+ * Features a depth effect, top glow on hover, and a "press" animation that shifts the button downwards.
+ */
 public class IsometricButton extends JButton {
     private final Color frontSide;
     private final Color topFill;
@@ -18,6 +22,17 @@ public class IsometricButton extends JButton {
     private float glowAlpha = 0f;
     private Timer glowTimer;
 
+    /**
+     * Constructs a new IsometricButton.
+     *
+     * @param text       the text to display on the button
+     * @param frontSide  the color of the button's front side (depth)
+     * @param topFill    the color of the button's top surface
+     * @param topGlow    the color of the glow effect on the top surface
+     * @param depth      the depth of the 3D effect in pixels
+     * @param arc        the corner arc diameter for rounded edges
+     * @param size       the preferred size of the button
+     */
     public IsometricButton(String text, Color frontSide, Color topFill, Color topGlow, int depth, int arc, Dimension size) {
         super(text);
         this.frontSide = frontSide;

@@ -19,21 +19,80 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+/**
+ * A panel that allows users to browse and select songs from the Audius API.
+ * It includes search functionality and genre filters.
+ */
 public class SongSelectionPanel extends JPanel implements Runnable {
     private static final Logger LOG = Logger.getLogger(SongSelectionPanel.class.getName());
+
+    /**
+     * Client for interacting with the Audius API.
+     */
     private final AudiusClient audiusClient;
+
+    /**
+     * JSON mapper for parsing API responses.
+     */
     private final ObjectMapper objectMapper;
+
+    /**
+     * Manager for handling screen transitions.
+     */
     private final ScreenManager screenManager;
+
+    /**
+     * Inner panel containing the list of track rows.
+     */
     private final JPanel songListPanel;
+
+    /**
+     * Full list of tracks fetched from the API.
+     */
     private final List<TrackData> allTracks = new ArrayList<>();
+
+    /**
+     * Flag indicating if the animation thread is running.
+     */
     private boolean running = false;
+
+    /**
+     * Thread responsible for running UI animations.
+     */
     private Thread animatorThread;
+
+    /**
+     * List of tracks after applying search filters.
+     */
     private List<TrackData> filteredTracks = new ArrayList<>();
+
+    /**
+     * The track currently selected by the user.
+     */
     private TrackData selectedTrack = null;
+
+    /**
+     * Current search query string.
+     */
     private String searchQuery = "";
+
+    /**
+     * Currently active genre filter.
+     */
     private String activeGenre = "All-Time";
+
+    /**
+     * Search input field.
+     */
     private JTextField searchField;
 
+    /**
+     * Constructs a new SongSelectionPanel.
+     *
+     * @param audiusClient  the client used for API requests
+     * @param objectMapper  the mapper used for JSON parsing
+     * @param screenManager the screen manager used for navigation
+     */
     public SongSelectionPanel(AudiusClient audiusClient, ObjectMapper objectMapper, ScreenManager screenManager) {
         this.audiusClient = audiusClient;
         this.objectMapper = objectMapper;
@@ -55,6 +114,12 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         loadTracks("allTime", null);
     }
 
+    /**
+     * Configures a custom JScrollPane with stylized scrollbars.
+     *
+     * @param content The panel to be wrapped in the scroll pane.
+     * @return The configured JScrollPane.
+     */
     private static JScrollPane buildScrollPane(JPanel content) {
         final JScrollPane sp = new JScrollPane(content);
 
@@ -80,6 +145,11 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         return sp;
     }
 
+    /**
+     * Creates the top navigation bar containing the search field and genre filters.
+     *
+     * @return The top bar JPanel.
+     */
     private JPanel createTopBar() {
         final JPanel topBar = new JPanel(new BorderLayout());
         topBar.setOpaque(false);
@@ -133,6 +203,12 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         return topBar;
     }
 
+    /**
+     * Creates a button acting as a genre selection "chip".
+     *
+     * @param name The name of the genre.
+     * @return The stylized JButton.
+     */
     private JButton createGenreChip(String name) {
         final JButton btn = new JButton(name) {
             @Override
@@ -170,6 +246,12 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         return btn;
     }
 
+    /**
+     * Asynchronously loads tracks from the Audius API based on time and genre filters.
+     *
+     * @param time  The timeframe (e.g., "allTime", "month").
+     * @param genre The genre string, or null for all genres.
+     */
     private void loadTracks(String time, String genre) {
         final CompletableFuture<String> future;
         if (genre != null) future = audiusClient.getTrendingTracksByGenre(genre, time);
@@ -177,6 +259,11 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         future.thenAccept(json -> SwingUtilities.invokeLater(() -> loadSongs(json)));
     }
 
+    /**
+     * Parses the JSON response from Audius and populates the track list.
+     *
+     * @param json The JSON string response from the API.
+     */
     private void loadSongs(String json) {
         try {
             final JsonNode root = objectMapper.readTree(json);
@@ -193,6 +280,9 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * Filters the internal track list based on the current search query and updates the UI.
+     */
     private void filterTracks() {
         filteredTracks = allTracks.stream()
                 .filter(t -> searchQuery.isEmpty() ||
@@ -202,6 +292,9 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         updateSongList();
     }
 
+    /**
+     * Rebuilds the UI components in the song list panel based on filtered tracks.
+     */
     private void updateSongList() {
         songListPanel.removeAll();
         for (TrackData track : filteredTracks) {
@@ -212,12 +305,20 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         songListPanel.repaint();
     }
 
+    /**
+     * Marks a track as selected and handles expansion state for animations.
+     *
+     * @param track The track to select.
+     */
     private void selectTrack(TrackData track) {
         if (selectedTrack != null) selectedTrack.expanded = false;
         selectedTrack = track;
         if (selectedTrack != null) selectedTrack.expanded = true;
     }
 
+    /**
+     * Starts the animation thread for the track expansion effects.
+     */
     public void startAnimations() {
         if (!running) {
             running = true;
@@ -226,6 +327,9 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * Stops the animation thread.
+     */
     public void stopAnimations() {
         running = false;
         if (animatorThread != null) {
@@ -234,6 +338,9 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * The main animation loop for track expansion and UI updates.
+     */
     @Override
     public void run() {
         long lastTime = System.nanoTime();
@@ -270,6 +377,11 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * Paints the background and border of the song selection panel with a gradient and rounded corners.
+     *
+     * @param g the Graphics object to protect
+     */
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();

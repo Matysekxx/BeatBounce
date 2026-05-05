@@ -5,10 +5,28 @@ import cz.matysekxx.beatbounce.gui.RenderUtils;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * A custom {@link JButton} that cycles through a list of options when clicked.
+ * Each click advances to the next option in the array.
+ */
 public class CycleButton extends JButton {
+
+    /**
+     * The array of available string options to cycle through.
+     */
     public final String[] options;
+
+    /**
+     * The index of the currently selected option.
+     */
     public int currentIndex;
 
+    /**
+     * Constructs a new CycleButton.
+     *
+     * @param options      the array of options to be displayed on the button
+     * @param initialIndex the index of the option to start with
+     */
     public CycleButton(String[] options, int initialIndex) {
         super();
         this.options = options;
@@ -25,10 +43,20 @@ public class CycleButton extends JButton {
         });
     }
 
+    /**
+     * Returns the index of the currently selected option.
+     *
+     * @return the current index
+     */
     public int getSelectedIndex() {
         return currentIndex;
     }
 
+    /**
+     * Returns the string value of the currently selected option.
+     *
+     * @return the selected option string
+     */
     public String getSelectedOption() {
         return options[currentIndex];
     }

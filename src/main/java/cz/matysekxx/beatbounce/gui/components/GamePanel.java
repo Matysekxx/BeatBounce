@@ -24,37 +24,130 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.concurrent.locks.LockSupport;
 
+/**
+ * The main panel for the game, handling rendering, user input, and the game loop.
+ */
 public class GamePanel extends JPanel implements Runnable {
     private static final Color FPS_COLOR = Color.YELLOW;
     private static final Color GRID_MAGENTA_90 = new Color(255, 0, 255, 90);
     private static final Color GRID_CYAN_110 = new Color(0, 255, 255, 110);
     private static final Color GRID_CYAN_120 = new Color(0, 255, 255, 120);
+
+    /**
+     * The 3D camera used for projecting game coordinates to the screen.
+     */
     private final Camera3D cam;
+
+    /**
+     * Callback invoked when the game session is closed or exited.
+     */
     private final Runnable onExit;
+
+    /**
+     * Transparent cursor used to hide the mouse during gameplay.
+     */
     private final Cursor blankCursor;
+
+    /**
+     * The primary game loop thread.
+     */
     private Thread gameThread;
+
+    /**
+     * The player-controlled sphere entity.
+     */
     private Sphere sphere;
+
+    /**
+     * The current level being played.
+     */
     private Level level;
+
+    /**
+     * The audio clip for the current level's song.
+     */
     private Clip clip;
+
+    /**
+     * The core game logic model.
+     */
     private GameModel gameModel;
+
+    /**
+     * Flag indicating if the game loop is active.
+     */
     private boolean running;
+
+    /**
+     * Timestamp of the previous frame for delta time calculation.
+     */
     private long lastFrameTime;
+
+    /**
+     * Current state of cursor visibility.
+     */
     private boolean isCursorHidden = false;
+
+    /**
+     * The score from the previous update, used to trigger animations.
+     */
     private int lastScore = 0;
+
+    /**
+     * Alpha value for the score "pop" animation.
+     */
     private float scorePopAlpha = 0f;
+
+    /**
+     * Helper for rendering game-specific UI elements.
+     */
     private GameUIRenderer uiRenderer;
 
+    /**
+     * Cached background image to optimize rendering performance.
+     */
     private BufferedImage bgCache;
+
+    /**
+     * Cached width of the panel for background re-generation.
+     */
     private int cachedW = -1;
+
+    /**
+     * Cached height of the panel for background re-generation.
+     */
     private int cachedH = -1;
 
+    /**
+     * Frame counter for FPS calculation.
+     */
     private int frames = 0;
+
+    /**
+     * Timestamp of the last FPS update.
+     */
     private long lastFpsTime = 0;
+
+    /**
+     * The most recently calculated FPS value.
+     */
     private int currentUpdateFps = 0;
 
+    /**
+     * Dimensions of the panel used for coordinate projections.
+     */
     private WindowData frameWindowData;
+
+    /**
+     * Off-screen buffer for double-buffered rendering.
+     */
     private BufferedImage backBuffer;
 
+    /**
+     * Constructs a new GamePanel.
+     *
+     * @param onExit a callback executed when the game is exited
+     */
     public GamePanel(Runnable onExit) {
         this.onExit = onExit;
         this.running = false;
@@ -68,6 +161,11 @@ public class GamePanel extends JPanel implements Runnable {
         this.blankCursor = RenderUtils.blankCursor;
     }
 
+    /**
+     * Initializes the game panel with the specified level.
+     *
+     * @param level the level to play
+     */
     public void init(Level level) {
         this.level = level;
         this.clip = level.audioData().clip();
@@ -118,6 +216,9 @@ public class GamePanel extends JPanel implements Runnable {
         });
     }
 
+    /**
+     * Starts the game loop.
+     */
     public void startGame() {
         if (!this.running) {
             this.running = true;
@@ -133,6 +234,9 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * Stops the game loop and clean up resources.
+     */
     public void stopGame() {
         if (!this.running) return;
         this.running = false;
@@ -154,6 +258,9 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * Updates the mouse cursor visibility based on the current game state.
+     */
     private void updateCursorVisibility() {
         if (gameModel == null) return;
         final GameState state = gameModel.getGameState();
@@ -167,44 +274,9 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    @Override
-    public void run() {
-        final long optimalTimeNanos = 1_000_000_000L / Settings.targetFps;
-        while (running) {
-            final long loopStartTime = System.nanoTime();
-            final double deltaTime = (loopStartTime - lastFrameTime) / 1_000_000_000.0;
-            lastFrameTime = loopStartTime;
-
-            final double currentTime = (clip != null && clip.isRunning()) ? clip.getMicrosecondPosition() / 1_000_000.0 : 0;
-            gameModel.update(currentTime, deltaTime);
-            updateCursorVisibility();
-
-            final int currentScore = gameModel.getScore();
-            if (currentScore != lastScore) {
-                scorePopAlpha = 1.0f;
-                lastScore = currentScore;
-            }
-
-            if (scorePopAlpha > 0) {
-                scorePopAlpha -= (float) (deltaTime * 3.0);
-                if (scorePopAlpha < 0) scorePopAlpha = 0;
-            }
-
-            if (Settings.showFps) {
-                frames++;
-                final long nowTime = System.currentTimeMillis();
-                if (nowTime - lastFpsTime >= 1000) {
-                    currentUpdateFps = frames;
-                    frames = 0;
-                    lastFpsTime = nowTime;
-                }
-            }
-            renderGame();
-
-            RenderUtils.delay(optimalTimeNanos, loopStartTime);
-        }
-    }
-
+    /**
+     * Orchestrates the rendering process, including double buffering and UI drawing.
+     */
     private void renderGame() {
         final Graphics g = getGraphics();
         if (g == null) return;
@@ -256,6 +328,13 @@ public class GamePanel extends JPanel implements Runnable {
         if (Settings.vsync) Toolkit.getDefaultToolkit().sync();
     }
 
+    /**
+     * Draws state-specific UI screens (e.g., Pause, Game Over).
+     *
+     * @param g2d The Graphics2D context.
+     * @param w   Panel width.
+     * @param h   Panel height.
+     */
     private void drawByGameState(Graphics2D g2d, int w, int h) {
         switch (gameModel.getGameState()) {
             case COUNTDOWN -> uiRenderer.drawCountdown(g2d, w, h);
@@ -265,6 +344,15 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * Renders the game environment, including the floor and background.
+     *
+     * @param g2d      The Graphics2D context.
+     * @param width    Panel width.
+     * @param height   Panel height.
+     * @param horizonY Vertical coordinate of the horizon.
+     * @param time     Current system time for animations.
+     */
     private void drawEnvironment(Graphics2D g2d, int width, int height, int horizonY, long time) {
         if (bgCache == null || cachedW != width || cachedH != height) {
             this.cachedW = width;
@@ -285,6 +373,14 @@ public class GamePanel extends JPanel implements Runnable {
         drawNeonGrid(g2d, width, height, horizonY);
     }
 
+    /**
+     * Renders a stylized planet with rings in the background.
+     *
+     * @param g2d      The Graphics2D context.
+     * @param width    Panel width.
+     * @param horizonY Vertical coordinate of the horizon.
+     * @param time     Current system time for animations.
+     */
     private void drawPlanet(Graphics2D g2d, int width, int horizonY, long time) {
         final int cx = width / 2;
         final int cy = horizonY - 150;
@@ -317,6 +413,19 @@ public class GamePanel extends JPanel implements Runnable {
         g2d.setStroke(RenderCache.STROKE_1);
     }
 
+    /**
+     * Helper to draw a stylized arc/ring segment.
+     *
+     * @param g2d        The Graphics2D context.
+     * @param cx         Center X.
+     * @param cy         Center Y.
+     * @param rx         Horizontal radius.
+     * @param ry         Vertical radius.
+     * @param startAngle Arc start angle.
+     * @param arcAngle   Arc angular extent.
+     * @param color      Color of the ring.
+     * @param stroke     Thickness of the line.
+     */
     private void drawRing(
             Graphics2D g2d, int cx, int cy, float rx, int ry, int startAngle, int arcAngle, Color color, float stroke
     ) {
@@ -325,6 +434,11 @@ public class GamePanel extends JPanel implements Runnable {
         g2d.drawArc(cx - (int) rx, cy - ry, (int) (rx * 2), ry * 2, startAngle, arcAngle);
     }
 
+    /**
+     * Renders all active game objects (tiles, orbs, sphere) in 3D.
+     *
+     * @param g2d The Graphics2D context.
+     */
     private void drawGameObjects(Graphics2D g2d) {
         if (gameModel == null || gameModel.getGameState() != GameState.FINISHED) {
             final List<AbstractTile> tiles = level.tiles();
@@ -348,6 +462,16 @@ public class GamePanel extends JPanel implements Runnable {
         sphere.paint3D(g2d, cam, frameWindowData);
     }
 
+    /**
+     * Projects 3D world coordinates to 2D screen coordinates.
+     *
+     * @param x        World X.
+     * @param y        World Y.
+     * @param z        World Z.
+     * @param width    Screen width.
+     * @param horizonY Screen vertical center.
+     * @return A 2D Point, or null if the coordinate is behind the camera.
+     */
     private Point projectPoint(double x, double y, double z, int width, int horizonY) {
         final double scale = cam.getScale(z);
         if (scale <= 0) return null;
@@ -356,6 +480,14 @@ public class GamePanel extends JPanel implements Runnable {
         return new Point(px, py);
     }
 
+    /**
+     * Renders the perspective neon grid on the floor.
+     *
+     * @param g2d      The Graphics2D context.
+     * @param width    Panel width.
+     * @param height   Panel height.
+     * @param horizonY Vertical coordinate of the horizon.
+     */
     private void drawNeonGrid(Graphics2D g2d, int width, int height, int horizonY) {
         for (int z = 0; z < 3000; z += 150) {
             final double distance = z - (cam.getZ() % 150);

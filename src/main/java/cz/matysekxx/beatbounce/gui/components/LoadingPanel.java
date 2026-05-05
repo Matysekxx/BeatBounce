@@ -7,6 +7,10 @@ import cz.matysekxx.beatbounce.util.Time;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * A panel that displays a loading screen with a progress bar and animated title.
+ * It uses a separate thread for the loading animation.
+ */
 public class LoadingPanel extends JPanel implements Runnable {
     private static final Font PERCENT_FONT = new Font("Monospaced", Font.BOLD, 16);
     private static final Stroke BAR_STROKE = new BasicStroke(1.5f);
@@ -24,15 +28,26 @@ public class LoadingPanel extends JPanel implements Runnable {
     private volatile boolean running = false;
     private String text = "Loading Level...";
 
+    /**
+     * Constructs a new LoadingPanel.
+     */
     public LoadingPanel() {
         setOpaque(true);
         setBackground(Color.BLACK);
     }
 
+    /**
+     * Sets the text to be displayed as the loading title.
+     *
+     * @param text the loading text
+     */
     public void setText(String text) {
         this.text = text;
     }
 
+    /**
+     * Starts the loading animation thread.
+     */
     public void startAnimation() {
         if (!running) {
             running = true;
@@ -43,6 +58,9 @@ public class LoadingPanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * Stops the loading animation thread.
+     */
     public void stopAnimation() {
         running = false;
         if (animationThread != null) {
@@ -55,6 +73,9 @@ public class LoadingPanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * The main loop for the loading animation, handling progress updates and repaints.
+     */
     @Override
     public void run() {
         long lastTime = System.nanoTime();

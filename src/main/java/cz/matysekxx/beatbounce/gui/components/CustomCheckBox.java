@@ -5,7 +5,18 @@ import cz.matysekxx.beatbounce.gui.RenderUtils;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * A stylized {@link JCheckBox} with a custom toggle switch icon.
+ * Features a rounded track and a sliding knob with smooth color transitions.
+ */
 public class CustomCheckBox extends JCheckBox {
+
+    /**
+     * Constructs a new CustomCheckBox with the specified text and initial selection state.
+     *
+     * @param text     the text to display next to the check box
+     * @param selected the initial selection state
+     */
     public CustomCheckBox(String text, boolean selected) {
         super(text, selected);
         setOpaque(false);

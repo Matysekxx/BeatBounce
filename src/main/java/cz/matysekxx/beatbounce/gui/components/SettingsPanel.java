@@ -7,6 +7,10 @@ import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * A panel that allows users to configure various game settings.
+ * It includes options for display, graphics, audio, and gameplay.
+ */
 public class SettingsPanel extends JPanel {
 
     private final ScreenManager screenManager;
@@ -23,6 +27,11 @@ public class SettingsPanel extends JPanel {
     private final CustomSlider soundSlider;
     private JLabel infoLabel;
 
+    /**
+     * Constructs a new SettingsPanel.
+     *
+     * @param screenManager the screen manager used to apply settings
+     */
     public SettingsPanel(ScreenManager screenManager) {
         this.screenManager = screenManager;
         setOpaque(false);
@@ -104,6 +113,11 @@ public class SettingsPanel extends JPanel {
         add(createBottomPanel(), BorderLayout.SOUTH);
     }
 
+    /**
+     * Paints the settings panel background with a gradient and rounded corners.
+     *
+     * @param g the graphics context to paint on
+     */
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();

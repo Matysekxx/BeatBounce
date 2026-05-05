@@ -5,7 +5,19 @@ import cz.matysekxx.beatbounce.gui.RenderUtils;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * A stylized {@link JSlider} with a custom UI.
+ * Features a rounded track and a custom thumb with glow effects.
+ */
 public class CustomSlider extends JSlider {
+
+    /**
+     * Constructs a new CustomSlider with the specified range and initial value.
+     *
+     * @param min the minimum value of the slider
+     * @param max the maximum value of the slider
+     * @param val the initial value of the slider
+     */
     public CustomSlider(int min, int max, int val) {
         super(min, max, val);
         setOpaque(false);

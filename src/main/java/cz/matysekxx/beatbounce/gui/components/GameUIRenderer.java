@@ -8,6 +8,10 @@ import cz.matysekxx.beatbounce.model.ScoreManager;
 import javax.sound.sampled.Clip;
 import java.awt.*;
 
+/**
+ * A renderer class responsible for drawing the game's user interface elements.
+ * This includes countdowns, pause screens, game over screens, scores, and progress bars.
+ */
 public class GameUIRenderer {
     private static final Color PAUSE_BG = new Color(0, 0, 8, 170);
     private static final Color PAUSE_LINE = new Color(0, 255, 220, 55);
@@ -32,11 +36,24 @@ public class GameUIRenderer {
     private final GameModel gameModel;
     private final Clip clip;
 
+    /**
+     * Constructs a new GameUIRenderer.
+     *
+     * @param gameModel the game model to retrieve state and score from
+     * @param clip      the audio clip to track progress
+     */
     public GameUIRenderer(GameModel gameModel, Clip clip) {
         this.gameModel = gameModel;
         this.clip = clip;
     }
 
+    /**
+     * Draws the countdown animation on the screen.
+     *
+     * @param g2d    the graphics context
+     * @param width  the width of the rendering area
+     * @param height the height of the rendering area
+     */
     public void drawCountdown(Graphics2D g2d, int width, int height) {
         final int count = (int) Math.ceil(gameModel.getCountdownTime());
         final String text = String.valueOf(count);
@@ -83,6 +100,13 @@ public class GameUIRenderer {
         g2d.drawRoundRect(cardX + 4, cardY + 4, cardW - 8, cardH - 8, 14, 14);
     }
 
+    /**
+     * Draws the pause screen overlay.
+     *
+     * @param g2d    the graphics context
+     * @param width  the width of the rendering area
+     * @param height the height of the rendering area
+     */
     public void drawPauseScreen(Graphics2D g2d, int width, int height) {
         g2d.setColor(PAUSE_BG);
         g2d.fillRect(0, 0, width, height);
@@ -107,6 +131,13 @@ public class GameUIRenderer {
         drawKeyHint(g2d, "ENTER", "Quit to Menu", width / 2 + 30, hintY);
     }
 
+    /**
+     * Draws the level complete (finished) screen overlay.
+     *
+     * @param g2d    the graphics context
+     * @param width  the width of the rendering area
+     * @param height the height of the rendering area
+     */
     public void drawFinishedScreen(Graphics2D g2d, int width, int height) {
         final float pulse = (float) ((Math.sin(System.currentTimeMillis() / 600.0) + 1.0) / 2.0);
         g2d.setColor(FINISHED_BG);
@@ -134,6 +165,13 @@ public class GameUIRenderer {
         drawKeyHint(g2d, "ENTER", "Continue", width / 2 + 30, hintY);
     }
 
+    /**
+     * Draws the game over screen overlay.
+     *
+     * @param g2d    the graphics context
+     * @param width  the width of the rendering area
+     * @param height the height of the rendering area
+     */
     public void drawGameOverScreen(Graphics2D g2d, int width, int height) {
         final long t = System.currentTimeMillis();
         final float pulse = (float) ((Math.sin(t / 600.0) + 1.0) / 2.0);
@@ -199,6 +237,13 @@ public class GameUIRenderer {
         g2d.drawString(totalOrbsLabel, (width - g2d.getFontMetrics().stringWidth(totalOrbsLabel)) / 2, cardY + 105);
     }
 
+    /**
+     * Draws the current score and orb count on the screen.
+     *
+     * @param g2d           the graphics context
+     * @param width         the width of the rendering area
+     * @param scorePopAlpha the alpha value for the score pop animation
+     */
     public void drawScore(Graphics2D g2d, int width, float scorePopAlpha) {
         final double pulse = (Math.sin(System.currentTimeMillis() / 550.0) + 1.0) / 2.0;
         final Integer score = gameModel.getScore();
@@ -238,6 +283,13 @@ public class GameUIRenderer {
         g2d.drawString(orbsText, 20, 40);
     }
 
+    /**
+     * Draws the song progress bar at the bottom of the screen.
+     *
+     * @param g2d    the graphics context
+     * @param width  the width of the rendering area
+     * @param height the height of the rendering area
+     */
     public void drawProgressBar(Graphics2D g2d, int width, int height) {
         if (clip == null) return;
         final double current = clip.getMicrosecondPosition() / 1_000_000.0;

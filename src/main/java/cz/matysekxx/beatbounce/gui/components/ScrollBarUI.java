@@ -8,6 +8,10 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+/**
+ * A custom scroll bar UI that provides a modern, neon-themed look.
+ * It uses {@link RenderUtils} to initialize graphics and follows the game's aesthetic.
+ */
 public class ScrollBarUI extends BasicScrollBarUI {
 
     private static final int THUMB_WIDTH = 4;
@@ -27,6 +31,9 @@ public class ScrollBarUI extends BasicScrollBarUI {
         return b;
     }
 
+    /**
+     * Installs listeners for the scroll bar, including mouse listeners for hover effects.
+     */
     @Override
     protected void installListeners() {
         super.installListeners();
@@ -45,26 +52,55 @@ public class ScrollBarUI extends BasicScrollBarUI {
         });
     }
 
+    /**
+     * Configures the colors for the scroll bar.
+     */
     @Override
     protected void configureScrollBarColors() {
         trackColor = new Color(0, 0, 0, 0);
     }
 
+    /**
+     * Creates the button that decreases the scroll bar value.
+     * Returns a zero-sized button as the custom UI does not show arrow buttons.
+     *
+     * @param o the orientation of the scroll bar
+     * @return a zero-sized {@link JButton}
+     */
     @Override
     protected JButton createDecreaseButton(int o) {
         return zeroButton();
     }
 
+    /**
+     * Creates the button that increases the scroll bar value.
+     * Returns a zero-sized button as the custom UI does not show arrow buttons.
+     *
+     * @param o the orientation of the scroll bar
+     * @return a zero-sized {@link JButton}
+     */
     @Override
     protected JButton createIncreaseButton(int o) {
         return zeroButton();
     }
 
+    /**
+     * Returns the minimum size of the scroll bar thumb.
+     *
+     * @return a {@link Dimension} representing the minimum thumb size
+     */
     @Override
     protected Dimension getMinimumThumbSize() {
         return new Dimension(THUMB_WIDTH, 32);
     }
 
+    /**
+     * Paints the track of the scroll bar.
+     *
+     * @param g      the graphics context
+     * @param c      the component being painted
+     * @param bounds the track bounds
+     */
     @Override
     protected void paintTrack(Graphics g, JComponent c, Rectangle bounds) {
         Graphics2D g2 = (Graphics2D) g.create();
@@ -77,6 +113,13 @@ public class ScrollBarUI extends BasicScrollBarUI {
         g2.dispose();
     }
 
+    /**
+     * Paints the thumb of the scroll bar.
+     *
+     * @param g      the graphics context
+     * @param c      the component being painted
+     * @param bounds the thumb bounds
+     */
     @Override
     protected void paintThumb(Graphics g, JComponent c, Rectangle bounds) {
         if (bounds.isEmpty() || !scrollbar.isEnabled()) return;

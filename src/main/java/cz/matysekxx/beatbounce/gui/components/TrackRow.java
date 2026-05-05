@@ -15,6 +15,10 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * A UI component representing a single track in the song selection list.
+ * It handles rendering track info, selection expansion, and initiating downloads/play.
+ */
 public class TrackRow extends JPanel {
     private static final Logger LOG = Logger.getLogger(TrackRow.class.getName());
 
@@ -23,6 +27,14 @@ public class TrackRow extends JPanel {
     private final ScreenManager screenManager;
     private boolean hovered = false;
 
+    /**
+     * Constructs a new TrackRow.
+     *
+     * @param data          the track data to display
+     * @param audiusClient  the Audius client for downloads
+     * @param screenManager the screen manager for navigation
+     * @param onSelect      a callback for when the track is selected
+     */
     public TrackRow(TrackData data, AudiusClient audiusClient, ScreenManager screenManager, Consumer<TrackData> onSelect) {
         this.data = data;
         this.audiusClient = audiusClient;
@@ -62,16 +74,31 @@ public class TrackRow extends JPanel {
         });
     }
 
+    /**
+     * Returns the preferred size of the component, which varies based on expansion state.
+     *
+     * @return the preferred {@link Dimension}
+     */
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(getWidth(), 64 + (int) (data.expansion * 44));
     }
 
+    /**
+     * Returns the maximum size of the component.
+     *
+     * @return the maximum {@link Dimension}
+     */
     @Override
     public Dimension getMaximumSize() {
         return new Dimension(Integer.MAX_VALUE, getPreferredSize().height);
     }
 
+    /**
+     * Paints the track row, including title, artist, duration, stars, and the play button if expanded.
+     *
+     * @param g the graphics context
+     */
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();

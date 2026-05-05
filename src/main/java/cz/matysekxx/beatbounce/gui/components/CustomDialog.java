@@ -5,10 +5,22 @@ import cz.matysekxx.beatbounce.gui.RenderUtils;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * A custom undecorated {@link JDialog} with a stylized background and border.
+ * Provides a consistent look for in-game dialogs.
+ */
 public class CustomDialog extends JDialog {
 
     private final JPanel buttonPanel;
 
+    /**
+     * Constructs a new CustomDialog.
+     *
+     * @param owner       the {@link Frame} from which the dialog is displayed
+     * @param titleText   the title text shown at the top of the dialog
+     * @param message     the message text shown in the center
+     * @param borderColor the color used for the dialog's border
+     */
     public CustomDialog(Frame owner, String titleText, String message, Color borderColor) {
         super(owner, titleText, true);
         setUndecorated(true);
@@ -35,6 +47,11 @@ public class CustomDialog extends JDialog {
         setContentPane(dialogContentPane);
     }
 
+    /**
+     * Adds a button to the dialog's button panel.
+     *
+     * @param button the {@link JButton} to add
+     */
     public void addButton(JButton button) {
         buttonPanel.add(button);
     }

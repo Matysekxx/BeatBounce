@@ -11,6 +11,10 @@ import java.awt.event.ComponentEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
+/**
+ * A panel used for the intro screen, featuring animated particles and a stylized background.
+ * It manages its own animation thread.
+ */
 public class IntroPanel extends JPanel implements Runnable {
     private final Particle[] particles;
     private int count;
@@ -24,6 +28,9 @@ public class IntroPanel extends JPanel implements Runnable {
     private int cachedBgW = -1;
     private int cachedBgH = -1;
 
+    /**
+     * Constructs a new IntroPanel.
+     */
     public IntroPanel() {
         super();
         this.setDoubleBuffered(true);
@@ -50,6 +57,10 @@ public class IntroPanel extends JPanel implements Runnable {
         };
     }
 
+    /**
+     * Starts the animation thread for the intro panel.
+     * If the animation is already running, this method does nothing.
+     */
     public void startAnimation() {
         if (!running) {
             running = true;
@@ -60,6 +71,10 @@ public class IntroPanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * Stops the animation thread.
+     * If the animation is not running, this method does nothing.
+     */
     public void stopAnimation() {
         running = false;
         if (animatorThread != null) {
@@ -68,6 +83,10 @@ public class IntroPanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * The main loop for the intro animation, handling particle updates and repaints.
+     * This method is executed in a separate thread.
+     */
     @Override
     public void run() {
         final long optimalTimeNanos = 1_000_000_000L / Settings.targetFps;

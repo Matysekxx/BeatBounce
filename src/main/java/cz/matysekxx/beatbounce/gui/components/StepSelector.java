@@ -4,10 +4,20 @@ import cz.matysekxx.beatbounce.gui.RenderUtils;
 
 import java.awt.*;
 
+/**
+ * A custom UI component that allows selecting a value from a discrete set of steps.
+ * It is used for settings like Target FPS.
+ */
 public class StepSelector extends javax.swing.JComponent {
     private final int[] values;
     private int selectedIndex;
 
+    /**
+     * Constructs a new StepSelector with the given values and an initial selection.
+     *
+     * @param values       the available values to select from
+     * @param currentValue the value that should be initially selected
+     */
     public StepSelector(int[] values, int currentValue) {
         this.values = values;
         setSelectedIndexByValue(currentValue);
@@ -25,6 +35,12 @@ public class StepSelector extends javax.swing.JComponent {
         });
     }
 
+    /**
+     * Sets the selected index based on the provided value.
+     * If the value is not found, the first index is selected.
+     *
+     * @param val the value to select
+     */
     public void setSelectedIndexByValue(int val) {
         for (int i = 0; i < values.length; i++) {
             if (values[i] == val) {
@@ -35,10 +51,20 @@ public class StepSelector extends javax.swing.JComponent {
         selectedIndex = 0;
     }
 
+    /**
+     * Returns the currently selected value.
+     *
+     * @return the selected value
+     */
     public int getSelectedValue() {
         return values[selectedIndex];
     }
 
+    /**
+     * Paints the component, including all steps and the current selection indicator.
+     *
+     * @param g the graphics context
+     */
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();

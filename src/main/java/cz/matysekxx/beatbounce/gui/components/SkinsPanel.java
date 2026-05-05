@@ -4,7 +4,13 @@ import cz.matysekxx.beatbounce.gui.RenderUtils;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * A panel that displays the available skins for the game.
+ */
 public class SkinsPanel extends JPanel {
+    /**
+     * Constructs a new SkinsPanel.
+     */
     public SkinsPanel() {
         setOpaque(false);
         setLayout(new BorderLayout());
@@ -16,6 +22,11 @@ public class SkinsPanel extends JPanel {
         add(title, BorderLayout.NORTH);
     }
 
+    /**
+     * Paints the skins panel background with a gradient and rounded corners.
+     *
+     * @param g the graphics context to paint on
+     */
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();

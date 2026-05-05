@@ -8,6 +8,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+/**
+ * A panel used as the background for the main menu.
+ * It handles background rendering and animations.
+ */
 public class MainMenuPanel extends JPanel implements Runnable {
     private boolean running = false;
     private Thread animatorThread;
@@ -15,11 +19,17 @@ public class MainMenuPanel extends JPanel implements Runnable {
     private int cachedW = -1;
     private int cachedH = -1;
 
+    /**
+     * Constructs a new MainMenuPanel.
+     */
     public MainMenuPanel() {
         this.setDoubleBuffered(true);
         this.setOpaque(true);
     }
 
+    /**
+     * Starts the animation thread for the background.
+     */
     public void startAnimation() {
         if (!running) {
             running = true;
@@ -28,6 +38,9 @@ public class MainMenuPanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * Stops the animation thread.
+     */
     public void stopAnimation() {
         running = false;
         if (animatorThread != null) {
@@ -36,6 +49,9 @@ public class MainMenuPanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * The main loop for the background animation, which handles repainting.
+     */
     @Override
     public void run() {
         long lastFpsTime = System.currentTimeMillis();
@@ -49,6 +65,11 @@ public class MainMenuPanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * Paints the background component, using a cache to improve performance.
+     *
+     * @param g the graphics context to paint on
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

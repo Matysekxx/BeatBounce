@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class LevelGenerator {
     private static final int LANE_WIDTH = 120;
-    private static final double MAX_ALLOWED_GAP_SECONDS = 1.5;
+    private static final double MAX_ALLOWED_GAP_SECONDS = 0.8;
 
     private static final Map<CacheKey, List<AbstractTile>> levelCache = new ConcurrentHashMap<>();
 
@@ -80,7 +80,7 @@ public class LevelGenerator {
             this.events = events;
             this.songName = songName;
             this.tiles = new ArrayList<>();
-            this.rng = new Random(songName.hashCode());
+            this.rng = new Random((long) songName.hashCode() * 31 + stars);
             this.audioData = audioData;
             this.stars = stars;
             this.zUnitsPerSecond = getZSpeed();
@@ -150,7 +150,7 @@ public class LevelGenerator {
                 if (gap <= MAX_ALLOWED_GAP_SECONDS) continue;
 
                 final double beatInterval = estimateLocalInterval(input, i);
-                final double safeInterval = Math.max(beatInterval, 0.12);
+                final double safeInterval = Math.max(beatInterval * 0.75, 0.10);
                 double t = gapStart + safeInterval;
                 int fills = 0;
 
@@ -260,7 +260,7 @@ public class LevelGenerator {
                 }
             }
 
-            List<Integer> fakeOffsets = new ArrayList<>();
+            final List<Integer> fakeOffsets = new ArrayList<>();
             for (int lane = startLane; lane <= endLane; lane++) {
                 if (lane != currentLane) {
                     fakeOffsets.add(lane - currentLane);

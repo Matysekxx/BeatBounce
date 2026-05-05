@@ -21,12 +21,12 @@ public class AudioProcessor {
     public static final int OVERLAP = 1024;
     private static final double HIGH_INTENSITY_THRESHOLD = 0.15;
     private static final double LOW_INTENSITY_THRESHOLD = 0.08;
-    private static final double SMOOTHING_FACTOR = 0.98;
+    private static final double SMOOTHING_FACTOR = 0.93;
     private static final double MIN_BEAT_INTERVAL = 0.08;
     private static final double DEDUP_WINDOW = 0.025;
     private static final double MAX_GAP_SECONDS = 1.2;
-    private static final double SILENCE_THRESHOLD = 0.015;
-    private static final int MAX_CONSECUTIVE_FALLBACKS = 8;
+    private static final double SILENCE_THRESHOLD = 0.006;
+    private static final int MAX_CONSECUTIVE_FALLBACKS = 32;
     private static final int BPM_HISTORY_SIZE = 8;
     private final PercussionOnsetDetector percussionDetector;
     private final ComplexOnsetDetector complexDetector;
@@ -42,8 +42,9 @@ public class AudioProcessor {
     private double lastAcceptedBeatTime = -1.0;
     private double lastRawBeatTime = -1.0;
     private int beatHistoryCount = 0;
-    private double nextFallbackBeatTime = -1.0;
+    private double nextFallbackBeatTime = MAX_GAP_SECONDS;
     private int consecutiveFallbacks = 0;
+    private double lastFallbackInterval = 0.4;
 
     private long framesProcessed = 0;
 
@@ -153,8 +154,8 @@ public class AudioProcessor {
         checkIntensityChanges(rms);
         checkFallbackBeat(rms);
 
-        final int stepSize = (chunk.length / channels) - (OVERLAP / channels);
-        framesProcessed += stepSize;
+        final int stepFrames = (BUFFER_SIZE - OVERLAP) / channels;
+        framesProcessed += stepFrames;
         currentTime = (double) framesProcessed / sampleRate;
     }
 
@@ -169,16 +170,19 @@ public class AudioProcessor {
             return;
         }
         if (consecutiveFallbacks >= MAX_CONSECUTIVE_FALLBACKS) {
-            nextFallbackBeatTime = currentTime + MAX_GAP_SECONDS;
-            return;
+            consecutiveFallbacks = 0;
         }
         final double estimatedInterval = getEstimatedBeatInterval();
+        if (estimatedInterval > 0.05 && estimatedInterval < 2.0) {
+            lastFallbackInterval = estimatedInterval;
+        }
+        final double interval = Math.max(lastFallbackInterval, MIN_BEAT_INTERVAL * 2);
         final double fallbackSalience = 0.1;
 
         onBeatDetected.accept(BeatEvent.of(currentTime, fallbackSalience));
         lastAcceptedBeatTime = currentTime;
         consecutiveFallbacks++;
-        nextFallbackBeatTime = currentTime + Math.max(estimatedInterval, MIN_BEAT_INTERVAL * 2);
+        nextFallbackBeatTime = currentTime + interval;
     }
 
     private float[] convertToFloatBuffer(short[] chunk) {

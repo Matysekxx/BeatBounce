@@ -8,26 +8,93 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ * Manages the application settings, including graphics, sound, and general preferences.
+ * <p>
+ * Settings are persisted in a {@code config.properties} file and can be loaded or saved
+ * using the provided static methods.
+ * </p>
+ */
 public class Settings {
+    /**
+     * The name of the configuration file where settings are stored.
+     */
     private static final String CONFIG_FILE = "config.properties";
+
+    /**
+     * The {@link Properties} object used to manage configuration key-value pairs.
+     */
     private static final Properties properties = new Properties();
+
+    /**
+     * Whether vertical synchronization is enabled to prevent screen tearing.
+     */
     public static boolean vsync = false;
+
+    /**
+     * Whether OpenGL hardware acceleration should be used for rendering.
+     */
     public static boolean opengl = true;
+
+    /**
+     * Whether the application should run in fullscreen mode.
+     */
     public static boolean fullscreen = true;
+
+    /**
+     * The master sound volume level, from 0 to 100.
+     */
     public static int soundVolume = 100;
+
+    /**
+     * The target frames per second (FPS) for the rendering loop.
+     */
     public static int targetFps = 60;
+
+    /**
+     * Whether to display the current FPS on the screen.
+     */
     public static boolean showFps = false;
+
+    /**
+     * The graphical quality preset (e.g., "LOW", "MEDIUM", "HIGH").
+     */
     public static String graphicsQuality = "HIGH";
+
+    /**
+     * The index of the monitor on which the application should be displayed.
+     */
     public static int monitorIndex = 0;
+
+    /**
+     * Whether particle effects are enabled.
+     */
     public static boolean particlesEnabled = true;
+
+    /**
+     * Whether the bloom post-processing effect is enabled.
+     */
     public static boolean bloomEnabled = true;
+
+    /**
+     * Whether the audio should be muted when the window loses focus.
+     */
     public static boolean muteOnFocusLoss = false;
+
+    /**
+     * Whether the application audio is currently muted.
+     */
     public static boolean isMuted = false;
 
     static {
         load();
     }
 
+    /**
+     * Applies the current sound volume settings to the given {@link Clip}.
+     *
+     * @param clip The audio clip to which the volume should be applied.
+     */
     public static void applyMusicVolume(Clip clip) {
         if (clip == null) return;
         try {
@@ -42,6 +109,12 @@ public class Settings {
         }
     }
 
+    /**
+     * Loads settings from the configuration file.
+     * <p>
+     * If the configuration file does not exist, default settings are saved.
+     * </p>
+     */
     public static void load() {
         final File file = new File(CONFIG_FILE);
         if (file.exists()) {
@@ -66,6 +139,9 @@ public class Settings {
         }
     }
 
+    /**
+     * Saves the current settings to the configuration file.
+     */
     public static void save() {
         properties.setProperty("vsync", Boolean.toString(vsync));
         properties.setProperty("opengl", String.valueOf(opengl));

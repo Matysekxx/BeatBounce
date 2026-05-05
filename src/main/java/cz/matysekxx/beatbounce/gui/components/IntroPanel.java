@@ -8,8 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.util.concurrent.locks.LockSupport;
 
 public class IntroPanel extends JPanel implements Runnable {
     private final Particle[] particles;
@@ -120,42 +120,191 @@ public class IntroPanel extends JPanel implements Runnable {
         }
         g2d.drawImage(staticBackgroundCache, 0, 0, null);
 
+        final float globalHue = (time * 0.05f) % 1.0f;
+        drawAudioBars(g2d, w, horizonY, globalHue);
+
         if (Settings.particlesEnabled) {
             Particle.drawAll(g2d, particles, count);
         }
 
-        drawIntroGrid(g2d, w, h, horizonY);
-        RenderUtils.drawHorizonLine(g2d, w, horizonY);
-        RenderUtils.drawTitle(g2d, w, h, "BEAT BOUNCE");
+        drawIntroGrid(g2d, w, h, horizonY, globalHue);
+        drawFloatingShapes(g2d, w, horizonY, globalHue);
+        
+        final Color horizonColor = Color.getHSBColor(globalHue, 0.6f, 1.0f);
+        g2d.setColor(RenderCache.customColorWithAlpha(horizonColor, 180));
+        g2d.setStroke(RenderCache.STROKE_3);
+        g2d.drawLine(0, horizonY, w, horizonY);
+        g2d.setStroke(RenderCache.STROKE_1);
+        g2d.setColor(RenderCache.whiteWithAlpha(200));
+        g2d.drawLine(0, horizonY, w, horizonY);
 
+        drawTitle(g2d, w, h, globalHue);
+        drawVignette(g2d, w, h);
         g2d.dispose();
-
         if (Settings.vsync) {
             Toolkit.getDefaultToolkit().sync();
         }
     }
 
-    private void drawIntroGrid(Graphics2D g2d, int w, int h, int horizonY) {
-        final int vanishingPointX = w >> 1;
+    private void drawVignette(Graphics2D g2d, int w, int h) {
+        final float[] dist = {0.0f, 1.0f};
+        final Color[] colors = {new Color(0, 0, 0, 0), new Color(0, 0, 0, 160)};
+        final RadialGradientPaint p = new RadialGradientPaint(w / 2f, h / 2f, (float) Math.hypot(w / 2.0, h / 2.0), dist, colors);
+        g2d.setPaint(p);
+        g2d.fillRect(0, 0, w, h);
+    }
 
-        g2d.setColor(RenderCache.cyanWithAlpha(100));
-        for (int i = -40; i <= 40; i++) {
-            final int bottomX = vanishingPointX + i * 200;
-            g2d.drawLine(vanishingPointX, horizonY, bottomX, h);
+    private void drawFloatingShapes(Graphics2D g2d, int w, int horizonY, float globalHue) {
+        final int shapes = 6;
+        for (int i = 0; i < shapes; i++) {
+            final float phase = time * 0.35f + i * 1.6f;
+            final float x = w * 0.15f + (w * 0.7f) * ((float) i / (shapes - 1));
+            final float y = horizonY - 130 - (float) Math.sin(phase) * 50 - i * 12;
+            final float size = 24 + (float) Math.sin(phase * 0.7f) * 8;
+            final float rotation = time * 0.4f + i;
+            final float alpha = 0.22f + (float) Math.sin(phase) * 0.1f;
+
+            final AffineTransform old = g2d.getTransform();
+            g2d.translate(x, y);
+            g2d.rotate(rotation);
+            g2d.scale(size, size);
+            
+            final Color shapeColor = Color.getHSBColor((globalHue + i * 0.06f) % 1.0f, 0.65f, 1.0f);
+            final Shape shape = getShape(i);
+
+            if (Settings.bloomEnabled) {
+                g2d.setColor(RenderCache.customColorWithAlpha(shapeColor, (int) (255 * alpha * 0.3f)));
+                g2d.setStroke(new BasicStroke(3f / size));
+                g2d.draw(shape);
+            }
+
+            g2d.setColor(RenderCache.customColorWithAlpha(shapeColor, (int) (255 * alpha)));
+            g2d.setStroke(new BasicStroke(2.0f / size));
+            g2d.draw(shape);
+
+            final Color fillColor = Color.getHSBColor((globalHue + 0.5f) % 1.0f, 0.8f, 1.0f);
+            g2d.setColor(RenderCache.customColorWithAlpha(fillColor, (int) (255 * alpha * 0.2f)));
+            g2d.fill(shape);
+            
+            g2d.setTransform(old);
+        }
+    }
+
+    private Shape getShape(int index) {
+        return switch (index % 3) {
+            case 0 -> RenderCache.SHAPE_TRIANGLE;
+            case 1 -> RenderCache.SHAPE_DIAMOND;
+            default -> RenderCache.SHAPE_HEXAGON;
+        };
+    }
+
+    private void drawAudioBars(Graphics2D g2d, int w, int horizonY, float globalHue) {
+        final int barCount = 120;
+        final float barWidth = (float) w / barCount;
+        final int maxHeight = 160;
+
+        for (int i = 0; i < barCount; i++) {
+            final float height = getHeight(i);
+            final float x = i * barWidth;
+            final float y = horizonY - height;
+            final float alpha = 0.08f + (height / maxHeight) * 0.2f;
+
+            final float distFromCenter = Math.abs((i - barCount / 2.0f) / (barCount / 2.0f));
+            final Color barColor = Color.getHSBColor((globalHue + distFromCenter * 0.2f) % 1.0f, 0.7f, 1.0f);
+
+            g2d.setColor(RenderCache.customColorWithAlpha(barColor, (int) (255 * alpha)));
+            g2d.fillRect((int) x, (int) y, (int) (barWidth - 2), (int) height);
+
+            g2d.setColor(RenderCache.whiteWithAlpha((int) (255 * Math.min(1.0f, alpha * 2.5f))));
+            g2d.fillRect((int) x, (int) y, (int) (barWidth - 2), 4);
+
+            final float reflectionHeight = height * 0.4f;
+            final Color reflectionColor = Color.getHSBColor((globalHue + 0.5f + distFromCenter * 0.2f) % 1.0f, 0.7f, 1.0f);
+            g2d.setColor(RenderCache.customColorWithAlpha(reflectionColor, (int) (255 * alpha * 0.4f)));
+            g2d.fillRect((int) x, horizonY, (int) (barWidth - 2), (int) reflectionHeight);
+        }
+    }
+
+    private float getHeight(int i) {
+        final float freq1 = (float) (Math.sin(time * 2 + i * 0.15) * 0.5 + 0.5);
+        final float freq2 = (float) (Math.sin(time * 3.5 + i * 0.4) * 0.3 + 0.3);
+        final float freq3 = (float) (Math.sin(time * 1.2 + i * 0.05) * 0.2 + 0.2);
+        final float freq4 = (float) (Math.cos(time * 5.0 - i * 0.2) * 0.1 + 0.1);
+
+        final float globalBounce = (float) (Math.sin(time * 4) * 0.5 + 0.5) * 15;
+        return (freq1 * 0.4f + freq2 * 0.3f + freq3 * 0.2f + freq4 * 0.1f) * 160 + globalBounce;
+    }
+
+    private void drawTitle(Graphics2D g2d, int w, int h, float globalHue) {
+        final String text = "BEAT BOUNCE";
+        g2d.setFont(RenderCache.MONO_ITALIC_BOLD_150);
+        
+        final FontMetrics fm = g2d.getFontMetrics();
+        final int textWidth = fm.stringWidth(text);
+        final int drawX = (w - textWidth) / 2;
+
+        final float floatingOffset = (float) (Math.sin(time * 0.8) * 15.0);
+        final int drawY = (int) (h / 4.f + 40 + floatingOffset);
+        
+        final double pulse = (Math.sin(System.currentTimeMillis() / 400.0) + 1.0) / 2.0;
+
+        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+        final Color bloomColor = Color.getHSBColor(globalHue, 0.85f, 1.0f);
+        final Color faceColor = Color.getHSBColor(globalHue, 0.25f, 1.0f);
+
+        int gx = 0, gy = 0;
+        if (Math.random() > 0.985) {
+            gx = (int) (Math.random() * 12 - 6);
+            gy = (int) (Math.random() * 6 - 3);
+            g2d.setColor(RenderCache.customColorWithAlpha(Color.getHSBColor((globalHue + 0.5f) % 1.0f, 1.0f, 1.0f), 100));
+            g2d.drawString(text, drawX + gx * 2, drawY + gy * 2);
         }
 
-        final float speed = 1.2f;
+        if (Settings.bloomEnabled) {
+            for (float j = 6f; j >= 1f; j -= 2.5f) {
+                final float alpha = Math.min(1.0f, (float) (0.1 + (0.2 * pulse) / (j * 0.5)));
+                g2d.setColor(RenderCache.customColorWithAlpha(bloomColor, (int) (alpha * 255)));
+                g2d.drawString(text, drawX - j + gx, drawY + gy);
+                g2d.drawString(text, drawX + j + gx, drawY + gy);
+                g2d.drawString(text, drawX + gx, drawY - j + gy);
+                g2d.drawString(text, drawX + gx, drawY + j + gy);
+            }
+        }
+        
+        g2d.setColor(RenderCache.blackWithAlpha(150));
+        g2d.drawString(text, drawX + 3 + gx, drawY + 3 + gy);
+        
+        g2d.setColor(faceColor);
+        g2d.drawString(text, drawX + gx, drawY + gy);
+    }
+
+    private void drawIntroGrid(Graphics2D g2d, int w, int h, int horizonY, float globalHue) {
+        final int vanishingPointX = w >> 1;
+
+        final Color vertGridColor = Color.getHSBColor((globalHue + 0.1f) % 1.0f, 0.7f, 1.0f);
+        g2d.setStroke(RenderCache.STROKE_2);
+        g2d.setColor(RenderCache.customColorWithAlpha(vertGridColor, 120));
+        for (int i = -50; i <= 50; i++) {
+            final int bottomX = vanishingPointX + i * 180;
+            g2d.drawLine(vanishingPointX, horizonY, bottomX, h);
+        }
+        g2d.setStroke(RenderCache.STROKE_1);
+
+        final float speed = 1.5f;
         final double angularFreq = Math.PI / 2.0;
         final double pos = speed * (time - (0.1 / angularFreq) * Math.cos(angularFreq * time));
         final float gridOffset = (float) (pos - Math.floor(pos));
 
-        for (int z = 0; z <= 25; z++) {
-            final double depth = Math.pow((z + gridOffset) / 25.0, 2.8);
+        for (int z = 0; z <= 35; z++) {
+            final double depth = Math.pow((z + gridOffset) / 35.0, 3.2);
             final int lineY = horizonY + (int) ((h - horizonY) * depth);
 
             if (lineY > horizonY && lineY <= h) {
-                final int alpha = (int) (100 * depth);
-                g2d.setColor(RenderCache.cyanWithAlpha(alpha));
+                final int alpha = (int) (140 * depth);
+                final Color horizGridColor = Color.getHSBColor((globalHue + (z % 5) * 0.05f) % 1.0f, 0.8f, 1.0f);
+                
+                g2d.setColor(RenderCache.customColorWithAlpha(horizGridColor, Math.min(255, Math.max(0, alpha))));
                 g2d.drawLine(0, lineY, w, lineY);
             }
         }

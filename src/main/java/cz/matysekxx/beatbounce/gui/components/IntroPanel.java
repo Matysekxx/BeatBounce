@@ -12,7 +12,8 @@ import java.awt.image.BufferedImage;
 import java.util.concurrent.locks.LockSupport;
 
 public class IntroPanel extends JPanel implements Runnable {
-    private Particle[] particles = new Particle[0];
+    private final Particle[] particles;
+    private int count;
     private float time = 0;
     private boolean running = false;
     private Thread animatorThread;
@@ -27,6 +28,9 @@ public class IntroPanel extends JPanel implements Runnable {
         super();
         this.setDoubleBuffered(true);
         this.setOpaque(true);
+        particles = new Particle[30];
+        for (int i = 0; i < particles.length; i++)
+            particles[i] = new Particle(1920, 540);
         updateParticleCount();
 
         this.addComponentListener(new ComponentAdapter() {
@@ -39,17 +43,11 @@ public class IntroPanel extends JPanel implements Runnable {
     }
 
     private void updateParticleCount() {
-        final int count = switch (Settings.graphicsQuality) {
+        this.count = switch (Settings.graphicsQuality) {
             case "LOW" -> 0;
             case "MEDIUM" -> 15;
             default -> 30;
         };
-        if (particles.length != count) {
-            particles = new Particle[count];
-            for (int i = 0; i < count; i++) {
-                particles[i] = new Particle(1920, 540);
-            }
-        }
     }
 
     public void startAnimation() {
@@ -87,7 +85,7 @@ public class IntroPanel extends JPanel implements Runnable {
             final int h = (cachedH > 0) ? cachedH : (getHeight() > 0 ? getHeight() : 1080);
             
             if (Settings.particlesEnabled) {
-                Particle.updateAll(particles, dt, w, h);
+                Particle.updateAll(particles, count,dt, w, h);
             }
             repaint();
 
@@ -132,7 +130,7 @@ public class IntroPanel extends JPanel implements Runnable {
         g2d.drawImage(staticBackgroundCache, 0, 0, null);
 
         if (Settings.particlesEnabled) {
-            Particle.drawAll(g2d, particles);
+            Particle.drawAll(g2d, particles, count);
         }
 
         drawIntroGrid(g2d, w, h, horizonY);

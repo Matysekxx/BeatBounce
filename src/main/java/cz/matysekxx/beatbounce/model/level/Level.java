@@ -13,6 +13,14 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Represents a game level, containing tile data, audio data, and metadata.
+ *
+ * @param tiles         the list of tiles in the level
+ * @param audioData     the audio data associated with the level (ignored in JSON)
+ * @param songName      the name of the song
+ * @param stars         the difficulty rating in stars
+ */
 public record Level(List<AbstractTile> tiles, @JsonIgnore AudioData audioData, String songName, int stars) {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final Path CACHE_DIR;
@@ -27,6 +35,13 @@ public record Level(List<AbstractTile> tiles, @JsonIgnore AudioData audioData, S
         }
     }
 
+    /**
+     * Attempts to load level data from a cache file.
+     *
+     * @param audioFile       the original audio file
+     * @param speedMultiplier the speed multiplier used for generation
+     * @return an {@link Optional} containing {@link LevelCacheData} if found, otherwise empty
+     */
     public static Optional<LevelCacheData> fromFile(File audioFile, float speedMultiplier) {
         try {
             final File cacheFile = getCacheFile(audioFile, speedMultiplier);
@@ -41,6 +56,12 @@ public record Level(List<AbstractTile> tiles, @JsonIgnore AudioData audioData, S
         }
     }
 
+    /**
+     * Saves the level data to a cache file.
+     *
+     * @param level           the level to save
+     * @param speedMultiplier the speed multiplier used for generation
+     */
     public static void toFile(Level level, float speedMultiplier) {
         try {
             final File cacheFile = getCacheFile(level.audioData().file(), speedMultiplier);
@@ -52,6 +73,13 @@ public record Level(List<AbstractTile> tiles, @JsonIgnore AudioData audioData, S
         }
     }
 
+    /**
+     * Generates a cache file reference for a given audio file and speed.
+     *
+     * @param audioFile       the audio file
+     * @param speedMultiplier the speed multiplier
+     * @return the cache {@link File}
+     */
     private static File getCacheFile(File audioFile, float speedMultiplier) {
         final String baseName = audioFile.getName();
         final String nameWithoutExt = baseName.contains(".") ? baseName.substring(0, baseName.lastIndexOf('.')) : baseName;

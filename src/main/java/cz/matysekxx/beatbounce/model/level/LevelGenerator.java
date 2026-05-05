@@ -9,21 +9,50 @@ import cz.matysekxx.beatbounce.model.entity.TileFactory;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Utility class for generating game levels based on audio analysis.
+ * It handles beat detection, gap filling, and tile placement.
+ */
 public class LevelGenerator {
+    /**
+     * Width of a single lane in world units.
+     */
     private static final int LANE_WIDTH = 120;
+
+    /**
+     * Maximum allowed gap between beats before synthetic beats are injected.
+     */
     private static final double MAX_ALLOWED_GAP_SECONDS = 0.8;
 
+    /**
+     * Cache to store generated tile lists for specific audio files and speed multipliers.
+     */
     private static final Map<CacheKey, List<AbstractTile>> levelCache = new ConcurrentHashMap<>();
 
+    /**
+     * @return the constant movement speed along the Z-axis
+     */
     public static double getZSpeed() {
         return 800.0;
     }
 
+    /**
+     * @deprecated Use {@link #generateLevel(AudioData, float, int)} instead.
+     */
     @Deprecated
     public static Level generateLevel(Iterable<BeatEvent> events, String songName) {
         return new GenerationContext(events, songName, null, 1).generate();
     }
 
+    /**
+     * Generates a level for the specified audio data and difficulty.
+     * It uses a cache to avoid re-generating the same level.
+     *
+     * @param audioData       the audio data to analyze
+     * @param speedMultiplier the speed multiplier for the level
+     * @param stars           the difficulty level (1-5 stars)
+     * @return the generated Level object
+     */
     public static Level generateLevel(AudioData audioData, float speedMultiplier, int stars) {
         final CacheKey key = new CacheKey(audioData.file().getAbsolutePath(), speedMultiplier);
 
@@ -57,25 +86,103 @@ public class LevelGenerator {
     private record CacheKey(String filePath, float speedMultiplier) {
     }
 
+    /**
+     * Context used during the level generation process to maintain state.
+     */
     private static class GenerationContext {
+        /**
+         * List of tiles generated for the level.
+         */
         private final List<AbstractTile> tiles;
+
+        /**
+         * The beat events detected in the audio.
+         */
         private final Iterable<BeatEvent> events;
+
+        /**
+         * Name of the song being processed.
+         */
         private final String songName;
+
+        /**
+         * Random number generator for procedural placement.
+         */
         private final Random rng;
+
+        /**
+         * Metadata and clip info for the audio.
+         */
         private final AudioData audioData;
+
+        /**
+         * Difficulty rating influencing generation parameters.
+         */
         private final int stars;
+
+        /**
+         * Movement speed of tiles in world units per second.
+         */
         private final double zUnitsPerSecond;
+
+        /**
+         * Total duration of the song in seconds.
+         */
         private final double songDurationSeconds;
+
+        /**
+         * The maximum Z-coordinate for tiles based on song duration.
+         */
         private final double maxZ;
+
+        /**
+         * Probability of placing fake tiles alongside a real one.
+         */
         private final double baseFakeChance;
+
+        /**
+         * Probability of placing fake tiles in all other lanes.
+         */
         private final double allLaneFakeChance;
+
+        /**
+         * Probability of a tile being a moving tile in normal intensity sections.
+         */
         private final double baseMoveChance;
+
+        /**
+         * Probability of a tile being a moving tile in high intensity sections.
+         */
         private final double highIntensityMoveChance;
+
+        /**
+         * Maximum absolute lane index allowed for this difficulty.
+         */
         private final int maxLane;
+
+        /**
+         * The current lane index where a tile was last placed.
+         */
         private int currentLane = 0;
+
+        /**
+         * Number of consecutive tiles placed in the same lane.
+         */
         private int consecutiveInLane = 0;
+
+        /**
+         * Total number of tiles generated so far.
+         */
         private int tilesGenerated = 0;
 
+        /**
+         * Initializes a new generation context.
+         *
+         * @param events    the detected beat events
+         * @param songName  the name of the song
+         * @param audioData the audio data
+         * @param stars     the difficulty rating
+         */
         public GenerationContext(Iterable<BeatEvent> events, String songName, AudioData audioData, int stars) {
             this.events = events;
             this.songName = songName;
@@ -99,6 +206,11 @@ public class LevelGenerator {
             this.maxLane = (stars >= 4) ? 2 : 1;
         }
 
+        /**
+         * Orchestrates the level generation process.
+         *
+         * @return the generated {@link Level}
+         */
         public Level generate() {
             final List<PlacedBeat> placed = collectBeats();
             final List<PlacedBeat> filled = fillGaps(placed);
@@ -109,6 +221,11 @@ public class LevelGenerator {
             return new Level(tiles, audioData, songName, stars);
         }
 
+        /**
+         * Filters raw beat events into a list of beats where tiles should be placed.
+         *
+         * @return a list of {@link PlacedBeat} objects
+         */
         private List<PlacedBeat> collectBeats() {
             final List<PlacedBeat> result = new ArrayList<>();
             boolean isHighIntensity = false;
@@ -135,6 +252,12 @@ public class LevelGenerator {
             return result;
         }
 
+        /**
+         * Fills large gaps between beats with synthetic beats to maintain gameplay flow.
+         *
+         * @param input the initial list of beats
+         * @return the list of beats including filled gaps
+         */
         private List<PlacedBeat> fillGaps(List<PlacedBeat> input) {
             if (input.isEmpty()) return input;
             final List<PlacedBeat> result = new ArrayList<>();
@@ -164,6 +287,13 @@ public class LevelGenerator {
             return result;
         }
 
+        /**
+         * Estimates the local beat interval around a given index to guide gap filling.
+         *
+         * @param beats the list of beats
+         * @param index the current index
+         * @return the estimated interval in seconds
+         */
         private double estimateLocalInterval(List<PlacedBeat> beats, int index) {
             final int window = 4;
             double sum = 0;
@@ -178,6 +308,11 @@ public class LevelGenerator {
             return count == 0 ? 0.5 : sum / count;
         }
 
+        /**
+         * Places a specific tile based on the beat's properties and the current generation state.
+         *
+         * @param beat the beat to place a tile for
+         */
         private void placeTile(PlacedBeat beat) {
             final double tileZ = beat.timestamp() * zUnitsPerSecond;
             currentLane = getNextLane(currentLane);
@@ -242,6 +377,12 @@ public class LevelGenerator {
             tilesGenerated++;
         }
 
+        /**
+         * Places fake tiles in all available lanes except the current one.
+         *
+         * @param e     The beat event.
+         * @param tileZ The Z-coordinate for the tiles.
+         */
         private void placeAllLaneFakes(BeatEvent e, double tileZ) {
             int startLane = -maxLane;
             int endLane = maxLane;
@@ -269,6 +410,12 @@ public class LevelGenerator {
             tiles.add(TileFactory.createNormalTileWithFakes(e, currentLane * LANE_WIDTH, 0, tileZ, fakeOffsets));
         }
 
+        /**
+         * Determines the next lane for tile placement, ensuring flow and variety.
+         *
+         * @param lane The current lane index.
+         * @return The next lane index.
+         */
         private int getNextLane(int lane) {
             int move;
             if (consecutiveInLane >= 2) {

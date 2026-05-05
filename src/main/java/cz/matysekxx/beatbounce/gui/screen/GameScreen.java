@@ -8,7 +8,6 @@ import cz.matysekxx.beatbounce.model.level.LevelGenerator;
 import javax.swing.*;
 import java.awt.*;
 import java.nio.file.Path;
-import java.util.concurrent.CompletableFuture;
 
 public class GameScreen extends Screen {
     private final LoadingPanel loadingPanel;

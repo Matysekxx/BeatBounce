@@ -1,7 +1,7 @@
 package cz.matysekxx.beatbounce.util;
 
-import java.util.function.Supplier;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /// A thread-safe container for a value that is computed lazily.
 ///
@@ -44,7 +44,7 @@ public class Lazy<T> {
 
     /// Creates a new lazy instance.
     ///
-    /// @param <T> The type of the value.
+    /// @param <T>      The type of the value.
     /// @param supplier The provider function.
     /// @return A new [Lazy] container.
     public static <T> Lazy<T> of(Supplier<T> supplier) {

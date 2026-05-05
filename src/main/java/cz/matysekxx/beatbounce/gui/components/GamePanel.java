@@ -201,16 +201,7 @@ public class GamePanel extends JPanel implements Runnable {
             }
             renderGame();
 
-            final long timeTakenNanos = System.nanoTime() - loopStartTime;
-            final long sleepNanos = optimalTimeNanos - timeTakenNanos;
-
-            if (sleepNanos > 0) {
-                final long targetTime = System.nanoTime() + sleepNanos;
-                if (sleepNanos > 2_000_000L) {
-                    LockSupport.parkNanos(sleepNanos - 2_000_000L);
-                }
-                while (System.nanoTime() < targetTime);
-            }
+            RenderUtils.delay(optimalTimeNanos, loopStartTime);
         }
     }
 
@@ -238,7 +229,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         if (gameModel.getGameState() != GameState.FINISHED) {
             drawEnvironment(g2d, w, h, horizonY, time);
-            drawGameObjects(g2d, w, h);
+            drawGameObjects(g2d);
             uiRenderer.drawProgressBar(g2d, w, h);
             uiRenderer.drawScore(g2d, w, scorePopAlpha);
         }
@@ -334,7 +325,7 @@ public class GamePanel extends JPanel implements Runnable {
         g2d.drawArc(cx - (int) rx, cy - ry, (int) (rx * 2), ry * 2, startAngle, arcAngle);
     }
 
-    private void drawGameObjects(Graphics2D g2d, int width, int height) {
+    private void drawGameObjects(Graphics2D g2d) {
         if (gameModel == null || gameModel.getGameState() != GameState.FINISHED) {
             final List<AbstractTile> tiles = level.tiles();
             for (int i = tiles.size() - 1; i >= 0; i--) {

@@ -72,33 +72,24 @@ public class IntroPanel extends JPanel implements Runnable {
     public void run() {
         final long optimalTimeNanos = 1_000_000_000L / Settings.targetFps;
         long lastTime = System.nanoTime();
-        
+
         while (running) {
             final long loopStartTime = System.nanoTime();
             updateParticleCount();
-            
+
             final float dt = (loopStartTime - lastTime) / 1_000_000_000f;
             lastTime = loopStartTime;
             time += dt;
 
             final int w = (cachedW > 0) ? cachedW : (getWidth() > 0 ? getWidth() : 1920);
             final int h = (cachedH > 0) ? cachedH : (getHeight() > 0 ? getHeight() : 1080);
-            
+
             if (Settings.particlesEnabled) {
-                Particle.updateAll(particles, count,dt, w, h);
+                Particle.updateAll(particles, count, dt, w, h);
             }
             repaint();
 
-            final long timeTakenNanos = System.nanoTime() - loopStartTime;
-            final long sleepNanos = optimalTimeNanos - timeTakenNanos;
-
-            if (sleepNanos > 0) {
-                final long targetTime = System.nanoTime() + sleepNanos;
-                if (sleepNanos > 2_000_000L) {
-                    LockSupport.parkNanos(sleepNanos - 2_000_000L);
-                }
-                while (System.nanoTime() < targetTime);
-            }
+            RenderUtils.delay(optimalTimeNanos, loopStartTime);
         }
     }
 
@@ -138,7 +129,7 @@ public class IntroPanel extends JPanel implements Runnable {
         RenderUtils.drawTitle(g2d, w, h, "BEAT BOUNCE");
 
         g2d.dispose();
-        
+
         if (Settings.vsync) {
             Toolkit.getDefaultToolkit().sync();
         }

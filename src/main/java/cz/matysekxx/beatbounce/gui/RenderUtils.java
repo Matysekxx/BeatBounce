@@ -5,6 +5,7 @@ import cz.matysekxx.beatbounce.configuration.Settings;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Random;
+import java.util.concurrent.locks.LockSupport;
 
 public final class RenderUtils {
     public final static Color cyan = new Color(0, 255, 220);
@@ -82,6 +83,19 @@ public final class RenderUtils {
         for (int[] star : starCache) {
             g2d.setColor(RenderCache.whiteWithAlpha(star[2]));
             g2d.fillRect(star[0] % w, star[1] % h, 1, 1);
+        }
+    }
+
+    public static void delay(long optimalTimeNanos, long loopStartTime) {
+        final long timeTakenNanos = System.nanoTime() - loopStartTime;
+        final long sleepNanos = optimalTimeNanos - timeTakenNanos;
+
+        if (sleepNanos > 0) {
+            final long targetTime = System.nanoTime() + sleepNanos;
+            if (sleepNanos > 2_000_000L) {
+                LockSupport.parkNanos(sleepNanos - 2_000_000L);
+            }
+            while (System.nanoTime() < targetTime) ;
         }
     }
 

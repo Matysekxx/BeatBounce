@@ -60,14 +60,18 @@ public final class RenderUtils {
             bgOrb3 = new RadialGradientPaint(w * 0.5f, h * 0.5f, w * 0.9f, new float[]{0f, 1f}, new Color[]{new Color(80, 0, 240, 18), new Color(0, 0, 0, 0)});
         }
 
+        drawOrbs(g2d, w, h, bgOrb1, bgOrb2, bgOrb3);
+
+        applyNoiseOverlay(g2d, 0, 0, w, h);
+    }
+
+    public static void drawOrbs(Graphics2D g2d, int w, int h, RadialGradientPaint bgOrb1, RadialGradientPaint bgOrb2, RadialGradientPaint bgOrb3) {
         g2d.setPaint(bgOrb1);
         g2d.fillRect(0, 0, w, h);
         g2d.setPaint(bgOrb2);
         g2d.fillRect(0, 0, w, h);
         g2d.setPaint(bgOrb3);
         g2d.fillRect(0, 0, w, h);
-
-        applyNoiseOverlay(g2d, 0, 0, w, h);
     }
 
     private static void drawStars(Graphics2D g2d, int w, int h) {
@@ -166,8 +170,4 @@ public final class RenderUtils {
         g2.setComposite(originalComposite);
     }
 
-    public static void drawTitle(Graphics2D g2d, int w, int h, String text) {
-        g2d.setFont(RenderCache.MONO_ITALIC_BOLD_130);
-        RenderUtils.drawText(g2d, text, (w - g2d.getFontMetrics().stringWidth(text)) >> 1, h >> 2, RenderUtils.cyan);
-    }
 }

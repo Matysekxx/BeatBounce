@@ -1,6 +1,7 @@
 package cz.matysekxx.beatbounce.gui;
 
 import java.awt.*;
+import java.awt.geom.GeneralPath;
 
 public final class RenderCache {
     public static final BasicStroke STROKE_1 = new BasicStroke(1.0f);
@@ -26,6 +27,7 @@ public final class RenderCache {
     public static final Font MONO_ITALIC_BOLD_72 = new Font("Monospaced", Font.BOLD | Font.ITALIC, 72);
     public static final Font MONO_ITALIC_BOLD_78 = new Font("Monospaced", Font.BOLD | Font.ITALIC, 78);
     public static final Font MONO_ITALIC_BOLD_130 = new Font("Monospaced", Font.BOLD | Font.ITALIC, 130);
+    public static final Font MONO_ITALIC_BOLD_150 = new Font("Monospaced", Font.BOLD | Font.ITALIC, 150);
 
     public static final Font SANS_PLAIN_13 = new Font("SansSerif", Font.PLAIN, 13);
     public static final Font SANS_PLAIN_14 = new Font("SansSerif", Font.PLAIN, 14);
@@ -36,6 +38,10 @@ public final class RenderCache {
     public static final Font SANS_BOLD_15 = new Font("SansSerif", Font.BOLD, 15);
     public static final Font SANS_BOLD_16 = new Font("SansSerif", Font.BOLD, 16);
     public static final Font SANS_BOLD_28 = new Font("SansSerif", Font.BOLD, 28);
+
+    public static final Shape SHAPE_TRIANGLE;
+    public static final Shape SHAPE_DIAMOND;
+    public static final Shape SHAPE_HEXAGON;
 
     private static final Color[] CYAN_ALPHA = new Color[256];
     private static final Color[] MAGENTA_ALPHA = new Color[256];
@@ -53,6 +59,32 @@ public final class RenderCache {
             WHITE_ALPHA[i] = new Color(255, 255, 255, i);
             BLACK_ALPHA[i] = new Color(0, 0, 0, i);
         }
+
+        final GeneralPath t = new GeneralPath();
+        t.moveTo(0, -1);
+        t.lineTo(0.866f, 0.5f);
+        t.lineTo(-0.866f, 0.5f);
+        t.closePath();
+        SHAPE_TRIANGLE = t;
+
+        final GeneralPath d = new GeneralPath();
+        d.moveTo(0, -1);
+        d.lineTo(0.6f, 0);
+        d.lineTo(0, 1);
+        d.lineTo(-0.6f, 0);
+        d.closePath();
+        SHAPE_DIAMOND = d;
+
+        final GeneralPath h = new GeneralPath();
+        for (int j = 0; j < 6; j++) {
+            final float angle = (float) (Math.PI / 3) * j - (float) (Math.PI / 6);
+            final float px = (float) Math.cos(angle) * 0.7f;
+            final float py = (float) Math.sin(angle) * 0.7f;
+            if (j == 0) h.moveTo(px, py);
+            else h.lineTo(px, py);
+        }
+        h.closePath();
+        SHAPE_HEXAGON = h;
     }
 
     private RenderCache() {

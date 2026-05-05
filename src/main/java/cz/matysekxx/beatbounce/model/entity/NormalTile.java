@@ -12,6 +12,11 @@ import java.awt.*;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * The {@code NormalTile} class represents a static tile in the 3D game space.
+ * It can optionally have "fake lanes" which are purely visual elements that appear alongside the tile.
+ * It extends {@link AbstractTile}.
+ */
 public class NormalTile extends AbstractTile {
     private float hueOffset;
     private List<Integer> fakeLaneOffsets;
@@ -20,10 +25,22 @@ public class NormalTile extends AbstractTile {
     private Color baseColorAlpha180;
     private Color baseColorAlpha230;
 
+    /**
+     * Default constructor for {@code NormalTile}.
+     */
     protected NormalTile() {
         super();
     }
 
+    /**
+     * Constructs a new {@code NormalTile} with specified parameters.
+     *
+     * @param beatEvent       the {@link BeatEvent} associated with this tile
+     * @param x               the horizontal position
+     * @param y               the vertical position
+     * @param z               the depth position
+     * @param fakeLaneOffsets a list of integer offsets for rendering fake lanes
+     */
     @JsonCreator
     public NormalTile(
             @JsonProperty("beatEvent") BeatEvent beatEvent,
@@ -37,14 +54,32 @@ public class NormalTile extends AbstractTile {
         calculateColors();
     }
 
+    /**
+     * Constructs a new {@code NormalTile} at the specified point and depth.
+     *
+     * @param beatEvent the {@link BeatEvent} associated with this tile
+     * @param point     the (x, y) coordinates of the tile
+     * @param z         the depth position
+     */
     public NormalTile(BeatEvent beatEvent, Point point, double z) {
         this(beatEvent, point.x, point.y, z, Collections.emptyList());
     }
 
+    /**
+     * Constructs a new {@code NormalTile} at the specified point and depth with fake lanes.
+     *
+     * @param beatEvent       the {@link BeatEvent} associated with this tile
+     * @param point           the (x, y) coordinates of the tile
+     * @param z               the depth position
+     * @param fakeLaneOffsets a list of integer offsets for rendering fake lanes
+     */
     public NormalTile(BeatEvent beatEvent, Point point, double z, List<Integer> fakeLaneOffsets) {
         this(beatEvent, point.x, point.y, z, fakeLaneOffsets);
     }
 
+    /**
+     * Calculates the colors used for rendering based on the hue offset.
+     */
     private void calculateColors() {
         final float h = 0.33f + (hueOffset * 0.1f);
         this.baseColor = Color.getHSBColor(h, 1.0f, 1.0f);
@@ -54,10 +89,22 @@ public class NormalTile extends AbstractTile {
         this.baseColorAlpha230 = RenderCache.customColorWithAlpha(baseColor, 230);
     }
 
+    /**
+     * Returns the list of fake lane offsets.
+     *
+     * @return a {@link List} of integers representing offsets
+     */
     public List<Integer> getFakeLaneOffsets() {
         return fakeLaneOffsets;
     }
 
+    /**
+     * Renders the tile and its fake lanes in a 3D perspective.
+     *
+     * @param g2d        the graphics context to paint on
+     * @param cam        the {@link Camera3D} used for perspective calculations
+     * @param windowData the {@link WindowData} containing screen dimensions
+     */
     @Override
     public void paint3D(Graphics2D g2d, Camera3D cam, WindowData windowData) {
         if (fakeLaneOffsets != null && !fakeLaneOffsets.isEmpty()) {
@@ -77,6 +124,12 @@ public class NormalTile extends AbstractTile {
         super.paint3D(g2d, cam, windowData);
     }
 
+    /**
+     * Draws a "fake lane" polygon with reduced opacity.
+     *
+     * @param g2d     the graphics context to paint on
+     * @param polygon the polygon representing the fake lane
+     */
     private void drawFakePolygon(Graphics2D g2d, Polygon polygon) {
         g2d.setColor(baseColorAlpha120);
         g2d.fillPolygon(polygon);
@@ -90,6 +143,13 @@ public class NormalTile extends AbstractTile {
         g2d.setStroke(RenderCache.STROKE_1);
     }
 
+    /**
+     * Renders the main 3D polygon of the tile.
+     * Includes cyan neon effects if graphics quality is not set to LOW.
+     *
+     * @param g2d     the graphics context to paint on
+     * @param polygon the polygon representing the tile's shape on screen
+     */
     @Override
     public void paint3D(Graphics2D g2d, Polygon polygon) {
         if (!Settings.graphicsQuality.equals("LOW")) {

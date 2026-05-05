@@ -8,6 +8,11 @@ import cz.matysekxx.beatbounce.gui.WindowData;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 
+/**
+ * The {@code Orb} class represents a collectible item in the game world.
+ * Orbs have a 3D position (x, y, z) and a radius.
+ * They implement {@link Paintable} for 3D rendering with pulsing glow effects.
+ */
 public class Orb implements Paintable {
     private final double x;
     private final double y;
@@ -18,6 +23,14 @@ public class Orb implements Paintable {
     private final Ellipse2D.Double highlightEllipse;
     private boolean collected;
 
+    /**
+     * Constructs a new {@code Orb} with specified coordinates and radius.
+     *
+     * @param x      the horizontal position
+     * @param y      the vertical position
+     * @param z      the depth position
+     * @param radius the radius of the orb
+     */
     public Orb(double x, double y, double z, double radius) {
         this.x = x;
         this.y = y;
@@ -29,30 +42,68 @@ public class Orb implements Paintable {
         this.highlightEllipse = new Ellipse2D.Double();
     }
 
+    /**
+     * Returns the horizontal position of the orb.
+     *
+     * @return the {@code x} coordinate
+     */
     public double getX() {
         return x;
     }
 
+    /**
+     * Returns the vertical position of the orb.
+     *
+     * @return the {@code y} coordinate
+     */
     public double getY() {
         return y;
     }
 
+    /**
+     * Returns the depth position of the orb.
+     *
+     * @return the {@code z} coordinate
+     */
     public double getZ() {
         return z;
     }
 
+    /**
+     * Returns the radius of the orb.
+     *
+     * @return the {@code radius} value
+     */
     public double getRadius() {
         return radius;
     }
 
+    /**
+     * Returns whether the orb has been collected by the player.
+     *
+     * @return {@code true} if collected, {@code false} otherwise
+     */
     public boolean isCollected() {
         return collected;
     }
 
+    /**
+     * Sets the collection status of the orb.
+     *
+     * @param collected the new collection status
+     */
     public void setCollected(boolean collected) {
         this.collected = collected;
     }
 
+    /**
+     * Renders the orb in 3D space.
+     * Includes a pulsing glow effect if graphics quality is not set to LOW.
+     *
+     * @param g2d the graphics context to paint on
+     * @param cam the {@link Camera3D} used for perspective calculations
+     * @param win the {@link WindowData} containing screen dimensions
+     */
     @Override
     public void paint3D(Graphics2D g2d, Camera3D cam, WindowData win) {
         if (collected) return;
@@ -90,6 +141,13 @@ public class Orb implements Paintable {
         g2d.fill(highlightEllipse);
     }
 
+    /**
+     * Implementation of {@link Paintable#paint3D(Graphics2D, Polygon)}.
+     * Currently does nothing for {@code Orb}.
+     *
+     * @param g2d     the graphics context
+     * @param polygon the polygon to paint
+     */
     @Override
     public void paint3D(Graphics2D g2d, Polygon polygon) {
 

@@ -148,7 +148,7 @@ public class IntroPanel extends JPanel implements Runnable {
 
         drawIntroGrid(g2d, w, h, horizonY, globalHue);
         drawFloatingShapes(g2d, w, horizonY, globalHue);
-        
+
         final Color horizonColor = Color.getHSBColor(globalHue, 0.6f, 1.0f);
         g2d.setColor(RenderCache.customColorWithAlpha(horizonColor, 180));
         g2d.setStroke(RenderCache.STROKE_3);
@@ -187,7 +187,7 @@ public class IntroPanel extends JPanel implements Runnable {
             g2d.translate(x, y);
             g2d.rotate(rotation);
             g2d.scale(size, size);
-            
+
             final Color shapeColor = Color.getHSBColor((globalHue + i * 0.06f) % 1.0f, 0.65f, 1.0f);
             final Shape shape = getShape(i);
 
@@ -204,7 +204,7 @@ public class IntroPanel extends JPanel implements Runnable {
             final Color fillColor = Color.getHSBColor((globalHue + 0.5f) % 1.0f, 0.8f, 1.0f);
             g2d.setColor(RenderCache.customColorWithAlpha(fillColor, (int) (255 * alpha * 0.2f)));
             g2d.fill(shape);
-            
+
             g2d.setTransform(old);
         }
     }
@@ -257,14 +257,14 @@ public class IntroPanel extends JPanel implements Runnable {
     private void drawTitle(Graphics2D g2d, int w, int h, float globalHue) {
         final String text = "BEAT BOUNCE";
         g2d.setFont(RenderCache.MONO_ITALIC_BOLD_150);
-        
+
         final FontMetrics fm = g2d.getFontMetrics();
         final int textWidth = fm.stringWidth(text);
         final int drawX = (w - textWidth) / 2;
 
         final float floatingOffset = (float) (Math.sin(time * 0.8) * 15.0);
         final int drawY = (int) (h / 4.f + 40 + floatingOffset);
-        
+
         final double pulse = (Math.sin(System.currentTimeMillis() / 400.0) + 1.0) / 2.0;
 
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -290,10 +290,10 @@ public class IntroPanel extends JPanel implements Runnable {
                 g2d.drawString(text, drawX + gx, drawY + j + gy);
             }
         }
-        
+
         g2d.setColor(RenderCache.blackWithAlpha(150));
         g2d.drawString(text, drawX + 3 + gx, drawY + 3 + gy);
-        
+
         g2d.setColor(faceColor);
         g2d.drawString(text, drawX + gx, drawY + gy);
     }
@@ -322,7 +322,7 @@ public class IntroPanel extends JPanel implements Runnable {
             if (lineY > horizonY && lineY <= h) {
                 final int alpha = (int) (140 * depth);
                 final Color horizGridColor = Color.getHSBColor((globalHue + (z % 5) * 0.05f) % 1.0f, 0.8f, 1.0f);
-                
+
                 g2d.setColor(RenderCache.customColorWithAlpha(horizGridColor, Math.min(255, Math.max(0, alpha))));
                 g2d.drawLine(0, lineY, w, lineY);
             }

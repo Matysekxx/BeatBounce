@@ -1,6 +1,7 @@
 package cz.matysekxx.beatbounce.gui.components;
 
 import cz.matysekxx.beatbounce.gui.RenderUtils;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -32,8 +33,8 @@ public class SkinsPanel extends JPanel {
         Graphics2D g2 = (Graphics2D) g.create();
         RenderUtils.initGraphics2D(g2);
         g2.setPaint(new LinearGradientPaint(0, 0, getWidth(), getHeight(),
-            new float[]{0f, 1f},
-            new Color[]{new Color(15, 15, 35, 180), new Color(10, 10, 25, 100)}));
+                new float[]{0f, 1f},
+                new Color[]{new Color(15, 15, 35, 180), new Color(10, 10, 25, 100)}));
         g2.fillRoundRect(0, 0, getWidth(), getHeight(), 24, 24);
         g2.setColor(new Color(0, 255, 255, 30));
         g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 24, 24);

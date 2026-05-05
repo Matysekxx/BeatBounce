@@ -41,7 +41,7 @@ class AudiusClientTest {
      * Tests that {@link AudiusClient#searchTracks(String)} correctly builds the search URI
      * and returns the expected JSON response.
      *
-     * @throws ExecutionException if the future completed exceptionally.
+     * @throws ExecutionException   if the future completed exceptionally.
      * @throws InterruptedException if the current thread was interrupted while waiting.
      */
     @Test
@@ -67,7 +67,7 @@ class AudiusClientTest {
      * Tests that {@link AudiusClient#downloadMusic(String, String)} correctly downloads music
      * and ensures the destination directory exists.
      *
-     * @throws ExecutionException if the future completed exceptionally.
+     * @throws ExecutionException   if the future completed exceptionally.
      * @throws InterruptedException if the current thread was interrupted while waiting.
      */
     @Test

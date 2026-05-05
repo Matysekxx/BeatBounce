@@ -22,7 +22,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.List;
-import java.util.concurrent.locks.LockSupport;
 
 /**
  * The main panel for the game, handling rendering, user input, and the game loop.
@@ -216,6 +215,44 @@ public class GamePanel extends JPanel implements Runnable {
         });
     }
 
+    @Override
+    public void run() {
+        final long optimalTimeNanos = 1_000_000_000L / Settings.targetFps;
+        while (running) {
+            final long loopStartTime = System.nanoTime();
+            final double deltaTime = (loopStartTime - lastFrameTime) / 1_000_000_000.0;
+            lastFrameTime = loopStartTime;
+
+            final double currentTime = (clip != null && clip.isRunning()) ? clip.getMicrosecondPosition() / 1_000_000.0 : 0;
+            gameModel.update(currentTime, deltaTime);
+            updateCursorVisibility();
+
+            final int currentScore = gameModel.getScore();
+            if (currentScore != lastScore) {
+                scorePopAlpha = 1.0f;
+                lastScore = currentScore;
+            }
+
+            if (scorePopAlpha > 0) {
+                scorePopAlpha -= (float) (deltaTime * 3.0);
+                if (scorePopAlpha < 0) scorePopAlpha = 0;
+            }
+
+            if (Settings.showFps) {
+                frames++;
+                final long nowTime = System.currentTimeMillis();
+                if (nowTime - lastFpsTime >= 1000) {
+                    currentUpdateFps = frames;
+                    frames = 0;
+                    lastFpsTime = nowTime;
+                }
+            }
+            renderGame();
+
+            RenderUtils.delay(optimalTimeNanos, loopStartTime);
+        }
+    }
+
     /**
      * Starts the game loop.
      */
@@ -394,8 +431,8 @@ public class GamePanel extends JPanel implements Runnable {
 
         final int ry = cy + (int) (Math.sin(t * 0.4) * 8);
 
-        drawRing(g2d, cx, ry, r * 1.8f, 28, 0, 180, new Color(200, 0, 255, 60), 1f);
-        drawRing(g2d, cx, ry, r * 1.4f, 18, 0, 180, new Color(0, 255, 255, 40), 1f);
+        drawRing(g2d, cx, ry, r * 1.8f, 28, 0, new Color(200, 0, 255, 60), 1f);
+        drawRing(g2d, cx, ry, r * 1.4f, 18, 0, new Color(0, 255, 255, 40), 1f);
 
         g2d.setPaint(new RadialGradientPaint(cx - r / 2.5f, cy - r / 2.5f, r * 1.5f, new float[]{0f, 1f}, new Color[]{new Color(45, 15, 80), new Color(10, 0, 25)}));
         g2d.fillOval(cx - r, cy - r, r * 2, r * 2);
@@ -405,9 +442,9 @@ public class GamePanel extends JPanel implements Runnable {
             g2d.setStroke(RenderCache.STROKE_2_5);
             g2d.drawOval(cx - r, cy - r, r * 2, r * 2);
 
-            drawRing(g2d, cx, ry, r * 1.4f, 18, 180, 180, RenderCache.cyanWithAlpha((int) (180 + 75 * pulse)), 2f);
-            drawRing(g2d, cx, ry, r * 1.8f, 28, 180, 180, RenderCache.magentaWithAlpha((int) (140 + 60 * pulse)), 2.5f);
-            drawRing(g2d, cx, ry, r * 1.8f, 28, 180, 180, new Color(255, 200, 255, 200), 1f);
+            drawRing(g2d, cx, ry, r * 1.4f, 18, 180, RenderCache.cyanWithAlpha((int) (180 + 75 * pulse)), 2f);
+            drawRing(g2d, cx, ry, r * 1.8f, 28, 180, RenderCache.magentaWithAlpha((int) (140 + 60 * pulse)), 2.5f);
+            drawRing(g2d, cx, ry, r * 1.8f, 28, 180, new Color(255, 200, 255, 200), 1f);
         }
 
         g2d.setStroke(RenderCache.STROKE_1);
@@ -422,16 +459,15 @@ public class GamePanel extends JPanel implements Runnable {
      * @param rx         Horizontal radius.
      * @param ry         Vertical radius.
      * @param startAngle Arc start angle.
-     * @param arcAngle   Arc angular extent.
      * @param color      Color of the ring.
      * @param stroke     Thickness of the line.
      */
     private void drawRing(
-            Graphics2D g2d, int cx, int cy, float rx, int ry, int startAngle, int arcAngle, Color color, float stroke
+            Graphics2D g2d, int cx, int cy, float rx, int ry, int startAngle, Color color, float stroke
     ) {
         g2d.setColor(color);
         g2d.setStroke(new BasicStroke(stroke));
-        g2d.drawArc(cx - (int) rx, cy - ry, (int) (rx * 2), ry * 2, startAngle, arcAngle);
+        g2d.drawArc(cx - (int) rx, cy - ry, (int) (rx * 2), ry * 2, startAngle, 180);
     }
 
     /**
@@ -466,17 +502,16 @@ public class GamePanel extends JPanel implements Runnable {
      * Projects 3D world coordinates to 2D screen coordinates.
      *
      * @param x        World X.
-     * @param y        World Y.
      * @param z        World Z.
      * @param width    Screen width.
      * @param horizonY Screen vertical center.
      * @return A 2D Point, or null if the coordinate is behind the camera.
      */
-    private Point projectPoint(double x, double y, double z, int width, int horizonY) {
+    private Point projectPoint(double x, double z, int width, int horizonY) {
         final double scale = cam.getScale(z);
         if (scale <= 0) return null;
         final int px = (int) (width / 2.0 + (x - cam.getX()) * scale);
-        final int py = (int) (horizonY + ((y - cam.getY()) * scale));
+        final int py = (int) (horizonY + (((double) 150 - cam.getY()) * scale));
         return new Point(px, py);
     }
 
@@ -492,7 +527,7 @@ public class GamePanel extends JPanel implements Runnable {
         for (int z = 0; z < 3000; z += 150) {
             final double distance = z - (cam.getZ() % 150);
             if (distance <= 0) continue;
-            final Point p = projectPoint(0, 150, cam.getZ() + distance, width, horizonY);
+            final Point p = projectPoint(0, cam.getZ() + distance, width, horizonY);
 
             if (p != null && p.y >= horizonY && p.y <= height) {
                 final int alpha = (int) Math.max(0, Math.min(120, 255 - (distance / 3000.0 * 255)));
@@ -505,8 +540,8 @@ public class GamePanel extends JPanel implements Runnable {
         g2d.setStroke(RenderCache.STROKE_2);
         for (int lx : laneXs) {
 
-            final Point start = projectPoint(lx, 150, cam.getZ() + 100, width, horizonY);
-            final Point end = projectPoint(lx, 150, cam.getZ() + 3000, width, horizonY);
+            final Point start = projectPoint(lx, cam.getZ() + 100, width, horizonY);
+            final Point end = projectPoint(lx, cam.getZ() + 3000, width, horizonY);
 
             if (start == null || end == null) continue;
 

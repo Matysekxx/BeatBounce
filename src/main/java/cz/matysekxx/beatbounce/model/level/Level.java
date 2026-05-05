@@ -16,10 +16,10 @@ import java.util.Optional;
 /**
  * Represents a game level, containing tile data, audio data, and metadata.
  *
- * @param tiles         the list of tiles in the level
- * @param audioData     the audio data associated with the level (ignored in JSON)
- * @param songName      the name of the song
- * @param stars         the difficulty rating in stars
+ * @param tiles     the list of tiles in the level
+ * @param audioData the audio data associated with the level (ignored in JSON)
+ * @param songName  the name of the song
+ * @param stars     the difficulty rating in stars
  */
 public record Level(List<AbstractTile> tiles, @JsonIgnore AudioData audioData, String songName, int stars) {
     private static final ObjectMapper objectMapper = new ObjectMapper();

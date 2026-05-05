@@ -5,11 +5,11 @@ import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
 
 /**
  * The main execution orchestrator for the BeatBounce application.
- *
+ * <p>
  * This class implements the {@link Runnable} interface and follows the **Singleton**
  * design pattern to ensure a single point of control for application lifecycle
  * events, such as starting the UI and managing screens.
- *
+ * <p>
  * ### Example Usage:
  * <pre>{@code
  * // Starting the application
@@ -19,15 +19,19 @@ import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
  */
 public class Execute implements Runnable {
 
-    /** The single static instance of the Execute class. */
+    /**
+     * The single static instance of the Execute class.
+     */
     private static final Execute singleton = new Execute();
 
-    /** Manager responsible for handling UI screen transitions. */
+    /**
+     * Manager responsible for handling UI screen transitions.
+     */
     private final ScreenManager screenManager;
 
     /**
      * Private constructor to enforce the Singleton pattern.
-     *
+     * <p>
      * Initializes the {@link ScreenManager} which will be used throughout
      * the application's lifecycle.
      */
@@ -46,7 +50,7 @@ public class Execute implements Runnable {
 
     /**
      * Starts the application's primary execution flow.
-     *
+     * <p>
      * This method is responsible for bootstrapping the initial user interface
      * by instructing the {@link ScreenManager} to display the {@link IntroScreen}.
      */

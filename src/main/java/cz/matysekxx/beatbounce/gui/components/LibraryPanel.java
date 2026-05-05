@@ -1,7 +1,6 @@
 package cz.matysekxx.beatbounce.gui.components;
 
 import cz.matysekxx.beatbounce.api.AudiusClient;
-import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.screen.GameScreen;
 import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
@@ -26,13 +25,21 @@ import java.util.stream.Stream;
  * It allows users to view downloaded songs and add new local audio files.
  */
 public class LibraryPanel extends JPanel {
-    /** Logger for this class. */
+    /**
+     * Logger for this class.
+     */
     private static final Logger LOG = Logger.getLogger(LibraryPanel.class.getName());
-    /** Client used to interact with the Audius API. */
+    /**
+     * Client used to interact with the Audius API.
+     */
     private final AudiusClient audiusClient;
-    /** Manager used to switch between different screens. */
+    /**
+     * Manager used to switch between different screens.
+     */
     private final ScreenManager screenManager;
-    /** Panel that contains the list of song rows. */
+    /**
+     * Panel that contains the list of song rows.
+     */
     private final JPanel listPanel;
 
     /**
@@ -89,8 +96,8 @@ public class LibraryPanel extends JPanel {
         Graphics2D g2 = (Graphics2D) g.create();
         RenderUtils.initGraphics2D(g2);
         g2.setPaint(new LinearGradientPaint(0, 0, getWidth(), getHeight(),
-            new float[]{0f, 1f},
-            new Color[]{new Color(15, 15, 35, 180), new Color(10, 10, 25, 100)}));
+                new float[]{0f, 1f},
+                new Color[]{new Color(15, 15, 35, 180), new Color(10, 10, 25, 100)}));
         g2.fillRoundRect(0, 0, getWidth(), getHeight(), 24, 24);
         g2.setColor(new Color(0, 255, 255, 30));
         g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 24, 24);
@@ -110,15 +117,15 @@ public class LibraryPanel extends JPanel {
                 Graphics2D g2 = (Graphics2D) g.create();
                 RenderUtils.initGraphics2D(g2);
                 boolean hover = getModel().isRollover();
-                
+
                 g2.setColor(hover ? RenderUtils.cyan : new Color(255, 255, 255, 15));
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
-                
+
                 if (!hover) {
                     g2.setColor(new Color(0, 255, 255, 60));
                     g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 12, 12);
                 }
-                
+
                 g2.setColor(hover ? Color.BLACK : Color.WHITE);
                 FontMetrics fm = g2.getFontMetrics();
                 g2.drawString(getText(), (getWidth() - fm.stringWidth(getText())) / 2, (getHeight() + fm.getAscent() - fm.getDescent()) / 2);
@@ -224,14 +231,22 @@ public class LibraryPanel extends JPanel {
      * A UI component representing a single song in the library.
      */
     private class LocalTrackRow extends JPanel {
-        /** The difficulty level of the song (1-5). */
+        /**
+         * The difficulty level of the song (1-5).
+         */
         private final int stars;
-        /** Whether the mouse is currently hovering over this row. */
-        private boolean hovered = false;
-        /** The display name of the song file (without extension). */
+        /**
+         * The display name of the song file (without extension).
+         */
         private final String fileName;
-        /** The best score achieved by the user on this song. */
+        /**
+         * The best score achieved by the user on this song.
+         */
         private final String bestScore;
+        /**
+         * Whether the mouse is currently hovering over this row.
+         */
+        private boolean hovered = false;
 
         /**
          * Constructs a LocalTrackRow for the given song path.
@@ -249,14 +264,24 @@ public class LibraryPanel extends JPanel {
             this.setPreferredSize(new Dimension(0, 90));
             this.setMaximumSize(new Dimension(Integer.MAX_VALUE, 90));
             this.setCursor(new Cursor(Cursor.HAND_CURSOR));
-            
+
             this.addMouseListener(new MouseAdapter() {
                 @Override
-                public void mouseEntered(MouseEvent e) { hovered = true; repaint(); }
+                public void mouseEntered(MouseEvent e) {
+                    hovered = true;
+                    repaint();
+                }
+
                 @Override
-                public void mouseExited(MouseEvent e) { hovered = false; repaint(); }
+                public void mouseExited(MouseEvent e) {
+                    hovered = false;
+                    repaint();
+                }
+
                 @Override
-                public void mousePressed(MouseEvent e) { launchGame(path, stars); }
+                public void mousePressed(MouseEvent e) {
+                    launchGame(path, stars);
+                }
             });
         }
 
@@ -269,8 +294,8 @@ public class LibraryPanel extends JPanel {
 
             if (hovered) {
                 g2.setPaint(new LinearGradientPaint(0, 0, w, 0,
-                    new float[]{0f, 1f},
-                    new Color[]{new Color(0, 255, 255, 45), new Color(0, 255, 255, 5)}));
+                        new float[]{0f, 1f},
+                        new Color[]{new Color(0, 255, 255, 45), new Color(0, 255, 255, 5)}));
             } else {
                 g2.setColor(new Color(255, 255, 255, 12));
             }
@@ -290,7 +315,7 @@ public class LibraryPanel extends JPanel {
             g2.setFont(new Font("SansSerif", Font.BOLD, 22));
             g2.setColor(Color.WHITE);
             g2.drawString(fileName, 100, 42);
-            
+
             g2.setFont(new Font("SansSerif", Font.PLAIN, 16));
             g2.setColor(new Color(180, 180, 200));
             final String subText = "Stars: " + "★".repeat(stars) + "☆".repeat(5 - stars);
@@ -301,7 +326,7 @@ public class LibraryPanel extends JPanel {
             final FontMetrics fmScore = g2.getFontMetrics();
             final int scoreW = fmScore.stringWidth(scoreText) + 24;
             final int scoreX = w - 170 - scoreW;
-            
+
             g2.setColor(new Color(255, 255, 255, 20));
             g2.fillRoundRect(scoreX, (h - 34) / 2, scoreW, 34, 10, 10);
             g2.setColor(RenderUtils.cyan);
@@ -310,10 +335,10 @@ public class LibraryPanel extends JPanel {
             final int btnW = 140, btnH = 50;
             final int bx = w - 155;
             final int by = (h - btnH) / 2;
-            
+
             g2.setColor(hovered ? RenderUtils.cyan : new Color(0, 200, 255));
             g2.fillRoundRect(bx, by, btnW, btnH, 14, 14);
-            
+
             g2.setColor(Color.BLACK);
             g2.setFont(new Font("SansSerif", Font.BOLD, 20));
             String playTxt = "PLAY";

@@ -12,9 +12,9 @@ public class Camera3D {
     /**
      * Constructs a new {@code Camera3D} with the specified position and field of view.
      *
-     * @param x the x-coordinate of the camera
-     * @param y the y-coordinate of the camera
-     * @param z the z-coordinate (depth) of the camera
+     * @param x           the x-coordinate of the camera
+     * @param y           the y-coordinate of the camera
+     * @param z           the z-coordinate (depth) of the camera
      * @param fieldOfView the field of view of the camera, affecting the perspective projection scale
      */
     public Camera3D(
@@ -36,6 +36,7 @@ public class Camera3D {
 
     /**
      * Sets the x-coordinate of the camera.
+     *
      * @param x the new x-coordinate
      */
     public void setX(double x) {
@@ -51,6 +52,7 @@ public class Camera3D {
 
     /**
      * Sets the y-coordinate of the camera.
+     *
      * @param y the new y-coordinate
      */
     public void setY(double y) {
@@ -66,6 +68,7 @@ public class Camera3D {
 
     /**
      * Sets the z-coordinate (depth) of the camera.
+     *
      * @param z the new z-coordinate
      */
     public void setZ(double z) {

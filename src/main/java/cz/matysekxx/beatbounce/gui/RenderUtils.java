@@ -12,23 +12,41 @@ import java.util.concurrent.locks.LockSupport;
  * It provides methods for drawing backgrounds, floors, text with bloom effects, and more.
  */
 public final class RenderUtils {
-    /** The standard cyan color used in the UI. */
+    /**
+     * The standard cyan color used in the UI.
+     */
     public final static Color cyan = new Color(0, 255, 220);
-    /** The standard green color used in the UI. */
+    /**
+     * The standard green color used in the UI.
+     */
     public final static Color green = new Color(50, 255, 50);
-    /** The standard blue color used in the UI. */
+    /**
+     * The standard blue color used in the UI.
+     */
     public final static Color blue = new Color(0, 150, 255);
-    /** The standard purple color used in the UI. */
+    /**
+     * The standard purple color used in the UI.
+     */
     public final static Color purple = new Color(191, 0, 255);
-    /** The standard yellow color used in the UI. */
+    /**
+     * The standard yellow color used in the UI.
+     */
     public final static Color yellow = new Color(255, 215, 0);
-    /** The width of the road in the game. */
+    /**
+     * The width of the road in the game.
+     */
     public static final int ROAD_WIDTH = 300;
-    /** A blank cursor used to hide the mouse cursor. */
+    /**
+     * A blank cursor used to hide the mouse cursor.
+     */
     public static final Cursor blankCursor;
-    /** A dark background color. */
+    /**
+     * A dark background color.
+     */
     public static final Color BG_DARK = new Color(10, 10, 26);
-    /** A gray color used for text. */
+    /**
+     * A gray color used for text.
+     */
     public static final Color TEXT_GRAY = new Color(160, 160, 170);
     private static final Color BG_COLOR = new Color(8, 8, 12);
     private static final Color FLOOR_COLOR = new Color(3, 0, 10);

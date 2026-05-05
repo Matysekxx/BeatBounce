@@ -2,13 +2,11 @@ package cz.matysekxx.beatbounce.gui.screen;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.matysekxx.beatbounce.api.AudiusClient;
-import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.components.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 
 /**
  * The main menu screen of the BeatBounce application.
@@ -29,9 +27,8 @@ public class MainMenuScreen extends Screen {
     private final String[] buttonsTitles = {
             "SONGS", "LIBRARY", "SKINS", "SHOP", "SETTINGS"
     };
-    
-    private String activePanel = "SONGS";
     private final JPanel sidebar;
+    private String activePanel = "SONGS";
 
     /**
      * Constructs a new MainMenuScreen.
@@ -71,6 +68,27 @@ public class MainMenuScreen extends Screen {
         cardPanel.add(settingsPanel, "SETTINGS");
     }
 
+    private static JPanel getJPanel() {
+        final JPanel p = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                RenderUtils.initGraphics2D(g2);
+                g2.setPaint(new LinearGradientPaint(0, 0, getWidth(), 0,
+                        new float[]{0f, 1f},
+                        new Color[]{new Color(15, 15, 35, 220), new Color(10, 10, 25, 100)}));
+                g2.fillRect(0, 0, getWidth(), getHeight());
+                g2.setColor(new Color(0, 255, 255, 40));
+                g2.drawLine(getWidth() - 1, 0, getWidth() - 1, getHeight());
+                g2.dispose();
+            }
+        };
+        p.setPreferredSize(new Dimension(280, 0));
+        p.setLayout(new GridBagLayout());
+        p.setOpaque(false);
+        return p;
+    }
+
     private JPanel createSidebar() {
         final JPanel p = getJPanel();
 
@@ -103,41 +121,20 @@ public class MainMenuScreen extends Screen {
         return p;
     }
 
-    private static JPanel getJPanel() {
-        final JPanel p = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                RenderUtils.initGraphics2D(g2);
-                g2.setPaint(new LinearGradientPaint(0, 0, getWidth(), 0,
-                    new float[]{0f, 1f},
-                    new Color[]{new Color(15, 15, 35, 220), new Color(10, 10, 25, 100)}));
-                g2.fillRect(0, 0, getWidth(), getHeight());
-                g2.setColor(new Color(0, 255, 255, 40));
-                g2.drawLine(getWidth() - 1, 0, getWidth() - 1, getHeight());
-                g2.dispose();
-            }
-        };
-        p.setPreferredSize(new Dimension(280, 0));
-        p.setLayout(new GridBagLayout());
-        p.setOpaque(false);
-        return p;
-    }
-
     private JButton createSidebarButton(String title) {
         final JButton btn = new JButton(title) {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 RenderUtils.initGraphics2D(g2);
-                
+
                 boolean active = activePanel.equals(getText());
                 if (active || getModel().isRollover()) {
                     g2.setPaint(new LinearGradientPaint(0, 0, getWidth(), 0,
-                        new float[]{0f, 1f},
-                        new Color[]{new Color(0, 255, 255, 40), new Color(0, 255, 255, 0)}));
+                            new float[]{0f, 1f},
+                            new Color[]{new Color(0, 255, 255, 40), new Color(0, 255, 255, 0)}));
                     g2.fillRect(0, 0, getWidth(), getHeight());
-                    
+
                     g2.setColor(RenderUtils.cyan);
                     g2.fillRect(0, 5, 4, getHeight() - 10);
                 }
@@ -146,7 +143,7 @@ public class MainMenuScreen extends Screen {
                 g2.setColor(active ? Color.WHITE : (getModel().isRollover() ? RenderUtils.cyan : new Color(200, 200, 220)));
                 FontMetrics fm = g2.getFontMetrics();
                 g2.drawString(getText(), 30, (getHeight() + fm.getAscent() - fm.getDescent()) / 2);
-                
+
                 g2.dispose();
             }
         };
@@ -157,7 +154,7 @@ public class MainMenuScreen extends Screen {
         btn.setFocusPainted(false);
         btn.setHorizontalAlignment(SwingConstants.LEFT);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        
+
         btn.addActionListener(_ -> {
             if (title.equals("EXIT")) {
                 screenManager.showScreen(IntroScreen.class);
@@ -167,7 +164,7 @@ public class MainMenuScreen extends Screen {
                 sidebar.repaint();
             }
         });
-        
+
         return btn;
     }
 

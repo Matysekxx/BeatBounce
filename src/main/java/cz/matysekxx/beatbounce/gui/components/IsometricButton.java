@@ -25,13 +25,13 @@ public class IsometricButton extends JButton {
     /**
      * Constructs a new IsometricButton.
      *
-     * @param text       the text to display on the button
-     * @param frontSide  the color of the button's front side (depth)
-     * @param topFill    the color of the button's top surface
-     * @param topGlow    the color of the glow effect on the top surface
-     * @param depth      the depth of the 3D effect in pixels
-     * @param arc        the corner arc diameter for rounded edges
-     * @param size       the preferred size of the button
+     * @param text      the text to display on the button
+     * @param frontSide the color of the button's front side (depth)
+     * @param topFill   the color of the button's top surface
+     * @param topGlow   the color of the glow effect on the top surface
+     * @param depth     the depth of the 3D effect in pixels
+     * @param arc       the corner arc diameter for rounded edges
+     * @param size      the preferred size of the button
      */
     public IsometricButton(String text, Color frontSide, Color topFill, Color topGlow, int depth, int arc, Dimension size) {
         super(text);

@@ -3,7 +3,7 @@ package cz.matysekxx.beatbounce.gui;
 /**
  * A record representing window dimensions.
  *
- * @param width the width of the window
+ * @param width  the width of the window
  * @param height the height of the window
  */
 public record WindowData(
@@ -13,7 +13,7 @@ public record WindowData(
     /**
      * Factory method to create a new {@code WindowData} instance.
      *
-     * @param width the width of the window
+     * @param width  the width of the window
      * @param height the height of the window
      * @return a new {@link WindowData} instance
      */

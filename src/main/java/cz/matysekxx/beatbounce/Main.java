@@ -7,7 +7,7 @@ import javax.swing.*;
 
 /**
  * The entry point of the BeatBounce application.
- *
+ * <p>
  * This class handles the initial bootstrapping of the application, including
  * loading configurations, setting up low-level JVM rendering properties,
  * and launching the UI on the Event Dispatch Thread (EDT).
@@ -16,10 +16,10 @@ public class Main {
 
     /**
      * Configures low-level JVM system properties to optimize rendering.
-     *
+     * <p>
      * The properties are set based on the current {@link Settings}, specifically
      * affecting OpenGL acceleration and text anti-aliasing.
-     *
+     * <p>
      * | Property | Description |
      * | :--- | :--- |
      * | {@code sun.java2d.opengl} | Enables/Disables OpenGL hardware acceleration. |
@@ -38,7 +38,7 @@ public class Main {
 
     /**
      * The main entry method that starts the application.
-     *
+     * <p>
      * The startup sequence is as follows:
      * 1. Initialize Swing Look and Feel via {@link SwingConfiguration}.
      * 2. Load user settings from {@link Settings}.

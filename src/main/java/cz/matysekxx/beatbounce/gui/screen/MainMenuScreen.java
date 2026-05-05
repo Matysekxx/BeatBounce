@@ -24,6 +24,9 @@ public class MainMenuScreen extends Screen {
     private final String[] buttonsTitles = {
             "SONGS", "LIBRARY", "SKINS", "SHOP", "SETTINGS"
     };
+    
+    private String activePanel = "SONGS";
+    private final JPanel sidebar;
 
     public MainMenuScreen(ScreenManager screenManager) {
         super();
@@ -36,15 +39,15 @@ public class MainMenuScreen extends Screen {
         backgroundPanel.setLayout(new BorderLayout());
         this.setContentPane(backgroundPanel);
 
-        final JLayeredPane layeredPane = new JLayeredPane();
-        backgroundPanel.add(layeredPane, BorderLayout.CENTER);
-        layeredPane.setLayout(new OverlayLayout(layeredPane));
+        // Sidebar Navigation
+        sidebar = createSidebar();
+        backgroundPanel.add(sidebar, BorderLayout.WEST);
 
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
         cardPanel.setOpaque(false);
-
-        layeredPane.add(cardPanel, JLayeredPane.DEFAULT_LAYER);
+        cardPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        backgroundPanel.add(cardPanel, BorderLayout.CENTER);
 
         songSelectionPanel = new SongSelectionPanel(audiusClient, objectMapper, screenManager);
         libraryPanel = new LibraryPanel(audiusClient, screenManager);
@@ -57,35 +60,106 @@ public class MainMenuScreen extends Screen {
         cardPanel.add(skinsPanel, "SKINS");
         cardPanel.add(shopPanel, "SHOP");
         cardPanel.add(settingsPanel, "SETTINGS");
+    }
 
-        final JPanel bottomBar = createBottomBar();
-        backgroundPanel.add(bottomBar, BorderLayout.SOUTH);
+    private JPanel createSidebar() {
+        final JPanel p = getJPanel();
+
+        final GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(40, 0, 50, 0);
+
+        final JLabel logo = new JLabel("BEAT BOUNCE");
+        logo.setFont(new Font("Monospaced", Font.BOLD | Font.ITALIC, 32));
+        logo.setForeground(RenderUtils.cyan);
+        logo.setHorizontalAlignment(SwingConstants.CENTER);
+        p.add(logo, gbc);
+
+        gbc.insets = new Insets(5, 20, 5, 0);
+        gbc.weightx = 1.0;
+        int row = 1;
+        for (String name : buttonsTitles) {
+            gbc.gridy = row++;
+            p.add(createSidebarButton(name), gbc);
+        }
+
+        gbc.gridy = row++;
+        gbc.weighty = 1.0;
+        gbc.anchor = GridBagConstraints.SOUTH;
+        gbc.insets = new Insets(0, 20, 30, 0);
+        p.add(createSidebarButton("EXIT"), gbc);
+
+        return p;
     }
 
     private static JPanel getJPanel() {
-        final JPanel bottomBar = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 15)) {
+        final JPanel p = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 RenderUtils.initGraphics2D(g2);
-                g2.setColor(new Color(10, 10, 26, 242));
+                g2.setPaint(new LinearGradientPaint(0, 0, getWidth(), 0,
+                    new float[]{0f, 1f},
+                    new Color[]{new Color(15, 15, 35, 220), new Color(10, 10, 25, 100)}));
                 g2.fillRect(0, 0, getWidth(), getHeight());
-                g2.setColor(new Color(0, 255, 255, 51));
-                g2.drawLine(0, 0, getWidth(), 0);
+                g2.setColor(new Color(0, 255, 255, 40));
+                g2.drawLine(getWidth() - 1, 0, getWidth() - 1, getHeight());
                 g2.dispose();
             }
         };
-        bottomBar.setPreferredSize(new Dimension(0, 52));
-        return bottomBar;
+        p.setPreferredSize(new Dimension(280, 0));
+        p.setLayout(new GridBagLayout());
+        p.setOpaque(false);
+        return p;
     }
 
-    private JPanel createBottomBar() {
-        final JPanel bottomBar = getJPanel();
-        for (String name : buttonsTitles) {
-            bottomBar.add(createNavButton(name, _ -> showPanel(name)));
-        }
-        bottomBar.add(createNavButton("BACK", _ -> screenManager.showScreen(IntroScreen.class)));
-        return bottomBar;
+    private JButton createSidebarButton(String title) {
+        final JButton btn = new JButton(title) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                RenderUtils.initGraphics2D(g2);
+                
+                boolean active = activePanel.equals(getText());
+                if (active || getModel().isRollover()) {
+                    g2.setPaint(new LinearGradientPaint(0, 0, getWidth(), 0,
+                        new float[]{0f, 1f},
+                        new Color[]{new Color(0, 255, 255, 40), new Color(0, 255, 255, 0)}));
+                    g2.fillRect(0, 0, getWidth(), getHeight());
+                    
+                    g2.setColor(RenderUtils.cyan);
+                    g2.fillRect(0, 5, 4, getHeight() - 10);
+                }
+
+                g2.setFont(getFont());
+                g2.setColor(active ? Color.WHITE : (getModel().isRollover() ? RenderUtils.cyan : new Color(200, 200, 220)));
+                FontMetrics fm = g2.getFontMetrics();
+                g2.drawString(getText(), 30, (getHeight() + fm.getAscent() - fm.getDescent()) / 2);
+                
+                g2.dispose();
+            }
+        };
+        btn.setFont(new Font("SansSerif", Font.BOLD, 18));
+        btn.setPreferredSize(new Dimension(260, 55));
+        btn.setContentAreaFilled(false);
+        btn.setBorderPainted(false);
+        btn.setFocusPainted(false);
+        btn.setHorizontalAlignment(SwingConstants.LEFT);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        btn.addActionListener(_ -> {
+            if (title.equals("EXIT")) {
+                screenManager.showScreen(IntroScreen.class);
+            } else {
+                activePanel = title;
+                showPanel(title);
+                sidebar.repaint();
+            }
+        });
+        
+        return btn;
     }
 
     private void showPanel(String name) {
@@ -93,27 +167,6 @@ public class MainMenuScreen extends Screen {
             libraryPanel.loadLibrary();
         }
         cardLayout.show(cardPanel, name);
-    }
-
-    private JButton createNavButton(String title, ActionListener action) {
-        final JButton btn = new JButton(title) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                RenderUtils.initGraphics2D(g2);
-                g2.setColor(RenderUtils.cyan);
-                final FontMetrics fm = g2.getFontMetrics();
-                g2.drawString(getText(), 0, fm.getAscent());
-                g2.dispose();
-            }
-        };
-        btn.setFont(RenderCache.SANS_BOLD_14);
-        btn.setContentAreaFilled(false);
-        btn.setBorderPainted(false);
-        btn.setFocusPainted(false);
-        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btn.addActionListener(action);
-        return btn;
     }
 
     @Override

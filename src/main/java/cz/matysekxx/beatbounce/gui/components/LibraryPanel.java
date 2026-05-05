@@ -31,17 +31,16 @@ public class LibraryPanel extends JPanel {
         this.audiusClient = audiusClient;
         this.screenManager = screenManager;
 
-        setOpaque(true);
-        setBackground(RenderUtils.BG_DARK);
+        setOpaque(false);
         setLayout(new BorderLayout());
 
         final JPanel topBar = new JPanel(new BorderLayout());
         topBar.setOpaque(false);
-        topBar.setBorder(new EmptyBorder(15, 30, 15, 30));
+        topBar.setBorder(new EmptyBorder(25, 40, 15, 40));
 
-        final JLabel title = new JLabel("Your Library");
-        title.setFont(RenderCache.SANS_BOLD_28);
-        title.setForeground(Color.WHITE);
+        final JLabel title = new JLabel("YOUR LIBRARY");
+        title.setFont(new Font("SansSerif", Font.BOLD, 36));
+        title.setForeground(RenderUtils.cyan);
         topBar.add(title, BorderLayout.CENTER);
 
         final JButton addBtn = createAddButton();
@@ -71,28 +70,44 @@ public class LibraryPanel extends JPanel {
         loadLibrary();
     }
 
+    @Override
+    protected void paintComponent(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g.create();
+        RenderUtils.initGraphics2D(g2);
+        g2.setPaint(new LinearGradientPaint(0, 0, getWidth(), getHeight(),
+            new float[]{0f, 1f},
+            new Color[]{new Color(15, 15, 35, 180), new Color(10, 10, 25, 100)}));
+        g2.fillRoundRect(0, 0, getWidth(), getHeight(), 24, 24);
+        g2.setColor(new Color(0, 255, 255, 30));
+        g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 24, 24);
+        g2.dispose();
+        super.paintComponent(g);
+    }
+
     private JButton createAddButton() {
         final JButton btn = new JButton("+ ADD LOCAL SONG") {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 RenderUtils.initGraphics2D(g2);
-                if (getModel().isRollover()) {
-                    g2.setColor(RenderUtils.cyan);
-                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
-                    g2.setColor(RenderUtils.BG_DARK);
-                } else {
-                    g2.setColor(RenderCache.whiteWithAlpha(40));
-                    g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 8, 8);
-                    g2.setColor(Color.WHITE);
+                boolean hover = getModel().isRollover();
+                
+                g2.setColor(hover ? RenderUtils.cyan : new Color(255, 255, 255, 15));
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
+                
+                if (!hover) {
+                    g2.setColor(new Color(0, 255, 255, 60));
+                    g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 12, 12);
                 }
+                
+                g2.setColor(hover ? Color.BLACK : Color.WHITE);
                 FontMetrics fm = g2.getFontMetrics();
-                g2.drawString(getText(), (getWidth() - fm.stringWidth(getText())) / 2, getHeight() / 2 + 5);
+                g2.drawString(getText(), (getWidth() - fm.stringWidth(getText())) / 2, (getHeight() + fm.getAscent() - fm.getDescent()) / 2);
                 g2.dispose();
             }
         };
-        btn.setPreferredSize(new Dimension(160, 36));
-        btn.setFont(RenderCache.SANS_BOLD_13);
+        btn.setPreferredSize(new Dimension(200, 45));
+        btn.setFont(new Font("SansSerif", Font.BOLD, 15));
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);
@@ -124,6 +139,7 @@ public class LibraryPanel extends JPanel {
 
     public void loadLibrary() {
         listPanel.removeAll();
+        listPanel.setBorder(new EmptyBorder(10, 40, 20, 40));
         final Path dir = audiusClient.getDownloadDirectory();
 
         if (Files.exists(dir)) {
@@ -139,7 +155,7 @@ public class LibraryPanel extends JPanel {
                     }
                 }).forEach(p -> {
                     listPanel.add(new LocalTrackRow(p));
-                    listPanel.add(Box.createRigidArea(new Dimension(0, 0)));
+                    listPanel.add(Box.createRigidArea(new Dimension(0, 15)));
                 });
             } catch (IOException e) {
                 LOG.log(Level.SEVERE, "Failed to load library", e);
@@ -148,10 +164,10 @@ public class LibraryPanel extends JPanel {
 
         if (listPanel.getComponentCount() == 0) {
             final JLabel empty = new JLabel("No songs downloaded yet.");
-            empty.setForeground(Color.GRAY);
-            empty.setFont(new Font("SansSerif", Font.PLAIN, 18));
+            empty.setForeground(new Color(255, 255, 255, 80));
+            empty.setFont(new Font("SansSerif", Font.ITALIC, 22));
             empty.setAlignmentX(Component.CENTER_ALIGNMENT);
-            listPanel.add(Box.createRigidArea(new Dimension(0, 50)));
+            listPanel.add(Box.createRigidArea(new Dimension(0, 100)));
             listPanel.add(empty);
         }
         listPanel.revalidate();
@@ -171,93 +187,93 @@ public class LibraryPanel extends JPanel {
     }
 
     private class LocalTrackRow extends JPanel {
-        private final Path path;
         private final int stars;
         private boolean hovered = false;
+        private final String fileName;
+        private final String bestScore;
 
         public LocalTrackRow(Path path) {
-            this.path = path;
-            String fileName = path.getFileName().toString();
-            int dot = fileName.lastIndexOf('.');
-            if (dot > 0) fileName = fileName.substring(0, dot);
+            final String rawName = path.getFileName().toString();
+            int dot = rawName.lastIndexOf('.');
+            this.fileName = (dot > 0) ? rawName.substring(0, dot) : rawName;
             this.stars = 1 + (Math.abs(fileName.hashCode()) % 5);
+            this.bestScore = String.valueOf(ScoreManager.getBestScore(fileName));
 
             this.setOpaque(false);
+            this.setPreferredSize(new Dimension(0, 90));
+            this.setMaximumSize(new Dimension(Integer.MAX_VALUE, 90));
+            this.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            
             this.addMouseListener(new MouseAdapter() {
                 @Override
-                public void mouseEntered(MouseEvent e) {
-                    hovered = true;
-                    repaint();
-                }
-
+                public void mouseEntered(MouseEvent e) { hovered = true; repaint(); }
                 @Override
-                public void mouseExited(MouseEvent e) {
-                    hovered = false;
-                    repaint();
-                }
-
+                public void mouseExited(MouseEvent e) { hovered = false; repaint(); }
                 @Override
-                public void mousePressed(MouseEvent e) {
-                    final int btnW = 100, btnH = 32;
-                    final int bx = getWidth() - 20 - btnW;
-                    final int by = (getHeight() - btnH) / 2;
-                    if (new Rectangle(bx, by, btnW, btnH).contains(e.getPoint())) {
-                        launchGame(path, stars);
-                    }
-                }
+                public void mousePressed(MouseEvent e) { launchGame(path, stars); }
             });
         }
 
         @Override
         protected void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g.create();
+            final Graphics2D g2 = (Graphics2D) g.create();
             RenderUtils.initGraphics2D(g2);
             final int w = getWidth();
             final int h = getHeight();
 
             if (hovered) {
-                g2.setColor(RenderCache.whiteWithAlpha(15));
-                g2.fillRect(0, 0, w, h);
+                g2.setPaint(new LinearGradientPaint(0, 0, w, 0,
+                    new float[]{0f, 1f},
+                    new Color[]{new Color(0, 255, 255, 45), new Color(0, 255, 255, 5)}));
+            } else {
+                g2.setColor(new Color(255, 255, 255, 12));
             }
+            g2.fillRoundRect(0, 0, w, h, 18, 18);
 
-            g2.setColor(RenderCache.whiteWithAlpha(15));
-            g2.drawLine(0, h - 1, w, h - 1);
-            g2.setFont(RenderCache.SANS_BOLD_16);
-            g2.setColor(RenderUtils.cyan);
-            g2.drawString("🎵", 20, 38);
+            g2.setColor(hovered ? new Color(0, 255, 255, 120) : new Color(255, 255, 255, 25));
+            g2.drawRoundRect(0, 0, w - 1, h - 1, 18, 18);
+
+            g2.setColor(new Color(255, 255, 255, 25));
+            g2.fillRoundRect(18, 15, 60, 60, 12, 12);
+            g2.setFont(new Font("SansSerif", Font.BOLD, 26));
+            g2.setColor(hovered ? RenderUtils.cyan : Color.WHITE);
+            final String icon = "🎵";
+            FontMetrics fmIcon = g2.getFontMetrics();
+            g2.drawString(icon, 18 + (60 - fmIcon.stringWidth(icon)) / 2, 15 + 42);
+
+            g2.setFont(new Font("SansSerif", Font.BOLD, 22));
             g2.setColor(Color.WHITE);
-            g2.setFont(RenderCache.SANS_BOLD_15);
-            String fileName = path.getFileName().toString();
+            g2.drawString(fileName, 100, 42);
+            
+            g2.setFont(new Font("SansSerif", Font.PLAIN, 16));
+            g2.setColor(new Color(180, 180, 200));
+            final String subText = "Stars: " + "★".repeat(stars) + "☆".repeat(5 - stars);
+            g2.drawString(subText, 100, 68);
 
-            final int dot = fileName.lastIndexOf('.');
-            if (dot > 0) fileName = fileName.substring(0, dot);
-            g2.drawString(fileName, 50, 38);
-
-            final int rightX = w - 140;
-            g2.setFont(RenderCache.SANS_PLAIN_14);
-
-            final String info = String.format("Best: %d", ScoreManager.getBestScore(fileName));
-            final FontMetrics fm = g2.getFontMetrics();
-            g2.setColor(RenderUtils.TEXT_GRAY);
-            g2.drawString(info, rightX - fm.stringWidth(info), 38);
-
-            final String starsStr = "★".repeat(stars) + "☆".repeat(5 - stars);
+            String scoreText = "BEST: " + bestScore;
+            g2.setFont(new Font("Monospaced", Font.BOLD, 17));
+            final FontMetrics fmScore = g2.getFontMetrics();
+            final int scoreW = fmScore.stringWidth(scoreText) + 24;
+            final int scoreX = w - 170 - scoreW;
+            
+            g2.setColor(new Color(255, 255, 255, 20));
+            g2.fillRoundRect(scoreX, (h - 34) / 2, scoreW, 34, 10, 10);
             g2.setColor(RenderUtils.cyan);
-            g2.drawString(starsStr, rightX - fm.stringWidth(info) - fm.stringWidth(starsStr) - 15, 38);
+            g2.drawString(scoreText, scoreX + 12, (h - 34) / 2 + 24);
 
-            final int btnW = 100, btnH = 32;
-            final int bx = w - 20 - btnW;
-            final int by = (h - btnH) >> 1;
+            final int btnW = 140, btnH = 50;
+            final int bx = w - 155;
+            final int by = (h - btnH) / 2;
+            
+            g2.setColor(hovered ? RenderUtils.cyan : new Color(0, 200, 255));
+            g2.fillRoundRect(bx, by, btnW, btnH, 14, 14);
+            
+            g2.setColor(Color.BLACK);
+            g2.setFont(new Font("SansSerif", Font.BOLD, 20));
+            String playTxt = "PLAY";
+            final FontMetrics fmPlay = g2.getFontMetrics();
+            g2.drawString(playTxt, bx + (btnW - fmPlay.stringWidth(playTxt)) / 2, by + 32);
 
-            final Color acc = RenderUtils.purple;
-            g2.setColor(acc);
-            g2.fillRoundRect(bx, by, btnW, btnH, 8, 8);
-            g2.setColor(RenderUtils.BG_DARK);
-            g2.setFont(RenderCache.SANS_BOLD_13);
-
-            final String txt = "PLAY";
-            final FontMetrics bfm = g2.getFontMetrics();
-            g2.drawString(txt, bx + (btnW - bfm.stringWidth(txt)) / 2, by + 20);
             g2.dispose();
         }
     }

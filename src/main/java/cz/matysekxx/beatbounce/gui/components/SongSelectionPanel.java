@@ -26,8 +26,6 @@ public class SongSelectionPanel extends JPanel implements Runnable {
     private final ScreenManager screenManager;
     private final JPanel songListPanel;
     private final List<TrackData> allTracks = new ArrayList<>();
-    private final Particle[] particles;
-    private int count = 0;
     private boolean running = false;
     private Thread animatorThread;
     private List<TrackData> filteredTracks = new ArrayList<>();
@@ -41,13 +39,8 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         this.objectMapper = objectMapper;
         this.screenManager = screenManager;
 
-        setOpaque(true);
-        setBackground(new Color(10, 10, 26));
+        setOpaque(false);
         setLayout(new BorderLayout());
-        particles = new Particle[30];
-        for (int i = 0; i < particles.length; i++)
-            particles[i] = new Particle(1920, 540);
-        updateParticleCount();
 
         final JPanel topBar = createTopBar();
         add(topBar, BorderLayout.NORTH);
@@ -87,22 +80,9 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         return sp;
     }
 
-    private void updateParticleCount() {
-        this.count = switch (Settings.graphicsQuality) {
-            case "LOW" -> 0;
-            case "MEDIUM" -> 15;
-            default -> 30;
-        };
-    }
-
     private JPanel createTopBar() {
-        final JPanel topBar = new JPanel(new BorderLayout()) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                g.setColor(new Color(10, 10, 26));
-                g.fillRect(0, 0, getWidth(), getHeight());
-            }
-        };
+        final JPanel topBar = new JPanel(new BorderLayout());
+        topBar.setOpaque(false);
         topBar.setPreferredSize(new Dimension(0, 56));
         topBar.setBorder(new EmptyBorder(0, 20, 0, 20));
 
@@ -113,8 +93,12 @@ public class SongSelectionPanel extends JPanel implements Runnable {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 RenderUtils.initGraphics2D(g2);
-                g2.setColor(new Color(20, 20, 40));
+                g2.setColor(new Color(255, 255, 255, 15));
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), getHeight(), getHeight());
+                if (hasFocus()) {
+                    g2.setColor(new Color(0, 255, 255, 60));
+                    g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, getHeight(), getHeight());
+                }
                 g2.dispose();
                 super.paintComponent(g);
             }
@@ -276,10 +260,6 @@ public class SongSelectionPanel extends JPanel implements Runnable {
                 SwingUtilities.invokeLater(songListPanel::revalidate);
             }
 
-            if (Settings.particlesEnabled) {
-                updateParticleCount();
-                Particle.updateAll(particles, count, dt, getWidth() > 0 ? getWidth() : 1920, getHeight() > 0 ? getHeight() : 1080);
-            }
             repaint();
             try {
                 final long frameTimeMs = (long) (1000.0 / Settings.targetFps);
@@ -292,14 +272,15 @@ public class SongSelectionPanel extends JPanel implements Runnable {
 
     @Override
     protected void paintComponent(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g.create();
+        RenderUtils.initGraphics2D(g2);
+        g2.setPaint(new LinearGradientPaint(0, 0, getWidth(), getHeight(),
+            new float[]{0f, 1f},
+            new Color[]{new Color(15, 15, 35, 180), new Color(10, 10, 25, 100)}));
+        g2.fillRoundRect(0, 0, getWidth(), getHeight(), 24, 24);
+        g2.setColor(new Color(0, 255, 255, 30));
+        g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 24, 24);
+        g2.dispose();
         super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D) g.create();
-        RenderUtils.initGraphics2D(g2d);
-        g2d.setColor(new Color(10, 10, 26));
-        g2d.fillRect(0, 0, getWidth(), getHeight());
-        if (Settings.particlesEnabled) {
-            Particle.drawAll(g2d, particles, count);
-        }
-        g2d.dispose();
     }
 }

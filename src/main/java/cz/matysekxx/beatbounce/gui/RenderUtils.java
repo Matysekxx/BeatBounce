@@ -7,15 +7,28 @@ import java.awt.image.BufferedImage;
 import java.util.Random;
 import java.util.concurrent.locks.LockSupport;
 
+/**
+ * Utility class for common rendering operations and colors.
+ * It provides methods for drawing backgrounds, floors, text with bloom effects, and more.
+ */
 public final class RenderUtils {
+    /** The standard cyan color used in the UI. */
     public final static Color cyan = new Color(0, 255, 220);
+    /** The standard green color used in the UI. */
     public final static Color green = new Color(50, 255, 50);
+    /** The standard blue color used in the UI. */
     public final static Color blue = new Color(0, 150, 255);
+    /** The standard purple color used in the UI. */
     public final static Color purple = new Color(191, 0, 255);
+    /** The standard yellow color used in the UI. */
     public final static Color yellow = new Color(255, 215, 0);
+    /** The width of the road in the game. */
     public static final int ROAD_WIDTH = 300;
+    /** A blank cursor used to hide the mouse cursor. */
     public static final Cursor blankCursor;
+    /** A dark background color. */
     public static final Color BG_DARK = new Color(10, 10, 26);
+    /** A gray color used for text. */
     public static final Color TEXT_GRAY = new Color(160, 160, 170);
     private static final Color BG_COLOR = new Color(8, 8, 12);
     private static final Color FLOOR_COLOR = new Color(3, 0, 10);
@@ -45,6 +58,13 @@ public final class RenderUtils {
     private RenderUtils() {
     }
 
+    /**
+     * Draws a stylized background with stars and orbs.
+     *
+     * @param g2d the graphics context to draw on
+     * @param w   the width of the area
+     * @param h   the height of the area
+     */
     public static void drawBackground(Graphics2D g2d, int w, int h) {
         g2d.setColor(BG_COLOR);
         g2d.fillRect(0, 0, w, h);
@@ -65,6 +85,16 @@ public final class RenderUtils {
         applyNoiseOverlay(g2d, 0, 0, w, h);
     }
 
+    /**
+     * Draws the background orbs.
+     *
+     * @param g2d    the graphics context
+     * @param w      the width
+     * @param h      the height
+     * @param bgOrb1 the first orb paint
+     * @param bgOrb2 the second orb paint
+     * @param bgOrb3 the third orb paint
+     */
     public static void drawOrbs(Graphics2D g2d, int w, int h, RadialGradientPaint bgOrb1, RadialGradientPaint bgOrb2, RadialGradientPaint bgOrb3) {
         g2d.setPaint(bgOrb1);
         g2d.fillRect(0, 0, w, h);
@@ -90,6 +120,12 @@ public final class RenderUtils {
         }
     }
 
+    /**
+     * Delays the current thread to maintain a target frame rate.
+     *
+     * @param optimalTimeNanos the target duration for a single frame in nanoseconds
+     * @param loopStartTime    the time when the loop iteration started in nanoseconds
+     */
     public static void delay(long optimalTimeNanos, long loopStartTime) {
         final long timeTakenNanos = System.nanoTime() - loopStartTime;
         final long sleepNanos = optimalTimeNanos - timeTakenNanos;
@@ -103,6 +139,11 @@ public final class RenderUtils {
         }
     }
 
+    /**
+     * Initializes the Graphics2D context with standard rendering hints.
+     *
+     * @param g2d the graphics context to initialize
+     */
     public static void initGraphics2D(Graphics2D g2d) {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
@@ -110,6 +151,14 @@ public final class RenderUtils {
         g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
     }
 
+    /**
+     * Draws the floor with a gradient effect.
+     *
+     * @param g2d      the graphics context
+     * @param width    the width
+     * @param height   the total height
+     * @param horizonY the y-coordinate of the horizon
+     */
     public static void drawFloor(Graphics2D g2d, int width, int height, int horizonY) {
         g2d.setColor(FLOOR_COLOR);
         g2d.fillRect(0, horizonY, width, height - horizonY);
@@ -120,6 +169,13 @@ public final class RenderUtils {
         g2d.fillRect(0, horizonY, width, height - horizonY);
     }
 
+    /**
+     * Draws a line representing the horizon.
+     *
+     * @param g2d      the graphics context
+     * @param width    the width
+     * @param horizonY the y-coordinate of the horizon
+     */
     public static void drawHorizonLine(Graphics2D g2d, int width, int horizonY) {
         g2d.setColor(HORIZON_MAGENTA);
         g2d.setStroke(RenderCache.STROKE_3);
@@ -129,6 +185,15 @@ public final class RenderUtils {
         g2d.drawLine(0, horizonY, width, horizonY);
     }
 
+    /**
+     * Draws text with a shadow and optional bloom effect.
+     *
+     * @param g2d  the graphics context
+     * @param text the text to draw
+     * @param x    the x-coordinate
+     * @param y    the y-coordinate
+     * @param c    the color of the text
+     */
     public static void drawText(Graphics2D g2d, String text, int x, int y, Color c) {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
@@ -150,6 +215,15 @@ public final class RenderUtils {
         g2d.drawString(text, x, y);
     }
 
+    /**
+     * Applies a noise overlay to the specified area.
+     *
+     * @param g2 the graphics context
+     * @param x  the x-coordinate
+     * @param y  the y-coordinate
+     * @param w  the width
+     * @param h  the height
+     */
     public static void applyNoiseOverlay(Graphics2D g2, int x, int y, int w, int h) {
         if (noiseTexture == null) {
             noiseTexture = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);

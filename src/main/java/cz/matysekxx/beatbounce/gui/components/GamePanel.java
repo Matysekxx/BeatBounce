@@ -12,7 +12,6 @@ import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.Orb;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.level.Level;
-import cz.matysekxx.beatbounce.util.Time;
 
 import javax.sound.sampled.Clip;
 import javax.swing.*;

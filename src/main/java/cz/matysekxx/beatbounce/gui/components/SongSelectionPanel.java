@@ -26,7 +26,8 @@ public class SongSelectionPanel extends JPanel implements Runnable {
     private final ScreenManager screenManager;
     private final JPanel songListPanel;
     private final List<TrackData> allTracks = new ArrayList<>();
-    private Particle[] particles = new Particle[0];
+    private final Particle[] particles;
+    private int count = 0;
     private boolean running = false;
     private Thread animatorThread;
     private List<TrackData> filteredTracks = new ArrayList<>();
@@ -43,7 +44,9 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         setOpaque(true);
         setBackground(new Color(10, 10, 26));
         setLayout(new BorderLayout());
-
+        particles = new Particle[30];
+        for (int i = 0; i < particles.length; i++)
+            particles[i] = new Particle(1920, 540);
         updateParticleCount();
 
         final JPanel topBar = createTopBar();
@@ -85,17 +88,11 @@ public class SongSelectionPanel extends JPanel implements Runnable {
     }
 
     private void updateParticleCount() {
-        int count = switch (Settings.graphicsQuality) {
+        this.count = switch (Settings.graphicsQuality) {
             case "LOW" -> 0;
             case "MEDIUM" -> 15;
             default -> 30;
         };
-        if (particles.length != count) {
-            particles = new Particle[count];
-            for (int i = 0; i < count; i++) {
-                particles[i] = new Particle(1920, 1080);
-            }
-        }
     }
 
     private JPanel createTopBar() {
@@ -281,7 +278,7 @@ public class SongSelectionPanel extends JPanel implements Runnable {
 
             if (Settings.particlesEnabled) {
                 updateParticleCount();
-                Particle.updateAll(particles, dt, getWidth() > 0 ? getWidth() : 1920, getHeight() > 0 ? getHeight() : 1080);
+                Particle.updateAll(particles, count, dt, getWidth() > 0 ? getWidth() : 1920, getHeight() > 0 ? getHeight() : 1080);
             }
             repaint();
             try {
@@ -301,7 +298,7 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         g2d.setColor(new Color(10, 10, 26));
         g2d.fillRect(0, 0, getWidth(), getHeight());
         if (Settings.particlesEnabled) {
-            Particle.drawAll(g2d, particles);
+            Particle.drawAll(g2d, particles, count);
         }
         g2d.dispose();
     }

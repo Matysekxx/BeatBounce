@@ -11,11 +11,13 @@ import javax.sound.sampled.AudioFormat;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
-/// Core Digital Signal Processing (DSP) engine for real-time audio chunk analysis.
-///
-/// Uses the TarsosDSP library to detect percussive onsets and complex pitch changes.
-/// It also tracks the Root Mean Square (RMS) volume of the track to trigger high/low
-/// intensity shifts, and can inject "fallback" beats if the track goes silent for too long.
+/**
+ * Core Digital Signal Processing (DSP) engine for real-time audio chunk analysis.
+ * <p>
+ * Uses the TarsosDSP library to detect percussive onsets and complex pitch changes.
+ * It also tracks the Root Mean Square (RMS) volume of the track to trigger high/low
+ * intensity shifts, and can inject "fallback" beats if the track goes silent for too long.
+ */
 public class AudioProcessor {
     public static final int BUFFER_SIZE = 2048;
     public static final int OVERLAP = 1024;
@@ -28,31 +30,104 @@ public class AudioProcessor {
     private static final double SILENCE_THRESHOLD = 0.006;
     private static final int MAX_CONSECUTIVE_FALLBACKS = 32;
     private static final int BPM_HISTORY_SIZE = 8;
+
+    /**
+     * Detector for percussive onsets (e.g., drums).
+     */
     private final PercussionOnsetDetector percussionDetector;
+
+    /**
+     * Detector for complex pitch-based onsets.
+     */
     private final ComplexOnsetDetector complexDetector;
+
+    /**
+     * TarsosDSP-compatible audio format.
+     */
     private final TarsosDSPAudioFormat tarsosFormat;
+
+    /**
+     * Callback for emitting detected beat events.
+     */
     private final Consumer<BeatEvent> onBeatDetected;
+
+    /**
+     * Audio sample rate (e.g., 44100 Hz).
+     */
     private final float sampleRate;
+
+    /**
+     * Number of audio channels.
+     */
     private final int channels;
+
+    /**
+     * Circular buffer storing timestamps of recent beats for BPM estimation.
+     */
     private final double[] beatHistory = new double[BPM_HISTORY_SIZE];
+
+    /**
+     * Current playback time in seconds, calculated from processed frames.
+     */
     private double currentTime = 0.0;
+
+    /**
+     * Exponentially smoothed RMS volume for intensity detection.
+     */
     private double smoothedRms = 0.0;
+
+    /**
+     * Flag indicating if the audio is currently in a high-intensity state.
+     */
     private boolean inHighIntensity = false;
+
+    /**
+     * Flag indicating if the audio is currently in a low-intensity state.
+     */
     private boolean inLowIntensity = false;
+
+    /**
+     * Timestamp of the last beat that passed deduplication and interval checks.
+     */
     private double lastAcceptedBeatTime = -1.0;
+
+    /**
+     * Timestamp of the last raw trigger from any detector.
+     */
     private double lastRawBeatTime = -1.0;
+
+    /**
+     * Total number of beats recorded in history.
+     */
     private int beatHistoryCount = 0;
+
+    /**
+     * Target time for the next synthesized fallback beat.
+     */
     private double nextFallbackBeatTime = MAX_GAP_SECONDS;
+
+    /**
+     * Counter for consecutive fallback beats injected.
+     */
     private int consecutiveFallbacks = 0;
+
+    /**
+     * The interval (in seconds) used for fallback beats, based on estimated BPM.
+     */
     private double lastFallbackInterval = 0.4;
 
+    /**
+     * Total number of audio frames processed so far.
+     */
     private long framesProcessed = 0;
 
-    /// Initializes a new AudioProcessor.
-    ///
-    /// @param format          The audio format (sample rate, channels, etc.).
-    /// @param speedMultiplier Current game speed multiplier to scale timestamps.
-    /// @param onBeatDetected  Callback invoked whenever a valid beat or intensity event is detected.
+    /**
+     * Initializes a new AudioProcessor.
+     *
+     * @param format          The audio format (sample rate, channels, etc.).
+     * @param speedMultiplier Current game speed multiplier to scale timestamps.
+     * @param onBeatDetected  Callback invoked whenever a valid beat or intensity event is detected.
+     */
     public AudioProcessor(AudioFormat format, float speedMultiplier, Consumer<BeatEvent> onBeatDetected) {
         this.sampleRate = format.getSampleRate();
         this.channels = format.getChannels();
@@ -78,8 +153,10 @@ public class AudioProcessor {
         );
     }
 
-    /// Handles raw beats reported by the underlying Tarsos detectors.
-    /// Deduplicates nearby triggers and enforces a minimum beat interval.
+    /**
+     * Handles raw beats reported by the underlying Tarsos detectors.
+     * Deduplicates nearby triggers and enforces a minimum beat interval.
+     */
     private synchronized void handleRawBeat(double time, double salience, float speedMultiplier) {
         final double adjustedTime = time / speedMultiplier;
 
@@ -96,7 +173,9 @@ public class AudioProcessor {
         acceptBeat(adjustedTime, salience);
     }
 
-    /// Accepts a valid beat, emits it via callback, and updates history for fallback calculation.
+    /**
+     * Accepts a valid beat, emits it via callback, and updates history for fallback calculation.
+     */
     private void acceptBeat(double time, double salience) {
         onBeatDetected.accept(BeatEvent.of(time, salience));
         lastAcceptedBeatTime = time;
@@ -105,12 +184,19 @@ public class AudioProcessor {
         nextFallbackBeatTime = time + MAX_GAP_SECONDS;
     }
 
+    /**
+     * Records a beat timestamp in the history buffer for BPM estimation.
+     *
+     * @param time The timestamp of the detected beat.
+     */
     private void recordBeatForBpm(double time) {
         beatHistory[beatHistoryCount % BPM_HISTORY_SIZE] = time;
         beatHistoryCount++;
     }
 
-    /// Estimates the current BPM (interval) based on recently detected valid beats.
+    /**
+     * Estimates the current BPM (interval) based on recently detected valid beats.
+     */
     private double getEstimatedBeatInterval() {
         if (beatHistoryCount < 2) return 0.5;
 
@@ -131,12 +217,14 @@ public class AudioProcessor {
         return sumIntervals / pairs;
     }
 
-    /// Processes a single chunk (window) of 16-bit audio samples.
-    ///
-    /// This runs the data through the percussive and complex detectors,
-    /// tracks RMS for intensity changes, and verifies if a fallback beat is needed.
-    ///
-    /// @param chunk Array of short values representing the raw PCM sample chunk.
+    /**
+     * Processes a single chunk (window) of 16-bit audio samples.
+     * <p>
+     * This runs the data through the percussive and complex detectors,
+     * tracks RMS for intensity changes, and verifies if a fallback beat is needed.
+     *
+     * @param chunk Array of short values representing the raw PCM sample chunk.
+     */
     public void processChunk(short[] chunk) {
         final float[] floatBuffer = convertToFloatBuffer(chunk);
         final double rms = calculateRMS(floatBuffer);
@@ -159,8 +247,10 @@ public class AudioProcessor {
         currentTime = (double) framesProcessed / sampleRate;
     }
 
-    /// Injects a synthesized fallback beat if no actual beats were detected
-    /// for a prolonged period, provided the audio track isn't completely silent.
+    /**
+     * Injects a synthesized fallback beat if no actual beats were detected
+     * for a prolonged period, provided the audio track isn't completely silent.
+     */
     private synchronized void checkFallbackBeat(double rms) {
         if (nextFallbackBeatTime < 0) return;
         if (currentTime < nextFallbackBeatTime) return;
@@ -185,6 +275,12 @@ public class AudioProcessor {
         nextFallbackBeatTime = currentTime + interval;
     }
 
+    /**
+     * Converts a chunk of 16-bit PCM samples to a float buffer normalized to [-1.0, 1.0].
+     *
+     * @param chunk The raw short sample array.
+     * @return A float array of normalized samples.
+     */
     private float[] convertToFloatBuffer(short[] chunk) {
         final float[] floatBuffer = new float[chunk.length];
         for (int i = 0; i < chunk.length; i++) {
@@ -193,14 +289,22 @@ public class AudioProcessor {
         return floatBuffer;
     }
 
+    /**
+     * Calculates the Root Mean Square (RMS) volume of the given float buffer.
+     *
+     * @param buffer The normalized audio samples.
+     * @return The calculated RMS value.
+     */
     private double calculateRMS(float[] buffer) {
         double sumOfSquares = 0.0;
         for (float sample : buffer) sumOfSquares += sample * sample;
         return Math.sqrt(sumOfSquares / buffer.length);
     }
 
-    /// Emits events when the track's smoothed volume (RMS) enters or exits
-    /// defined high and low thresholds.
+    /**
+     * Emits events when the track's smoothed volume (RMS) enters or exits
+     * defined high and low thresholds.
+     */
     private void checkIntensityChanges(double rms) {
         smoothedRms = (smoothedRms * SMOOTHING_FACTOR) + (rms * (1.0 - SMOOTHING_FACTOR));
 

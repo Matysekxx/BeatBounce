@@ -13,6 +13,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * The core logic of the game, managing the game state, player movement, score, and level progress.
+ */
 public class GameModel {
     private static final int LANE_WIDTH = 120;
 
@@ -33,6 +36,14 @@ public class GameModel {
     private int collectedOrbs = 0;
     private double smoothedAudioTime = 0;
 
+    /**
+     * Constructs a new GameModel.
+     *
+     * @param level  the level to play
+     * @param sphere the player's sphere
+     * @param cam    the game camera
+     * @param clip   the audio clip for the level
+     */
     public GameModel(Level level, Sphere sphere, Camera3D cam, Clip clip) {
         this.level = level;
         this.sphere = sphere;
@@ -41,6 +52,9 @@ public class GameModel {
         this.zUnitsPerSecond = LevelGenerator.getZSpeed();
     }
 
+    /**
+     * Initializes or resets the game state.
+     */
     public void init() {
         this.gameState = GameState.COUNTDOWN;
         this.countdownTime = 2.99;
@@ -92,12 +106,18 @@ public class GameModel {
         clip.setFramePosition(0);
     }
 
+    /**
+     * Stops the audio clip if it's running.
+     */
     public void stop() {
         if (clip.isRunning()) {
             clip.stop();
         }
     }
 
+    /**
+     * Toggles between paused and playing/countdown states.
+     */
     public void togglePause() {
         if (gameState == GameState.PLAYING) {
             gameState = GameState.PAUSED;
@@ -108,26 +128,54 @@ public class GameModel {
         }
     }
 
+    /**
+     * @return the current score
+     */
     public Integer getScore() {
         return score;
     }
 
+    /**
+     * @return the number of orbs collected
+     */
     public int getCollectedOrbs() {
         return collectedOrbs;
     }
 
+    /**
+     * @return the list of orbs in the level
+     */
     public List<Orb> getOrbs() {
         return orbs;
     }
 
+    /**
+     * @return the remaining countdown time
+     */
     public double getCountdownTime() {
         return countdownTime;
     }
 
+    /**
+     * @return the current alpha for the neon flash effect
+     */
     public float getNeonFlashAlpha() {
         return neonFlashAlpha;
     }
 
+    /**
+     * @return the current game state
+     */
+    public GameState getGameState() {
+        return gameState;
+    }
+
+    /**
+     * Updates the game logic based on the elapsed time.
+     *
+     * @param currentTime the current time in seconds
+     * @param deltaTime   the time since the last update in seconds
+     */
     public void update(double currentTime, double deltaTime) {
         switch (gameState) {
             case COUNTDOWN -> handleCountdown(deltaTime);
@@ -302,9 +350,5 @@ public class GameModel {
 
         final double height = 50 + (distanceZ * 0.15);
         sphere.startJump(currentTime, duration, height);
-    }
-
-    public GameState getGameState() {
-        return gameState;
     }
 }

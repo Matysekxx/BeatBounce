@@ -19,7 +19,8 @@ public class Settings {
     /**
      * The name of the configuration file where settings are stored.
      */
-    private static final String CONFIG_FILE = "config.properties";
+    private static final String CONFIG_FILE = System.getProperty("user.home")
+            + File.separator + ".beatbounce" + File.separator + "config" + File.separator + "config.properties";
 
     /**
      * The {@link Properties} object used to manage configuration key-value pairs.
@@ -155,7 +156,13 @@ public class Settings {
         properties.setProperty("bloomEnabled", String.valueOf(bloomEnabled));
         properties.setProperty("muteOnFocusLoss", String.valueOf(muteOnFocusLoss));
 
-        try (FileOutputStream fos = new FileOutputStream(CONFIG_FILE)) {
+        final File configFile = new File(CONFIG_FILE);
+        final File parentDir = configFile.getParentFile();
+        if (parentDir != null && !parentDir.exists()) {
+            parentDir.mkdirs();
+        }
+
+        try (FileOutputStream fos = new FileOutputStream(configFile)) {
             properties.store(fos, "BeatBounce Configuration");
         } catch (IOException e) {
             System.err.println("Failed to save settings: " + e.getMessage());

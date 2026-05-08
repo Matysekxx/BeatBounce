@@ -22,7 +22,7 @@ public class LevelGenerator {
     /**
      * Maximum allowed gap between beats before synthetic beats are injected.
      */
-    private static final double MAX_ALLOWED_GAP_SECONDS = 0.8;
+    private static final double MAX_ALLOWED_GAP_SECONDS = 1.4;
 
     /**
      * Cache to store generated tile lists for specific audio files and speed multipliers.
@@ -33,7 +33,7 @@ public class LevelGenerator {
      * @return the constant movement speed along the Z-axis
      */
     public static double getZSpeed() {
-        return 800.0;
+        return 500.0;
     }
 
     /**
@@ -229,8 +229,8 @@ public class LevelGenerator {
         private List<PlacedBeat> collectBeats() {
             final List<PlacedBeat> result = new ArrayList<>();
             boolean isHighIntensity = false;
-            final double minTimeBetweenTiles = Math.max(0.05, 0.30 - (stars * 0.05));
-            final double minZDistance = 130.0;
+            final double minTimeBetweenTiles = Math.max(0.08, 0.25 - (stars * 0.03));
+            final double minZDistance = zUnitsPerSecond * 0.25; 
             double lastTileTimestamp = -999.0;
 
             for (BeatEvent e : events) {
@@ -240,10 +240,13 @@ public class LevelGenerator {
                     case BEAT -> {
                         if (e.timestamp() >= songDurationSeconds) continue;
                         if (e.timestamp() - lastTileTimestamp < minTimeBetweenTiles) continue;
+                        
                         final double tileZ = e.timestamp() * zUnitsPerSecond;
                         final double lastTileZ = lastTileTimestamp >= 0
                                 ? lastTileTimestamp * zUnitsPerSecond : -999.0;
+                        
                         if (tileZ - lastTileZ < minZDistance) continue;
+                        
                         result.add(PlacedBeat.of(e.timestamp(), e.salience(), isHighIntensity, false));
                         lastTileTimestamp = e.timestamp();
                     }
@@ -334,7 +337,7 @@ public class LevelGenerator {
                         : rng.nextDouble() < baseMoveChance;
 
                 if (!shouldMove) {
-                    if (tilesGenerated > 10 && stars >= 2 && rng.nextDouble() < allLaneFakeChance) {
+                    if (tilesGenerated > 10 && stars >= 4 && rng.nextDouble() < allLaneFakeChance) {
                         shouldHaveAllLaneFakes = true;
                     } else if (rng.nextDouble() < baseFakeChance) {
                         shouldHaveFakes = true;

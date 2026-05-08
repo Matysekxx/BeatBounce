@@ -32,8 +32,8 @@ public class LevelGeneratorTest {
         assertInstanceOf(NormalTile.class, level.tiles().get(0));
         assertInstanceOf(NormalTile.class, level.tiles().get(1));
 
-        assertEquals(1000.0, level.tiles().get(0).getZ(), 0.1);
-        assertEquals(2000.0, level.tiles().get(1).getZ(), 0.1);
+        assertEquals(500.0, level.tiles().get(0).getZ(), 0.1);
+        assertEquals(1000.0, level.tiles().get(1).getZ(), 0.1);
     }
 
     /**

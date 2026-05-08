@@ -84,7 +84,8 @@ public record Level(List<AbstractTile> tiles, @JsonIgnore AudioData audioData, S
         final String baseName = audioFile.getName();
         final String nameWithoutExt = baseName.contains(".") ? baseName.substring(0, baseName.lastIndexOf('.')) : baseName;
         final String sanitizedName = nameWithoutExt.replaceAll("[^a-zA-Z0-9.-]", "_");
-        final String fileName = sanitizedName + "-" + speedMultiplier + ".json";
+        final double zSpeed = LevelGenerator.getZSpeed();
+        final String fileName = String.format("%s-sm%.1f-zs%.0f.json", sanitizedName, speedMultiplier, zSpeed);
         return CACHE_DIR.resolve(fileName).toFile();
     }
 }

@@ -1,15 +1,36 @@
 package cz.matysekxx.beatbounce.model.entity;
 
+import cz.matysekxx.beatbounce.model.level.DifficultyProfile;
+
 /**
- * The {@code TileType} enum defines the different types of tiles available in the game.
+ * Enumerates all tile variants available in BeatBounce.
+ * <p>
+ * Used as a discriminator in JSON serialisation (see {@link AbstractTile})
+ * and as a reference when building {@link DifficultyProfile} allow-lists.
  */
 public enum TileType {
     /**
-     * A standard tile that represents a single beat.
+     * Standard static tile placed on a beat.
      */
     NORMAL,
     /**
-     * A long tile that represents a sustained note or multiple beats.
+     * Long tile spanning multiple Z-units for a sustained note.
      */
-    LONG
+    LONG,
+    /**
+     * Narrower tile requiring more precise movement.
+     */
+    SMALL,
+    /**
+     * Oscillating tile that moves horizontally.
+     */
+    MOVING,
+    /**
+     * Shatters after one landing; the second touch causes a fall.
+     */
+    BREAKABLE,
+    /**
+     * Temporarily changes the game's scroll speed on contact.
+     */
+    SPEED
 }

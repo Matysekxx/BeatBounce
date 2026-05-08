@@ -21,6 +21,8 @@ public class TrackData {
     float expansion = 0f;
     boolean downloading = false;
     float downloadProgress = 0f;
+    boolean starting = false;
+    float startingProgress = 0f;
 
     /**
      * Constructs a new TrackData object from a JSON node.

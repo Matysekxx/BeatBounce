@@ -360,6 +360,9 @@ public class SongSelectionPanel extends JPanel implements Runnable {
                         t.expansion = Math.max(0f, t.expansion - dt / expansionTime);
                         needsRevalidate = true;
                     }
+
+                    if (t.starting && t.startingProgress < 1f)
+                        t.startingProgress = Math.min(1f, t.startingProgress + dt * 2.5f);
                 }
             }
 
@@ -385,14 +388,7 @@ public class SongSelectionPanel extends JPanel implements Runnable {
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();
-        RenderUtils.initGraphics2D(g2);
-        g2.setPaint(new LinearGradientPaint(0, 0, getWidth(), getHeight(),
-                new float[]{0f, 1f},
-                new Color[]{new Color(15, 15, 35, 180), new Color(10, 10, 25, 100)}));
-        g2.fillRoundRect(0, 0, getWidth(), getHeight(), 24, 24);
-        g2.setColor(new Color(0, 255, 255, 30));
-        g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 24, 24);
-        g2.dispose();
+        RenderUtils.drawMenuBackground(g2, getWidth(), getHeight());
         super.paintComponent(g);
     }
 }

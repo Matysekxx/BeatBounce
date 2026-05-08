@@ -103,6 +103,17 @@ public final class RenderUtils {
         applyNoiseOverlay(g2d, 0, 0, w, h);
     }
 
+    public static void drawMenuBackground(Graphics2D g2, int w, int h) {
+        RenderUtils.initGraphics2D(g2);
+        g2.setPaint(new LinearGradientPaint(0, 0, w, h,
+                new float[]{0f, 1f},
+                new Color[]{new Color(15, 15, 35, 180), new Color(10, 10, 25, 100)}));
+        g2.fillRoundRect(0, 0, w, h, 24, 24);
+        g2.setColor(new Color(0, 255, 255, 30));
+        g2.drawRoundRect(0, 0, w - 1, h - 1, 24, 24);
+        g2.dispose();
+    }
+
     /**
      * Draws the background orbs.
      *

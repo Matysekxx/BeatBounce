@@ -6,55 +6,111 @@ import java.awt.*;
 import java.util.List;
 
 /**
- * The {@code TileFactory} class provides static utility methods to create various types of tiles.
+ * Factory class providing static utility methods to create all tile variants.
+ * <p>
+ * Every tile type registered in {@link TileType} has a corresponding factory method here.
+ * Generation code and tests should use this class rather than constructing tiles directly.
  */
-public class TileFactory {
+public final class TileFactory {
 
-    /**
-     * Private constructor to prevent instantiation of the factory class.
-     */
     private TileFactory() {
     }
 
     /**
-     * Creates a new {@link NormalTile} at the specified coordinates and depth.
+     * Creates a {@link NormalTile} at the specified world coordinates.
      *
-     * @param event the {@link BeatEvent} associated with the tile
-     * @param x     the horizontal position
-     * @param y     the vertical position
-     * @param z     the depth position
-     * @return a new instance of {@link NormalTile}
+     * @param event the beat event associated with the tile
+     * @param x     world X position
+     * @param y     world Y position
+     * @param z     world Z position (depth)
+     * @return a new {@link NormalTile}
      */
     public static NormalTile createNormalTile(BeatEvent event, int x, int y, double z) {
         return new NormalTile(event, new Point(x, y), z);
     }
 
     /**
-     * Creates a new {@link NormalTile} with fake lane offsets.
+     * Creates a {@link NormalTile} with associated fake-lane offsets.
      *
-     * @param event           the {@link BeatEvent} associated with the tile
-     * @param x               the horizontal position
-     * @param y               the vertical position
-     * @param z               the depth position
-     * @param fakeLaneOffsets a list of offsets for visual fake lanes
-     * @return a new instance of {@link NormalTile}
+     * @param event           the beat event
+     * @param x               world X position
+     * @param y               world Y position
+     * @param z               world Z position
+     * @param fakeLaneOffsets list of lane offsets for fake (distraction) tiles
+     * @return a new {@link NormalTile}
      */
-    public static NormalTile createNormalTileWithFakes(BeatEvent event, int x, int y, double z, List<Integer> fakeLaneOffsets) {
+    public static NormalTile createNormalTileWithFakes(BeatEvent event, int x, int y, double z,
+                                                       List<Integer> fakeLaneOffsets) {
         return new NormalTile(event, new Point(x, y), z, fakeLaneOffsets);
     }
 
     /**
-     * Creates a new {@link MovingTile} with the specified movement parameters.
+     * Creates a {@link MovingTile} with horizontal oscillation.
      *
-     * @param event     the {@link BeatEvent} associated with the tile
-     * @param x         the initial horizontal position
-     * @param y         the vertical position
-     * @param z         the depth position
-     * @param amplitude the maximum horizontal displacement
-     * @param speed     the frequency of oscillation
-     * @return a new instance of {@link MovingTile}
+     * @param event     the beat event
+     * @param x         initial X position
+     * @param y         world Y position
+     * @param z         world Z position
+     * @param amplitude maximum horizontal displacement from start
+     * @param speed     oscillation frequency
+     * @return a new {@link MovingTile}
      */
-    public static MovingTile createMovingTile(BeatEvent event, int x, int y, double z, int amplitude, double speed) {
+    public static MovingTile createMovingTile(BeatEvent event, int x, int y, double z,
+                                              int amplitude, double speed) {
         return new MovingTile(event, x, y, z, amplitude, speed);
+    }
+
+    /**
+     * Creates a {@link LongTile} spanning a given Z-length.
+     *
+     * @param event     the beat event
+     * @param x         world X position
+     * @param y         world Y position
+     * @param z         world Z position (start of the tile)
+     * @param lengthInZ length of the tile along the Z-axis in world units
+     * @return a new {@link LongTile}
+     */
+    public static LongTile createLongTile(BeatEvent event, int x, int y, double z, double lengthInZ) {
+        return new LongTile(event, x, y, z, lengthInZ);
+    }
+
+    /**
+     * Creates a {@link SmallTile} requiring more precise player positioning.
+     *
+     * @param event the beat event
+     * @param x     world X position
+     * @param y     world Y position
+     * @param z     world Z position
+     * @return a new {@link SmallTile}
+     */
+    public static SmallTile createSmallTile(BeatEvent event, int x, int y, double z) {
+        return new SmallTile(event, x, y, z);
+    }
+
+    /**
+     * Creates a {@link BreakableTile} that shatters after the first player landing.
+     *
+     * @param event the beat event
+     * @param x     world X position
+     * @param y     world Y position
+     * @param z     world Z position
+     * @return a new {@link BreakableTile}
+     */
+    public static BreakableTile createBreakableTile(BeatEvent event, int x, int y, double z) {
+        return new BreakableTile(event, x, y, z);
+    }
+
+    /**
+     * Creates a {@link SpeedTile} that temporarily modifies the scroll speed.
+     *
+     * @param event           the beat event
+     * @param x               world X position
+     * @param y               world Y position
+     * @param z               world Z position
+     * @param speedMultiplier factor applied to game speed (e.g. 1.5 or 0.7)
+     * @return a new {@link SpeedTile}
+     */
+    public static SpeedTile createSpeedTile(BeatEvent event, int x, int y, double z, float speedMultiplier) {
+        return new SpeedTile(event, x, y, z, speedMultiplier);
     }
 }

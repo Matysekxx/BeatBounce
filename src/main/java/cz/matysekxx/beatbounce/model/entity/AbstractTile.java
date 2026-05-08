@@ -21,7 +21,11 @@ import java.awt.*;
 )
 @JsonSubTypes({
         @JsonSubTypes.Type(value = NormalTile.class, name = "normal"),
-        @JsonSubTypes.Type(value = MovingTile.class, name = "moving")
+        @JsonSubTypes.Type(value = MovingTile.class, name = "moving"),
+        @JsonSubTypes.Type(value = LongTile.class, name = "long"),
+        @JsonSubTypes.Type(value = SmallTile.class, name = "small"),
+        @JsonSubTypes.Type(value = BreakableTile.class, name = "breakable"),
+        @JsonSubTypes.Type(value = SpeedTile.class, name = "speed")
 })
 public abstract class AbstractTile extends Entity implements Paintable {
     /**
@@ -174,5 +178,11 @@ public abstract class AbstractTile extends Entity implements Paintable {
     public void setLocation(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+
+    /**
+     * Resets the internal state of the tile. By default does nothing.
+     */
+    public void reset() {
     }
 }

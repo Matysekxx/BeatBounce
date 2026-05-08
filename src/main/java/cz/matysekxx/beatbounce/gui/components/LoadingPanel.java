@@ -147,44 +147,25 @@ public class LoadingPanel extends JPanel implements Runnable {
     }
 
     private void drawProgressBar(Graphics2D g2, int w, int h, float pulse) {
-        final int barWidth = Math.min(600, (int) (w * 0.45));
+        final int barWidth = Math.min(500, (int) (w * 0.4));
         final int barX = (w - barWidth) >> 1;
-        final int barY = (int) (h * 0.62);
-        final int arcSize = BAR_HEIGHT;
+        final int barY = (int) (h * 0.65);
+        final int arcSize = 10;
 
-        final int glowAlpha = (int) (15 + pulse * 10);
-        g2.setColor(new Color(0, 255, 220, glowAlpha));
-        g2.fillRoundRect(barX - 8, barY - 8, barWidth + 16, BAR_HEIGHT + 16, arcSize + 16, arcSize + 16);
-
-        g2.setColor(BORDER_GLOW_COLOR);
-        g2.setStroke(BAR_STROKE);
-        g2.drawRoundRect(barX, barY, barWidth, BAR_HEIGHT, arcSize, arcSize);
+        g2.setColor(new Color(255, 255, 255, 15));
+        g2.fillRoundRect(barX, barY, barWidth, 6, arcSize, arcSize);
 
         final int fillWidth = (int) (barWidth * progress);
-        if (fillWidth > 6) {
-            drawProgressFill(g2, barX, barY, fillWidth, pulse, barWidth);
+        if (fillWidth > 4) {
+            g2.setColor(new Color(RenderUtils.purple.getRed(), RenderUtils.purple.getGreen(), RenderUtils.purple.getBlue(), (int) (40 + 20 * pulse)));
+            g2.fillRoundRect(barX - 2, barY - 2, fillWidth + 4, 10, arcSize, arcSize);
+
+            final GradientPaint fillGrad = new GradientPaint(barX, barY, RenderUtils.purple, barX + fillWidth, barY, RenderUtils.cyan);
+            g2.setPaint(fillGrad);
+            g2.fillRoundRect(barX, barY, fillWidth, 6, arcSize, arcSize);
         }
 
         drawPercentLabel(g2, barX, barY, barWidth);
-    }
-
-    private void drawProgressFill(Graphics2D g2, int x, int y, int width, float pulse, int maxBarWidth) {
-        final int arcSize = BAR_HEIGHT;
-        g2.setColor(FILL_GLOW_COLOR);
-        g2.fillRoundRect(x + 2, y - 2, width - 4, BAR_HEIGHT + 4, arcSize, arcSize);
-
-        final GradientPaint fillGrad = new GradientPaint(x, y, RenderUtils.cyan, x + width, y, RenderUtils.purple);
-        g2.setPaint(fillGrad);
-        g2.fillRoundRect(x + 2, y + 2, width - 4, BAR_HEIGHT - 4, arcSize - 4, arcSize - 4);
-
-        final GradientPaint shine = new GradientPaint(x, y + 2, new Color(255, 255, 255, 120), x, y + BAR_HEIGHT / 2f, new Color(255, 255, 255, 0));
-        g2.setPaint(shine);
-        g2.fillRoundRect(x + 2, y + 2, width - 4, (BAR_HEIGHT - 4) / 2, arcSize - 4, arcSize - 4);
-
-        if (width < maxBarWidth - 6) {
-            g2.setColor(new Color(255, 255, 255, (int) (100 + 80 * pulse)));
-            g2.fillOval(x + width - 6, y + (BAR_HEIGHT >> 1) - 6, 12, 12);
-        }
     }
 
     private void drawPercentLabel(Graphics2D g2, int barX, int barY, int barWidth) {
@@ -192,7 +173,7 @@ public class LoadingPanel extends JPanel implements Runnable {
         final String percentText = (int) (progress * 100) + "%";
         final FontMetrics fm = g2.getFontMetrics();
         final int pctX = barX + (barWidth >> 1) - (fm.stringWidth(percentText) >> 1);
-        final int pctY = barY + BAR_HEIGHT + 30;
+        final int pctY = barY + 35;
 
         g2.setColor(PERCENT_SHADOW_COLOR);
         g2.drawString(percentText, pctX - 1, pctY);

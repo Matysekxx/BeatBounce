@@ -1,0 +1,11 @@
+{
+  "id": "diamond_white",
+  "name": "Diamond White",
+  "price": 5000,
+  "primaryColor": "#FFFFFF",
+  "glowColor": "#E0E0E0",
+  "visuals": {
+    "renderType": "GLOW",
+    "trailEnabled": true
+  }
+}

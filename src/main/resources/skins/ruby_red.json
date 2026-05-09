@@ -1,0 +1,11 @@
+{
+  "id": "ruby_red",
+  "name": "Ruby Red",
+  "price": 500,
+  "primaryColor": "#FF0033",
+  "glowColor": "#CC0000",
+  "visuals": {
+    "renderType": "sphere",
+    "trailEnabled": true
+  }
+}

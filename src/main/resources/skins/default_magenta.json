@@ -1,0 +1,11 @@
+{
+  "id": "default_magenta",
+  "name": "Neon Magenta",
+  "price": 0,
+  "primaryColor": "#FF00FF",
+  "glowColor": "#FF007F",
+  "visuals": {
+    "renderType": "GLOW",
+    "trailEnabled": true
+  }
+}

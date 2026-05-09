@@ -1,0 +1,11 @@
+{
+  "id": "amethyst_purple",
+  "name": "Amethyst Purple",
+  "price": 1000,
+  "primaryColor": "#9932CC",
+  "glowColor": "#8A2BE2",
+  "visuals": {
+    "renderType": "GLOW",
+    "trailEnabled": true
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "id": "topaz_orange",
+  "name": "Topaz Orange",
+  "price": 300,
+  "primaryColor": "#FF8C00",
+  "glowColor": "#FF4500",
+  "visuals": {
+    "renderType": "GLOW",
+    "trailEnabled": true
+  }
+}

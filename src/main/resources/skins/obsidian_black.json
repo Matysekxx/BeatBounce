@@ -1,0 +1,11 @@
+{
+  "id": "obsidian_black",
+  "name": "Obsidian Black",
+  "price": 2000,
+  "primaryColor": "#1A1A1A",
+  "glowColor": "#333333",
+  "visuals": {
+    "renderType": "sphere",
+    "trailEnabled": false
+  }
+}

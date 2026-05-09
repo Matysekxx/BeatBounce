@@ -1,0 +1,11 @@
+{
+  "id": "cyber_cyan",
+  "name": "Cyber Cyan",
+  "price": 100,
+  "primaryColor": "#00FFFF",
+  "glowColor": "#00AFFF",
+  "visuals": {
+    "renderType": "GLOW",
+    "trailEnabled": true
+  }
+}

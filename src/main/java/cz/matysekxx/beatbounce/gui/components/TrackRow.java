@@ -151,7 +151,7 @@ public class TrackRow extends JPanel {
         g2.setColor(new Color(200, 200, 200));
         g2.drawString(info, rightX - fm.stringWidth(info), 38);
 
-        final String stars = "★".repeat(data.stars) + "☆".repeat(5 - data.stars);
+        final String stars = "★".repeat(data.stars) + "☆".repeat(10 - data.stars);
         g2.setColor(RenderUtils.cyan);
         g2.drawString(stars, rightX - fm.stringWidth(info) - g2.getFontMetrics().stringWidth(stars) - 15, 38);
     }

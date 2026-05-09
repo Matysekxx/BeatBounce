@@ -257,7 +257,7 @@ public class LibraryPanel extends JPanel {
             final String rawName = path.getFileName().toString();
             int dot = rawName.lastIndexOf('.');
             this.fileName = (dot > 0) ? rawName.substring(0, dot) : rawName;
-            this.stars = 1 + (Math.abs(fileName.hashCode()) % 5);
+            this.stars = 1 + (Math.abs(fileName.hashCode()) % 10);
             this.bestScore = String.valueOf(ScoreManager.getBestScore(fileName));
 
             this.setOpaque(false);
@@ -318,7 +318,7 @@ public class LibraryPanel extends JPanel {
 
             g2.setFont(new Font("SansSerif", Font.PLAIN, 16));
             g2.setColor(new Color(180, 180, 200));
-            final String subText = "Stars: " + "★".repeat(stars) + "☆".repeat(5 - stars);
+            final String subText = "Stars: " + "★".repeat(stars) + "☆".repeat(10 - stars);
             g2.drawString(subText, 100, 68);
 
             String scoreText = "BEST: " + bestScore;

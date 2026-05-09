@@ -34,7 +34,7 @@ public class TrackData {
         this.title = node.path("title").asText();
         this.artist = node.path("user").path("name").asText("Unknown Artist");
         this.hash = id.hashCode();
-        this.stars = 1 + (Math.abs(hash) % 5);
+        this.stars = 1 + (Math.abs(hash) % 10);
         this.best = ScoreManager.getBestScore(title);
 
         int durationSeconds = node.path("duration").asInt(222);

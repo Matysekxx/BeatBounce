@@ -3,6 +3,7 @@ package cz.matysekxx.beatbounce.gui.components;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.model.GameModel;
+import cz.matysekxx.beatbounce.model.GameState;
 import cz.matysekxx.beatbounce.model.ScoreManager;
 
 import javax.sound.sampled.Clip;
@@ -372,5 +373,13 @@ public class GameUIRenderer {
         g2d.setFont(RenderCache.SANS_PLAIN_13);
         g2d.setColor(HINT_LABEL);
         g2d.drawString(label, x + keyW + 22, y - 4);
+    }
+    public void renderGameState(Graphics2D g2d, int width, int height, GameState state) {
+        switch (state) {
+            case COUNTDOWN -> drawCountdown(g2d, width, height);
+            case PAUSED -> drawPauseScreen(g2d, width, height);
+            case FINISHED -> drawFinishedScreen(g2d, width, height);
+            case GAME_OVER -> drawGameOverScreen(g2d, width, height);
+        }
     }
 }

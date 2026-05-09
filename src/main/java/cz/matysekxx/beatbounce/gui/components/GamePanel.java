@@ -8,8 +8,6 @@ import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.WindowData;
 import cz.matysekxx.beatbounce.model.GameModel;
 import cz.matysekxx.beatbounce.model.GameState;
-import cz.matysekxx.beatbounce.model.entity.AbstractTile;
-import cz.matysekxx.beatbounce.model.entity.Orb;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.level.Level;
 
@@ -21,16 +19,13 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.util.List;
 
 /**
  * The main panel for the game, handling rendering, user input, and the game loop.
  */
 public class GamePanel extends JPanel implements Runnable {
-    private static final Color FPS_COLOR = Color.YELLOW;
-    private static final Color GRID_MAGENTA_90 = new Color(255, 0, 255, 90);
-    private static final Color GRID_CYAN_110 = new Color(0, 255, 255, 110);
-    private static final Color GRID_CYAN_120 = new Color(0, 255, 255, 120);
+    /** Number of particles for game background effects. */
+    private static final int MAX_PARTICLES = 20;
 
     /**
      * The 3D camera used for projecting game coordinates to the screen.
@@ -51,16 +46,6 @@ public class GamePanel extends JPanel implements Runnable {
      * The primary game loop thread.
      */
     private Thread gameThread;
-
-    /**
-     * The player-controlled sphere entity.
-     */
-    private Sphere sphere;
-
-    /**
-     * The current level being played.
-     */
-    private Level level;
 
     /**
      * The audio clip for the current level's song.
@@ -103,9 +88,9 @@ public class GamePanel extends JPanel implements Runnable {
     private GameUIRenderer uiRenderer;
 
     /**
-     * Cached background image to optimize rendering performance.
+     * Helper for rendering the 3D world environment.
      */
-    private BufferedImage bgCache;
+    private GameWorldRenderer worldRenderer;
 
     /**
      * Cached width of the panel for background re-generation.
@@ -143,6 +128,23 @@ public class GamePanel extends JPanel implements Runnable {
     private BufferedImage backBuffer;
 
     /**
+     * Particle array for ambient background animation.
+     */
+    private final Particle[] particles;
+
+    /**
+     * Current particle count based on quality settings.
+     */
+    private int particleCount;
+
+    /**
+     * Accumulated time for animations (seconds).
+     */
+    private float animTime = 0f;
+
+
+
+    /**
      * Constructs a new GamePanel.
      *
      * @param onExit a callback executed when the game is exited
@@ -158,6 +160,18 @@ public class GamePanel extends JPanel implements Runnable {
         this.setIgnoreRepaint(true);
         this.setOpaque(true);
         this.blankCursor = RenderUtils.blankCursor;
+        this.particles = new Particle[MAX_PARTICLES];
+        for (int i = 0; i < particles.length; i++)
+            particles[i] = new Particle(1920, 540);
+        updateParticleCount();
+    }
+
+    private void updateParticleCount() {
+        this.particleCount = switch (Settings.graphicsQuality) {
+            case "LOW" -> 0;
+            case "MEDIUM" -> 10;
+            default -> MAX_PARTICLES;
+        };
     }
 
     /**
@@ -166,13 +180,13 @@ public class GamePanel extends JPanel implements Runnable {
      * @param level the level to play
      */
     public void init(Level level) {
-        this.level = level;
         this.clip = level.audioData().clip();
-        this.sphere = new Sphere(0, 150, 0, 25);
+        final Sphere sphere = new Sphere(0, 150, 0, 25);
         this.gameModel = new GameModel(level, sphere, cam, clip);
         this.lastScore = 0;
         this.scorePopAlpha = 0f;
         this.uiRenderer = new GameUIRenderer(gameModel, clip);
+        this.worldRenderer = new GameWorldRenderer(cam, gameModel, level, sphere);
         this.addMouseMotionListener(new GameController(cam, sphere));
         this.addKeyListener(new KeyAdapter() {
             @Override
@@ -205,6 +219,7 @@ public class GamePanel extends JPanel implements Runnable {
                 final int h = e.getComponent().getHeight();
                 if (w != cachedW) cachedW = w;
                 if (h != cachedH) cachedH = h;
+                frameWindowData = WindowData.of(w, h);
                 if (backBuffer == null || backBuffer.getWidth(null) != w || backBuffer.getHeight(null) != h) {
                     final GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment()
                             .getDefaultScreenDevice().getDefaultConfiguration();
@@ -220,12 +235,20 @@ public class GamePanel extends JPanel implements Runnable {
         final long optimalTimeNanos = 1_000_000_000L / Settings.targetFps;
         while (running) {
             final long loopStartTime = System.nanoTime();
-            final double deltaTime = (loopStartTime - lastFrameTime) / 1_000_000_000.0;
+            final float dt = (float) ((loopStartTime - lastFrameTime) / 1_000_000_000.0);
             lastFrameTime = loopStartTime;
+            animTime += dt;
 
+            updateParticleCount();
             final double currentTime = (clip != null && clip.isRunning()) ? clip.getMicrosecondPosition() / 1_000_000.0 : 0;
-            gameModel.update(currentTime, deltaTime);
+            gameModel.update(currentTime, dt);
             updateCursorVisibility();
+
+            if (Settings.particlesEnabled) {
+                final int w = (cachedW > 0) ? cachedW : 1920;
+                final int h = (cachedH > 0) ? cachedH : 1080;
+                Particle.updateAll(particles, particleCount, dt, w, h);
+            }
 
             final int currentScore = gameModel.getScore();
             if (currentScore != lastScore) {
@@ -234,7 +257,7 @@ public class GamePanel extends JPanel implements Runnable {
             }
 
             if (scorePopAlpha > 0) {
-                scorePopAlpha -= (float) (deltaTime * 3.0);
+                scorePopAlpha -= (float) (dt * 3.0);
                 if (scorePopAlpha < 0) scorePopAlpha = 0;
             }
 
@@ -334,221 +357,36 @@ public class GamePanel extends JPanel implements Runnable {
 
         final int horizonY = h / 3;
         final long time = System.currentTimeMillis();
-        frameWindowData = WindowData.of(w, h);
+        final float globalHue = (animTime * 0.02f) % 1.0f; 
 
         if (gameModel.getGameState() != GameState.FINISHED) {
-            drawEnvironment(g2d, w, h, horizonY, time);
-            drawGameObjects(g2d);
+            worldRenderer.drawEnvironment(g2d, w, h, horizonY, time, globalHue);
+            if (Settings.particlesEnabled) {
+                Particle.drawAll(g2d, particles, particleCount);
+            }
+            worldRenderer.drawGameObjects(g2d, frameWindowData);
             uiRenderer.drawProgressBar(g2d, w, h);
             uiRenderer.drawScore(g2d, w, scorePopAlpha);
         }
 
         if (gameModel != null && gameModel.getNeonFlashAlpha() > 0) {
-            final float alpha = Math.min(1f, gameModel.getNeonFlashAlpha());
-            g2d.setColor(new Color(0f, 0f, 0f, alpha));
+            final int flashAlpha = Math.min(255, (int) (gameModel.getNeonFlashAlpha() * 255));
+            g2d.setColor(RenderCache.blackWithAlpha(flashAlpha));
             g2d.fillRect(0, 0, w, h);
         }
-        drawByGameState(g2d, w, h);
+
+        assert gameModel != null;
+        uiRenderer.renderGameState(g2d, w, h, gameModel.getGameState());
 
         if (Settings.showFps) {
-            g2d.setColor(FPS_COLOR);
+            g2d.setColor(Color.YELLOW);
             g2d.setFont(RenderCache.MONO_BOLD_16);
             g2d.drawString("FPS: " + currentUpdateFps, 10, 20);
         }
 
         g2d.dispose();
-
-        final Graphics2D g2 = (Graphics2D) g.create();
-        RenderUtils.initGraphics2D(g2);
-        g2.drawImage(backBuffer, 0, 0, null);
-        g2.dispose();
+        g.drawImage(backBuffer, 0, 0, null);
+        g.dispose();
         if (Settings.vsync) Toolkit.getDefaultToolkit().sync();
-    }
-
-    /**
-     * Draws state-specific UI screens (e.g., Pause, Game Over).
-     *
-     * @param g2d The Graphics2D context.
-     * @param w   Panel width.
-     * @param h   Panel height.
-     */
-    private void drawByGameState(Graphics2D g2d, int w, int h) {
-        switch (gameModel.getGameState()) {
-            case COUNTDOWN -> uiRenderer.drawCountdown(g2d, w, h);
-            case PAUSED -> uiRenderer.drawPauseScreen(g2d, w, h);
-            case FINISHED -> uiRenderer.drawFinishedScreen(g2d, w, h);
-            case GAME_OVER -> uiRenderer.drawGameOverScreen(g2d, w, h);
-        }
-    }
-
-    /**
-     * Renders the game environment, including the floor and background.
-     *
-     * @param g2d      The Graphics2D context.
-     * @param width    Panel width.
-     * @param height   Panel height.
-     * @param horizonY Vertical coordinate of the horizon.
-     * @param time     Current system time for animations.
-     */
-    private void drawEnvironment(Graphics2D g2d, int width, int height, int horizonY, long time) {
-        if (bgCache == null || cachedW != width || cachedH != height) {
-            this.cachedW = width;
-            this.cachedH = height;
-            this.bgCache = GraphicsEnvironment.getLocalGraphicsEnvironment()
-                    .getDefaultScreenDevice().getDefaultConfiguration()
-                    .createCompatibleImage(width, height, Transparency.OPAQUE);
-            final Graphics2D cg = bgCache.createGraphics();
-            RenderUtils.initGraphics2D(cg);
-            RenderUtils.drawBackground(cg, width, height);
-            RenderUtils.drawFloor(cg, width, height, horizonY);
-            cg.dispose();
-        }
-        g2d.drawImage(bgCache, 0, 0, null);
-
-        drawPlanet(g2d, width, horizonY, time);
-        RenderUtils.drawHorizonLine(g2d, width, horizonY);
-        drawNeonGrid(g2d, width, height, horizonY);
-    }
-
-    /**
-     * Renders a stylized planet with rings in the background.
-     *
-     * @param g2d      The Graphics2D context.
-     * @param width    Panel width.
-     * @param horizonY Vertical coordinate of the horizon.
-     * @param time     Current system time for animations.
-     */
-    private void drawPlanet(Graphics2D g2d, int width, int horizonY, long time) {
-        final int cx = width / 2;
-        final int cy = horizonY - 150;
-        final int r = 100;
-        final float t = time / 1000.0f;
-        final float pulse = (float) ((Math.sin(t * 1.5) + 1.0) / 2.0);
-
-        final int glowR = (int) (r * (2.f + pulse * 0.15f));
-        g2d.setPaint(new RadialGradientPaint(cx, cy, glowR, new float[]{0f, 1f}, new Color[]{new Color(0, 200, 255, (int) (15 + pulse * 30)), new Color(0, 200, 255, 0)}));
-        g2d.fillOval(cx - glowR, cy - glowR, glowR * 2, glowR * 2);
-
-        final int ry = cy + (int) (Math.sin(t * 0.4) * 8);
-
-        drawRing(g2d, cx, ry, r * 1.8f, 28, 0, new Color(200, 0, 255, 60), 1f);
-        drawRing(g2d, cx, ry, r * 1.4f, 18, 0, new Color(0, 255, 255, 40), 1f);
-
-        g2d.setPaint(new RadialGradientPaint(cx - r / 2.5f, cy - r / 2.5f, r * 1.5f, new float[]{0f, 1f}, new Color[]{new Color(45, 15, 80), new Color(10, 0, 25)}));
-        g2d.fillOval(cx - r, cy - r, r * 2, r * 2);
-
-        if (!Settings.graphicsQuality.equals("LOW")) {
-            g2d.setColor(GRID_CYAN_120);
-            g2d.setStroke(RenderCache.STROKE_2_5);
-            g2d.drawOval(cx - r, cy - r, r * 2, r * 2);
-
-            drawRing(g2d, cx, ry, r * 1.4f, 18, 180, RenderCache.cyanWithAlpha((int) (180 + 75 * pulse)), 2f);
-            drawRing(g2d, cx, ry, r * 1.8f, 28, 180, RenderCache.magentaWithAlpha((int) (140 + 60 * pulse)), 2.5f);
-            drawRing(g2d, cx, ry, r * 1.8f, 28, 180, new Color(255, 200, 255, 200), 1f);
-        }
-
-        g2d.setStroke(RenderCache.STROKE_1);
-    }
-
-    /**
-     * Helper to draw a stylized arc/ring segment.
-     *
-     * @param g2d        The Graphics2D context.
-     * @param cx         Center X.
-     * @param cy         Center Y.
-     * @param rx         Horizontal radius.
-     * @param ry         Vertical radius.
-     * @param startAngle Arc start angle.
-     * @param color      Color of the ring.
-     * @param stroke     Thickness of the line.
-     */
-    private void drawRing(
-            Graphics2D g2d, int cx, int cy, float rx, int ry, int startAngle, Color color, float stroke
-    ) {
-        g2d.setColor(color);
-        g2d.setStroke(new BasicStroke(stroke));
-        g2d.drawArc(cx - (int) rx, cy - ry, (int) (rx * 2), ry * 2, startAngle, 180);
-    }
-
-    /**
-     * Renders all active game objects (tiles, orbs, sphere) in 3D.
-     *
-     * @param g2d The Graphics2D context.
-     */
-    private void drawGameObjects(Graphics2D g2d) {
-        if (gameModel == null || gameModel.getGameState() != GameState.FINISHED) {
-            final List<AbstractTile> tiles = level.tiles();
-            for (int i = tiles.size() - 1; i >= 0; i--) {
-                final AbstractTile tile = tiles.get(i);
-                final double distance = cam.getDistanceTo(tile.getZ());
-                final double tileDepth = distance + tile.getLengthInZ();
-                if (tileDepth <= 0 || distance > 3000) continue;
-                tile.paint3D(g2d, cam, frameWindowData);
-            }
-
-            if (gameModel != null) {
-                for (Orb orb : gameModel.getOrbs()) {
-                    final double distance = cam.getDistanceTo(orb.getZ());
-                    if (distance > 0 && distance < 3000) {
-                        orb.paint3D(g2d, cam, frameWindowData);
-                    }
-                }
-            }
-        }
-        sphere.paint3D(g2d, cam, frameWindowData);
-    }
-
-    /**
-     * Projects 3D world coordinates to 2D screen coordinates.
-     *
-     * @param x        World X.
-     * @param z        World Z.
-     * @param width    Screen width.
-     * @param horizonY Screen vertical center.
-     * @return A 2D Point, or null if the coordinate is behind the camera.
-     */
-    private Point projectPoint(double x, double z, int width, int horizonY) {
-        final double scale = cam.getScale(z);
-        if (scale <= 0) return null;
-        final int px = (int) (width / 2.0 + (x - cam.getX()) * scale);
-        final int py = (int) (horizonY + (((double) 150 - cam.getY()) * scale));
-        return new Point(px, py);
-    }
-
-    /**
-     * Renders the perspective neon grid on the floor.
-     *
-     * @param g2d      The Graphics2D context.
-     * @param width    Panel width.
-     * @param height   Panel height.
-     * @param horizonY Vertical coordinate of the horizon.
-     */
-    private void drawNeonGrid(Graphics2D g2d, int width, int height, int horizonY) {
-        for (int z = 0; z < 3000; z += 150) {
-            final double distance = z - (cam.getZ() % 150);
-            if (distance <= 0) continue;
-            final Point p = projectPoint(0, cam.getZ() + distance, width, horizonY);
-
-            if (p != null && p.y >= horizonY && p.y <= height) {
-                final int alpha = (int) Math.max(0, Math.min(120, 255 - (distance / 3000.0 * 255)));
-                g2d.setColor(RenderCache.cyanWithAlpha(alpha));
-                g2d.drawLine(0, p.y, width, p.y);
-            }
-        }
-
-        final int[] laneXs = {-300, -180, -60, 60, 180, 300};
-        g2d.setStroke(RenderCache.STROKE_2);
-        for (int lx : laneXs) {
-
-            final Point start = projectPoint(lx, cam.getZ() + 100, width, horizonY);
-            final Point end = projectPoint(lx, cam.getZ() + 3000, width, horizonY);
-
-            if (start == null || end == null) continue;
-
-            if (Math.abs(lx) > 180) g2d.setColor(GRID_MAGENTA_90);
-            else g2d.setColor(GRID_CYAN_110);
-            g2d.drawLine(start.x, start.y, end.x, end.y);
-        }
-        g2d.setStroke(RenderCache.STROKE_1);
     }
 }

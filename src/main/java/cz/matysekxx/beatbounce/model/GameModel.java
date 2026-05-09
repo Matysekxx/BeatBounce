@@ -337,14 +337,11 @@ public class GameModel {
     }
 
     private void handleBreakableCollision(BreakableTile bt) {
-        if (!bt.isBroken()) {
-            bt.breakTile();
-            currentTileIndex++;
-            score += 12;
-            startNextJump(smoothedAudioTime);
-        } else {
-            startFalling();
-        }
+        bt.breakTile();
+        currentTileIndex++;
+        score += 12;
+        startNextJump(smoothedAudioTime);
+        startFalling();
     }
 
     private void handleSpeedTileCollision(SpeedTile st) {

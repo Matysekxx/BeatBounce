@@ -7,6 +7,7 @@ import cz.matysekxx.beatbounce.model.ScoreManager;
 
 import javax.sound.sampled.Clip;
 import java.awt.*;
+import java.awt.geom.RoundRectangle2D;
 
 /**
  * A renderer class responsible for drawing the game's user interface elements.
@@ -277,10 +278,38 @@ public class GameUIRenderer {
         g2d.setFont(RenderCache.MONO_ITALIC_BOLD_60);
         RenderUtils.drawText(g2d, text, (width - g2d.getFontMetrics().stringWidth(text)) / 2, 88, c);
 
-        final String orbsText = "Orbs: " + gameModel.getCollectedOrbs();
-        g2d.setFont(RenderCache.MONO_BOLD_20);
+        final String orbsText = String.valueOf(gameModel.getCollectedOrbs());
+        g2d.setFont(RenderCache.MONO_BOLD_24);
+        final int orbsW = g2d.getFontMetrics().stringWidth(orbsText);
+
+        final int boxW = orbsW + 50;
+        final int boxH = 40;
+        final int boxX = 20;
+        final int boxY = 20;
+
+        g2d.setPaint(new RadialGradientPaint(
+                boxX + boxW / 2f, boxY + boxH / 2f, boxW * 0.8f,
+                new float[]{0f, 1f},
+                new Color[]{RenderCache.customColorWithAlpha(ORBS_COLOR, 30), new Color(0, 0, 0, 0)}
+        ));
+        g2d.fill(new RoundRectangle2D.Float(boxX - 10, boxY - 10, boxW + 20, boxH + 20, 20, 20));
+
+        g2d.setColor(new Color(0, 0, 0, 150));
+        g2d.fill(new RoundRectangle2D.Float(boxX, boxY, boxW, boxH, 15, 15));
+
+        g2d.setColor(RenderCache.customColorWithAlpha(ORBS_COLOR, (int) (100 + 50 * pulse)));
+        g2d.setStroke(RenderCache.STROKE_2);
+        g2d.draw(new RoundRectangle2D.Float(boxX, boxY, boxW, boxH, 15, 15));
+        g2d.setStroke(RenderCache.STROKE_1);
+
+        g2d.setColor(ORBS_COLOR);
+        final int orbR = 8;
+        final int orbX = boxX + 16;
+        final int orbY = boxY + boxH / 2;
+        g2d.fillOval(orbX - orbR, orbY - orbR, orbR * 2, orbR * 2);
+
         g2d.setColor(ORBS_TEXT_COLOR);
-        g2d.drawString(orbsText, 20, 40);
+        g2d.drawString(orbsText, boxX + 35, boxY + 28);
     }
 
     /**

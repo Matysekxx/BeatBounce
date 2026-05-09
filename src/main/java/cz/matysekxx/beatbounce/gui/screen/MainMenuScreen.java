@@ -25,7 +25,7 @@ public class MainMenuScreen extends Screen {
     private final LibraryPanel libraryPanel;
     private final ScreenManager screenManager;
     private final String[] buttonsTitles = {
-            "SONGS", "LIBRARY", "SKINS", "SHOP", "SETTINGS"
+            "SONGS", "LIBRARY", "SETTINGS"
     };
     private final JPanel sidebar;
     private String activePanel = "SONGS";
@@ -57,14 +57,10 @@ public class MainMenuScreen extends Screen {
 
         songSelectionPanel = new SongSelectionPanel(audiusClient, objectMapper, screenManager);
         libraryPanel = new LibraryPanel(audiusClient, screenManager);
-        final SkinsPanel skinsPanel = new SkinsPanel();
-        final ShopPanel shopPanel = new ShopPanel();
         final SettingsPanel settingsPanel = new SettingsPanel(screenManager);
 
         cardPanel.add(songSelectionPanel, "SONGS");
         cardPanel.add(libraryPanel, "LIBRARY");
-        cardPanel.add(skinsPanel, "SKINS");
-        cardPanel.add(shopPanel, "SHOP");
         cardPanel.add(settingsPanel, "SETTINGS");
     }
 

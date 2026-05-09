@@ -53,17 +53,11 @@ public class SwingConfiguration {
      */
     public static void setup() {
         try {
-            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
-        UIManager.put("Panel.background", mainBg);
-        UIManager.put("Label.foreground", lightText);
-        setupButtonProperties();
-        setupTextFieldProperties();
-        setupListProperties();
-        setupComboBoxProperties();
-        setupFileChooserProperties();
+
     }
 
     /**

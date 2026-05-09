@@ -341,7 +341,7 @@ public class GameUIRenderer {
 
         g2d.setFont(RenderCache.MONO_BOLD_16);
         g2d.setColor(RenderCache.whiteWithAlpha(150));
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append((int) current / 60).append(":");
         int currentSec = (int) current % 60;
         if (currentSec < 10) sb.append("0");

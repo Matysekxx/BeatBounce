@@ -297,7 +297,9 @@ public class GameModel {
         if (onLongTile && currentTileIndex >= 0) {
             final AbstractTile curTile = level.tiles().get(currentTileIndex);
             if (curTile instanceof LongTile lt) {
-                if (gameZProgress <= lt.getZ() + lt.getLengthInZ()) {
+                final double timeToNextTile = (nextTile.getZ() - gameZProgress) / zUnitsPerSecond;
+                final boolean shouldJumpEarly = timeToNextTile <= 0.15;
+                if (gameZProgress <= lt.getZ() + lt.getLengthInZ() && !shouldJumpEarly) {
                     longTileScoreAccum++;
                     if (longTileScoreAccum % 6 == 0) score += 1;
                     return;
@@ -337,11 +339,14 @@ public class GameModel {
     }
 
     private void handleBreakableCollision(BreakableTile bt) {
+        if (bt.isBroken()) {
+            startFalling();
+            return;
+        }
         bt.breakTile();
         currentTileIndex++;
         score += 12;
         startNextJump(smoothedAudioTime);
-        startFalling();
     }
 
     private void handleSpeedTileCollision(SpeedTile st) {
@@ -361,6 +366,7 @@ public class GameModel {
         onLongTile = true;
         longTileScoreAccum = 0;
         score += 5;
+        sphere.cancelJump();
     }
 
     private void startFalling() {
@@ -422,12 +428,13 @@ public class GameModel {
         final int nextIdx = currentTileIndex + 1;
         if (nextIdx >= tiles.size()) return;
 
-        AbstractTile currentTile = (currentTileIndex >= 0) ? tiles.get(currentTileIndex) : null;
         final AbstractTile nextTile = tiles.get(nextIdx);
 
-        double startZ = (currentTile != null) ? currentTile.getZ() : 0;
+        double startZ = gameZProgress;
         final double endZ = nextTile.getZ();
         double distanceZ = endZ - startZ;
+        if (distanceZ < 10) distanceZ = 10;
+        
         double duration = distanceZ / zUnitsPerSecond;
         if (duration <= 0) duration = 0.2;
         duration /= activeSpeedMultiplier;

@@ -8,7 +8,7 @@ import java.util.Set;
 /**
  * Defines all tunable parameters that control level generation for a given difficulty.
  * <p>
- * Difficulty ranges from 1–10. All tile X-positions are constrained by the fixed map
+ * Difficulty ranges from 1 to 10. All tile X-positions are constrained by the fixed map
  * boundary: 5 lanes (-2,-1,0,1,2), lane width 120 units, road half-width = 300 units.
  * {@code maxLanes} is therefore always at most 2.
  *

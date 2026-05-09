@@ -63,6 +63,15 @@ public class Sphere extends Entity implements Paintable {
     }
 
     /**
+     * Cancels the current jump and snaps the sphere back to the ground.
+     */
+    public void cancelJump() {
+        this.isJumping = false;
+        this.currentY = 150;
+        this.y = 150;
+    }
+
+    /**
      * Updates the sphere's position and state based on the current time.
      *
      * @param currentTime the current game time

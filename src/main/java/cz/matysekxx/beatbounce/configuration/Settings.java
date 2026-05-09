@@ -168,4 +168,21 @@ public class Settings {
             System.err.println("Failed to save settings: " + e.getMessage());
         }
     }
+
+    /**
+     * Resets the application settings to their default values.
+     */
+    public static void reset() {
+        Settings.fullscreen = true;
+        Settings.vsync = false;
+        Settings.opengl = true;
+        Settings.showFps = false;
+        Settings.graphicsQuality = "HIGH";
+        Settings.monitorIndex = 0;
+        Settings.targetFps = 60;
+        Settings.soundVolume = 100;
+        Settings.particlesEnabled = true;
+        Settings.bloomEnabled = true;
+        Settings.muteOnFocusLoss = false;
+    }
 }

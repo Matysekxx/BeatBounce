@@ -2,6 +2,7 @@ package cz.matysekxx.beatbounce.gui.screen;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.matysekxx.beatbounce.api.AudiusClient;
+import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.components.*;
 
@@ -95,7 +96,7 @@ public class MainMenuScreen extends Screen {
         gbc.insets = new Insets(40, 0, 50, 0);
 
         final JLabel logo = new JLabel("BEAT BOUNCE");
-        logo.setFont(new Font("Monospaced", Font.BOLD | Font.ITALIC, 32));
+        logo.setFont(RenderCache.MONO_ITALIC_BOLD_24);
         logo.setForeground(RenderUtils.cyan);
         logo.setHorizontalAlignment(SwingConstants.CENTER);
         p.add(logo, gbc);
@@ -143,7 +144,7 @@ public class MainMenuScreen extends Screen {
                 g2.dispose();
             }
         };
-        btn.setFont(new Font("SansSerif", Font.BOLD, 18));
+        btn.setFont(RenderCache.SANS_BOLD_18);
         btn.setPreferredSize(new Dimension(260, 55));
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);

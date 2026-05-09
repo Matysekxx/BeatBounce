@@ -52,7 +52,7 @@ public class AudiusClient {
         this.httpClient = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_2)
                 .followRedirects(HttpClient.Redirect.NORMAL)
-                .connectTimeout(Duration.ofSeconds(20))
+                .connectTimeout(Duration.ofSeconds(30))
                 .build();
 
         final String userHome = System.getProperty("user.home");
@@ -108,7 +108,7 @@ public class AudiusClient {
         final HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(String.format("%s/v1/tracks/search?query=%s&app_name=%s", DEFAULT_HOST, encodedQuery, appName)))
                 .GET()
-                .timeout(Duration.ofSeconds(15))
+                .timeout(Duration.ofSeconds(20))
                 .build();
 
         return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
@@ -125,7 +125,7 @@ public class AudiusClient {
         final HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(String.format("%s/v1/tracks/trending?time=%s&limit=20&app_name=%s", DEFAULT_HOST, time, appName)))
                 .GET()
-                .timeout(Duration.ofSeconds(15))
+                .timeout(Duration.ofSeconds(20))
                 .build();
         return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::body);
@@ -143,7 +143,7 @@ public class AudiusClient {
         final HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(String.format("%s/v1/tracks/trending?genre=%s&time=%s&limit=20&app_name=%s", DEFAULT_HOST, encodedGenre, time, appName)))
                 .GET()
-                .timeout(Duration.ofSeconds(15))
+                .timeout(Duration.ofSeconds(20))
                 .build();
         return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::body);
@@ -169,7 +169,7 @@ public class AudiusClient {
         final HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(String.format("%s/v1/tracks/%s/stream?app_name=%s", DEFAULT_HOST, trackId, appName)))
                 .GET()
-                .timeout(Duration.ofSeconds(60))
+                .timeout(Duration.ofSeconds(40))
                 .build();
 
         return httpClient

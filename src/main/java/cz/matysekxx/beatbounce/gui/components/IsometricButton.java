@@ -42,7 +42,7 @@ public class IsometricButton extends JButton {
         this.arc = arc;
         this.setCursor(new Cursor(Cursor.HAND_CURSOR));
         this.setForeground(Color.WHITE);
-        this.setFont(new Font("Monospaced", Font.BOLD | Font.ITALIC, 24));
+        this.setFont(RenderCache.MONO_ITALIC_BOLD_24);
         this.setPreferredSize(size);
         this.setContentAreaFilled(false);
         this.setBorderPainted(false);

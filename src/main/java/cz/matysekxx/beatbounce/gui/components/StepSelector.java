@@ -1,5 +1,6 @@
 package cz.matysekxx.beatbounce.gui.components;
 
+import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 
 import java.awt.*;
@@ -21,7 +22,9 @@ public class StepSelector extends javax.swing.JComponent {
     public StepSelector(int[] values, int currentValue) {
         this.values = values;
         setSelectedIndexByValue(currentValue);
-        setPreferredSize(new Dimension(420, 60));
+        setMinimumSize(new Dimension(450, 60));
+        setPreferredSize(new Dimension(450, 60));
+        setMaximumSize(new Dimension(450, 60));
         setCursor(new Cursor(Cursor.HAND_CURSOR));
         addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -77,18 +80,18 @@ public class StepSelector extends javax.swing.JComponent {
             int itemW = w - margin * 2;
 
             g2.setColor(i == selectedIndex ? RenderUtils.cyan : new Color(40, 40, 45));
-            g2.fillRoundRect(x, 4, itemW, 24, 12, 12);
+            g2.fillRoundRect(x, 4, itemW, 30, 12, 12);
 
             if (i == selectedIndex) {
                 g2.setColor(new Color(0, 255, 255, 40));
-                g2.fillRoundRect(x - 2, 2, itemW + 4, 28, 14, 14);
+                g2.fillRoundRect(x - 2, 2, itemW + 4, 34, 14, 14);
             }
 
             g2.setColor(i == selectedIndex ? Color.WHITE : Color.GRAY);
-            g2.setFont(new Font("SansSerif", i == selectedIndex ? Font.BOLD : Font.PLAIN, 14));
+            g2.setFont(i == selectedIndex ? RenderCache.SANS_BOLD_16 : RenderCache.SANS_PLAIN_16);
             String s = String.valueOf(values[i]);
             FontMetrics fm = g2.getFontMetrics();
-            g2.drawString(s, x + (itemW - fm.stringWidth(s)) / 2, 52);
+            g2.drawString(s, x + (itemW - fm.stringWidth(s)) / 2, 25);
         }
         g2.dispose();
     }

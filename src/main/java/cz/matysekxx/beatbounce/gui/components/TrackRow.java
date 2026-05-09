@@ -1,6 +1,7 @@
 package cz.matysekxx.beatbounce.gui.components;
 
 import cz.matysekxx.beatbounce.api.AudiusClient;
+import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.screen.GameScreen;
 import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
@@ -130,21 +131,21 @@ public class TrackRow extends JPanel {
 
     private void drawTrackDetails(Graphics2D g2, int w, int h) {
         final boolean downloaded = data.isDownloaded(audiusClient);
-        g2.setFont(new Font("SansSerif", Font.BOLD, 16));
+        g2.setFont(RenderCache.SANS_BOLD_16);
         g2.setColor(downloaded ? RenderUtils.cyan : Color.GRAY);
         g2.drawString(downloaded ? "✓" : "☁", 20, 38);
 
         g2.setColor(Color.WHITE);
-        g2.setFont(new Font("SansSerif", Font.BOLD, 15));
+        g2.setFont(RenderCache.SANS_BOLD_20);
         g2.drawString(data.title, 50, 28);
         g2.setColor(Color.GRAY);
-        g2.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        g2.setFont(RenderCache.SANS_PLAIN_15);
         g2.drawString(data.artist, 50, 48);
     }
 
     private void drawStats(Graphics2D g2, int w, int h) {
         final int rightX = w - 20;
-        g2.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        g2.setFont(RenderCache.SANS_PLAIN_20);
         final String sanitizedTitle = data.title.replaceAll("[\\\\/:*?\"<>|]", "_");
         final String info = String.format("%s  •  Best: %d", data.duration, ScoreManager.getBestScore(sanitizedTitle));
         final FontMetrics fm = g2.getFontMetrics();
@@ -159,13 +160,12 @@ public class TrackRow extends JPanel {
     private void drawActionButton(Graphics2D g2, int w, int h) {
         if (data.expansion <= 0.5f) return;
         final int btnW = 110, btnH = 32, bx = w - 20 - btnW, by = 60;
-        final Font btnFont = new Font("SansSerif", Font.BOLD, 13);
 
         if (data.starting) {
             g2.setColor(Color.WHITE);
             g2.fillRoundRect(bx, by, btnW, btnH, 8, 8);
             g2.setColor(new Color(10, 10, 26));
-            g2.setFont(btnFont);
+            g2.setFont(RenderCache.SANS_BOLD_13);
             drawCenteredString(g2, "READY!", bx, by, btnW, btnH);
             final float alpha = Math.max(0, 1.0f - data.startingProgress);
             g2.setColor(new Color(255, 255, 255, (int)(alpha * 120)));
@@ -177,14 +177,14 @@ public class TrackRow extends JPanel {
             g2.setPaint(new GradientPaint(bx, by, RenderUtils.purple, bx + btnW, by, RenderUtils.cyan));
             g2.fillRoundRect(bx, by, (int)(btnW * data.downloadProgress), btnH, 8, 8);
             g2.setColor(Color.WHITE);
-            g2.setFont(new Font("SansSerif", Font.BOLD, 11));
+            g2.setFont(RenderCache.SANS_BOLD_11);
             drawCenteredString(g2, (int)(data.downloadProgress * 100) + "%", bx, by, btnW, btnH);
 
         } else {
             g2.setColor(data.getAccent());
             g2.fillRoundRect(bx, by, btnW, btnH, 8, 8);
             g2.setColor(new Color(10, 10, 26));
-            g2.setFont(btnFont);
+            g2.setFont(RenderCache.SANS_BOLD_13);
             drawCenteredString(g2, "PLAY", bx, by, btnW, btnH);
         }
 

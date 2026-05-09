@@ -1,5 +1,6 @@
 package cz.matysekxx.beatbounce.gui.components;
 
+import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 
 import javax.swing.*;
@@ -32,6 +33,7 @@ public class CycleButton extends JButton {
         this.options = options;
         this.currentIndex = initialIndex;
         setText(options[currentIndex]);
+        setFont(RenderCache.SANS_BOLD_20);
         setOpaque(false);
         setFocusPainted(false);
         setContentAreaFilled(false);
@@ -71,6 +73,7 @@ public class CycleButton extends JButton {
         g2.setColor(hover ? Color.WHITE : RenderUtils.cyan);
         g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 12, 12);
         g2.setColor(Color.WHITE);
+        g2.setFont(getFont());
         FontMetrics fm = g2.getFontMetrics();
         String t = "◄  " + getText() + "  ►";
         g2.drawString(t, (getWidth() - fm.stringWidth(t)) / 2, (getHeight() - fm.getHeight()) / 2 + fm.getAscent());

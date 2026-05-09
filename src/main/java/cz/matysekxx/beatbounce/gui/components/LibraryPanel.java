@@ -1,6 +1,7 @@
 package cz.matysekxx.beatbounce.gui.components;
 
 import cz.matysekxx.beatbounce.api.AudiusClient;
+import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.screen.GameScreen;
 import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
@@ -60,7 +61,7 @@ public class LibraryPanel extends JPanel {
         topBar.setBorder(new EmptyBorder(25, 40, 15, 40));
 
         final JLabel title = new JLabel("YOUR LIBRARY");
-        title.setFont(new Font("SansSerif", Font.BOLD, 36));
+        title.setFont(RenderCache.SANS_BOLD_36);
         title.setForeground(RenderUtils.cyan);
         topBar.add(title, BorderLayout.CENTER);
 
@@ -133,7 +134,7 @@ public class LibraryPanel extends JPanel {
             }
         };
         btn.setPreferredSize(new Dimension(200, 45));
-        btn.setFont(new Font("SansSerif", Font.BOLD, 15));
+        btn.setFont(RenderCache.SANS_BOLD_15);
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);
@@ -200,7 +201,7 @@ public class LibraryPanel extends JPanel {
         if (listPanel.getComponentCount() == 0) {
             final JLabel empty = new JLabel("No songs downloaded yet.");
             empty.setForeground(new Color(255, 255, 255, 80));
-            empty.setFont(new Font("SansSerif", Font.ITALIC, 22));
+            empty.setFont(RenderCache.SANS_ITALIC_22);
             empty.setAlignmentX(Component.CENTER_ALIGNMENT);
             listPanel.add(Box.createRigidArea(new Dimension(0, 100)));
             listPanel.add(empty);
@@ -306,23 +307,23 @@ public class LibraryPanel extends JPanel {
 
             g2.setColor(new Color(255, 255, 255, 25));
             g2.fillRoundRect(18, 15, 60, 60, 12, 12);
-            g2.setFont(new Font("SansSerif", Font.BOLD, 26));
+            g2.setFont(RenderCache.SANS_BOLD_26);
             g2.setColor(hovered ? RenderUtils.cyan : Color.WHITE);
             final String icon = "🎵";
             FontMetrics fmIcon = g2.getFontMetrics();
             g2.drawString(icon, 18 + (60 - fmIcon.stringWidth(icon)) / 2, 15 + 42);
 
-            g2.setFont(new Font("SansSerif", Font.BOLD, 22));
+            g2.setFont(RenderCache.SANS_BOLD_22);
             g2.setColor(Color.WHITE);
             g2.drawString(fileName, 100, 42);
 
-            g2.setFont(new Font("SansSerif", Font.PLAIN, 16));
+            g2.setFont(RenderCache.SANS_PLAIN_20);
             g2.setColor(new Color(180, 180, 200));
             final String subText = "Stars: " + "★".repeat(stars) + "☆".repeat(10 - stars);
             g2.drawString(subText, 100, 68);
 
             String scoreText = "BEST: " + bestScore;
-            g2.setFont(new Font("Monospaced", Font.BOLD, 17));
+            g2.setFont(RenderCache.MONO_BOLD_17);
             final FontMetrics fmScore = g2.getFontMetrics();
             final int scoreW = fmScore.stringWidth(scoreText) + 24;
             final int scoreX = w - 170 - scoreW;
@@ -340,7 +341,7 @@ public class LibraryPanel extends JPanel {
             g2.fillRoundRect(bx, by, btnW, btnH, 14, 14);
 
             g2.setColor(Color.BLACK);
-            g2.setFont(new Font("SansSerif", Font.BOLD, 20));
+            g2.setFont(RenderCache.SANS_BOLD_20);
             String playTxt = "PLAY";
             final FontMetrics fmPlay = g2.getFontMetrics();
             g2.drawString(playTxt, bx + (btnW - fmPlay.stringWidth(playTxt)) / 2, by + 32);

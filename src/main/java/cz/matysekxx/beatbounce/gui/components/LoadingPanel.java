@@ -12,7 +12,6 @@ import java.awt.*;
  * It uses a separate thread for the loading animation.
  */
 public class LoadingPanel extends JPanel implements Runnable {
-    private static final Font PERCENT_FONT = new Font("Monospaced", Font.BOLD, 16);
     private static final Stroke BAR_STROKE = new BasicStroke(1.5f);
     private static final int BAR_HEIGHT = 20;
     private static final Color FILL_GLOW_COLOR = new Color(
@@ -169,7 +168,7 @@ public class LoadingPanel extends JPanel implements Runnable {
     }
 
     private void drawPercentLabel(Graphics2D g2, int barX, int barY, int barWidth) {
-        g2.setFont(PERCENT_FONT);
+        g2.setFont(RenderCache.MONO_BOLD_16);
         final String percentText = (int) (progress * 100) + "%";
         final FontMetrics fm = g2.getFontMetrics();
         final int pctX = barX + (barWidth >> 1) - (fm.stringWidth(percentText) >> 1);

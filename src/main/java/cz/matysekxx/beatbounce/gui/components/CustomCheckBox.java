@@ -1,5 +1,6 @@
 package cz.matysekxx.beatbounce.gui.components;
 
+import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 
 import javax.swing.*;
@@ -23,7 +24,7 @@ public class CustomCheckBox extends JCheckBox {
         setFocusPainted(false);
         setBorderPainted(false);
         setForeground(Color.LIGHT_GRAY);
-        setFont(new Font("SansSerif", Font.PLAIN, 17));
+        setFont(RenderCache.SANS_PLAIN_20);
         setAlignmentX(Component.LEFT_ALIGNMENT);
         setCursor(new Cursor(Cursor.HAND_CURSOR));
         addChangeListener(_ -> setForeground(isSelected() ? Color.WHITE : Color.LIGHT_GRAY));

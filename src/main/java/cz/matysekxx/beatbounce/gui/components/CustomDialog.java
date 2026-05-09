@@ -1,5 +1,6 @@
 package cz.matysekxx.beatbounce.gui.components;
 
+import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 
 import javax.swing.*;
@@ -28,14 +29,14 @@ public class CustomDialog extends JDialog {
 
         final DialogContentPane dialogContentPane = new DialogContentPane(borderColor);
         final JLabel titleLabel = new JLabel(titleText);
-        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 28));
+        titleLabel.setFont(RenderCache.SANS_BOLD_28);
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
         dialogContentPane.add(titleLabel, BorderLayout.NORTH);
 
         final JLabel messageLabel = new JLabel(message);
-        messageLabel.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        messageLabel.setFont(RenderCache.SANS_PLAIN_18);
         messageLabel.setForeground(new Color(200, 200, 200));
         messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         dialogContentPane.add(messageLabel, BorderLayout.CENTER);
@@ -74,7 +75,7 @@ public class CustomDialog extends JDialog {
             g2d.setColor(new Color(15, 15, 25, 240));
             g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
             g2d.setColor(borderColor);
-            g2d.setStroke(new BasicStroke(2));
+            g2d.setStroke(RenderCache.STROKE_2);
             g2d.drawRoundRect(1, 1, getWidth() - 3, getHeight() - 3, 20, 20);
             g2d.dispose();
         }

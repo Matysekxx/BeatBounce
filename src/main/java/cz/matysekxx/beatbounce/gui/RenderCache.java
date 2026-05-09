@@ -45,69 +45,43 @@ public final class RenderCache {
      */
     public static final BasicStroke STROKE_8 = new BasicStroke(8.0f);
 
-    /**
-     * A bold monospaced font of size 11.
-     */
     public static final Font MONO_BOLD_11 = new Font("Monospaced", Font.BOLD, 11);
-    /**
-     * A bold monospaced font of size 12.
-     */
     public static final Font MONO_BOLD_12 = new Font("Monospaced", Font.BOLD, 12);
-    /**
-     * A bold monospaced font of size 16.
-     */
     public static final Font MONO_BOLD_16 = new Font("Monospaced", Font.BOLD, 16);
-    /**
-     * A bold monospaced font of size 24.
-     */
+    public static final Font MONO_BOLD_17 = new Font("Monospaced", Font.BOLD, 17);
     public static final Font MONO_BOLD_24 = new Font("Monospaced", Font.BOLD, 24);
-    /**
-     * A bold monospaced font of size 85.
-     */
     public static final Font MONO_BOLD_85 = new Font("Monospaced", Font.BOLD, 85);
-    /**
-     * A bold monospaced font of size 150.
-     */
     public static final Font MONO_BOLD_150 = new Font("Monospaced", Font.BOLD, 150);
 
-    /**
-     * A bold italic monospaced font of size 48.
-     */
+    public static final Font MONO_ITALIC_BOLD_24 = new Font("Monospaced", Font.BOLD | Font.ITALIC, 24);
     public static final Font MONO_ITALIC_BOLD_48 = new Font("Monospaced", Font.BOLD | Font.ITALIC, 48);
-    /**
-     * A bold italic monospaced font of size 60.
-     */
     public static final Font MONO_ITALIC_BOLD_60 = new Font("Monospaced", Font.BOLD | Font.ITALIC, 60);
-    /**
-     * A bold italic monospaced font of size 65.
-     */
     public static final Font MONO_ITALIC_BOLD_65 = new Font("Monospaced", Font.BOLD | Font.ITALIC, 65);
-    /**
-     * A bold italic monospaced font of size 78.
-     */
     public static final Font MONO_ITALIC_BOLD_78 = new Font("Monospaced", Font.BOLD | Font.ITALIC, 78);
-    /**
-     * A bold italic monospaced font of size 150.
-     */
     public static final Font MONO_ITALIC_BOLD_150 = new Font("Monospaced", Font.BOLD | Font.ITALIC, 150);
 
-    /**
-     * A plain sans-serif font of size 13.
-     */
     public static final Font SANS_PLAIN_13 = new Font("SansSerif", Font.PLAIN, 13);
-    /**
-     * A plain sans-serif font of size 14.
-     */
     public static final Font SANS_PLAIN_14 = new Font("SansSerif", Font.PLAIN, 14);
-    /**
-     * A plain sans-serif font of size 20.
-     */
+    public static final Font SANS_PLAIN_15 = new Font("SansSerif", Font.PLAIN, 15);
+    public static final Font SANS_PLAIN_16 = new Font("SansSerif", Font.PLAIN, 16);
+    public static final Font SANS_PLAIN_17 = new Font("SansSerif", Font.PLAIN, 17);
+    public static final Font SANS_PLAIN_18 = new Font("SansSerif", Font.PLAIN, 18);
     public static final Font SANS_PLAIN_20 = new Font("SansSerif", Font.PLAIN, 20);
 
-    /**
-     * A bold sans-serif font of size 13.
-     */
+    public static final Font SANS_BOLD_11 = new Font("SansSerif", Font.BOLD, 11);
     public static final Font SANS_BOLD_13 = new Font("SansSerif", Font.BOLD, 13);
+    public static final Font SANS_BOLD_14 = new Font("SansSerif", Font.BOLD, 14);
+    public static final Font SANS_BOLD_15 = new Font("SansSerif", Font.BOLD, 15);
+    public static final Font SANS_BOLD_16 = new Font("SansSerif", Font.BOLD, 16);
+    public static final Font SANS_BOLD_18 = new Font("SansSerif", Font.BOLD, 18);
+    public static final Font SANS_BOLD_20 = new Font("SansSerif", Font.BOLD, 20);
+    public static final Font SANS_BOLD_22 = new Font("SansSerif", Font.BOLD, 22);
+    public static final Font SANS_BOLD_26 = new Font("SansSerif", Font.BOLD, 26);
+    public static final Font SANS_BOLD_28 = new Font("SansSerif", Font.BOLD, 28);
+    public static final Font SANS_BOLD_36 = new Font("SansSerif", Font.BOLD, 36);
+    public static final Font SANS_BOLD_56 = new Font("SansSerif", Font.BOLD, 56);
+
+    public static final Font SANS_ITALIC_22 = new Font("SansSerif", Font.ITALIC, 22);
 
     /**
      * A triangle shape.

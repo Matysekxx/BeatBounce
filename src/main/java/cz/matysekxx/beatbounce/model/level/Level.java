@@ -24,6 +24,8 @@ import java.util.Optional;
 public record Level(List<AbstractTile> tiles, @JsonIgnore AudioData audioData, String songName, int stars) {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final Path CACHE_DIR;
+    private static final int CACHE_VERSION = 2;
+
 
     static {
         final String userHome = System.getProperty("user.home");
@@ -65,13 +67,16 @@ public record Level(List<AbstractTile> tiles, @JsonIgnore AudioData audioData, S
     public static void toFile(Level level, float speedMultiplier) {
         try {
             final File cacheFile = getCacheFile(level.audioData().file(), speedMultiplier);
-            final LevelCacheData cacheData = new LevelCacheData(level.tiles(), level.songName(), level.stars());
+            final LevelCacheData cacheData = new LevelCacheData(
+                    level.tiles(), level.songName(), level.stars(),
+                    LevelCacheData.CURRENT_VERSION, 0.0, 0);
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(cacheFile, cacheData);
             System.out.println("Level saved to cache: " + cacheFile.getAbsolutePath());
         } catch (IOException e) {
             System.err.println("Failed to save level to cache: " + e.getMessage());
         }
     }
+
 
     /**
      * Generates a cache file reference for a given audio file and speed.
@@ -85,7 +90,8 @@ public record Level(List<AbstractTile> tiles, @JsonIgnore AudioData audioData, S
         final String nameWithoutExt = baseName.contains(".") ? baseName.substring(0, baseName.lastIndexOf('.')) : baseName;
         final String sanitizedName = nameWithoutExt.replaceAll("[^a-zA-Z0-9.-]", "_");
         final double zSpeed = LevelGenerator.getZSpeed();
-        final String fileName = String.format("%s-sm%.1f-zs%.0f.json", sanitizedName, speedMultiplier, zSpeed);
+        final String fileName = String.format("%s-sm%.1f-zs%.0f-v%d.json",
+                sanitizedName, speedMultiplier, zSpeed, CACHE_VERSION);
         return CACHE_DIR.resolve(fileName).toFile();
     }
 }

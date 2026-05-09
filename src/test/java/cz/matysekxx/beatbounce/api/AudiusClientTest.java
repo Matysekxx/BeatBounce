@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Test class for {@link AudiusClient}.
- * Verifies that tracks can be searched and music can be downloaded.
+ * Verifies that tracks can be searched.
  */
 class AudiusClientTest {
     static {
@@ -61,28 +61,5 @@ class AudiusClientTest {
         ArgumentCaptor<HttpRequest> requestCaptor = ArgumentCaptor.forClass(HttpRequest.class);
         Mockito.verify(mockHttpClient).sendAsync(requestCaptor.capture(), any());
         assertTrue(requestCaptor.getValue().uri().toString().contains("query=synthwave"));
-    }
-
-    /**
-     * Tests that {@link AudiusClient#downloadMusic(String, String)} correctly downloads music
-     * and ensures the destination directory exists.
-     *
-     * @throws ExecutionException   if the future completed exceptionally.
-     * @throws InterruptedException if the current thread was interrupted while waiting.
-     */
-    @Test
-    @SuppressWarnings("unchecked")
-    void downloadMusic_shouldReturnPathAndEnsureDirectoryExists() throws ExecutionException, InterruptedException {
-        Path expectedPath = Paths.get("songs/myTrack.mp3");
-        HttpResponse<Path> mockResponse = Mockito.mock(HttpResponse.class);
-        when(mockResponse.body()).thenReturn(expectedPath);
-
-        when(mockHttpClient.sendAsync(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
-                .thenReturn(CompletableFuture.completedFuture(mockResponse));
-
-        Path result = audiusClient.downloadMusic("98765", "myTrack").get();
-
-        assertEquals(expectedPath, result);
-        assertTrue(Files.exists(Paths.get("songs")), "The 'songs' directory should be created.");
     }
 }

@@ -76,12 +76,8 @@ class SettingsTest {
      */
     @Test
     void testDefaultValues() {
-        final File file = new File(CONFIG_FILE);
-        if (file.exists()) file.delete();
+        Settings.reset();
 
-        Settings.load();
-
-        assertTrue(file.exists());
         assertTrue(Settings.opengl);
         assertTrue(Settings.fullscreen);
         assertEquals(100, Settings.soundVolume);

@@ -66,11 +66,11 @@ public class SpeedTile extends AbstractTile {
 
     private void calculateColors() {
         if (speedMultiplier >= 1.0f) {
-            this.baseColor = new Color(50, 255, 100, 210);
-            this.glowColor = new Color(0, 255, 80, 80);
+            this.baseColor = new Color(255, 200, 0, 230);
+            this.glowColor = new Color(255, 150, 0, 100);
         } else {
-            this.baseColor = new Color(0, 180, 255, 210);
-            this.glowColor = new Color(0, 220, 255, 80);
+            this.baseColor = new Color(200, 0, 255, 230);
+            this.glowColor = new Color(150, 0, 255, 100);
         }
     }
 
@@ -108,27 +108,27 @@ public class SpeedTile extends AbstractTile {
     @Override
     public void paint3D(Graphics2D g2d, Polygon polygon) {
         final long t = System.currentTimeMillis();
-        final float pulse = (float) ((Math.sin(t / 180.0) + 1.0) / 2.0);
+        final float pulse = (float) ((Math.sin(t / 120.0) + 1.0) / 2.0);
 
         if (!Settings.graphicsQuality.equals("LOW")) {
             g2d.setStroke(RenderCache.STROKE_8);
             g2d.setColor(new Color(
                     glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(),
-                    (int) (30 + pulse * 60)));
+                    (int) (40 + pulse * 80)));
             g2d.drawPolygon(polygon);
 
             if (Settings.graphicsQuality.equals("HIGH")) {
                 g2d.setStroke(RenderCache.STROKE_4);
                 g2d.setColor(new Color(
                         glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(),
-                        (int) (80 + pulse * 80)));
+                        (int) (100 + pulse * 100)));
                 g2d.drawPolygon(polygon);
             }
 
             g2d.setStroke(RenderCache.STROKE_2);
             g2d.setColor(new Color(
                     glowColor.getRed(), glowColor.getGreen(), glowColor.getBlue(),
-                    (int) (150 + pulse * 80)));
+                    (int) (180 + pulse * 75)));
             g2d.drawPolygon(polygon);
         }
 

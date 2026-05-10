@@ -48,11 +48,9 @@ public class GameWorldRenderer {
         this.sphere = sphere;
     }
 
-    public void drawEnvironment(Graphics2D g2d, int width, int height, int horizonY, long time, float globalHue) {
+    public void drawBackground(Graphics2D g2d, int width, int height, int horizonY) {
         if (bgCache == null || bgCache.getWidth() != width || bgCache.getHeight() != height) {
-            this.bgCache = GraphicsEnvironment.getLocalGraphicsEnvironment()
-                    .getDefaultScreenDevice().getDefaultConfiguration()
-                    .createCompatibleImage(width, height, Transparency.OPAQUE);
+            this.bgCache = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
             final Graphics2D cg = bgCache.createGraphics();
             RenderUtils.initGraphics2D(cg);
             RenderUtils.drawBackground(cg, width, height);
@@ -60,6 +58,9 @@ public class GameWorldRenderer {
             cg.dispose();
         }
         g2d.drawImage(bgCache, 0, 0, null);
+    }
+
+    public void drawPlanetAndGrid(Graphics2D g2d, int width, int height, int horizonY, long time, float globalHue) {
         drawPlanet(g2d, width, horizonY, time, globalHue);
         RenderUtils.drawHorizonLine(g2d, width, horizonY);
         drawNeonGrid(g2d, width, height, horizonY, globalHue);

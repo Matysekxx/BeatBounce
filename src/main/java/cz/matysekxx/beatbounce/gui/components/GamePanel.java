@@ -18,6 +18,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 /**
@@ -142,6 +143,9 @@ public class GamePanel extends JPanel implements Runnable {
      */
     private float animTime = 0f;
 
+    private static final GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment()
+            .getDefaultScreenDevice().getDefaultConfiguration();
+
 
 
     /**
@@ -237,8 +241,6 @@ public class GamePanel extends JPanel implements Runnable {
                 if (h != cachedH) cachedH = h;
                 frameWindowData = WindowData.of(w, h);
                 if (backBuffer == null || backBuffer.getWidth(null) != w || backBuffer.getHeight(null) != h) {
-                    final GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment()
-                            .getDefaultScreenDevice().getDefaultConfiguration();
                     backBuffer = gc.createCompatibleImage(w, h, Transparency.OPAQUE);
 
                 }
@@ -264,7 +266,11 @@ public class GamePanel extends JPanel implements Runnable {
             if (Settings.particlesEnabled) {
                 final int w = (cachedW > 0) ? cachedW : 1920;
                 final int h = (cachedH > 0) ? cachedH : 1080;
-                Particle.updateAll(particles, particleCount, dt, w, h);
+                final double REFERENCE_HEIGHT = 1440.0;
+                final double scale = h / REFERENCE_HEIGHT;
+                final int virtualW = (int) (w / scale);
+                final int virtualH = (int) (h / scale);
+                Particle.updateAll(particles, particleCount, dt, virtualW, virtualH);
             }
 
             final int currentScore = gameModel.getScore();
@@ -362,8 +368,6 @@ public class GamePanel extends JPanel implements Runnable {
         final int h = cachedH;
         if (w <= 0 || h <= 0) return;
         if (backBuffer == null || backBuffer.getWidth(null) != w || backBuffer.getHeight(null) != h) {
-            final GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment()
-                    .getDefaultScreenDevice().getDefaultConfiguration();
             backBuffer = gc.createCompatibleImage(w, h, Transparency.OPAQUE);
         }
 
@@ -374,26 +378,37 @@ public class GamePanel extends JPanel implements Runnable {
 
         final int horizonY = h / 3;
         final long time = System.currentTimeMillis();
-        final float globalHue = (animTime * 0.02f) % 1.0f; 
-
+        final float globalHue = (animTime * 0.02f) % 1.0f;
         if (gameModel.getGameState() != GameState.FINISHED) {
-            worldRenderer.drawEnvironment(g2d, w, h, horizonY, time, globalHue);
+            worldRenderer.drawBackground(g2d, w, h, horizonY);
+        }
+        final double REFERENCE_HEIGHT = 1440.0;
+        final double uiScale = h / REFERENCE_HEIGHT;
+        final int virtualW = (int) (w / uiScale);
+        final int virtualH = (int) (h / uiScale);
+        final int virtualHorizonY = virtualH / 3;
+
+        final AffineTransform oldTransform = g2d.getTransform();
+        g2d.scale(uiScale, uiScale);
+        if (gameModel.getGameState() != GameState.FINISHED) {
+            worldRenderer.drawPlanetAndGrid(g2d, virtualW, virtualH, virtualHorizonY, time, globalHue);
             if (Settings.particlesEnabled) {
                 Particle.drawAll(g2d, particles, particleCount);
             }
-            worldRenderer.drawGameObjects(g2d, frameWindowData);
-            uiRenderer.drawProgressBar(g2d, w, h);
-            uiRenderer.drawScore(g2d, w, scorePopAlpha);
+            final WindowData virtualWindowData = WindowData.of(virtualW, virtualH);
+            worldRenderer.drawGameObjects(g2d, virtualWindowData);
+            uiRenderer.drawProgressBar(g2d, virtualW, virtualH);
+            uiRenderer.drawScore(g2d, virtualW, scorePopAlpha);
         }
 
         if (gameModel != null && gameModel.getNeonFlashAlpha() > 0) {
             final int flashAlpha = Math.min(255, (int) (gameModel.getNeonFlashAlpha() * 255));
             g2d.setColor(RenderCache.blackWithAlpha(flashAlpha));
-            g2d.fillRect(0, 0, w, h);
+            g2d.fillRect(0, 0, virtualW, virtualH);
         }
+        uiRenderer.renderGameState(g2d, virtualW, virtualH, gameModel.getGameState());
 
-        assert gameModel != null;
-        uiRenderer.renderGameState(g2d, w, h, gameModel.getGameState());
+        g2d.setTransform(oldTransform);
 
         if (Settings.showFps) {
             g2d.setColor(Color.YELLOW);

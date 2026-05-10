@@ -95,6 +95,7 @@ public final class RenderCache {
      * A hexagon shape.
      */
     public static final Shape SHAPE_HEXAGON;
+    public static final Font MONO_BOLD_65 = new Font("Monospaced", Font.BOLD, 65);
 
     private static final Color[] CYAN_ALPHA = new Color[256];
     private static final Color[] MAGENTA_ALPHA = new Color[256];

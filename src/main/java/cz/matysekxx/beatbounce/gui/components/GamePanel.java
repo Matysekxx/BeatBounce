@@ -201,7 +201,23 @@ public class GamePanel extends JPanel implements Runnable {
                             if (onExit != null) onExit.run();
                         }
                     }
-                    case GAME_OVER, FINISHED -> {
+                    case GAME_OVER -> {
+                        if (gameModel.getRevivesUsed() < GameModel.MAX_REVIVES && !gameModel.isReviveDeclined()) {
+                            if (e.getKeyCode() == KeyEvent.VK_V) {
+                                gameModel.revive();
+                            } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_ENTER) {
+                                gameModel.declineRevive();
+                            }
+                        } else {
+                            if (e.getKeyCode() == KeyEvent.VK_R) {
+                                gameModel.init();
+                            } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_ENTER) {
+                                stopGame();
+                                if (onExit != null) onExit.run();
+                            }
+                        }
+                    }
+                    case FINISHED -> {
                         if (e.getKeyCode() == KeyEvent.VK_R) {
                             gameModel.init();
                         } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -243,6 +259,7 @@ public class GamePanel extends JPanel implements Runnable {
             final double currentTime = (clip != null && clip.isRunning()) ? clip.getMicrosecondPosition() / 1_000_000.0 : 0;
             gameModel.update(currentTime, dt);
             updateCursorVisibility();
+            if (uiRenderer != null) uiRenderer.update(dt);
 
             if (Settings.particlesEnabled) {
                 final int w = (cachedW > 0) ? cachedW : 1920;

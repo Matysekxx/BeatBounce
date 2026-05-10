@@ -168,6 +168,20 @@ public class Sphere extends Entity implements Paintable {
     }
 
     /**
+     * Prepares the sphere for continuation after a revive.
+     */
+    public void revive() {
+        this.isFalling = false;
+        this.fallSpeed = 0;
+        this.currentY = 150;
+        this.y = 150;
+        this.alpha = 1.0f;
+        this.vibration = 0.0f;
+        this.stretch = 1.0f;
+        this.scaleMultiplier = 1.0f;
+    }
+
+    /**
      * Returns whether the sphere is currently jumping.
      *
      * @return {@code true} if jumping, {@code false} otherwise

@@ -37,6 +37,8 @@ public class GameUIRenderer {
     private static final Color HINT_LABEL = new Color(220, 220, 220);
     private final GameModel gameModel;
     private final Clip clip;
+    private GameState lastState = GameState.COUNTDOWN;
+    private float screenAppearTimer = 0f;
 
     /**
      * Constructs a new GameUIRenderer.
@@ -47,6 +49,22 @@ public class GameUIRenderer {
     public GameUIRenderer(GameModel gameModel, Clip clip) {
         this.gameModel = gameModel;
         this.clip = clip;
+    }
+
+    /**
+     * Updates the UI state, specifically for animations.
+     *
+     * @param dt delta time in seconds
+     */
+    public void update(float dt) {
+        final GameState currentState = gameModel.getGameState();
+        if (currentState != lastState) {
+            lastState = currentState;
+            screenAppearTimer = 0f;
+        }
+        if (screenAppearTimer < 1f) {
+            screenAppearTimer += dt;
+        }
     }
 
     /**
@@ -102,6 +120,40 @@ public class GameUIRenderer {
         g2d.drawRoundRect(cardX + 4, cardY + 4, cardW - 8, cardH - 8, 14, 14);
     }
 
+    private float getPulse(double speed) {
+        return (float) ((Math.sin(System.currentTimeMillis() / speed) + 1.0) / 2.0);
+    }
+
+    private int setupScreenCard(Graphics2D g2d, int width, int height, int cardW, int cardH, Color accentColor, float pulse) {
+        final float appearProgress = Math.min(1f, screenAppearTimer / 0.4f);
+        final float easedAppear = 1f - (float) Math.pow(1f - appearProgress, 3);
+        final int offsetY = (int) (-50 * (1f - easedAppear));
+        g2d.translate(0, offsetY);
+
+        final int cardY = (height - cardH) / 2;
+        drawGlassCard(g2d, width, height, cardW, cardH, accentColor, pulse);
+        return cardY;
+    }
+
+    private void teardownScreenCard(Graphics2D g2d) {
+        final float appearProgress = Math.min(1f, screenAppearTimer / 0.4f);
+        final float easedAppear = 1f - (float) Math.pow(1f - appearProgress, 3);
+        final int offsetY = (int) (-50 * (1f - easedAppear));
+        g2d.translate(0, -offsetY);
+    }
+
+    private void drawCardLine(Graphics2D g2d, int width, int cardW, int y, Color color, float pulse) {
+        g2d.setColor(RenderCache.customColorWithAlpha(color, (int) (70 + 50 * pulse)));
+        g2d.setStroke(RenderCache.STROKE_2);
+        g2d.drawLine((width - cardW) / 2 + 40, y, (width + cardW) / 2 - 40, y);
+        g2d.setStroke(RenderCache.STROKE_1);
+    }
+
+    private void drawEndScreenHints(Graphics2D g2d, int width, int y, String k1, String l1, String k2, String l2) {
+        drawKeyHint(g2d, k1, l1, width / 2 - 130, y);
+        drawKeyHint(g2d, k2, l2, width / 2 + 30, y);
+    }
+
     /**
      * Draws the pause screen overlay.
      *
@@ -113,7 +165,7 @@ public class GameUIRenderer {
         g2d.setColor(PAUSE_BG);
         g2d.fillRect(0, 0, width, height);
 
-        final float pulse = (float) ((Math.sin(System.currentTimeMillis() / 700.0) + 1.0) / 2.0);
+        final float pulse = getPulse(700.0);
         final int cardW = 460;
         final int cardH = 260;
         final int cardY = (height - cardH) / 2;
@@ -128,9 +180,7 @@ public class GameUIRenderer {
         g2d.setColor(PAUSE_LINE);
         g2d.drawLine((width - cardW) / 2 + 40, cardY + 115, (width + cardW) / 2 - 40, cardY + 115);
 
-        final int hintY = cardY + 195;
-        drawKeyHint(g2d, "ESC", "Resume", width / 2 - 130, hintY);
-        drawKeyHint(g2d, "ENTER", "Quit to Menu", width / 2 + 30, hintY);
+        drawEndScreenHints(g2d, width, cardY + 195, "ESC", "Resume", "ENTER", "Quit to Menu");
     }
 
     /**
@@ -141,30 +191,23 @@ public class GameUIRenderer {
      * @param height the height of the rendering area
      */
     public void drawFinishedScreen(Graphics2D g2d, int width, int height) {
-        final float pulse = (float) ((Math.sin(System.currentTimeMillis() / 600.0) + 1.0) / 2.0);
+        final float pulse = getPulse(600.0);
         g2d.setColor(FINISHED_BG);
         g2d.fillRect(0, 0, width, height);
 
         final int cardW = 600;
-        final int cardH = 340;
-        final int cardY = (height - cardH) / 2;
-
-        drawGlassCard(g2d, width, height, cardW, cardH, RenderUtils.yellow, pulse);
+        final int cardH = gameModel.isNewHighScore() ? 440 : 410;
+        final int cardY = setupScreenCard(g2d, width, height, cardW, cardH, RenderUtils.yellow, pulse);
 
         final String text = "LEVEL COMPLETE";
         g2d.setFont(RenderCache.MONO_ITALIC_BOLD_65);
         RenderUtils.drawText(g2d, text, (width - g2d.getFontMetrics().stringWidth(text)) / 2, cardY + 100, RenderUtils.yellow);
 
-        g2d.setColor(RenderCache.customColorWithAlpha(FINISHED_YELLOW_LINE, (int) (70 + 50 * pulse)));
-        g2d.setStroke(RenderCache.STROKE_2);
-        g2d.drawLine((width - cardW) / 2 + 40, cardY + 130, (width + cardW) / 2 - 40, cardY + 130);
-        g2d.setStroke(RenderCache.STROKE_1);
-
-        drawPostGameScore(g2d, cardY + 70, width, RenderUtils.yellow);
-
-        final int hintY = cardY + 280;
-        drawKeyHint(g2d, "R", "Restart", width / 2 - 130, hintY);
-        drawKeyHint(g2d, "ENTER", "Continue", width / 2 + 30, hintY);
+        drawCardLine(g2d, width, cardW, cardY + 130, FINISHED_YELLOW_LINE, pulse);
+        drawPostGameScore(g2d, cardY + 90, width, RenderUtils.yellow);
+        drawEndScreenHints(g2d, width, cardY + cardH - 60, "R", "Restart", "ENTER", "Continue");
+        
+        teardownScreenCard(g2d);
     }
 
     /**
@@ -175,8 +218,7 @@ public class GameUIRenderer {
      * @param height the height of the rendering area
      */
     public void drawGameOverScreen(Graphics2D g2d, int width, int height) {
-        final long t = System.currentTimeMillis();
-        final float pulse = (float) ((Math.sin(t / 600.0) + 1.0) / 2.0);
+        final float pulse = getPulse(600.0);
 
         g2d.setColor(GAMEOVER_BG);
         g2d.fillRect(0, 0, width, height);
@@ -185,17 +227,16 @@ public class GameUIRenderer {
             g2d.drawLine(0, sy, width, sy);
         }
 
-        final int cardW = 540;
-        final int cardH = 340;
-        final int cardY = (height - cardH) / 2;
-
-        drawGlassCard(g2d, width, height, cardW, cardH, GAMEOVER_RED, pulse);
+        final int cardW = 560;
+        final int cardH = gameModel.isNewHighScore() ? 440 : 410;
+        final int cardY = setupScreenCard(g2d, width, height, cardW, cardH, GAMEOVER_RED, pulse);
 
         final String text = "GAME OVER";
         g2d.setFont(RenderCache.MONO_BOLD_85);
         final int x = (width - g2d.getFontMetrics().stringWidth(text)) / 2;
         final int y = cardY + 110;
 
+        final long t = System.currentTimeMillis();
         final int glitchOffset = (int) (4 + Math.sin(t / 80.0) * 2);
         g2d.setColor(GLITCH_CYAN);
         g2d.drawString(text, x - glitchOffset, y + 1);
@@ -204,39 +245,56 @@ public class GameUIRenderer {
 
         RenderUtils.drawText(g2d, text, x, y, GAMEOVER_RED);
 
-        g2d.setColor(RenderCache.customColorWithAlpha(GAMEOVER_RED, (int) (70 + 50 * pulse)));
-        g2d.setStroke(RenderCache.STROKE_2);
-        g2d.drawLine((width - cardW) / 2 + 40, cardY + 140, (width + cardW) / 2 - 40, cardY + 140);
-        g2d.setStroke(RenderCache.STROKE_1);
-
-        drawPostGameScore(g2d, cardY + 80, width, GAMEOVER_RED_LIGHT);
-
-        final int hintY = cardY + 280;
-        drawKeyHint(g2d, "R", "Restart", width / 2 - 130, hintY);
-        drawKeyHint(g2d, "ENTER", "Main Menu", width / 2 + 30, hintY);
+        drawCardLine(g2d, width, cardW, cardY + 140, GAMEOVER_RED, pulse);
+        drawPostGameScore(g2d, cardY + 100, width, GAMEOVER_RED_LIGHT);
+        drawEndScreenHints(g2d, width, cardY + cardH - 60, "R", "Restart", "ENTER", "Main Menu");
+        
+        teardownScreenCard(g2d);
     }
 
     private void drawPostGameScore(Graphics2D g2d, int titleY, int width, Color accentColor) {
         final String label = "F I N A L   S C O R E";
         final String scoreText = String.format("%,d", gameModel.getScore());
-        final int cardY = titleY + 55;
+
+        int currentY = titleY + 40;
 
         g2d.setFont(RenderCache.MONO_BOLD_12);
         g2d.setColor(SCORE_LABEL_COLOR);
-        g2d.drawString(label, (width - g2d.getFontMetrics().stringWidth(label)) / 2, cardY + 12);
+        g2d.drawString(label, (width - g2d.getFontMetrics().stringWidth(label)) / 2, currentY);
 
+        currentY += 50;
         g2d.setFont(RenderCache.MONO_ITALIC_BOLD_48);
-        RenderUtils.drawText(g2d, scoreText, (width - g2d.getFontMetrics().stringWidth(scoreText)) / 2, cardY + 55, accentColor);
+        RenderUtils.drawText(g2d, scoreText, (width - g2d.getFontMetrics().stringWidth(scoreText)) / 2, currentY, accentColor);
+
+        currentY += 50;
+
+        if (gameModel.isNewHighScore()) {
+            final double t = System.currentTimeMillis() / 300.0;
+            final float glow = (float) ((Math.sin(t) + 1.0) / 2.0);
+            g2d.setFont(RenderCache.MONO_BOLD_16);
+            g2d.setColor(RenderCache.customColorWithAlpha(RenderUtils.yellow, (int) (150 + 105 * glow)));
+            final String hsText = "NEW HIGH SCORE!";
+            g2d.drawString(hsText, (width - g2d.getFontMetrics().stringWidth(hsText)) / 2, currentY);
+        } else {
+            g2d.setFont(RenderCache.MONO_BOLD_16);
+            g2d.setColor(new Color(150, 150, 150));
+            String songId = gameModel.getLevel().songName();
+            if (songId.contains(".")) songId = songId.substring(0, songId.lastIndexOf('.'));
+            final String bestText = "BEST: " + String.format("%,d", ScoreManager.getBestScore(songId));
+            g2d.drawString(bestText, (width - g2d.getFontMetrics().stringWidth(bestText)) / 2, currentY);
+        }
+        currentY += 30;
 
         final String orbsLabel = "ORBS COLLECTED: " + gameModel.getCollectedOrbs();
         g2d.setFont(RenderCache.MONO_BOLD_16);
         g2d.setColor(ORBS_COLOR);
-        g2d.drawString(orbsLabel, (width - g2d.getFontMetrics().stringWidth(orbsLabel)) / 2, cardY + 85);
+        g2d.drawString(orbsLabel, (width - g2d.getFontMetrics().stringWidth(orbsLabel)) / 2, currentY);
+        currentY += 25;
 
         final String totalOrbsLabel = "TOTAL ORBS: " + ScoreManager.getCurrency();
         g2d.setFont(RenderCache.SANS_PLAIN_14);
         g2d.setColor(TOTAL_ORBS_COLOR);
-        g2d.drawString(totalOrbsLabel, (width - g2d.getFontMetrics().stringWidth(totalOrbsLabel)) / 2, cardY + 105);
+        g2d.drawString(totalOrbsLabel, (width - g2d.getFontMetrics().stringWidth(totalOrbsLabel)) / 2, currentY);
     }
 
     /**
@@ -374,12 +432,79 @@ public class GameUIRenderer {
         g2d.setColor(HINT_LABEL);
         g2d.drawString(label, x + keyW + 22, y - 4);
     }
+
+    public void drawReviveScreen(Graphics2D g2d, int width, int height) {
+        final float pulse = getPulse(600.0);
+
+        g2d.setColor(GAMEOVER_BG);
+        g2d.fillRect(0, 0, width, height);
+
+        final int cardW = 540;
+        final int cardH = 430;
+        
+        final boolean canRevive = gameModel.canRevive();
+        final Color cardColor = canRevive ? ORBS_COLOR : GAMEOVER_RED;
+
+        final int cardY = setupScreenCard(g2d, width, height, cardW, cardH, cardColor, pulse);
+
+        final String text = "YOU FELL";
+        g2d.setFont(RenderCache.MONO_BOLD_65);
+        RenderUtils.drawText(g2d, text, (width - g2d.getFontMetrics().stringWidth(text)) / 2, cardY + 90, cardColor);
+
+        drawCardLine(g2d, width, cardW, cardY + 115, cardColor, pulse);
+
+        int currentY = cardY + 165;
+        g2d.setFont(RenderCache.MONO_BOLD_16);
+        g2d.setColor(SCORE_TEXT_COLOR);
+        String scoreText = "Score so far: " + String.format("%,d", gameModel.getScore());
+        g2d.drawString(scoreText, (width - g2d.getFontMetrics().stringWidth(scoreText)) / 2, currentY);
+        
+        currentY += 35;
+        g2d.setColor(ORBS_COLOR);
+        String orbsText = "Orbs collected: " + gameModel.getCollectedOrbs();
+        g2d.drawString(orbsText, (width - g2d.getFontMetrics().stringWidth(orbsText)) / 2, currentY);
+
+        currentY += 55;
+        g2d.setFont(RenderCache.MONO_ITALIC_BOLD_24);
+        if (canRevive) {
+            g2d.setColor(ORBS_TEXT_COLOR);
+            String reviveText = "REVIVE? Cost: " + gameModel.getReviveCost() + " orbs";
+            g2d.drawString(reviveText, (width - g2d.getFontMetrics().stringWidth(reviveText)) / 2, currentY);
+        } else {
+            g2d.setColor(GAMEOVER_RED_LIGHT);
+            String reason = gameModel.getRevivesUsed() >= GameModel.MAX_REVIVES ? "No revives left" : "Not enough orbs";
+            String reviveText = "CANNOT REVIVE (" + reason + ")";
+            g2d.drawString(reviveText, (width - g2d.getFontMetrics().stringWidth(reviveText)) / 2, currentY);
+        }
+
+        currentY += 35;
+        g2d.setFont(RenderCache.SANS_PLAIN_14);
+        g2d.setColor(TOTAL_ORBS_COLOR);
+        String totalOrbs = "Your orbs: " + ScoreManager.getCurrency();
+        g2d.drawString(totalOrbs, (width - g2d.getFontMetrics().stringWidth(totalOrbs)) / 2, currentY);
+
+        final int hintY = cardY + cardH - 50;
+        if (canRevive) {
+            drawEndScreenHints(g2d, width, hintY, "V", "Revive", "ENTER", "Quit");
+        } else {
+            drawKeyHint(g2d, "ENTER", "Quit", width / 2 - 40, hintY);
+        }
+
+        teardownScreenCard(g2d);
+    }
+
     public void renderGameState(Graphics2D g2d, int width, int height, GameState state) {
         switch (state) {
             case COUNTDOWN -> drawCountdown(g2d, width, height);
             case PAUSED -> drawPauseScreen(g2d, width, height);
             case FINISHED -> drawFinishedScreen(g2d, width, height);
-            case GAME_OVER -> drawGameOverScreen(g2d, width, height);
+            case GAME_OVER -> {
+                if (gameModel.getRevivesUsed() < GameModel.MAX_REVIVES && !gameModel.isReviveDeclined()) {
+                    drawReviveScreen(g2d, width, height);
+                } else {
+                    drawGameOverScreen(g2d, width, height);
+                }
+            }
         }
     }
 }

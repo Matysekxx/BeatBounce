@@ -158,13 +158,23 @@ public class ScoreManager {
 
     /**
      * Adds a specified amount to the total currency and saves it.
+     * Negative amounts can be used for spending currency.
      *
      * @param amount the amount of currency to add
      */
     public static void addCurrency(int amount) {
-        if (amount > 0) {
-            totalCurrency += amount;
-            saveCurrency();
-        }
+        totalCurrency += amount;
+        saveCurrency();
+    }
+
+    /**
+     * Checks if the given score is a new high score for a specific song.
+     *
+     * @param songId the identifier of the song
+     * @param score  the score to check
+     * @return true if it's a new high score, false otherwise
+     */
+    public static boolean isHighScore(String songId, int score) {
+        return score > getBestScore(songId);
     }
 }

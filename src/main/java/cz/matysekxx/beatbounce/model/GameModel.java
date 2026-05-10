@@ -27,6 +27,10 @@ import java.util.Random;
  * </ul>
  */
 public class GameModel {
+    /**
+     * Maximum number of times the player can revive per run.
+     */
+    public static final int MAX_REVIVES = 3;
     private static final int LANE_WIDTH = 120;
     /**
      * Normal tile hitbox half-width in world units.
@@ -62,6 +66,8 @@ public class GameModel {
     private boolean speedEffectActive = false;
     private double speedEffectTimeRemaining = 0.0;
     private double activeSpeedMultiplier = 1.0;
+    private int revivesUsed = 0;
+    private boolean reviveDeclined = false;
 
     /**
      * Constructs a new GameModel.
@@ -99,6 +105,8 @@ public class GameModel {
         this.speedEffectActive = false;
         this.speedEffectTimeRemaining = 0.0;
         this.activeSpeedMultiplier = 1.0;
+        this.revivesUsed = 0;
+        this.reviveDeclined = false;
         this.sphere.reset();
 
         cam.setX(0);
@@ -186,6 +194,20 @@ public class GameModel {
     }
 
     /**
+     * @return the level being played
+     */
+    public Level getLevel() {
+        return level;
+    }
+
+    /**
+     * @return the index of the last processed tile
+     */
+    public int getCurrentTileIndex() {
+        return currentTileIndex;
+    }
+
+    /**
      * @return remaining countdown time
      */
     public double getCountdownTime() {
@@ -207,7 +229,77 @@ public class GameModel {
     }
 
     /**
+     * @return the number of times the player has revived in this session
+     */
+    public int getRevivesUsed() {
+        return revivesUsed;
+    }
+
+    /**
+     * @return the cost in orbs to revive
+     */
+    public int getReviveCost() {
+        return 10 * (int) Math.pow(2, revivesUsed);
+    }
+
+    /**
+     * Declines the revive prompt, locking the player into Game Over state.
+     */
+    public void declineRevive() {
+        this.reviveDeclined = true;
+    }
+
+    /**
+     * @return true if the player has explicitly declined a revive
+     */
+    public boolean isReviveDeclined() {
+        return reviveDeclined;
+    }
+
+    /**
+     * Attempts to revive the player by spending orbs.
+     *
+     * @return true if revival was successful
+     */
+    public boolean revive() {
+        if (revivesUsed >= MAX_REVIVES) return false;
+        final int cost = getReviveCost();
+        if (ScoreManager.getCurrency() >= cost) {
+            ScoreManager.addCurrency(-cost);
+            revivesUsed++;
+            this.gameState = GameState.COUNTDOWN;
+            this.countdownTime = 2.99;
+            this.fallStartZ = 0;
+            this.sphere.revive();
+            final long microPos = clip.getMicrosecondPosition();
+            clip.setMicrosecondPosition(Math.max(0, microPos - 1_500_000));
+            this.smoothedAudioTime = clip.getMicrosecondPosition() / 1_000_000.0;
+            this.gameZProgress = smoothedAudioTime * zUnitsPerSecond;
+
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks whether the player can currently revive.
+     *
+     * @return true if revives are available and the player has enough currency
+     */
+    public boolean canRevive() {
+        return revivesUsed < MAX_REVIVES && ScoreManager.getCurrency() >= getReviveCost();
+    }
+
+    /**
+     * @return true if the current score is a new high score for the level
+     */
+    public boolean isNewHighScore() {
+        return ScoreManager.isHighScore(getCleanSongName(), score);
+    }
+
+    /**
      * Updates game logic based on elapsed time.
+     * ...
      *
      * @param currentTime current audio time in seconds
      * @param deltaTime   time since last update in seconds
@@ -221,7 +313,8 @@ public class GameModel {
             }
             case LEVEL_END_ANIMATION -> handleLevelEndAnimation(deltaTime);
             case FALLING -> handleFalling(currentTime);
-            case PAUSED, FINISHED, GAME_OVER -> {}
+            case PAUSED, FINISHED, GAME_OVER -> {
+            }
         }
     }
 
@@ -266,7 +359,8 @@ public class GameModel {
                     movingTile.setLocation(newX, movingTile.getY());
                 }
                 case BreakableTile bt when bt.isBroken() -> bt.updateBreakAnimation(deltaTime);
-                default -> {}
+                default -> {
+                }
             }
         }
         sphere.setZ(gameZProgress);
@@ -434,7 +528,7 @@ public class GameModel {
         final double endZ = nextTile.getZ();
         double distanceZ = endZ - startZ;
         if (distanceZ < 10) distanceZ = 10;
-        
+
         double duration = distanceZ / zUnitsPerSecond;
         if (duration <= 0) duration = 0.2;
         duration /= activeSpeedMultiplier;

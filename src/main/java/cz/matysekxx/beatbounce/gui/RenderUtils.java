@@ -1,6 +1,7 @@
 package cz.matysekxx.beatbounce.gui;
 
 import cz.matysekxx.beatbounce.configuration.Settings;
+import cz.matysekxx.beatbounce.gui.components.IntroPanel;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -228,20 +229,24 @@ public final class RenderUtils {
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
         final double pulse = (Math.sin(System.currentTimeMillis() / 400.0) + 1.0) / 2.0;
 
-        if (Settings.bloomEnabled) {
-            for (float i = 6f; i >= 1f; i -= 2.5f) {
-                final float alpha = Math.min(1.0f, (float) (0.1 + (0.2 * pulse) / (i * 0.5)));
-                g2d.setColor(RenderCache.customColorWithAlpha(c, (int) (alpha * 255)));
-                g2d.drawString(text, x - i, y);
-                g2d.drawString(text, x + i, y);
-                g2d.drawString(text, x, y - i);
-                g2d.drawString(text, x, y + i);
-            }
-        }
+        drawBloom(g2d, text, x, y, pulse, c);
         g2d.setColor(SHADOW_COLOR);
         g2d.drawString(text, x + 1, y + 1);
         g2d.setColor(TITLE_COLOR);
         g2d.drawString(text, x, y);
+    }
+
+    public static void drawBloom(Graphics2D g2d, String text, int drawX, int drawY, double pulse, Color bloomColor) {
+        if (Settings.bloomEnabled) {
+            for (float j = 6f; j >= 1f; j -= 2.5f) {
+                final float alpha = Math.min(1.0f, (float) (0.1 + (0.2 * pulse) / (j * 0.5)));
+                g2d.setColor(RenderCache.customColorWithAlpha(bloomColor, (int) (alpha * 255)));
+                g2d.drawString(text, drawX - j, drawY);
+                g2d.drawString(text, drawX + j, drawY);
+                g2d.drawString(text, drawX, drawY - j);
+                g2d.drawString(text, drawX, drawY + j);
+            }
+        }
     }
 
     /**

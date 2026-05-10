@@ -271,32 +271,16 @@ public class IntroPanel extends JPanel implements Runnable {
 
         final Color bloomColor = Color.getHSBColor(globalHue, 0.85f, 1.0f);
         final Color faceColor = Color.getHSBColor(globalHue, 0.25f, 1.0f);
-
-        int gx = 0, gy = 0;
-        if (Math.random() > 0.985) {
-            gx = (int) (Math.random() * 12 - 6);
-            gy = (int) (Math.random() * 6 - 3);
-            g2d.setColor(RenderCache.customColorWithAlpha(Color.getHSBColor((globalHue + 0.5f) % 1.0f, 1.0f, 1.0f), 100));
-            g2d.drawString(text, drawX + gx * 2, drawY + gy * 2);
-        }
-
-        if (Settings.bloomEnabled) {
-            for (float j = 6f; j >= 1f; j -= 2.5f) {
-                final float alpha = Math.min(1.0f, (float) (0.1 + (0.2 * pulse) / (j * 0.5)));
-                g2d.setColor(RenderCache.customColorWithAlpha(bloomColor, (int) (alpha * 255)));
-                g2d.drawString(text, drawX - j + gx, drawY + gy);
-                g2d.drawString(text, drawX + j + gx, drawY + gy);
-                g2d.drawString(text, drawX + gx, drawY - j + gy);
-                g2d.drawString(text, drawX + gx, drawY + j + gy);
-            }
-        }
+        RenderUtils.drawBloom(g2d, text, drawX, drawY, pulse, bloomColor);
 
         g2d.setColor(RenderCache.blackWithAlpha(150));
-        g2d.drawString(text, drawX + 3 + gx, drawY + 3 + gy);
+        g2d.drawString(text, drawX + 3, drawY + 3);
 
         g2d.setColor(faceColor);
-        g2d.drawString(text, drawX + gx, drawY + gy);
+        g2d.drawString(text, drawX, drawY );
     }
+
+
 
     private void drawIntroGrid(Graphics2D g2d, int w, int h, int horizonY, float globalHue) {
         final int vanishingPointX = w >> 1;

@@ -60,7 +60,7 @@ public class LevelGenerator {
      *
      * @param audioData       the audio metadata and sample data to analyze
      * @param speedMultiplier the multiplier for playback speed (scales timestamps)
-     * @param stars           the difficulty rating (1-5 stars)
+     * @param stars           the difficulty rating (1-10 stars)
      * @return a fully initialized {@link Level}
      */
     public static Level generateLevel(AudioData audioData, float speedMultiplier, int stars) {

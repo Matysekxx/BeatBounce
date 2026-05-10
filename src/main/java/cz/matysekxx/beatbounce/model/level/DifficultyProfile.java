@@ -74,13 +74,13 @@ public record DifficultyProfile(
             case 6 ->
                     p(6, 2, 0.34, 0.70, 0.15, 0.12, 0.08, 0.08, 0.06, 0.10, 0.00, true, true, 0.55, EnumSet.of(TileType.NORMAL, TileType.LONG, TileType.SMALL, TileType.MOVING, TileType.BREAKABLE, TileType.SPEED));
             case 7 ->
-                    p(7, 2, 0.30, 0.64, 0.16, 0.14, 0.10, 0.10, 0.08, 0.11, 0.00, true, true, 0.60, EnumSet.allOf(TileType.class));
+                    p(7, 2, 0.28, 0.62, 0.16, 0.15, 0.12, 0.12, 0.18, 0.12, 0.02, true, true, 0.70, EnumSet.allOf(TileType.class));
             case 8 ->
-                    p(8, 2, 0.28, 0.60, 0.16, 0.16, 0.12, 0.12, 0.10, 0.12, 0.01, true, true, 0.65, EnumSet.allOf(TileType.class));
+                    p(8, 2, 0.24, 0.58, 0.16, 0.18, 0.15, 0.15, 0.22, 0.15, 0.05, true, true, 0.80, EnumSet.allOf(TileType.class));
             case 9 ->
-                    p(9, 2, 0.26, 0.56, 0.16, 0.18, 0.14, 0.14, 0.12, 0.14, 0.02, true, true, 0.70, EnumSet.allOf(TileType.class));
+                    p(9, 2, 0.20, 0.52, 0.16, 0.22, 0.18, 0.18, 0.26, 0.18, 0.08, true, true, 0.90, EnumSet.allOf(TileType.class));
             case 10 ->
-                    p(10, 2, 0.24, 0.52, 0.16, 0.20, 0.16, 0.16, 0.14, 0.15, 0.03, true, true, 0.75, EnumSet.allOf(TileType.class));
+                    p(10, 2, 0.18, 0.45, 0.16, 0.25, 0.22, 0.22, 0.30, 0.22, 0.12, true, true, 0.98, EnumSet.allOf(TileType.class));
             default -> forStars(5);
         };
     }

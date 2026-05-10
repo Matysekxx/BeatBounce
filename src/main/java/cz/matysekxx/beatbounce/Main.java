@@ -15,19 +15,26 @@ import javax.swing.*;
 public class Main {
 
     /**
+     * Configures the DPI awareness properties.
+     */
+    static void setupHighDPI() {
+        System.setProperty("sun.java2d.dpiaware", "true");
+        System.setProperty("sun.java2d.uiScale.enabled", "false");
+        System.setProperty("sun.java2d.uiScale", "1");
+    }
+
+    /**
      * Configures low-level JVM system properties to optimize rendering.
      * <p>
      * The properties are set based on the current {@link Settings}, specifically
-     * affecting OpenGL acceleration and text anti-aliasing.
+     * affecting OpenGL acceleration and text antialiasing.
      * <p>
-     * | Property | Description |
-     * | :--- | :--- |
-     * | {@code sun.java2d.opengl} | Enables/Disables OpenGL hardware acceleration. |
-     * | {@code sun.java2d.noddraw} | Disables DirectDraw to avoid conflicts with OpenGL. |
-     * | {@code sun.awt.noerasebackground} | Prevents flickering by not clearing the background. |
-     * | {@code awt.useSystemAAFontSettings} | Controls system-level font anti-aliasing. |
+     * {@code sun.java2d.opengl}  Enables/Disables OpenGL hardware acceleration. <p>
+     * {@code sun.java2d.noddraw}  Disables DirectDraw to avoid conflicts with OpenGL. <p>
+     * {@code sun.awt.noerasebackground}  Prevents flickering by not clearing the background. <p>
+     * {@code awt.useSystemAAFontSettings}  Controls system-level font antialiasing. <p>
      */
-    static void setupProperties() {
+    static void setupRenderingProperties() {
         System.setProperty("sun.java2d.opengl", Settings.opengl ? "true" : "false");
         System.setProperty("sun.java2d.noddraw", Settings.opengl ? "true" : "false");
         System.setProperty("sun.awt.noerasebackground", "true");
@@ -39,16 +46,17 @@ public class Main {
     /**
      * The main entry method that starts the application.
      * <p>
-     * The startup sequence is as follows:
-     * 1. Initialize Swing Look and Feel via {@link SwingConfiguration}.
-     * 2. Load user settings from {@link Settings}.
-     * 3. Apply JVM rendering properties.
-     * 4. Hand over execution to {@link Execute} on the Swing Event Dispatch Thread.
+     * The startup sequence is as follows: <p>
+     * 1. Initialize Swing Look and Feel via {@link SwingConfiguration}.<p>
+     * 2. Load user settings from {@link Settings}.<p>
+     * 3. Apply JVM rendering properties.<p>
+     * 4. Hand over execution to {@link Execute} on the Swing Event Dispatch Thread.<p>
      */
     static void main() {
+        setupHighDPI();
         SwingConfiguration.setup();
         Settings.load();
-        setupProperties();
+        setupRenderingProperties();
         SwingUtilities.invokeLater(Execute.getSingleton());
     }
 }

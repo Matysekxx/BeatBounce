@@ -15,6 +15,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -49,7 +50,7 @@ public class SongSelectionPanel extends JPanel implements Runnable {
     /**
      * Full list of tracks fetched from the API.
      */
-    private final List<TrackData> allTracks = new ArrayList<>();
+    private final CopyOnWriteArrayList<TrackData> allTracks = new CopyOnWriteArrayList<>();
 
     /**
      * Flag indicating if the animation thread is running.

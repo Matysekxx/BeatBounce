@@ -7,6 +7,9 @@ import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 /**
  * A panel that allows users to configure various game settings.
@@ -253,7 +256,11 @@ public class SettingsPanel extends JPanel {
         restartBtn.setPreferredSize(new Dimension(180, 45));
         restartBtn.addActionListener(_ -> {
             dialog.dispose();
-            //TODO: pridat restart aplikace pres cmd
+            try {
+                restart();
+            }catch(IOException e) {
+                System.err.println(e.getMessage());
+            }
         });
 
         dialog.addButton(laterBtn);
@@ -261,6 +268,21 @@ public class SettingsPanel extends JPanel {
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
+    }
+
+    private static void restart() throws IOException {
+        final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+        final File jarFile;
+        try {
+            jarFile = new File(SettingsPanel.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        if (!jarFile.getName().endsWith(".jar")) return;
+        ProcessBuilder pb = new ProcessBuilder(javaBin, "-jar", jarFile.getPath());
+        pb.directory(jarFile.getParentFile());
+        pb.start();
+        System.exit(0);
     }
 
     private void showResetDialog() {

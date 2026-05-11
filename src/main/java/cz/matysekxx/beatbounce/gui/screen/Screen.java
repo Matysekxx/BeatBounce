@@ -43,24 +43,9 @@ public abstract class Screen extends JFrame {
         if (Settings.fullscreen) {
             applyFullscreen(this);
         } else {
-
+            applyDefaultSize(this);
         }
-
-        this.addWindowFocusListener(new WindowFocusListener() {
-            @Override
-            public void windowGainedFocus(WindowEvent e) {
-                if (Settings.muteOnFocusLoss) {
-                    Settings.isMuted = false;
-                }
-            }
-
-            @Override
-            public void windowLostFocus(WindowEvent e) {
-                if (Settings.muteOnFocusLoss) {
-                    Settings.isMuted = true;
-                }
-            }
-        });
+        this.addWindowFocusListener(new FocusListener());
     }
 
     /**

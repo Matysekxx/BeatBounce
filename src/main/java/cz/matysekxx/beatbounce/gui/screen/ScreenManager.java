@@ -111,16 +111,9 @@ public class ScreenManager {
                 if (Settings.fullscreen) {
                     applyFullscreen(screen);
                 } else {
-                    screen.setExtendedState(JFrame.NORMAL);
-                    screen.setSize(1024, 768);
-                    final GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-                    final GraphicsDevice device = (Settings.monitorIndex >= 0 && Settings.monitorIndex < devices.length) ? devices[Settings.monitorIndex] : devices[0];
-                    final Rectangle bounds = device.getDefaultConfiguration().getBounds();
-                    screen.setLocation(bounds.x + (bounds.width - 1024) / 2, bounds.y + (bounds.height - 768) / 2);
+                    applyDefaultSize(screen);
                 }
-                if (isActive) {
-                    screen.setVisible(true);
-                }
+                if (isActive) screen.setVisible(true);
             }
         }
     }
@@ -131,10 +124,10 @@ public class ScreenManager {
      * @param screen The screen to make fullscreen.
      */
     private void applyFullscreen(Screen screen) {
-        final GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-        final GraphicsDevice device = (Settings.monitorIndex >= 0 && Settings.monitorIndex < devices.length) ? devices[Settings.monitorIndex] : devices[0];
-        final Rectangle bounds = device.getDefaultConfiguration().getBounds();
-        bounds.height += 1;
-        screen.setBounds(bounds);
+        Screen.applyFullscreen(screen);
+    }
+
+    private void applyDefaultSize(Screen screen) {
+        Screen.applyDefaultSize(screen);
     }
 }

@@ -305,7 +305,7 @@ public class GameEngine { //TODO: vytvorit CollisionEngine pro spravu kolizi mez
      * @param currentTime current audio time in seconds
      * @param deltaTime   time since last update in seconds
      */
-    public void update(double currentTime, double deltaTime) {
+    public void update(double currentTime, double deltaTime) { //TODO: pridat handlery na gameState
         switch (gameState) {
             case COUNTDOWN -> handleCountdown(deltaTime);
             case PLAYING -> {

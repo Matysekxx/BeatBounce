@@ -481,8 +481,6 @@ public class GameEngine {
 
         gameZProgress += zUnitsPerSecond * deltaTime;
         sphere.setZ(gameZProgress);
-        sphere.setStretch(1.0f);
-        sphere.setVibration(0f);
         sphere.setScaleMultiplier(1.0f);
         sphere.setAlpha(1.0f);
 

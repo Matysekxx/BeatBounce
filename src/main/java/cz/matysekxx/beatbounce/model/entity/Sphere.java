@@ -24,9 +24,6 @@ public class Sphere extends Entity implements Paintable {
     private boolean isFalling = false;
     private float alpha = 1.0f;
     private float scaleMultiplier = 1.0f;
-    private float vibration = 0.0f;
-    private float stretch = 1.0f;
-
     /**
      * Constructs a new {@code Sphere} with specified coordinates and radius.
      *
@@ -79,7 +76,6 @@ public class Sphere extends Entity implements Paintable {
         final double lerpFactor = 1.0 - Math.exp(-25 * deltaTime);
         currentX += (targetX - currentX) * lerpFactor;
         this.x = (int) currentX;
-        this.stretch = 1.0f;
         if (isFalling) {
             final double constantFallVelocity = 600.0;
             currentY += constantFallVelocity * deltaTime;
@@ -159,8 +155,6 @@ public class Sphere extends Entity implements Paintable {
         isFalling = false;
         alpha = 1.0f;
         scaleMultiplier = 1.0f;
-        vibration = 0.0f;
-        stretch = 1.0f;
     }
 
     /**
@@ -171,8 +165,6 @@ public class Sphere extends Entity implements Paintable {
         this.currentY = 150;
         this.y = 150;
         this.alpha = 1.0f;
-        this.vibration = 0.0f;
-        this.stretch = 1.0f;
         this.scaleMultiplier = 1.0f;
     }
 
@@ -249,42 +241,6 @@ public class Sphere extends Entity implements Paintable {
     }
 
     /**
-     * Returns the vibration intensity of the sphere.
-     *
-     * @return the {@code vibration} value
-     */
-    public float getVibration() {
-        return vibration;
-    }
-
-    /**
-     * Sets the vibration intensity for the sphere's rendering.
-     *
-     * @param vibration the new vibration intensity
-     */
-    public void setVibration(float vibration) {
-        this.vibration = vibration;
-    }
-
-    /**
-     * Returns the vertical stretch factor of the sphere.
-     *
-     * @return the {@code stretch} value
-     */
-    public float getStretch() {
-        return stretch;
-    }
-
-    /**
-     * Sets the vertical stretch factor for the sphere's rendering.
-     *
-     * @param stretch the new stretch factor
-     */
-    public void setStretch(float stretch) {
-        this.stretch = stretch;
-    }
-
-    /**
      * Returns the base radius of the sphere.
      *
      * @return the {@code radius} value
@@ -304,30 +260,10 @@ public class Sphere extends Entity implements Paintable {
     public void paint3D(Graphics2D g2d, Camera3D cam, WindowData windowData) {
         final double scale = cam.getScale(z);
         if (scale <= 0) return;
+        final double vx = 0;
+        final double vy = 0;
 
-        final double vx;
-        final double vy;
-        if (vibration > 0) {
-            vx = (Math.random() - 0.5) * vibration * 15;
-            vy = (Math.random() - 0.5) * vibration * 15;
-        } else {
-            vx = 0;
-            vy = 0;
-        }
-
-        final double groundY = 150;
-        final int shadowScreenX = (int) (windowData.width() / 2. + (currentX + vx - cam.getX()) * scale);
-        final int shadowScreenY = (int) (windowData.height() / 3. + (groundY - cam.getY()) * scale);
-
-        final double heightFactor = Math.max(0, (groundY - currentY) / 300.0);
-        final float shadowAlpha = (float) Math.max(0, 0.4 - heightFactor * 0.3);
-        final int shadowSizeX = (int) (radius * scale * (1.2 - heightFactor * 0.4));
-        final int shadowSizeY = (int) (shadowSizeX * 0.4);
-
-        if (shadowAlpha > 0 && shadowSizeX > 0 && shadowSizeY > 0) {
-            g2d.setColor(new Color(0, 0, 0, (int) (255 * shadowAlpha)));
-            g2d.fillOval(shadowScreenX - shadowSizeX, shadowScreenY - shadowSizeY / 2, shadowSizeX * 2, shadowSizeY);
-        }
+        drawShadow(g2d, cam, windowData, vx);
 
         final int screenX = (int) (windowData.width() / 2. + (currentX + vx - cam.getX()) * scale);
         final int screenY = (int) (windowData.height() / 3. + (currentY + vy - radius - cam.getY()) * scale);
@@ -341,9 +277,24 @@ public class Sphere extends Entity implements Paintable {
         g2d.fillOval(screenX - scaledRadiusX, screenY - scaledRadiusY, scaledRadiusX * 2, scaledRadiusY * 2);
     }
 
+    public void drawShadow(Graphics2D g2d, Camera3D cam, WindowData windowData, double vx) {
+        final double scale = cam.getScale(z);
+        final double groundY = 150;
+        final int shadowScreenX = (int) (windowData.width() / 2. + (currentX + vx - cam.getX()) * scale);
+        final int shadowScreenY = (int) (windowData.height() / 3. + (groundY - cam.getY()) * scale);
+        final double heightFactor = Math.max(0, (groundY - currentY) / 300.0);
+        final float shadowAlpha = (float) Math.max(0, 0.4 - heightFactor * 0.3);
+        final int shadowSizeX = (int) (radius * scale * (1.2 - heightFactor * 0.4));
+        final int shadowSizeY = (int) (shadowSizeX * 0.4);
+        if (shadowAlpha > 0 && shadowSizeX > 0 && shadowSizeY > 0) {
+            g2d.setColor(new Color(0, 0, 0, (int) (255 * shadowAlpha)));
+            g2d.fillOval(shadowScreenX - shadowSizeX, shadowScreenY - shadowSizeY / 2, shadowSizeX * 2, shadowSizeY);
+        }
+    }
+
     /**
      * Implementation of {@link Paintable#paint3D(Graphics2D, Polygon)}.
-     * Currently does nothing for {@code Sphere}.
+     * Currently, does nothing for {@code Sphere}.
      *
      * @param g2d     the graphics context
      * @param polygon the polygon to paint

@@ -9,7 +9,7 @@ import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.Orb;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
-import cz.matysekxx.beatbounce.model.game.GameState;
+import cz.matysekxx.beatbounce.model.game.state.GameState;
 import cz.matysekxx.beatbounce.model.level.Level;
 
 import java.awt.*;

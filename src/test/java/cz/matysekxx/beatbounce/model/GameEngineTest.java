@@ -5,7 +5,7 @@ import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.NormalTile;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
-import cz.matysekxx.beatbounce.model.game.GameState;
+import cz.matysekxx.beatbounce.model.game.state.GameState;
 import cz.matysekxx.beatbounce.model.level.Level;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

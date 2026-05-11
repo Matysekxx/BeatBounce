@@ -1,4 +1,4 @@
-package cz.matysekxx.beatbounce.model.game;
+package cz.matysekxx.beatbounce.model.game.state;
 
 /**
  * Represents the various states the game can be in during its lifecycle.

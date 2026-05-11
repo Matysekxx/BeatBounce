@@ -8,7 +8,7 @@ import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.WindowData;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
-import cz.matysekxx.beatbounce.model.game.GameState;
+import cz.matysekxx.beatbounce.model.game.state.GameState;
 import cz.matysekxx.beatbounce.model.level.Level;
 
 import javax.sound.sampled.Clip;

@@ -7,16 +7,19 @@ import cz.matysekxx.beatbounce.model.entity.BreakableTile;
 import cz.matysekxx.beatbounce.model.entity.MovingTile;
 import cz.matysekxx.beatbounce.model.entity.Orb;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
+import cz.matysekxx.beatbounce.model.game.collision.CollisionEngine;
 
 import javax.sound.sampled.Clip;
 
 public class PlayingHandler implements GameStateHandler {
     private final GameEngine gameEngine;
     private final Clip clip;
+    private final CollisionEngine collisionEngine;
 
     public PlayingHandler(GameEngine gameEngine, Clip clip) {
         this.gameEngine = gameEngine;
         this.clip = clip;
+        this.collisionEngine = new CollisionEngine(gameEngine);
     }
 
     @Override
@@ -31,7 +34,7 @@ public class PlayingHandler implements GameStateHandler {
         updateSpeedEffect(deltaTime);
         updateTiles(deltaTime);
         updateCameraAndSphere();
-        gameEngine.handleCollisions(deltaTime);
+        collisionEngine.handleCollisions();
         checkOrbCollisions();
 
         gameEngine.getSphere().update(gameEngine.getSmoothedAudioTime(), deltaTime);

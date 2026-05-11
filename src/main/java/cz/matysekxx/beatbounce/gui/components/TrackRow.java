@@ -168,17 +168,17 @@ public class TrackRow extends JPanel {
             g2.setFont(RenderCache.SANS_BOLD_13);
             drawCenteredString(g2, "READY!", bx, by, btnW, btnH);
             final float alpha = Math.max(0, 1.0f - data.startingProgress);
-            g2.setColor(new Color(255, 255, 255, (int)(alpha * 120)));
+            g2.setColor(new Color(255, 255, 255, (int) (alpha * 120)));
             g2.fillRect(0, 0, w, h);
 
         } else if (data.downloading) {
             g2.setColor(new Color(255, 255, 255, 20));
             g2.fillRoundRect(bx, by, btnW, btnH, 8, 8);
             g2.setPaint(new GradientPaint(bx, by, RenderUtils.purple, bx + btnW, by, RenderUtils.cyan));
-            g2.fillRoundRect(bx, by, (int)(btnW * data.downloadProgress), btnH, 8, 8);
+            g2.fillRoundRect(bx, by, (int) (btnW * data.downloadProgress), btnH, 8, 8);
             g2.setColor(Color.WHITE);
             g2.setFont(RenderCache.SANS_BOLD_11);
-            drawCenteredString(g2, (int)(data.downloadProgress * 100) + "%", bx, by, btnW, btnH);
+            drawCenteredString(g2, (int) (data.downloadProgress * 100) + "%", bx, by, btnW, btnH);
 
         } else {
             g2.setColor(data.getAccent());
@@ -240,7 +240,8 @@ public class TrackRow extends JPanel {
                         LOG.log(Level.SEVERE, "Failed to launch game", ex);
                     }
                 });
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException ignored) {
+            }
         }).start();
     }
 }

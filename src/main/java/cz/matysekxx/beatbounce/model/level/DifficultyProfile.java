@@ -59,7 +59,7 @@ public record DifficultyProfile(
      * @return the corresponding {@link DifficultyProfile}
      */
     public static DifficultyProfile forStars(int stars) {
-        final int s = Math.max(1, Math.min(10, stars));
+        final int s = Math.clamp(stars, 1, 10);
         return switch (s) {
             case 1 ->
                     p(1, 1, 0.70, 1.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, false, false, 0.20, EnumSet.of(TileType.NORMAL));

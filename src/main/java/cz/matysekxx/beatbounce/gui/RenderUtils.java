@@ -1,7 +1,6 @@
 package cz.matysekxx.beatbounce.gui;
 
 import cz.matysekxx.beatbounce.configuration.Settings;
-import cz.matysekxx.beatbounce.gui.components.IntroPanel;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

@@ -39,7 +39,7 @@ public class CycleButton extends JButton {
         setContentAreaFilled(false);
         setBorderPainted(false);
         setCursor(new Cursor(Cursor.HAND_CURSOR));
-        addActionListener(e -> {
+        addActionListener(_ -> {
             currentIndex = (currentIndex + 1) % options.length;
             setText(this.options[currentIndex]);
         });

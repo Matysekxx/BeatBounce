@@ -103,7 +103,7 @@ public class Settings {
                 final FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
                 final float volume = (isMuted) ? 0 : (soundVolume / 100f);
                 final float dB = (float) (Math.log(volume <= 0 ? 0.0001 : volume) / Math.log(10.0) * 20.0);
-                gainControl.setValue(Math.max(gainControl.getMinimum(), Math.min(gainControl.getMaximum(), dB)));
+                gainControl.setValue(Math.clamp(dB, gainControl.getMinimum(), gainControl.getMaximum()));
             }
         } catch (Exception e) {
             System.err.println("Failed to apply volume: " + e.getMessage());

@@ -27,7 +27,7 @@ import java.util.Random;
  *   <li>{@link SpeedTile}  — temporarily modifies scroll speed on first contact.</li>
  * </ul>
  */
-public class GameEngine {
+public class GameEngine { //TODO: vytvorit CollisionEngine pro spravu kolizi mezi hracem a dlazdicemi
     /**
      * Maximum number of times the player can revive per run.
      */

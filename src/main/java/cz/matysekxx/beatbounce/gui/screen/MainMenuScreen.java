@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.matysekxx.beatbounce.api.AudiusClient;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
-import cz.matysekxx.beatbounce.gui.components.*;
+import cz.matysekxx.beatbounce.gui.components.LibraryPanel;
+import cz.matysekxx.beatbounce.gui.components.MainMenuPanel;
+import cz.matysekxx.beatbounce.gui.components.SettingsPanel;
+import cz.matysekxx.beatbounce.gui.components.SongSelectionPanel;
 
 import javax.swing.*;
 import java.awt.*;

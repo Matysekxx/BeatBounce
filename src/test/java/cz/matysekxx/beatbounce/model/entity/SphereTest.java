@@ -60,9 +60,9 @@ public class SphereTest {
         sphere.setTargetX(500);
         sphere.setZ(1000);
         sphere.startFalling();
-        
+
         sphere.reset();
-        
+
         assertEquals(0, sphere.getX());
         assertEquals(150, sphere.getCurrentY());
         assertEquals(0, sphere.getZ());

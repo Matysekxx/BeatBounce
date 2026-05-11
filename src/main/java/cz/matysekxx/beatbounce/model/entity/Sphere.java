@@ -24,6 +24,7 @@ public class Sphere extends Entity implements Paintable {
     private boolean isFalling = false;
     private float alpha = 1.0f;
     private float scaleMultiplier = 1.0f;
+
     /**
      * Constructs a new {@code Sphere} with specified coordinates and radius.
      *

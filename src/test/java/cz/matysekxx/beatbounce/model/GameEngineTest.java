@@ -4,9 +4,9 @@ import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.NormalTile;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
-import cz.matysekxx.beatbounce.model.level.Level;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
 import cz.matysekxx.beatbounce.model.game.GameState;
+import cz.matysekxx.beatbounce.model.level.Level;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +16,8 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GameEngineTest {
 
@@ -36,7 +37,7 @@ public class GameEngineTest {
         tiles = new ArrayList<>();
         tiles.add(new NormalTile(null, new Point(0, 150), 0));
         tiles.add(new NormalTile(null, new Point(0, 150), 500));
-        
+
         mockLevel = new Level(tiles, null, "test.mp3", 3);
         mockSphere = new Sphere(0, 150, 0, 25);
         mockCam = new Camera3D(0, 0, -500, 500);
@@ -62,7 +63,7 @@ public class GameEngineTest {
                     return null;
                 }
         );
-        
+
         gameEngine = new GameEngine(mockLevel, mockSphere, mockCam, mockClip);
     }
 
@@ -75,7 +76,7 @@ public class GameEngineTest {
     @Test
     void testCountdownToPlayingTransition() {
         gameEngine.update(0, 4.0);
-        
+
         assertEquals(GameState.PLAYING, gameEngine.getGameState(), "Game should transition to PLAYING after countdown ends.");
         assertTrue(clipStarted, "Clip should be started when entering PLAYING state.");
     }
@@ -87,7 +88,7 @@ public class GameEngineTest {
         gameEngine.togglePause();
         assertEquals(GameState.PAUSED, gameEngine.getGameState(), "GameState should be PAUSED after toggle.");
         assertTrue(clipStopped, "Clip should be stopped when pausing.");
-        
+
         gameEngine.togglePause();
         assertEquals(GameState.COUNTDOWN, gameEngine.getGameState(), "GameState should go back to COUNTDOWN when unpausing.");
         assertTrue(gameEngine.getCountdownTime() > 3.0);
@@ -102,7 +103,7 @@ public class GameEngineTest {
     void testInitResetsEverything() {
         gameEngine.update(0, 4.0);
         mockSphere.setZ(100);
-        
+
         gameEngine.init();
         assertEquals(GameState.COUNTDOWN, gameEngine.getGameState());
         assertEquals(0, gameEngine.getScore());

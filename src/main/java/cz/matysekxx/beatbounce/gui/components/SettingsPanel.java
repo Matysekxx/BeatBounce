@@ -71,12 +71,12 @@ public class SettingsPanel extends JPanel {
         monitorCycle.setMinimumSize(new Dimension(240, 40));
         monitorCycle.setPreferredSize(new Dimension(240, 40));
         monitorCycle.setMaximumSize(new Dimension(240, 40));
-        
+
         qualityCycle = new CycleButton(new String[]{"LOW", "MEDIUM", "HIGH"}, getQualityIndex());
         qualityCycle.setMinimumSize(new Dimension(240, 40));
         qualityCycle.setPreferredSize(new Dimension(240, 40));
         qualityCycle.setMaximumSize(new Dimension(240, 40));
-        
+
         fpsSelector = new StepSelector(new int[]{30, 60, 90, 120, 165, 240}, Settings.targetFps);
         fpsSelector.setMinimumSize(new Dimension(300, 45));
         fpsSelector.setPreferredSize(new Dimension(300, 45));
@@ -88,7 +88,7 @@ public class SettingsPanel extends JPanel {
         displayGroup.add(Box.createRigidArea(new Dimension(0, 25)));
         displayGroup.add(createLabeledComponent("Target FPS:", fpsSelector));
         displayGroup.add(Box.createRigidArea(new Dimension(0, 35)));
-        
+
         displayGroup.add(fullscreenCheck = new CustomCheckBox("Fullscreen (Borderless)", Settings.fullscreen));
         displayGroup.add(Box.createRigidArea(new Dimension(0, 15)));
         displayGroup.add(openglCheck = new CustomCheckBox("OpenGL Hardware Acceleration", Settings.opengl));
@@ -135,6 +135,21 @@ public class SettingsPanel extends JPanel {
         add(createBottomPanel(), BorderLayout.SOUTH);
     }
 
+    private static void restart() throws IOException {
+        final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+        final File jarFile;
+        try {
+            jarFile = new File(SettingsPanel.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        if (!jarFile.getName().endsWith(".jar")) return;
+        ProcessBuilder pb = new ProcessBuilder(javaBin, "-jar", jarFile.getPath());
+        pb.directory(jarFile.getParentFile());
+        pb.start();
+        System.exit(0);
+    }
+
     /**
      * Paints the settings panel background with a gradient and rounded corners.
      *
@@ -168,7 +183,7 @@ public class SettingsPanel extends JPanel {
 
         final JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         titlePanel.setOpaque(false);
-        
+
         final JLabel t = new JLabel(title);
         t.setFont(RenderCache.SANS_BOLD_22);
         t.setForeground(RenderUtils.cyan);
@@ -179,10 +194,10 @@ public class SettingsPanel extends JPanel {
         titlePanel.setPreferredSize(new Dimension(520, 45));
         titlePanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 45));
         titlePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
+
         p.add(titlePanel);
         p.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
-        
+
         return p;
     }
 
@@ -258,7 +273,7 @@ public class SettingsPanel extends JPanel {
             dialog.dispose();
             try {
                 restart();
-            }catch(IOException e) {
+            } catch (IOException e) {
                 System.err.println(e.getMessage());
             }
         });
@@ -268,21 +283,6 @@ public class SettingsPanel extends JPanel {
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
-    }
-
-    private static void restart() throws IOException {
-        final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
-        final File jarFile;
-        try {
-            jarFile = new File(SettingsPanel.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-        if (!jarFile.getName().endsWith(".jar")) return;
-        ProcessBuilder pb = new ProcessBuilder(javaBin, "-jar", jarFile.getPath());
-        pb.directory(jarFile.getParentFile());
-        pb.start();
-        System.exit(0);
     }
 
     private void showResetDialog() {
@@ -359,7 +359,7 @@ public class SettingsPanel extends JPanel {
         p.add(l);
         p.add(Box.createRigidArea(new Dimension(10, 0)));
         p.add(comp);
-        
+
         p.setAlignmentX(Component.LEFT_ALIGNMENT);
         p.setMinimumSize(new Dimension(0, 50));
         p.setPreferredSize(new Dimension(520, 50));

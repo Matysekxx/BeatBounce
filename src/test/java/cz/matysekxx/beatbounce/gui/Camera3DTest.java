@@ -1,7 +1,9 @@
 package cz.matysekxx.beatbounce.gui;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Camera3DTest {
 
@@ -15,10 +17,10 @@ public class Camera3DTest {
     @Test
     void testGetScaleDecreasesWithDistance() {
         Camera3D cam = new Camera3D(0, 0, -500, 500);
-        
+
         double scaleClose = cam.getScale(0);
         double scaleFar = cam.getScale(1000);
-        
+
         assertTrue(scaleClose > scaleFar, "Scale should be larger for closer objects.");
         assertTrue(scaleFar > 0, "Scale should be positive for objects in front of camera.");
     }

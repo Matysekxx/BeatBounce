@@ -60,7 +60,7 @@ public class MainMenuPanel extends JPanel implements Runnable {
             if (System.currentTimeMillis() - lastFpsTime >= 1000) {
                 lastFpsTime = System.currentTimeMillis();
             }
-            long frameTimeMs = (long) (1000.0 / Settings.targetFps);
+            final long frameTimeMs = (long) (1000.0 / Settings.targetFps);
             Time.sleep(frameTimeMs);
         }
     }

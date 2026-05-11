@@ -277,9 +277,8 @@ public class IntroPanel extends JPanel implements Runnable {
         g2d.drawString(text, drawX + 3, drawY + 3);
 
         g2d.setColor(faceColor);
-        g2d.drawString(text, drawX, drawY );
+        g2d.drawString(text, drawX, drawY);
     }
-
 
 
     private void drawIntroGrid(Graphics2D g2d, int w, int h, int horizonY, float globalHue) {
@@ -307,7 +306,7 @@ public class IntroPanel extends JPanel implements Runnable {
                 final int alpha = (int) (140 * depth);
                 final Color horizGridColor = Color.getHSBColor((globalHue + (z % 5) * 0.05f) % 1.0f, 0.8f, 1.0f);
 
-                g2d.setColor(RenderCache.customColorWithAlpha(horizGridColor, Math.min(255, Math.max(0, alpha))));
+                g2d.setColor(RenderCache.customColorWithAlpha(horizGridColor, Math.clamp(alpha, 0, 255)));
                 g2d.drawLine(0, lineY, w, lineY);
             }
         }

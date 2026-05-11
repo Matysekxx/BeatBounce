@@ -15,7 +15,7 @@ public class CustomCheckBox extends JCheckBox {
     /**
      * Constructs a new CustomCheckBox with the specified text and initial selection state.
      *
-     * @param text     the text to display next to the check box
+     * @param text     the text to display next to the checkbox
      * @param selected the initial selection state
      */
     public CustomCheckBox(String text, boolean selected) {
@@ -25,31 +25,33 @@ public class CustomCheckBox extends JCheckBox {
         setBorderPainted(false);
         setForeground(Color.LIGHT_GRAY);
         setFont(RenderCache.SANS_PLAIN_20);
-        setAlignmentX(Component.LEFT_ALIGNMENT);
+        setAlignmentX(LEFT_ALIGNMENT);
         setCursor(new Cursor(Cursor.HAND_CURSOR));
         addChangeListener(_ -> setForeground(isSelected() ? Color.WHITE : Color.LIGHT_GRAY));
-        setIcon(new Icon() {
-            @Override
-            public void paintIcon(Component c, Graphics g, int x, int y) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                RenderUtils.initGraphics2D(g2);
-                g2.setColor(isSelected() ? RenderUtils.cyan : new Color(60, 60, 65));
-                g2.fillRoundRect(x, y + 2, 40, 20, 20, 20);
-                g2.setColor(Color.WHITE);
-                final int knobX = isSelected() ? x + 22 : x + 2;
-                g2.fillOval(knobX, y + 4, 16, 16);
-                g2.dispose();
-            }
+        setIcon(new CheckBoxIcon());
+    }
 
-            @Override
-            public int getIconWidth() {
-                return 55;
-            }
+    private class CheckBoxIcon implements Icon {
+        @Override
+        public void paintIcon(Component c, Graphics g, int x, int y) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            RenderUtils.initGraphics2D(g2);
+            g2.setColor(isSelected() ? RenderUtils.cyan : new Color(60, 60, 65));
+            g2.fillRoundRect(x, y + 2, 40, 20, 20, 20);
+            g2.setColor(Color.WHITE);
+            final int knobX = isSelected() ? x + 22 : x + 2;
+            g2.fillOval(knobX, y + 4, 16, 16);
+            g2.dispose();
+        }
 
-            @Override
-            public int getIconHeight() {
-                return 26;
-            }
-        });
+        @Override
+        public int getIconWidth() {
+            return 55;
+        }
+
+        @Override
+        public int getIconHeight() {
+            return 26;
+        }
     }
 }

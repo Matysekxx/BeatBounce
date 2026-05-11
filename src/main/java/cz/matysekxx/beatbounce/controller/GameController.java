@@ -74,6 +74,6 @@ public class GameController implements MouseMotionListener {
         final double scale = cam.getScale(sphere.getZ());
         if (scale <= 0) return;
         final double rawTargetX = cam.getX() + (mouseX - width / 2.0) / scale;
-        sphere.setTargetX(Math.max(-MAX_LANE_ABS, Math.min(MAX_LANE_ABS, rawTargetX)));
+        sphere.setTargetX(Math.clamp(rawTargetX, -MAX_LANE_ABS, MAX_LANE_ABS));
     }
 }

@@ -5,11 +5,11 @@ import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.WindowData;
-import cz.matysekxx.beatbounce.model.game.GameEngine;
-import cz.matysekxx.beatbounce.model.game.GameState;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.Orb;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
+import cz.matysekxx.beatbounce.model.game.GameEngine;
+import cz.matysekxx.beatbounce.model.game.GameState;
 import cz.matysekxx.beatbounce.model.level.Level;
 
 import java.awt.*;
@@ -17,7 +17,7 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 
 /**
- * Handles the rendering of the 3D world environment, including the planet, 
+ * Handles the rendering of the 3D world environment, including the planet,
  * neon grid (floor and ceiling), and game entities.
  */
 public class GameWorldRenderer {
@@ -27,6 +27,7 @@ public class GameWorldRenderer {
     private static final Color TRANSPARENT = new Color(0, 0, 0, 0);
 
     private static final Color[] HUE_CACHE = new Color[360];
+
     static {
         for (int i = 0; i < 360; i++) {
             HUE_CACHE[i] = Color.getHSBColor(i / 360f, 0.85f, 1.0f);
@@ -37,9 +38,8 @@ public class GameWorldRenderer {
     private final GameEngine gameEngine;
     private final Level level;
     private final Sphere sphere;
-    
-    private BufferedImage bgCache;
     private final int[] projScratch = new int[2];
+    private BufferedImage bgCache;
 
     public GameWorldRenderer(Camera3D cam, GameEngine gameEngine, Level level, Sphere sphere) {
         this.cam = cam;
@@ -75,7 +75,7 @@ public class GameWorldRenderer {
 
         final int glowR = (int) (r * (2.f + pulse * 0.15f));
         final int glowAlpha = (int) (15 + pulse * 30);
-        
+
         final Color baseColor = getCachedColor(globalHue);
         final Color secondaryColor = getCachedColor((globalHue + 0.3f) % 1.0f);
 
@@ -125,7 +125,7 @@ public class GameWorldRenderer {
             final int py = projScratch[1];
             if (py < 0 || py > height) continue;
 
-            final int alpha = (int) Math.max(0, Math.min(60, 255 - (distance / 3000.0 * 255)));
+            final int alpha = (int) Math.clamp(255 - (distance / 3000.0 * 255), 0, 60);
             final float rowHue = (globalHue + (z / 3000f) * 0.15f) % 1.0f;
             g2d.setColor(RenderCache.customColorWithAlpha(getCachedColor(rowHue), alpha));
             g2d.drawLine(0, py, width, py);
@@ -142,8 +142,8 @@ public class GameWorldRenderer {
 
             final boolean isMainLane = Math.abs(lx) <= 300;
             final float laneHue = isMainLane ? globalHue : (globalHue + 0.5f) % 1.0f;
-            final int alpha = isMainLane ? 110 : (int)(110 * 0.5);
-            
+            final int alpha = isMainLane ? 110 : (int) (110 * 0.5);
+
             g2d.setColor(RenderCache.customColorWithAlpha(getCachedColor(laneHue), alpha));
             g2d.drawLine(sx, sy, ex, ey);
         }

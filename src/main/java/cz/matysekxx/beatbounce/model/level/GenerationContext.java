@@ -24,7 +24,7 @@ import static cz.matysekxx.beatbounce.model.level.LevelGenerator.getZSpeed;
  * Difficulty is governed by a {@link DifficultyProfile} (stars 1–10) rather than raw
  * probability constants.
  */
-class GenerationContext {
+class GenerationContext { //TODO: vytvorit tridu TilePlacer ktera pomuze GenerationContext v generaci levelu
 
     /**
      * Duration (in seconds) a speed-tile effect persists.
@@ -197,7 +197,8 @@ class GenerationContext {
             case MovingTile _ -> trackType(TileType.MOVING);
             case BreakableTile _ -> trackType(TileType.BREAKABLE);
             case SpeedTile _ -> trackType(TileType.SPEED);
-            default -> {}
+            default -> {
+            }
         }
     }
 

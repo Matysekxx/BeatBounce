@@ -12,12 +12,6 @@ import java.awt.*;
  * It uses a separate thread for the loading animation.
  */
 public class LoadingPanel extends JPanel implements Runnable {
-    private static final Stroke BAR_STROKE = new BasicStroke(1.5f);
-    private static final int BAR_HEIGHT = 20;
-    private static final Color FILL_GLOW_COLOR = new Color(
-            RenderUtils.cyan.getRed(), RenderUtils.cyan.getGreen(), RenderUtils.cyan.getBlue(), 40
-    );
-    private static final Color BORDER_GLOW_COLOR = new Color(0, 255, 220, 60);
     private static final Color PERCENT_SHADOW_COLOR = new Color(0, 255, 220, 30);
     private static final Color PERCENT_TEXT_COLOR = new Color(255, 255, 255, 200);
     private static final Color FOOTER_COLOR = new Color(180, 180, 200, 120);

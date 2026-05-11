@@ -6,9 +6,9 @@ import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.WindowData;
+import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
 import cz.matysekxx.beatbounce.model.game.GameState;
-import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.level.Level;
 
 import javax.sound.sampled.Clip;
@@ -25,127 +25,100 @@ import java.awt.image.BufferedImage;
  * The main panel for the game, handling rendering, user input, and the game loop.
  */
 public class GamePanel extends JPanel implements Runnable {
-    /** Number of particles for game background effects. */
+    /**
+     * Number of particles for game background effects.
+     */
     private static final int MAX_PARTICLES = 20;
-
+    private static final GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment()
+            .getDefaultScreenDevice().getDefaultConfiguration();
     /**
      * The 3D camera used for projecting game coordinates to the screen.
      */
     private final Camera3D cam;
-
     /**
      * Callback invoked when the game session is closed or exited.
      */
     private final Runnable onExit;
-
     /**
      * Transparent cursor used to hide the mouse during gameplay.
      */
     private final Cursor blankCursor;
-
-    /**
-     * The primary game loop thread.
-     */
-    private Thread gameThread;
-
-    /**
-     * The audio clip for the current level's song.
-     */
-    private Clip clip;
-
-    /**
-     * The core game logic model.
-     */
-    private GameEngine gameEngine;
-
-    /**
-     * Flag indicating if the game loop is active.
-     */
-    private boolean running;
-
-    /**
-     * Timestamp of the previous frame for delta time calculation.
-     */
-    private long lastFrameTime;
-
-    /**
-     * Current state of cursor visibility.
-     */
-    private boolean isCursorHidden = false;
-
-    /**
-     * The score from the previous update, used to trigger animations.
-     */
-    private int lastScore = 0;
-
-    /**
-     * Alpha value for the score "pop" animation.
-     */
-    private float scorePopAlpha = 0f;
-
-    /**
-     * Helper for rendering game-specific UI elements.
-     */
-    private GameUIRenderer uiRenderer;
-
-    /**
-     * Helper for rendering the 3D world environment.
-     */
-    private GameWorldRenderer worldRenderer;
-
-    /**
-     * Cached width of the panel for background re-generation.
-     */
-    private int cachedW = -1;
-
-    /**
-     * Cached height of the panel for background re-generation.
-     */
-    private int cachedH = -1;
-
-    /**
-     * Frame counter for FPS calculation.
-     */
-    private int frames = 0;
-
-    /**
-     * Timestamp of the last FPS update.
-     */
-    private long lastFpsTime = 0;
-
-    /**
-     * The most recently calculated FPS value.
-     */
-    private int currentUpdateFps = 0;
-
-    /**
-     * Dimensions of the panel used for coordinate projections.
-     */
-    private WindowData frameWindowData;
-
-    /**
-     * Off-screen buffer for double-buffered rendering.
-     */
-    private BufferedImage backBuffer;
-
     /**
      * Particle array for ambient background animation.
      */
     private final Particle[] particles;
-
+    /**
+     * The primary game loop thread.
+     */
+    private Thread gameThread;
+    /**
+     * The audio clip for the current level's song.
+     */
+    private Clip clip;
+    /**
+     * The core game logic model.
+     */
+    private GameEngine gameEngine;
+    /**
+     * Flag indicating if the game loop is active.
+     */
+    private boolean running;
+    /**
+     * Timestamp of the previous frame for delta time calculation.
+     */
+    private long lastFrameTime;
+    /**
+     * Current state of cursor visibility.
+     */
+    private boolean isCursorHidden = false;
+    /**
+     * The score from the previous update, used to trigger animations.
+     */
+    private int lastScore = 0;
+    /**
+     * Alpha value for the score "pop" animation.
+     */
+    private float scorePopAlpha = 0f;
+    /**
+     * Helper for rendering game-specific UI elements.
+     */
+    private GameUIRenderer uiRenderer;
+    /**
+     * Helper for rendering the 3D world environment.
+     */
+    private GameWorldRenderer worldRenderer;
+    /**
+     * Cached width of the panel for background re-generation.
+     */
+    private int cachedW = -1;
+    /**
+     * Cached height of the panel for background re-generation.
+     */
+    private int cachedH = -1;
+    /**
+     * Frame counter for FPS calculation.
+     */
+    private int frames = 0;
+    /**
+     * Timestamp of the last FPS update.
+     */
+    private long lastFpsTime = 0;
+    /**
+     * The most recently calculated FPS value.
+     */
+    private int currentUpdateFps = 0;
+    /**
+     * Off-screen buffer for double-buffered rendering.
+     */
+    private BufferedImage backBuffer;
     /**
      * Current particle count based on quality settings.
      */
     private int particleCount;
-
     /**
      * Accumulated time for animations (seconds).
      */
     private float animTime = 0f;
-
-    private static final GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment()
-            .getDefaultScreenDevice().getDefaultConfiguration();
-
 
 
     /**
@@ -239,10 +212,8 @@ public class GamePanel extends JPanel implements Runnable {
                 final int h = e.getComponent().getHeight();
                 if (w != cachedW) cachedW = w;
                 if (h != cachedH) cachedH = h;
-                frameWindowData = WindowData.of(w, h);
                 if (backBuffer == null || backBuffer.getWidth(null) != w || backBuffer.getHeight(null) != h) {
                     backBuffer = gc.createCompatibleImage(w, h, Transparency.OPAQUE);
-
                 }
             }
         });
@@ -406,6 +377,7 @@ public class GamePanel extends JPanel implements Runnable {
             g2d.setColor(RenderCache.blackWithAlpha(flashAlpha));
             g2d.fillRect(0, 0, virtualW, virtualH);
         }
+        assert gameEngine != null;
         uiRenderer.renderGameState(g2d, virtualW, virtualH, gameEngine.getGameState());
 
         g2d.setTransform(oldTransform);

@@ -44,7 +44,7 @@ public class GameUIRenderer {
      * Constructs a new GameUIRenderer.
      *
      * @param gameEngine the game model to retrieve state and score from
-     * @param clip      the audio clip to track progress
+     * @param clip       the audio clip to track progress
      */
     public GameUIRenderer(GameEngine gameEngine, Clip clip) {
         this.gameEngine = gameEngine;
@@ -206,7 +206,7 @@ public class GameUIRenderer {
         drawCardLine(g2d, width, cardW, cardY + 130, FINISHED_YELLOW_LINE, pulse);
         drawPostGameScore(g2d, cardY + 90, width, RenderUtils.yellow);
         drawEndScreenHints(g2d, width, cardY + cardH - 60, "R", "Restart", "ENTER", "Continue");
-        
+
         teardownScreenCard(g2d);
     }
 
@@ -248,7 +248,7 @@ public class GameUIRenderer {
         drawCardLine(g2d, width, cardW, cardY + 140, GAMEOVER_RED, pulse);
         drawPostGameScore(g2d, cardY + 100, width, GAMEOVER_RED_LIGHT);
         drawEndScreenHints(g2d, width, cardY + cardH - 60, "R", "Restart", "ENTER", "Main Menu");
-        
+
         teardownScreenCard(g2d);
     }
 
@@ -441,7 +441,7 @@ public class GameUIRenderer {
 
         final int cardW = 540;
         final int cardH = 430;
-        
+
         final boolean canRevive = gameEngine.canRevive();
         final Color cardColor = canRevive ? ORBS_COLOR : GAMEOVER_RED;
 
@@ -458,7 +458,7 @@ public class GameUIRenderer {
         g2d.setColor(SCORE_TEXT_COLOR);
         String scoreText = "Score so far: " + String.format("%,d", gameEngine.getScore());
         g2d.drawString(scoreText, (width - g2d.getFontMetrics().stringWidth(scoreText)) / 2, currentY);
-        
+
         currentY += 35;
         g2d.setColor(ORBS_COLOR);
         String orbsText = "Orbs collected: " + gameEngine.getCollectedOrbs();

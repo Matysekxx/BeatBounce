@@ -15,10 +15,6 @@ import java.util.*;
  */
 public class GameEngine { //TODO: vytvorit CollisionEngine pro spravu kolizi mezi hracem a dlazdicemi
     public static final int MAX_REVIVES = 3;
-    private static final int LANE_WIDTH = 120;
-    private static final double NORMAL_HALF_WIDTH = LANE_WIDTH / 2.0;
-    private static final double SMALL_HALF_WIDTH = 30.0;
-    private static final double SPEED_EFFECT_DURATION = 3.0;
 
     private final Level level;
     private final Sphere sphere;
@@ -27,10 +23,8 @@ public class GameEngine { //TODO: vytvorit CollisionEngine pro spravu kolizi mez
     private final double zUnitsPerSecond;
     private final List<Orb> orbs = new ArrayList<>();
     private final List<AbstractTile> updatableTiles;
-    
-    private volatile GameState gameState = GameState.COUNTDOWN;
     private final EnumMap<GameState, GameStateHandler> stateHandlers = new EnumMap<>(GameState.class);
-
+    private volatile GameState gameState = GameState.COUNTDOWN;
     private int currentTileIndex = -1;
     private double gameZProgress;
     private double fallStartZ = 0;
@@ -128,7 +122,7 @@ public class GameEngine { //TODO: vytvorit CollisionEngine pro spravu kolizi mez
     public void stopClip() {
         if (clip.isRunning()) clip.stop();
     }
-    
+
     public void stop() {
         stopClip();
     }
@@ -182,92 +176,54 @@ public class GameEngine { //TODO: vytvorit CollisionEngine pro spravu kolizi mez
         }
     }
 
-    public void handleCollisions(double deltaTime) {
-        if (currentTileIndex + 1 >= level.tiles().size()) return;
-        final AbstractTile nextTile = level.tiles().get(currentTileIndex + 1);
-        if (onLongTile && currentTileIndex >= 0) {
-            final AbstractTile curTile = level.tiles().get(currentTileIndex);
-            if (curTile instanceof LongTile lt) {
-                final double timeToNextTile = (nextTile.getZ() - gameZProgress) / zUnitsPerSecond;
-                final boolean shouldJumpEarly = timeToNextTile <= 0.25;
-                if (gameZProgress <= lt.getZ() + lt.getLengthInZ() && !shouldJumpEarly) {
-                    longTileScoreAccum++;
-                    if (longTileScoreAccum % 6 == 0) score += 1;
-                    return;
-                } else {
-                    onLongTile = false;
-                    startNextJump(smoothedAudioTime);
-                }
-            } else {
-                onLongTile = false;
-            }
-        }
-        if (gameZProgress < nextTile.getZ()) return;
-        final double halfWidth;
-        if (nextTile instanceof SmallTile) {
-            halfWidth = SMALL_HALF_WIDTH + sphere.getRadius();
-        } else {
-            halfWidth = NORMAL_HALF_WIDTH + sphere.getRadius();
-        }
-
-        final double tileMinX = nextTile.getX() - halfWidth;
-        final double tileMaxX = nextTile.getX() + halfWidth;
-
-        if (sphere.getX() < tileMinX || sphere.getX() > tileMaxX) {
-            startFalling();
-            return;
-        }
-        switch (nextTile) {
-            case BreakableTile bt -> handleBreakableCollision(bt);
-            case SpeedTile st -> handleSpeedTileCollision(st);
-            case LongTile _ -> handleLongTileCollision();
-            default -> {
-                currentTileIndex++;
-                score += (nextTile instanceof SmallTile) ? 15 : 10;
-                startNextJump(smoothedAudioTime);
-            }
-        }
+    public int getTilesSize() {
+        return level.tiles().size();
     }
 
-    private void handleBreakableCollision(BreakableTile bt) {
-        if (bt.isBroken()) {
-            startFalling();
-            return;
-        }
-        bt.breakTile();
-        currentTileIndex++;
-        score += 12;
-        startNextJump(smoothedAudioTime);
+    public int getCurrentTileIndex() {
+        return currentTileIndex;
     }
 
-    private void handleSpeedTileCollision(SpeedTile st) {
-        currentTileIndex++;
-        score += 10;
-        if (!st.isActivated()) {
-            st.activate();
-            speedEffectActive = true;
-            speedEffectTimeRemaining = SPEED_EFFECT_DURATION;
-            activeSpeedMultiplier = st.getSpeedMultiplier();
-        }
-        startNextJump(smoothedAudioTime);
+    public void setCurrentTileIndex(int currentTileIndex) {
+        this.currentTileIndex = currentTileIndex;
     }
 
-    private void handleLongTileCollision() {
-        currentTileIndex++;
-        onLongTile = true;
-        longTileScoreAccum = 0;
-        score += 5;
-        sphere.cancelJump();
+    public AbstractTile getNextTile() {
+        return level.tiles().get(currentTileIndex + 1);
     }
 
-    private void startFalling() {
+    public AbstractTile getCurrentTile() {
+        return level.tiles().get(currentTileIndex);
+    }
+
+    public boolean isOnLongTile() {
+        return onLongTile;
+    }
+
+    public void setOnLongTile(boolean onLongTile) {
+        this.onLongTile = onLongTile;
+    }
+
+    public double getzUnitsPerSecond() {
+        return zUnitsPerSecond;
+    }
+
+    public int getLongTileScoreAccum() {
+        return longTileScoreAccum;
+    }
+
+    public void setLongTileScoreAccum(int longTileScoreAccum) {
+        this.longTileScoreAccum = longTileScoreAccum;
+    }
+
+    public void startFalling() {
         gameState = GameState.FALLING;
         sphere.startFalling();
         fallStartZ = sphere.getZ();
         clip.stop();
     }
 
-    private void startNextJump(double currentTime) {
+    public void startNextJump(double currentTime) {
         final var tiles = level.tiles();
         final int nextIdx = currentTileIndex + 1;
         if (nextIdx >= tiles.size()) return;
@@ -285,42 +241,142 @@ public class GameEngine { //TODO: vytvorit CollisionEngine pro spravu kolizi mez
         final double height = 100.0;
         sphere.startJump(currentTime, duration, height);
     }
+
     public String getCleanSongName() {
         final String name = level.songName();
         final int dot = name.lastIndexOf('.');
         return dot > 0 ? name.substring(0, dot) : name;
     }
 
-    public Clip getClip() { return clip; }
-    public void startClip() { clip.start(); }
-    public double getCountdownTime() { return countdownTime; }
-    public void setCountdownTime(double countdownTime) { this.countdownTime = countdownTime; }
-    public GameState getGameState() { return gameState; }
-    public void setGameState(GameState gameState) { this.gameState = gameState; }
-    public double getEndAnimationTimer() { return endAnimationTimer; }
-    public void setEndAnimationTimer(double endAnimationTimer) { this.endAnimationTimer = endAnimationTimer; }
-    public double getSmoothedAudioTime() { return smoothedAudioTime; }
-    public void setSmoothedAudioTime(double smoothedAudioTime) { this.smoothedAudioTime = smoothedAudioTime; }
-    public double getGameZProgress() { return gameZProgress; }
-    public void setGameZProgress(double gameZProgress) { this.gameZProgress = gameZProgress; }
-    public double getZUnitsPerSecond() { return zUnitsPerSecond; }
-    public boolean isSpeedEffectActive() { return speedEffectActive; }
-    public void setSpeedEffectActive(boolean speedEffectActive) { this.speedEffectActive = speedEffectActive; }
-    public double getSpeedEffectTimeRemaining() { return speedEffectTimeRemaining; }
-    public void setSpeedEffectTimeRemaining(double speedEffectTimeRemaining) { this.speedEffectTimeRemaining = speedEffectTimeRemaining; }
-    public void setActiveSpeedMultiplier(double activeSpeedMultiplier) { this.activeSpeedMultiplier = activeSpeedMultiplier; }
-    public List<AbstractTile> getUpdatableTiles() { return updatableTiles; }
-    public Camera3D getCam() { return cam; }
-    public Sphere getSphere() { return sphere; }
-    public List<Orb> getOrbs() { return orbs; }
-    public void incrementCollectedOrbs() { this.collectedOrbs++; }
-    public void setNeonFlashAlpha(float neonFlashAlpha) { this.neonFlashAlpha = neonFlashAlpha; }
-    public double getFallStartZ() { return fallStartZ; }
-    public Integer getScore() { return score; }
-    public int getCollectedOrbs() { return collectedOrbs; }
-    public Level getLevel() { return level; }
-    public float getNeonFlashAlpha() { return neonFlashAlpha; }
-    public int getRevivesUsed() { return revivesUsed; }
-    public int getReviveCost() { return 10 * (int) Math.pow(2, revivesUsed); }
-    public boolean isReviveDeclined() { return reviveDeclined; }
+    public Clip getClip() {
+        return clip;
+    }
+
+    public void startClip() {
+        clip.start();
+    }
+
+    public double getCountdownTime() {
+        return countdownTime;
+    }
+
+    public void setCountdownTime(double countdownTime) {
+        this.countdownTime = countdownTime;
+    }
+
+    public GameState getGameState() {
+        return gameState;
+    }
+
+    public void setGameState(GameState gameState) {
+        this.gameState = gameState;
+    }
+
+    public double getEndAnimationTimer() {
+        return endAnimationTimer;
+    }
+
+    public void setEndAnimationTimer(double endAnimationTimer) {
+        this.endAnimationTimer = endAnimationTimer;
+    }
+
+    public double getSmoothedAudioTime() {
+        return smoothedAudioTime;
+    }
+
+    public void setSmoothedAudioTime(double smoothedAudioTime) {
+        this.smoothedAudioTime = smoothedAudioTime;
+    }
+
+    public double getGameZProgress() {
+        return gameZProgress;
+    }
+
+    public void setGameZProgress(double gameZProgress) {
+        this.gameZProgress = gameZProgress;
+    }
+
+    public double getZUnitsPerSecond() {
+        return zUnitsPerSecond;
+    }
+
+    public boolean isSpeedEffectActive() {
+        return speedEffectActive;
+    }
+
+    public void setSpeedEffectActive(boolean speedEffectActive) {
+        this.speedEffectActive = speedEffectActive;
+    }
+
+    public double getSpeedEffectTimeRemaining() {
+        return speedEffectTimeRemaining;
+    }
+
+    public void setSpeedEffectTimeRemaining(double speedEffectTimeRemaining) {
+        this.speedEffectTimeRemaining = speedEffectTimeRemaining;
+    }
+
+    public void setActiveSpeedMultiplier(double activeSpeedMultiplier) {
+        this.activeSpeedMultiplier = activeSpeedMultiplier;
+    }
+
+    public List<AbstractTile> getUpdatableTiles() {
+        return updatableTiles;
+    }
+
+    public Camera3D getCam() {
+        return cam;
+    }
+
+    public Sphere getSphere() {
+        return sphere;
+    }
+
+    public List<Orb> getOrbs() {
+        return orbs;
+    }
+
+    public void incrementCollectedOrbs() {
+        this.collectedOrbs++;
+    }
+
+    public double getFallStartZ() {
+        return fallStartZ;
+    }
+
+    public Integer getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public int getCollectedOrbs() {
+        return collectedOrbs;
+    }
+
+    public Level getLevel() {
+        return level;
+    }
+
+    public float getNeonFlashAlpha() {
+        return neonFlashAlpha;
+    }
+
+    public void setNeonFlashAlpha(float neonFlashAlpha) {
+        this.neonFlashAlpha = neonFlashAlpha;
+    }
+
+    public int getRevivesUsed() {
+        return revivesUsed;
+    }
+
+    public int getReviveCost() {
+        return 10 * (int) Math.pow(2, revivesUsed);
+    }
+
+    public boolean isReviveDeclined() {
+        return reviveDeclined;
+    }
 }

@@ -2,9 +2,9 @@ package cz.matysekxx.beatbounce.gui.components;
 
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
-import cz.matysekxx.beatbounce.model.GameModel;
-import cz.matysekxx.beatbounce.model.GameState;
-import cz.matysekxx.beatbounce.model.ScoreManager;
+import cz.matysekxx.beatbounce.model.game.GameModel;
+import cz.matysekxx.beatbounce.model.game.GameState;
+import cz.matysekxx.beatbounce.model.score.ScoreManager;
 
 import javax.sound.sampled.Clip;
 import java.awt.*;

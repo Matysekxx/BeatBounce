@@ -1,4 +1,4 @@
-package cz.matysekxx.beatbounce.model;
+package cz.matysekxx.beatbounce.model.score;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

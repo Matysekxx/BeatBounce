@@ -1,4 +1,4 @@
-package cz.matysekxx.beatbounce.model;
+package cz.matysekxx.beatbounce.model.game;
 
 import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.Camera3D;
@@ -6,6 +6,7 @@ import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.model.entity.*;
 import cz.matysekxx.beatbounce.model.level.Level;
 import cz.matysekxx.beatbounce.model.level.LevelGenerator;
+import cz.matysekxx.beatbounce.model.score.ScoreManager;
 
 import javax.sound.sampled.Clip;
 import java.util.ArrayList;
@@ -312,7 +313,7 @@ public class GameModel {
                 handlePlaying(deltaTime);
             }
             case LEVEL_END_ANIMATION -> handleLevelEndAnimation(deltaTime);
-            case FALLING -> handleFalling(currentTime);
+            case FALLING -> handleFalling(currentTime, deltaTime);
             case PAUSED, FINISHED, GAME_OVER -> {
             }
         }
@@ -379,7 +380,7 @@ public class GameModel {
                 }
             }
         }
-        sphere.update(smoothedAudioTime);
+        sphere.update(smoothedAudioTime, deltaTime);
     }
 
     /**
@@ -392,7 +393,7 @@ public class GameModel {
             final AbstractTile curTile = level.tiles().get(currentTileIndex);
             if (curTile instanceof LongTile lt) {
                 final double timeToNextTile = (nextTile.getZ() - gameZProgress) / zUnitsPerSecond;
-                final boolean shouldJumpEarly = timeToNextTile <= 0.15;
+                final boolean shouldJumpEarly = timeToNextTile <= 0.25;
                 if (gameZProgress <= lt.getZ() + lt.getLengthInZ() && !shouldJumpEarly) {
                     longTileScoreAccum++;
                     if (longTileScoreAccum % 6 == 0) score += 1;
@@ -501,8 +502,8 @@ public class GameModel {
         }
     }
 
-    private void handleFalling(double currentTime) {
-        sphere.update(currentTime);
+    private void handleFalling(double currentTime, double deltaTime) {
+        sphere.update(currentTime, deltaTime);
         sphere.setZ(fallStartZ);
         cam.setZ(gameZProgress - 500);
         if (sphere.getCurrentY() > 500) {
@@ -532,8 +533,7 @@ public class GameModel {
         double duration = distanceZ / zUnitsPerSecond;
         if (duration <= 0) duration = 0.2;
         duration /= activeSpeedMultiplier;
-
-        final double height = 50 + (distanceZ * 0.15);
+        final double height = 100.0;
         sphere.startJump(currentTime, duration, height);
     }
 }

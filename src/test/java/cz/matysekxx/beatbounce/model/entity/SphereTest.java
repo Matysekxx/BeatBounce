@@ -24,10 +24,10 @@ public class SphereTest {
     @Test
     void testHorizontalInterpolation() {
         sphere.setTargetX(100);
-        sphere.update(0);
+        sphere.update(0, 0.016);
         assertTrue(sphere.getX() > 0, "X position should have moved towards target.");
         assertTrue(sphere.getX() < 100, "X position should not have reached target instantly.");
-        for (int i = 0; i < 20; i++) sphere.update(0);
+        for (int i = 0; i < 100; i++) sphere.update(0, 0.016);
         assertTrue(sphere.getX() >= 99, "X position should eventually reach target (approximate due to int truncation).");
     }
 
@@ -35,9 +35,9 @@ public class SphereTest {
     void testJumpPhysics() {
         sphere.startJump(0.0, 1.0, 100);
         assertTrue(sphere.isJumping());
-        sphere.update(0.5);
+        sphere.update(0.5, 0.016);
         assertEquals(50, sphere.getCurrentY(), 1.0, "At peak, Y should be 50 (floor 150 - peak 100).");
-        sphere.update(1.1);
+        sphere.update(1.1, 0.016);
         assertFalse(sphere.isJumping(), "Jump should be finished after duration.");
         assertEquals(150, sphere.getCurrentY(), "After jump, sphere should be back on floor (y=150).");
     }
@@ -46,12 +46,12 @@ public class SphereTest {
     void testFallingPhysics() {
         sphere.startFalling();
         double initialY = sphere.getCurrentY();
-        
-        sphere.update(0);
+
+        sphere.update(0, 0.016);
         assertTrue(sphere.getCurrentY() > initialY, "Sphere should fall downwards (Y increases).");
-        
+
         double yAfterOneUpdate = sphere.getCurrentY();
-        sphere.update(0);
+        sphere.update(0, 0.016);
         assertTrue(sphere.getCurrentY() > yAfterOneUpdate, "Sphere should continue to fall.");
     }
 

@@ -5,7 +5,7 @@ import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.screen.GameScreen;
 import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
-import cz.matysekxx.beatbounce.model.ScoreManager;
+import cz.matysekxx.beatbounce.model.score.ScoreManager;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

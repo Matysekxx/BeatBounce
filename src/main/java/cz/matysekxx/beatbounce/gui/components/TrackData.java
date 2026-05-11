@@ -2,7 +2,7 @@ package cz.matysekxx.beatbounce.gui.components;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import cz.matysekxx.beatbounce.api.AudiusClient;
-import cz.matysekxx.beatbounce.model.ScoreManager;
+import cz.matysekxx.beatbounce.model.score.ScoreManager;
 
 import java.awt.*;
 import java.nio.file.Files;

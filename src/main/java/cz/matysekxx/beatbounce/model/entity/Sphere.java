@@ -22,7 +22,6 @@ public class Sphere extends Entity implements Paintable {
     private double peakHeight;
     private boolean isJumping;
     private boolean isFalling = false;
-    private double fallSpeed = 0;
     private float alpha = 1.0f;
     private float scaleMultiplier = 1.0f;
     private float vibration = 0.0f;
@@ -59,7 +58,6 @@ public class Sphere extends Entity implements Paintable {
         this.peakHeight = height;
         this.isJumping = true;
         this.isFalling = false;
-        this.fallSpeed = 0;
     }
 
     /**
@@ -72,34 +70,34 @@ public class Sphere extends Entity implements Paintable {
     }
 
     /**
-     * Updates the sphere's position and state based on the current time.
+     * Updates the sphere's position and state based on the current time and delta time.
      *
-     * @param currentTime the current game time
+     * @param currentTime the current game time in seconds
+     * @param deltaTime   the time elapsed since the last update in seconds
      */
-    public void update(double currentTime) {
-        currentX += (targetX - currentX) * 0.7;
+    public void update(double currentTime, double deltaTime) {
+        final double lerpFactor = 1.0 - Math.exp(-25 * deltaTime);
+        currentX += (targetX - currentX) * lerpFactor;
         this.x = (int) currentX;
-
+        this.stretch = 1.0f;
         if (isFalling) {
-            fallSpeed += 0.5;
-            currentY += fallSpeed;
+            final double constantFallVelocity = 600.0;
+            currentY += constantFallVelocity * deltaTime;
             this.y = (int) currentY;
         } else if (isJumping) {
             final double elapsed = currentTime - jumpStartTime;
-            double progress = elapsed / jumpDuration;
-
+            final double progress = elapsed / jumpDuration;
             if (progress >= 1.0) {
                 isJumping = false;
                 currentY = 150;
-                this.y = 150;
             } else {
                 final double jumpYOffset = 4 * peakHeight * progress * (1 - progress);
                 currentY = 150 - jumpYOffset;
-                this.y = (int) currentY;
             }
+            this.y = (int) currentY;
         } else {
             currentY = 150;
-            this.y = 150;
+            this.y = (int) currentY;
         }
     }
 
@@ -146,7 +144,6 @@ public class Sphere extends Entity implements Paintable {
     public void startFalling() {
         isFalling = true;
         isJumping = false;
-        fallSpeed = 0;
     }
 
     /**
@@ -160,7 +157,6 @@ public class Sphere extends Entity implements Paintable {
         this.z = 0;
         isJumping = false;
         isFalling = false;
-        fallSpeed = 0;
         alpha = 1.0f;
         scaleMultiplier = 1.0f;
         vibration = 0.0f;
@@ -172,7 +168,6 @@ public class Sphere extends Entity implements Paintable {
      */
     public void revive() {
         this.isFalling = false;
-        this.fallSpeed = 0;
         this.currentY = 150;
         this.y = 150;
         this.alpha = 1.0f;
@@ -299,7 +294,7 @@ public class Sphere extends Entity implements Paintable {
     }
 
     /**
-     * Renders the sphere in 3D space.
+     * Renders the sphere and its shadow in 3D space.
      *
      * @param g2d        the graphics context to paint on
      * @param cam        the {@link Camera3D} used for perspective calculations
@@ -320,23 +315,30 @@ public class Sphere extends Entity implements Paintable {
             vy = 0;
         }
 
+        final double groundY = 150;
+        final int shadowScreenX = (int) (windowData.width() / 2. + (currentX + vx - cam.getX()) * scale);
+        final int shadowScreenY = (int) (windowData.height() / 3. + (groundY - cam.getY()) * scale);
+
+        final double heightFactor = Math.max(0, (groundY - currentY) / 300.0);
+        final float shadowAlpha = (float) Math.max(0, 0.4 - heightFactor * 0.3);
+        final int shadowSizeX = (int) (radius * scale * (1.2 - heightFactor * 0.4));
+        final int shadowSizeY = (int) (shadowSizeX * 0.4);
+
+        if (shadowAlpha > 0 && shadowSizeX > 0 && shadowSizeY > 0) {
+            g2d.setColor(new Color(0, 0, 0, (int) (255 * shadowAlpha)));
+            g2d.fillOval(shadowScreenX - shadowSizeX, shadowScreenY - shadowSizeY / 2, shadowSizeX * 2, shadowSizeY);
+        }
+
         final int screenX = (int) (windowData.width() / 2. + (currentX + vx - cam.getX()) * scale);
         final int screenY = (int) (windowData.height() / 3. + (currentY + vy - radius - cam.getY()) * scale);
         final int scaledRadiusX = (int) (radius * scale * scaleMultiplier);
-        final int scaledRadiusY = (int) (radius * scale * scaleMultiplier * stretch);
+        final int scaledRadiusY = (int) (radius * scale * scaleMultiplier);
 
-        final int a = (int) (255 * Math.max(0, Math.min(1.0f, alpha)));
+        final int a = (int) (255 * Math.clamp(alpha, 0, 1.0f));
         if (a <= 0 || scaledRadiusX <= 0 || scaledRadiusY <= 0) return;
 
         g2d.setColor(new Color(255, 0, 255, a));
         g2d.fillOval(screenX - scaledRadiusX, screenY - scaledRadiusY, scaledRadiusX * 2, scaledRadiusY * 2);
-
-        if (stretch > 1.2) {
-            g2d.setColor(new Color(255, 200, 255, (int) (a * 0.6)));
-            final int innerW = (int) (scaledRadiusX * 0.6);
-            final int innerH = (int) (scaledRadiusY * 0.9);
-            g2d.fillOval(screenX - innerW, screenY - innerH, innerW * 2, innerH * 2);
-        }
     }
 
     /**

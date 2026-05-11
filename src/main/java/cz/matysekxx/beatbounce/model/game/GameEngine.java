@@ -1,50 +1,25 @@
 package cz.matysekxx.beatbounce.model.game;
 
-import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.Camera3D;
-import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.model.entity.*;
+import cz.matysekxx.beatbounce.model.game.state.*;
 import cz.matysekxx.beatbounce.model.level.Level;
 import cz.matysekxx.beatbounce.model.level.LevelGenerator;
 import cz.matysekxx.beatbounce.model.score.ScoreManager;
 
 import javax.sound.sampled.Clip;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * The core logic of the game, managing the game state, player movement, score, and level progress.
- * <p>
- * Supports all tile types:
- * <ul>
- *   <li>{@link NormalTile} — standard collision, single landing.</li>
- *   <li>{@link MovingTile} — standard collision with position update.</li>
- *   <li>{@link LongTile}   — player rolls on top for its full Z-length, scoring per tick.</li>
- *   <li>{@link SmallTile}  — narrower hitbox (60 px) requiring precision.</li>
- *   <li>{@link BreakableTile} — first landing valid; second landing triggers fall.</li>
- *   <li>{@link SpeedTile}  — temporarily modifies scroll speed on first contact.</li>
- * </ul>
  */
 public class GameEngine { //TODO: vytvorit CollisionEngine pro spravu kolizi mezi hracem a dlazdicemi
-    /**
-     * Maximum number of times the player can revive per run.
-     */
     public static final int MAX_REVIVES = 3;
     private static final int LANE_WIDTH = 120;
-    /**
-     * Normal tile hitbox half-width in world units.
-     */
     private static final double NORMAL_HALF_WIDTH = LANE_WIDTH / 2.0;
-    /**
-     * Small tile hitbox half-width in world units.
-     */
     private static final double SMALL_HALF_WIDTH = 30.0;
-    /**
-     * Duration the speed tile effect lasts (seconds).
-     */
     private static final double SPEED_EFFECT_DURATION = 3.0;
+
     private final Level level;
     private final Sphere sphere;
     private final Camera3D cam;
@@ -52,7 +27,10 @@ public class GameEngine { //TODO: vytvorit CollisionEngine pro spravu kolizi mez
     private final double zUnitsPerSecond;
     private final List<Orb> orbs = new ArrayList<>();
     private final List<AbstractTile> updatableTiles;
+    
     private volatile GameState gameState = GameState.COUNTDOWN;
+    private final EnumMap<GameState, GameStateHandler> stateHandlers = new EnumMap<>(GameState.class);
+
     private int currentTileIndex = -1;
     private double gameZProgress;
     private double fallStartZ = 0;
@@ -70,14 +48,6 @@ public class GameEngine { //TODO: vytvorit CollisionEngine pro spravu kolizi mez
     private int revivesUsed = 0;
     private boolean reviveDeclined = false;
 
-    /**
-     * Constructs a new GameModel.
-     *
-     * @param level  the level to play
-     * @param sphere the player's sphere
-     * @param cam    the game camera
-     * @param clip   the audio clip for the level
-     */
     public GameEngine(Level level, Sphere sphere, Camera3D cam, Clip clip) {
         this.level = level;
         this.sphere = sphere;
@@ -88,11 +58,13 @@ public class GameEngine { //TODO: vytvorit CollisionEngine pro spravu kolizi mez
                 .stream()
                 .filter(t -> t instanceof MovingTile || t instanceof BreakableTile)
                 .toList();
+
+        stateHandlers.put(GameState.COUNTDOWN, new CountdownHandler(this));
+        stateHandlers.put(GameState.PLAYING, new PlayingHandler(this, clip));
+        stateHandlers.put(GameState.LEVEL_END_ANIMATION, new LevelEndAnimationHandler(this, cam, sphere));
+        stateHandlers.put(GameState.FALLING, new FallingHandler(this, sphere));
     }
 
-    /**
-     * Initializes or resets the game state.
-     */
     public void init() {
         this.gameState = GameState.COUNTDOWN;
         this.countdownTime = 2.99;
@@ -153,16 +125,14 @@ public class GameEngine { //TODO: vytvorit CollisionEngine pro spravu kolizi mez
         }
     }
 
-    /**
-     * Stops the audio clip if it is running.
-     */
-    public void stop() {
+    public void stopClip() {
         if (clip.isRunning()) clip.stop();
     }
+    
+    public void stop() {
+        stopClip();
+    }
 
-    /**
-     * Toggles between paused and playing/countdown states.
-     */
     public void togglePause() {
         if (gameState == GameState.PLAYING) {
             gameState = GameState.PAUSED;
@@ -173,95 +143,10 @@ public class GameEngine { //TODO: vytvorit CollisionEngine pro spravu kolizi mez
         }
     }
 
-    /**
-     * @return current score
-     */
-    public Integer getScore() {
-        return score;
-    }
-
-    /**
-     * @return number of collected orbs
-     */
-    public int getCollectedOrbs() {
-        return collectedOrbs;
-    }
-
-    /**
-     * @return list of orbs in the level
-     */
-    public List<Orb> getOrbs() {
-        return orbs;
-    }
-
-    /**
-     * @return the level being played
-     */
-    public Level getLevel() {
-        return level;
-    }
-
-    /**
-     * @return the index of the last processed tile
-     */
-    public int getCurrentTileIndex() {
-        return currentTileIndex;
-    }
-
-    /**
-     * @return remaining countdown time
-     */
-    public double getCountdownTime() {
-        return countdownTime;
-    }
-
-    /**
-     * @return alpha for the neon flash effect
-     */
-    public float getNeonFlashAlpha() {
-        return neonFlashAlpha;
-    }
-
-    /**
-     * @return current game state
-     */
-    public GameState getGameState() {
-        return gameState;
-    }
-
-    /**
-     * @return the number of times the player has revived in this session
-     */
-    public int getRevivesUsed() {
-        return revivesUsed;
-    }
-
-    /**
-     * @return the cost in orbs to revive
-     */
-    public int getReviveCost() {
-        return 10 * (int) Math.pow(2, revivesUsed);
-    }
-
-    /**
-     * Declines the revive prompt, locking the player into Game Over state.
-     */
     public void declineRevive() {
         this.reviveDeclined = true;
     }
 
-    /**
-     * @return true if the player has explicitly declined a revive
-     */
-    public boolean isReviveDeclined() {
-        return reviveDeclined;
-    }
-
-    /**
-     * Attempts to revive the player by spending orbs.
-     *
-     * @return true if revival was successful
-     */
     public boolean revive() {
         if (revivesUsed >= MAX_REVIVES) return false;
         final int cost = getReviveCost();
@@ -282,111 +167,22 @@ public class GameEngine { //TODO: vytvorit CollisionEngine pro spravu kolizi mez
         return false;
     }
 
-    /**
-     * Checks whether the player can currently revive.
-     *
-     * @return true if revives are available and the player has enough currency
-     */
     public boolean canRevive() {
         return revivesUsed < MAX_REVIVES && ScoreManager.getCurrency() >= getReviveCost();
     }
 
-    /**
-     * @return true if the current score is a new high score for the level
-     */
     public boolean isNewHighScore() {
         return ScoreManager.isHighScore(getCleanSongName(), score);
     }
 
-    /**
-     * Updates game logic based on elapsed time.
-     * ...
-     *
-     * @param currentTime current audio time in seconds
-     * @param deltaTime   time since last update in seconds
-     */
-    public void update(double currentTime, double deltaTime) { //TODO: pridat handlery na gameState
-        switch (gameState) {
-            case COUNTDOWN -> handleCountdown(deltaTime);
-            case PLAYING -> {
-                Settings.applyMusicVolume(clip);
-                handlePlaying(deltaTime);
-            }
-            case LEVEL_END_ANIMATION -> handleLevelEndAnimation(deltaTime);
-            case FALLING -> handleFalling(currentTime, deltaTime);
-            case PAUSED, FINISHED, GAME_OVER -> {
-            }
+    public void update(double currentTime, double deltaTime) {
+        if (stateHandlers.containsKey(gameState)) {
+            GameStateHandler handler = stateHandlers.get(gameState);
+            handler.handle(currentTime, deltaTime);
         }
     }
 
-    private void handleCountdown(double deltaTime) {
-        countdownTime -= deltaTime;
-        if (countdownTime <= 0) {
-            gameState = GameState.PLAYING;
-            Settings.applyMusicVolume(clip);
-            clip.start();
-        }
-    }
-
-    private void handlePlaying(double deltaTime) {
-        if (clip.getMicrosecondPosition() >= clip.getMicrosecondLength() - 50000) {
-            gameState = GameState.LEVEL_END_ANIMATION;
-            endAnimationTimer = 3.0;
-            return;
-        }
-        final double rawAudioTime = clip.getMicrosecondPosition() / 1_000_000.0;
-        if (smoothedAudioTime == 0 && rawAudioTime > 0) smoothedAudioTime = rawAudioTime;
-        smoothedAudioTime += deltaTime;
-        final double diff = rawAudioTime - smoothedAudioTime;
-        smoothedAudioTime += (Math.abs(diff) > 0.05) ? diff : diff * 0.1;
-        this.gameZProgress = smoothedAudioTime * zUnitsPerSecond;
-        if (speedEffectActive) {
-            speedEffectTimeRemaining -= deltaTime;
-            if (speedEffectTimeRemaining <= 0) {
-                speedEffectActive = false;
-                activeSpeedMultiplier = 1.0;
-            }
-        }
-
-        for (AbstractTile tile : updatableTiles) {
-            switch (tile) {
-                case MovingTile movingTile -> {
-                    final double distance = cam.getDistanceTo(tile.getZ());
-                    if (distance <= 0 || distance > 3000) continue;
-                    movingTile.update(deltaTime);
-                    int newX = movingTile.getX();
-                    if (newX < -RenderUtils.ROAD_WIDTH) newX = -RenderUtils.ROAD_WIDTH;
-                    else if (newX > RenderUtils.ROAD_WIDTH) newX = RenderUtils.ROAD_WIDTH;
-                    movingTile.setLocation(newX, movingTile.getY());
-                }
-                case BreakableTile bt when bt.isBroken() -> bt.updateBreakAnimation(deltaTime);
-                default -> {
-                }
-            }
-        }
-        sphere.setZ(gameZProgress);
-        cam.setZ(gameZProgress - 500);
-        final double targetCamX = sphere.getX() * 0.2;
-        cam.setX(cam.getX() + (targetCamX - cam.getX()) * 0.05);
-        handleCollisions(deltaTime);
-        for (Orb orb : orbs) {
-            if (!orb.isCollected()) {
-                final double dz = orb.getZ() - sphere.getZ();
-                final double dx = orb.getX() - sphere.getX();
-                final double dy = orb.getY() - sphere.getCurrentY();
-                if (dz * dz + dx * dx + dy * dy < 6400) {
-                    orb.setCollected(true);
-                    collectedOrbs++;
-                }
-            }
-        }
-        sphere.update(smoothedAudioTime, deltaTime);
-    }
-
-    /**
-     * Unified collision detection for all tile types.
-     */
-    private void handleCollisions(double deltaTime) {
+    public void handleCollisions(double deltaTime) {
         if (currentTileIndex + 1 >= level.tiles().size()) return;
         final AbstractTile nextTile = level.tiles().get(currentTileIndex + 1);
         if (onLongTile && currentTileIndex >= 0) {
@@ -471,51 +267,6 @@ public class GameEngine { //TODO: vytvorit CollisionEngine pro spravu kolizi mez
         clip.stop();
     }
 
-    private void handleLevelEndAnimation(double deltaTime) {
-        endAnimationTimer -= deltaTime;
-        final double totalDuration = 3.0;
-        final double progress = Math.min(1.0, 1.0 - (endAnimationTimer / totalDuration));
-        final double eased = (progress < 0.5)
-                ? 2 * progress * progress
-                : 1 - Math.pow(-2 * progress + 2, 2) / 2;
-
-        gameZProgress += zUnitsPerSecond * deltaTime;
-        sphere.setZ(gameZProgress);
-        sphere.setScaleMultiplier(1.0f);
-        sphere.setAlpha(1.0f);
-
-        cam.setZ(gameZProgress - (500 + eased * 1500));
-        cam.setY(-eased * 300);
-        cam.setX(cam.getX() * (1.0 - deltaTime * 2));
-
-        neonFlashAlpha = (progress > 0.7) ? (float) ((progress - 0.7) / 0.3) : 0f;
-
-        if (endAnimationTimer <= 0) {
-            gameState = GameState.FINISHED;
-            neonFlashAlpha = 0f;
-            cam.setY(0);
-            clip.stop();
-            ScoreManager.updateScore(getCleanSongName(), score);
-            ScoreManager.addCurrency(collectedOrbs);
-        }
-    }
-
-    private void handleFalling(double currentTime, double deltaTime) {
-        sphere.update(currentTime, deltaTime);
-        sphere.setZ(fallStartZ);
-        cam.setZ(gameZProgress - 500);
-        if (sphere.getCurrentY() > 500) {
-            gameState = GameState.GAME_OVER;
-            ScoreManager.updateScore(getCleanSongName(), score);
-        }
-    }
-
-    private String getCleanSongName() {
-        final String name = level.songName();
-        final int dot = name.lastIndexOf('.');
-        return dot > 0 ? name.substring(0, dot) : name;
-    }
-
     private void startNextJump(double currentTime) {
         final var tiles = level.tiles();
         final int nextIdx = currentTileIndex + 1;
@@ -534,4 +285,42 @@ public class GameEngine { //TODO: vytvorit CollisionEngine pro spravu kolizi mez
         final double height = 100.0;
         sphere.startJump(currentTime, duration, height);
     }
+    public String getCleanSongName() {
+        final String name = level.songName();
+        final int dot = name.lastIndexOf('.');
+        return dot > 0 ? name.substring(0, dot) : name;
+    }
+
+    public Clip getClip() { return clip; }
+    public void startClip() { clip.start(); }
+    public double getCountdownTime() { return countdownTime; }
+    public void setCountdownTime(double countdownTime) { this.countdownTime = countdownTime; }
+    public GameState getGameState() { return gameState; }
+    public void setGameState(GameState gameState) { this.gameState = gameState; }
+    public double getEndAnimationTimer() { return endAnimationTimer; }
+    public void setEndAnimationTimer(double endAnimationTimer) { this.endAnimationTimer = endAnimationTimer; }
+    public double getSmoothedAudioTime() { return smoothedAudioTime; }
+    public void setSmoothedAudioTime(double smoothedAudioTime) { this.smoothedAudioTime = smoothedAudioTime; }
+    public double getGameZProgress() { return gameZProgress; }
+    public void setGameZProgress(double gameZProgress) { this.gameZProgress = gameZProgress; }
+    public double getZUnitsPerSecond() { return zUnitsPerSecond; }
+    public boolean isSpeedEffectActive() { return speedEffectActive; }
+    public void setSpeedEffectActive(boolean speedEffectActive) { this.speedEffectActive = speedEffectActive; }
+    public double getSpeedEffectTimeRemaining() { return speedEffectTimeRemaining; }
+    public void setSpeedEffectTimeRemaining(double speedEffectTimeRemaining) { this.speedEffectTimeRemaining = speedEffectTimeRemaining; }
+    public void setActiveSpeedMultiplier(double activeSpeedMultiplier) { this.activeSpeedMultiplier = activeSpeedMultiplier; }
+    public List<AbstractTile> getUpdatableTiles() { return updatableTiles; }
+    public Camera3D getCam() { return cam; }
+    public Sphere getSphere() { return sphere; }
+    public List<Orb> getOrbs() { return orbs; }
+    public void incrementCollectedOrbs() { this.collectedOrbs++; }
+    public void setNeonFlashAlpha(float neonFlashAlpha) { this.neonFlashAlpha = neonFlashAlpha; }
+    public double getFallStartZ() { return fallStartZ; }
+    public Integer getScore() { return score; }
+    public int getCollectedOrbs() { return collectedOrbs; }
+    public Level getLevel() { return level; }
+    public float getNeonFlashAlpha() { return neonFlashAlpha; }
+    public int getRevivesUsed() { return revivesUsed; }
+    public int getReviveCost() { return 10 * (int) Math.pow(2, revivesUsed); }
+    public boolean isReviveDeclined() { return reviveDeclined; }
 }

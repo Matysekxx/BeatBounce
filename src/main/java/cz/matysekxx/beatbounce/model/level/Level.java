@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.matysekxx.beatbounce.model.audio.AudioData;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
+import cz.matysekxx.beatbounce.util.Lazy;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 /**
  * Represents a game level, containing tile data, audio data, and metadata.
@@ -22,6 +24,8 @@ import java.util.Optional;
  * @param stars     the difficulty rating in stars
  */
 public record Level(List<AbstractTile> tiles, @JsonIgnore AudioData audioData, String songName, int stars) {
+
+    private static final Logger LOG = Logger.getLogger(Level.class.getName());
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final Path CACHE_DIR;
     private static final int CACHE_VERSION = 2;
@@ -33,7 +37,7 @@ public record Level(List<AbstractTile> tiles, @JsonIgnore AudioData audioData, S
         try {
             if (!Files.exists(CACHE_DIR)) Files.createDirectories(CACHE_DIR);
         } catch (IOException e) {
-            System.err.println("Could not create level cache directory: " + e.getMessage());
+            LOG.severe("Could not create level cache directory: " + e.getMessage());
         }
     }
 
@@ -53,7 +57,7 @@ public record Level(List<AbstractTile> tiles, @JsonIgnore AudioData audioData, S
             }
             return Optional.empty();
         } catch (IOException e) {
-            System.err.println("Failed to load level from cache: " + e.getMessage());
+            LOG.warning("Failed to load level from cache: " + e.getMessage());
             return Optional.empty();
         }
     }
@@ -71,9 +75,9 @@ public record Level(List<AbstractTile> tiles, @JsonIgnore AudioData audioData, S
                     level.tiles(), level.songName(), level.stars(),
                     LevelCacheData.CURRENT_VERSION, 0.0, 0);
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(cacheFile, cacheData);
-            System.out.println("Level saved to cache: " + cacheFile.getAbsolutePath());
+            LOG.info("Level saved to cache: " + cacheFile.getAbsolutePath());
         } catch (IOException e) {
-            System.err.println("Failed to save level to cache: " + e.getMessage());
+            LOG.warning("Failed to save level to cache: " + e.getMessage());
         }
     }
 

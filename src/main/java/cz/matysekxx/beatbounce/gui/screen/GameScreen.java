@@ -8,12 +8,14 @@ import cz.matysekxx.beatbounce.model.level.LevelGenerator;
 import javax.swing.*;
 import java.awt.*;
 import java.nio.file.Path;
+import java.util.logging.Logger;
 
 /**
  * The screen where the actual gameplay takes place.
  * It manages the loading of the level and the game panel.
  */
 public class GameScreen extends Screen {
+    private static final Logger LOG = Logger.getLogger(GameScreen.class.getName());
     private final LoadingPanel loadingPanel;
     private final ScreenManager screenManager;
     private GamePanel gamePanel;
@@ -68,7 +70,7 @@ public class GameScreen extends Screen {
             gamePanel.requestFocusInWindow();
             loadingPanel.stopAnimation();
         })).exceptionally(ex -> {
-            System.err.println(ex.getMessage());
+            LOG.severe(ex.getMessage());
             SwingUtilities.invokeLater(() -> {
                 loadingPanel.setText("Failed to load level!");
             });

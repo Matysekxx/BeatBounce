@@ -2,6 +2,7 @@ package cz.matysekxx.beatbounce.util;
 
 import java.util.Objects;
 import java.util.function.Supplier;
+import java.util.logging.Logger;
 
 /**
  * A thread-safe container for a value that is computed lazily.

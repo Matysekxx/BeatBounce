@@ -11,7 +11,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Logger;
 
 /**
  * A client for interacting with the Audius API to search, list, and download music.
@@ -25,6 +27,7 @@ import java.util.concurrent.CompletableFuture;
  * </p>
  */
 public class AudiusClient {
+    private final static Logger LOG = Logger.getLogger(AudiusClient.class.getName());
 
     /**
      * The default host URL for the Audius Discovery Provider.
@@ -63,7 +66,7 @@ public class AudiusClient {
                 Files.createDirectories(this.downloadDirectory);
             }
         } catch (IOException e) {
-            System.err.println("Could not create download directory: " + e.getMessage());
+            LOG.severe("Could not create download directory: " + e.getMessage());
         }
     }
 
@@ -84,7 +87,7 @@ public class AudiusClient {
                 Files.createDirectories(this.downloadDirectory);
             }
         } catch (IOException e) {
-            System.err.println("Could not create download directory: " + e.getMessage());
+            LOG.severe("Could not create download directory: " + e.getMessage());
         }
     }
 

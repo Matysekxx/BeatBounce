@@ -54,10 +54,7 @@ public class SwingConfiguration {
     public static void setup() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
-
+        } catch (Exception _) {}
     }
 
     /**

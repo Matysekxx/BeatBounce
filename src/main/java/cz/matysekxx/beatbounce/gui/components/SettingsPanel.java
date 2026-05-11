@@ -273,9 +273,7 @@ public class SettingsPanel extends JPanel {
             dialog.dispose();
             try {
                 restart();
-            } catch (IOException e) {
-                System.err.println(e.getMessage());
-            }
+            } catch (IOException _) {}
         });
 
         dialog.addButton(laterBtn);

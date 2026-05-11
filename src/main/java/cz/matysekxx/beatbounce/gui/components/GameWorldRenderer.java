@@ -5,7 +5,7 @@ import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.WindowData;
-import cz.matysekxx.beatbounce.model.game.GameModel;
+import cz.matysekxx.beatbounce.model.game.GameEngine;
 import cz.matysekxx.beatbounce.model.game.GameState;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.Orb;
@@ -34,16 +34,16 @@ public class GameWorldRenderer {
     }
 
     private final Camera3D cam;
-    private final GameModel gameModel;
+    private final GameEngine gameEngine;
     private final Level level;
     private final Sphere sphere;
     
     private BufferedImage bgCache;
     private final int[] projScratch = new int[2];
 
-    public GameWorldRenderer(Camera3D cam, GameModel gameModel, Level level, Sphere sphere) {
+    public GameWorldRenderer(Camera3D cam, GameEngine gameEngine, Level level, Sphere sphere) {
         this.cam = cam;
-        this.gameModel = gameModel;
+        this.gameEngine = gameEngine;
         this.level = level;
         this.sphere = sphere;
     }
@@ -151,7 +151,7 @@ public class GameWorldRenderer {
     }
 
     public void drawGameObjects(Graphics2D g2d, WindowData windowData) {
-        if (gameModel == null || gameModel.getGameState() != GameState.FINISHED) {
+        if (gameEngine == null || gameEngine.getGameState() != GameState.FINISHED) {
             final List<AbstractTile> tiles = level.tiles();
             for (int i = tiles.size() - 1; i >= 0; i--) {
                 final AbstractTile tile = tiles.get(i);
@@ -161,8 +161,8 @@ public class GameWorldRenderer {
                 tile.paint3D(g2d, cam, windowData);
             }
 
-            if (gameModel != null) {
-                for (Orb orb : gameModel.getOrbs()) {
+            if (gameEngine != null) {
+                for (Orb orb : gameEngine.getOrbs()) {
                     final double distance = cam.getDistanceTo(orb.getZ());
                     if (distance > 0 && distance < 3000) {
                         orb.paint3D(g2d, cam, windowData);

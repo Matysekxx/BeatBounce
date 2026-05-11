@@ -5,7 +5,7 @@ import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.NormalTile;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.level.Level;
-import cz.matysekxx.beatbounce.model.game.GameModel;
+import cz.matysekxx.beatbounce.model.game.GameEngine;
 import cz.matysekxx.beatbounce.model.game.GameState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,9 +18,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GameModelTest {
+public class GameEngineTest {
 
-    private GameModel gameModel;
+    private GameEngine gameEngine;
     private Level mockLevel;
     private Sphere mockSphere;
     private Camera3D mockCam;
@@ -63,49 +63,49 @@ public class GameModelTest {
                 }
         );
         
-        gameModel = new GameModel(mockLevel, mockSphere, mockCam, mockClip);
+        gameEngine = new GameEngine(mockLevel, mockSphere, mockCam, mockClip);
     }
 
     @Test
     void testInitialStateIsCountdown() {
-        assertEquals(GameState.COUNTDOWN, gameModel.getGameState(), "Game should start in COUNTDOWN state.");
-        assertTrue(gameModel.getCountdownTime() > 0, "Countdown time should be positive.");
+        assertEquals(GameState.COUNTDOWN, gameEngine.getGameState(), "Game should start in COUNTDOWN state.");
+        assertTrue(gameEngine.getCountdownTime() > 0, "Countdown time should be positive.");
     }
 
     @Test
     void testCountdownToPlayingTransition() {
-        gameModel.update(0, 4.0);
+        gameEngine.update(0, 4.0);
         
-        assertEquals(GameState.PLAYING, gameModel.getGameState(), "Game should transition to PLAYING after countdown ends.");
+        assertEquals(GameState.PLAYING, gameEngine.getGameState(), "Game should transition to PLAYING after countdown ends.");
         assertTrue(clipStarted, "Clip should be started when entering PLAYING state.");
     }
 
     @Test
     void testTogglePause() {
-        gameModel.update(0, 4.0); 
-        assertEquals(GameState.PLAYING, gameModel.getGameState());
-        gameModel.togglePause();
-        assertEquals(GameState.PAUSED, gameModel.getGameState(), "GameState should be PAUSED after toggle.");
+        gameEngine.update(0, 4.0);
+        assertEquals(GameState.PLAYING, gameEngine.getGameState());
+        gameEngine.togglePause();
+        assertEquals(GameState.PAUSED, gameEngine.getGameState(), "GameState should be PAUSED after toggle.");
         assertTrue(clipStopped, "Clip should be stopped when pausing.");
         
-        gameModel.togglePause();
-        assertEquals(GameState.COUNTDOWN, gameModel.getGameState(), "GameState should go back to COUNTDOWN when unpausing.");
-        assertTrue(gameModel.getCountdownTime() > 3.0);
+        gameEngine.togglePause();
+        assertEquals(GameState.COUNTDOWN, gameEngine.getGameState(), "GameState should go back to COUNTDOWN when unpausing.");
+        assertTrue(gameEngine.getCountdownTime() > 3.0);
     }
 
     @Test
     void testScoreInitialization() {
-        assertEquals(0, gameModel.getScore(), "Initial score should be 0.");
+        assertEquals(0, gameEngine.getScore(), "Initial score should be 0.");
     }
 
     @Test
     void testInitResetsEverything() {
-        gameModel.update(0, 4.0);
+        gameEngine.update(0, 4.0);
         mockSphere.setZ(100);
         
-        gameModel.init();
-        assertEquals(GameState.COUNTDOWN, gameModel.getGameState());
-        assertEquals(0, gameModel.getScore());
+        gameEngine.init();
+        assertEquals(GameState.COUNTDOWN, gameEngine.getGameState());
+        assertEquals(0, gameEngine.getScore());
         assertEquals(0, mockSphere.getZ(), "Sphere should be reset to initial Z.");
         assertEquals(-500, mockCam.getZ());
     }

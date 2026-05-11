@@ -27,7 +27,7 @@ import java.util.Random;
  *   <li>{@link SpeedTile}  — temporarily modifies scroll speed on first contact.</li>
  * </ul>
  */
-public class GameModel {
+public class GameEngine {
     /**
      * Maximum number of times the player can revive per run.
      */
@@ -78,7 +78,7 @@ public class GameModel {
      * @param cam    the game camera
      * @param clip   the audio clip for the level
      */
-    public GameModel(Level level, Sphere sphere, Camera3D cam, Clip clip) {
+    public GameEngine(Level level, Sphere sphere, Camera3D cam, Clip clip) {
         this.level = level;
         this.sphere = sphere;
         this.cam = cam;

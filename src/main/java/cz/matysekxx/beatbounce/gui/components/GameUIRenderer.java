@@ -2,7 +2,7 @@ package cz.matysekxx.beatbounce.gui.components;
 
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
-import cz.matysekxx.beatbounce.model.game.GameModel;
+import cz.matysekxx.beatbounce.model.game.GameEngine;
 import cz.matysekxx.beatbounce.model.game.GameState;
 import cz.matysekxx.beatbounce.model.score.ScoreManager;
 
@@ -35,7 +35,7 @@ public class GameUIRenderer {
     private static final Color HINT_BORDER = new Color(255, 255, 255, 30);
     private static final Color HINT_KEY_BG = new Color(0, 255, 220, 20);
     private static final Color HINT_LABEL = new Color(220, 220, 220);
-    private final GameModel gameModel;
+    private final GameEngine gameEngine;
     private final Clip clip;
     private GameState lastState = GameState.COUNTDOWN;
     private float screenAppearTimer = 0f;
@@ -43,11 +43,11 @@ public class GameUIRenderer {
     /**
      * Constructs a new GameUIRenderer.
      *
-     * @param gameModel the game model to retrieve state and score from
+     * @param gameEngine the game model to retrieve state and score from
      * @param clip      the audio clip to track progress
      */
-    public GameUIRenderer(GameModel gameModel, Clip clip) {
-        this.gameModel = gameModel;
+    public GameUIRenderer(GameEngine gameEngine, Clip clip) {
+        this.gameEngine = gameEngine;
         this.clip = clip;
     }
 
@@ -57,7 +57,7 @@ public class GameUIRenderer {
      * @param dt delta time in seconds
      */
     public void update(float dt) {
-        final GameState currentState = gameModel.getGameState();
+        final GameState currentState = gameEngine.getGameState();
         if (currentState != lastState) {
             lastState = currentState;
             screenAppearTimer = 0f;
@@ -75,11 +75,11 @@ public class GameUIRenderer {
      * @param height the height of the rendering area
      */
     public void drawCountdown(Graphics2D g2d, int width, int height) {
-        final int count = (int) Math.ceil(gameModel.getCountdownTime());
+        final int count = (int) Math.ceil(gameEngine.getCountdownTime());
         final String text = String.valueOf(count);
         final Color color = RenderUtils.cyan;
 
-        final double countFrac = gameModel.getCountdownTime() % 1.0;
+        final double countFrac = gameEngine.getCountdownTime() % 1.0;
         final int ringR = (int) (countFrac * 230);
         final int ringAlpha = (int) (220 * (1.0 - countFrac));
 
@@ -196,7 +196,7 @@ public class GameUIRenderer {
         g2d.fillRect(0, 0, width, height);
 
         final int cardW = 600;
-        final int cardH = gameModel.isNewHighScore() ? 440 : 410;
+        final int cardH = gameEngine.isNewHighScore() ? 440 : 410;
         final int cardY = setupScreenCard(g2d, width, height, cardW, cardH, RenderUtils.yellow, pulse);
 
         final String text = "LEVEL COMPLETE";
@@ -228,7 +228,7 @@ public class GameUIRenderer {
         }
 
         final int cardW = 560;
-        final int cardH = gameModel.isNewHighScore() ? 440 : 410;
+        final int cardH = gameEngine.isNewHighScore() ? 440 : 410;
         final int cardY = setupScreenCard(g2d, width, height, cardW, cardH, GAMEOVER_RED, pulse);
 
         final String text = "GAME OVER";
@@ -254,7 +254,7 @@ public class GameUIRenderer {
 
     private void drawPostGameScore(Graphics2D g2d, int titleY, int width, Color accentColor) {
         final String label = "F I N A L   S C O R E";
-        final String scoreText = String.format("%,d", gameModel.getScore());
+        final String scoreText = String.format("%,d", gameEngine.getScore());
 
         int currentY = titleY + 40;
 
@@ -268,7 +268,7 @@ public class GameUIRenderer {
 
         currentY += 50;
 
-        if (gameModel.isNewHighScore()) {
+        if (gameEngine.isNewHighScore()) {
             final double t = System.currentTimeMillis() / 300.0;
             final float glow = (float) ((Math.sin(t) + 1.0) / 2.0);
             g2d.setFont(RenderCache.MONO_BOLD_16);
@@ -278,14 +278,14 @@ public class GameUIRenderer {
         } else {
             g2d.setFont(RenderCache.MONO_BOLD_16);
             g2d.setColor(new Color(150, 150, 150));
-            String songId = gameModel.getLevel().songName();
+            String songId = gameEngine.getLevel().songName();
             if (songId.contains(".")) songId = songId.substring(0, songId.lastIndexOf('.'));
             final String bestText = "BEST: " + String.format("%,d", ScoreManager.getBestScore(songId));
             g2d.drawString(bestText, (width - g2d.getFontMetrics().stringWidth(bestText)) / 2, currentY);
         }
         currentY += 30;
 
-        final String orbsLabel = "ORBS COLLECTED: " + gameModel.getCollectedOrbs();
+        final String orbsLabel = "ORBS COLLECTED: " + gameEngine.getCollectedOrbs();
         g2d.setFont(RenderCache.MONO_BOLD_16);
         g2d.setColor(ORBS_COLOR);
         g2d.drawString(orbsLabel, (width - g2d.getFontMetrics().stringWidth(orbsLabel)) / 2, currentY);
@@ -306,7 +306,7 @@ public class GameUIRenderer {
      */
     public void drawScore(Graphics2D g2d, int width, float scorePopAlpha) {
         final double pulse = (Math.sin(System.currentTimeMillis() / 550.0) + 1.0) / 2.0;
-        final Integer score = gameModel.getScore();
+        final Integer score = gameEngine.getScore();
         final Color c = switch (score) {
             case Integer i when i < 500 -> RenderUtils.cyan;
             case Integer i when i < 750 -> RenderUtils.green;
@@ -337,7 +337,7 @@ public class GameUIRenderer {
         g2d.setFont(RenderCache.MONO_ITALIC_BOLD_60);
         RenderUtils.drawText(g2d, text, (width - g2d.getFontMetrics().stringWidth(text)) / 2, 88, c);
 
-        final String orbsText = String.valueOf(gameModel.getCollectedOrbs());
+        final String orbsText = String.valueOf(gameEngine.getCollectedOrbs());
         g2d.setFont(RenderCache.MONO_BOLD_24);
         final int orbsW = g2d.getFontMetrics().stringWidth(orbsText);
 
@@ -442,7 +442,7 @@ public class GameUIRenderer {
         final int cardW = 540;
         final int cardH = 430;
         
-        final boolean canRevive = gameModel.canRevive();
+        final boolean canRevive = gameEngine.canRevive();
         final Color cardColor = canRevive ? ORBS_COLOR : GAMEOVER_RED;
 
         final int cardY = setupScreenCard(g2d, width, height, cardW, cardH, cardColor, pulse);
@@ -456,23 +456,23 @@ public class GameUIRenderer {
         int currentY = cardY + 165;
         g2d.setFont(RenderCache.MONO_BOLD_16);
         g2d.setColor(SCORE_TEXT_COLOR);
-        String scoreText = "Score so far: " + String.format("%,d", gameModel.getScore());
+        String scoreText = "Score so far: " + String.format("%,d", gameEngine.getScore());
         g2d.drawString(scoreText, (width - g2d.getFontMetrics().stringWidth(scoreText)) / 2, currentY);
         
         currentY += 35;
         g2d.setColor(ORBS_COLOR);
-        String orbsText = "Orbs collected: " + gameModel.getCollectedOrbs();
+        String orbsText = "Orbs collected: " + gameEngine.getCollectedOrbs();
         g2d.drawString(orbsText, (width - g2d.getFontMetrics().stringWidth(orbsText)) / 2, currentY);
 
         currentY += 55;
         g2d.setFont(RenderCache.MONO_ITALIC_BOLD_24);
         if (canRevive) {
             g2d.setColor(ORBS_TEXT_COLOR);
-            String reviveText = "REVIVE? Cost: " + gameModel.getReviveCost() + " orbs";
+            String reviveText = "REVIVE? Cost: " + gameEngine.getReviveCost() + " orbs";
             g2d.drawString(reviveText, (width - g2d.getFontMetrics().stringWidth(reviveText)) / 2, currentY);
         } else {
             g2d.setColor(GAMEOVER_RED_LIGHT);
-            String reason = gameModel.getRevivesUsed() >= GameModel.MAX_REVIVES ? "No revives left" : "Not enough orbs";
+            String reason = gameEngine.getRevivesUsed() >= GameEngine.MAX_REVIVES ? "No revives left" : "Not enough orbs";
             String reviveText = "CANNOT REVIVE (" + reason + ")";
             g2d.drawString(reviveText, (width - g2d.getFontMetrics().stringWidth(reviveText)) / 2, currentY);
         }
@@ -499,7 +499,7 @@ public class GameUIRenderer {
             case PAUSED -> drawPauseScreen(g2d, width, height);
             case FINISHED -> drawFinishedScreen(g2d, width, height);
             case GAME_OVER -> {
-                if (gameModel.getRevivesUsed() < GameModel.MAX_REVIVES && !gameModel.isReviveDeclined()) {
+                if (gameEngine.getRevivesUsed() < GameEngine.MAX_REVIVES && !gameEngine.isReviveDeclined()) {
                     drawReviveScreen(g2d, width, height);
                 } else {
                     drawGameOverScreen(g2d, width, height);

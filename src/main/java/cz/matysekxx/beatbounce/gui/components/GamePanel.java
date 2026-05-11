@@ -6,7 +6,7 @@ import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.WindowData;
-import cz.matysekxx.beatbounce.model.game.GameModel;
+import cz.matysekxx.beatbounce.model.game.GameEngine;
 import cz.matysekxx.beatbounce.model.game.GameState;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.level.Level;
@@ -56,7 +56,7 @@ public class GamePanel extends JPanel implements Runnable {
     /**
      * The core game logic model.
      */
-    private GameModel gameModel;
+    private GameEngine gameEngine;
 
     /**
      * Flag indicating if the game loop is active.
@@ -186,35 +186,35 @@ public class GamePanel extends JPanel implements Runnable {
     public void init(Level level) {
         this.clip = level.audioData().clip();
         final Sphere sphere = new Sphere(0, 150, 0, 25);
-        this.gameModel = new GameModel(level, sphere, cam, clip);
+        this.gameEngine = new GameEngine(level, sphere, cam, clip);
         this.lastScore = 0;
         this.scorePopAlpha = 0f;
-        this.uiRenderer = new GameUIRenderer(gameModel, clip);
-        this.worldRenderer = new GameWorldRenderer(cam, gameModel, level, sphere);
+        this.uiRenderer = new GameUIRenderer(gameEngine, clip);
+        this.worldRenderer = new GameWorldRenderer(cam, gameEngine, level, sphere);
         this.addMouseMotionListener(new GameController(cam, sphere));
         this.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (gameModel == null) return;
-                final GameState state = gameModel.getGameState();
+                if (gameEngine == null) return;
+                final GameState state = gameEngine.getGameState();
                 switch (state) {
                     case PLAYING, COUNTDOWN, PAUSED -> {
-                        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) gameModel.togglePause();
+                        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) gameEngine.togglePause();
                         else if (state == GameState.PAUSED && e.getKeyCode() == KeyEvent.VK_ENTER) {
                             stopGame();
                             if (onExit != null) onExit.run();
                         }
                     }
                     case GAME_OVER -> {
-                        if (gameModel.getRevivesUsed() < GameModel.MAX_REVIVES && !gameModel.isReviveDeclined()) {
+                        if (gameEngine.getRevivesUsed() < GameEngine.MAX_REVIVES && !gameEngine.isReviveDeclined()) {
                             if (e.getKeyCode() == KeyEvent.VK_V) {
-                                gameModel.revive();
+                                gameEngine.revive();
                             } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_ENTER) {
-                                gameModel.declineRevive();
+                                gameEngine.declineRevive();
                             }
                         } else {
                             if (e.getKeyCode() == KeyEvent.VK_R) {
-                                gameModel.init();
+                                gameEngine.init();
                             } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_ENTER) {
                                 stopGame();
                                 if (onExit != null) onExit.run();
@@ -223,7 +223,7 @@ public class GamePanel extends JPanel implements Runnable {
                     }
                     case FINISHED -> {
                         if (e.getKeyCode() == KeyEvent.VK_R) {
-                            gameModel.init();
+                            gameEngine.init();
                         } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_ENTER) {
                             stopGame();
                             if (onExit != null) onExit.run();
@@ -259,7 +259,7 @@ public class GamePanel extends JPanel implements Runnable {
 
             updateParticleCount();
             final double currentTime = (clip != null && clip.isRunning()) ? clip.getMicrosecondPosition() / 1_000_000.0 : 0;
-            gameModel.update(currentTime, dt);
+            gameEngine.update(currentTime, dt);
             updateCursorVisibility();
             if (uiRenderer != null) uiRenderer.update(dt);
 
@@ -273,7 +273,7 @@ public class GamePanel extends JPanel implements Runnable {
                 Particle.updateAll(particles, particleCount, dt, virtualW, virtualH);
             }
 
-            final int currentScore = gameModel.getScore();
+            final int currentScore = gameEngine.getScore();
             if (currentScore != lastScore) {
                 scorePopAlpha = 1.0f;
                 lastScore = currentScore;
@@ -305,7 +305,7 @@ public class GamePanel extends JPanel implements Runnable {
     public void startGame() {
         if (!this.running) {
             this.running = true;
-            gameModel.init();
+            gameEngine.init();
             this.lastFrameTime = System.nanoTime();
             this.lastFpsTime = System.currentTimeMillis();
             this.frames = 0;
@@ -328,8 +328,8 @@ public class GamePanel extends JPanel implements Runnable {
             setCursor(Cursor.getDefaultCursor());
         }
 
-        if (gameModel != null) {
-            gameModel.stop();
+        if (gameEngine != null) {
+            gameEngine.stop();
         }
         if (gameThread != null) {
             gameThread.interrupt();
@@ -345,8 +345,8 @@ public class GamePanel extends JPanel implements Runnable {
      * Updates the mouse cursor visibility based on the current game state.
      */
     private void updateCursorVisibility() {
-        if (gameModel == null) return;
-        final GameState state = gameModel.getGameState();
+        if (gameEngine == null) return;
+        final GameState state = gameEngine.getGameState();
         final boolean shouldHide = (state == GameState.PLAYING || state == GameState.FALLING);
         if (shouldHide && !isCursorHidden) {
             setCursor(blankCursor);
@@ -379,7 +379,7 @@ public class GamePanel extends JPanel implements Runnable {
         final int horizonY = h / 3;
         final long time = System.currentTimeMillis();
         final float globalHue = (animTime * 0.02f) % 1.0f;
-        if (gameModel.getGameState() != GameState.FINISHED) {
+        if (gameEngine.getGameState() != GameState.FINISHED) {
             worldRenderer.drawBackground(g2d, w, h, horizonY);
         }
         final double REFERENCE_HEIGHT = 1440.0;
@@ -390,7 +390,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         final AffineTransform oldTransform = g2d.getTransform();
         g2d.scale(uiScale, uiScale);
-        if (gameModel.getGameState() != GameState.FINISHED) {
+        if (gameEngine.getGameState() != GameState.FINISHED) {
             worldRenderer.drawPlanetAndGrid(g2d, virtualW, virtualH, virtualHorizonY, time, globalHue);
             if (Settings.particlesEnabled) {
                 Particle.drawAll(g2d, particles, particleCount);
@@ -401,12 +401,12 @@ public class GamePanel extends JPanel implements Runnable {
             uiRenderer.drawScore(g2d, virtualW, scorePopAlpha);
         }
 
-        if (gameModel != null && gameModel.getNeonFlashAlpha() > 0) {
-            final int flashAlpha = Math.min(255, (int) (gameModel.getNeonFlashAlpha() * 255));
+        if (gameEngine != null && gameEngine.getNeonFlashAlpha() > 0) {
+            final int flashAlpha = Math.min(255, (int) (gameEngine.getNeonFlashAlpha() * 255));
             g2d.setColor(RenderCache.blackWithAlpha(flashAlpha));
             g2d.fillRect(0, 0, virtualW, virtualH);
         }
-        uiRenderer.renderGameState(g2d, virtualW, virtualH, gameModel.getGameState());
+        uiRenderer.renderGameState(g2d, virtualW, virtualH, gameEngine.getGameState());
 
         g2d.setTransform(oldTransform);
 

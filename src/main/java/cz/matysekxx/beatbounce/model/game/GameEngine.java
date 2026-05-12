@@ -13,7 +13,7 @@ import java.util.*;
 /**
  * The core logic of the game, managing the game state, player movement, score, and level progress.
  */
-public class GameEngine { //TODO: vytvorit CollisionEngine pro spravu kolizi mezi hracem a dlazdicemi
+public class GameEngine {
     public static final int MAX_REVIVES = 3;
 
     private final Level level;
@@ -23,7 +23,6 @@ public class GameEngine { //TODO: vytvorit CollisionEngine pro spravu kolizi mez
     private final double zUnitsPerSecond;
     private final List<Orb> orbs = new ArrayList<>();
     private final List<AbstractTile> updatableTiles;
-    private final EnumMap<GameState, GameStateHandler> stateHandlers = new EnumMap<>(GameState.class);
     private volatile GameState gameState = GameState.COUNTDOWN;
     private int currentTileIndex = -1;
     private double gameZProgress;
@@ -41,6 +40,11 @@ public class GameEngine { //TODO: vytvorit CollisionEngine pro spravu kolizi mez
     private double activeSpeedMultiplier = 1.0;
     private int revivesUsed = 0;
     private boolean reviveDeclined = false;
+    private final GameStateHandler countdownHandler;
+    private final GameStateHandler playingHandler;
+    private final GameStateHandler levelEndAnimationHandler;
+    private final GameStateHandler fallingHandler;
+
 
     public GameEngine(Level level, Sphere sphere, Camera3D cam, Clip clip) {
         this.level = level;
@@ -53,10 +57,10 @@ public class GameEngine { //TODO: vytvorit CollisionEngine pro spravu kolizi mez
                 .filter(t -> t instanceof MovingTile || t instanceof BreakableTile)
                 .toList();
 
-        stateHandlers.put(GameState.COUNTDOWN, new CountdownHandler(this));
-        stateHandlers.put(GameState.PLAYING, new PlayingHandler(this, clip));
-        stateHandlers.put(GameState.LEVEL_END_ANIMATION, new LevelEndAnimationHandler(this, cam, sphere));
-        stateHandlers.put(GameState.FALLING, new FallingHandler(this, sphere));
+        countdownHandler = new CountdownHandler(this);
+        playingHandler = new PlayingHandler(this, clip);
+        levelEndAnimationHandler = new LevelEndAnimationHandler(this, cam, sphere);
+        fallingHandler = new FallingHandler(this, sphere);
     }
 
     public void init() {
@@ -93,13 +97,13 @@ public class GameEngine { //TODO: vytvorit CollisionEngine pro spravu kolizi mez
     private void spawnOrbs() {
         final double totalSeconds = clip.getMicrosecondLength() / 1_000_000.0;
         final int numOrbs;
-        if (totalSeconds < 30) numOrbs = 1;
-        else if (totalSeconds < 60) numOrbs = 2;
+        if (totalSeconds < 30) numOrbs = 2;
+        else if (totalSeconds < 60) numOrbs = 3;
         else {
             final double roll = new Random().nextDouble();
-            if (roll < 0.7) numOrbs = 3;
-            else if (roll < 0.9) numOrbs = 4;
-            else numOrbs = 5;
+            if (roll < 0.7) numOrbs = 4;
+            else if (roll < 0.9) numOrbs = 5;
+            else numOrbs = 6;
         }
 
         final double maxOrbZ = totalSeconds * zUnitsPerSecond;
@@ -141,8 +145,8 @@ public class GameEngine { //TODO: vytvorit CollisionEngine pro spravu kolizi mez
         this.reviveDeclined = true;
     }
 
-    public boolean revive() {
-        if (revivesUsed >= MAX_REVIVES) return false;
+    public void revive() {
+        if (revivesUsed >= MAX_REVIVES) return;
         final int cost = getReviveCost();
         if (ScoreManager.getCurrency() >= cost) {
             ScoreManager.addCurrency(-cost);
@@ -156,9 +160,7 @@ public class GameEngine { //TODO: vytvorit CollisionEngine pro spravu kolizi mez
             this.smoothedAudioTime = clip.getMicrosecondPosition() / 1_000_000.0;
             this.gameZProgress = smoothedAudioTime * zUnitsPerSecond;
 
-            return true;
         }
-        return false;
     }
 
     public boolean canRevive() {
@@ -170,9 +172,11 @@ public class GameEngine { //TODO: vytvorit CollisionEngine pro spravu kolizi mez
     }
 
     public void update(double currentTime, double deltaTime) {
-        if (stateHandlers.containsKey(gameState)) {
-            GameStateHandler handler = stateHandlers.get(gameState);
-            handler.handle(currentTime, deltaTime);
+        switch (gameState) {
+            case FALLING -> fallingHandler.handle(currentTime, deltaTime);
+            case PLAYING -> playingHandler.handle(currentTime, deltaTime);
+            case COUNTDOWN -> countdownHandler.handle(currentTime, deltaTime);
+            case LEVEL_END_ANIMATION -> levelEndAnimationHandler.handle(currentTime, deltaTime);
         }
     }
 

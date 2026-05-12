@@ -456,31 +456,31 @@ public class GameUIRenderer {
         int currentY = cardY + 165;
         g2d.setFont(RenderCache.MONO_BOLD_16);
         g2d.setColor(SCORE_TEXT_COLOR);
-        String scoreText = "Score so far: " + String.format("%,d", gameEngine.getScore());
+        final String scoreText = "Score so far: " + String.format("%,d", gameEngine.getScore());
         g2d.drawString(scoreText, (width - g2d.getFontMetrics().stringWidth(scoreText)) / 2, currentY);
 
         currentY += 35;
         g2d.setColor(ORBS_COLOR);
-        String orbsText = "Orbs collected: " + gameEngine.getCollectedOrbs();
+        final String orbsText = "Orbs collected: " + gameEngine.getCollectedOrbs();
         g2d.drawString(orbsText, (width - g2d.getFontMetrics().stringWidth(orbsText)) / 2, currentY);
 
         currentY += 55;
         g2d.setFont(RenderCache.MONO_ITALIC_BOLD_24);
         if (canRevive) {
             g2d.setColor(ORBS_TEXT_COLOR);
-            String reviveText = "REVIVE? Cost: " + gameEngine.getReviveCost() + " orbs";
+            final String reviveText = "REVIVE? Cost: " + gameEngine.getReviveCost() + " orbs";
             g2d.drawString(reviveText, (width - g2d.getFontMetrics().stringWidth(reviveText)) / 2, currentY);
         } else {
             g2d.setColor(GAMEOVER_RED_LIGHT);
-            String reason = gameEngine.getRevivesUsed() >= GameEngine.MAX_REVIVES ? "No revives left" : "Not enough orbs";
-            String reviveText = "CANNOT REVIVE (" + reason + ")";
+            final String reason = gameEngine.getRevivesUsed() >= GameEngine.MAX_REVIVES ? "No revives left" : "Not enough orbs";
+            final String reviveText = "CANNOT REVIVE (" + reason + ")";
             g2d.drawString(reviveText, (width - g2d.getFontMetrics().stringWidth(reviveText)) / 2, currentY);
         }
 
         currentY += 35;
         g2d.setFont(RenderCache.SANS_PLAIN_14);
         g2d.setColor(TOTAL_ORBS_COLOR);
-        String totalOrbs = "Your orbs: " + ScoreManager.getCurrency();
+        final String totalOrbs = "Your orbs: " + ScoreManager.getCurrency();
         g2d.drawString(totalOrbs, (width - g2d.getFontMetrics().stringWidth(totalOrbs)) / 2, currentY);
 
         final int hintY = cardY + cardH - 50;

@@ -2,6 +2,7 @@ package cz.matysekxx.beatbounce.gui.screen;
 
 import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.util.Lazy;
+import cz.matysekxx.beatbounce.util.ScreenUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -124,10 +125,10 @@ public class ScreenManager {
      * @param screen The screen to make fullscreen.
      */
     private void applyFullscreen(Screen screen) {
-        Screen.applyFullscreen(screen);
+        ScreenUtil.applyFullscreen(screen);
     }
 
     private void applyDefaultSize(Screen screen) {
-        Screen.applyDefaultSize(screen);
+        ScreenUtil.applyDefaultSize(screen);
     }
 }

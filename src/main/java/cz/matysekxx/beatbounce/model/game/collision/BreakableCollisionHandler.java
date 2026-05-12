@@ -4,7 +4,7 @@ import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.BreakableTile;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
 
-public class BreakableCollisionHandler extends  CollisionHandler {
+public class BreakableCollisionHandler extends CollisionHandler {
 
     protected BreakableCollisionHandler(GameEngine gameEngine) {
         super(gameEngine);

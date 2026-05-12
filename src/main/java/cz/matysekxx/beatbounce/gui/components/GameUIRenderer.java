@@ -3,6 +3,7 @@ package cz.matysekxx.beatbounce.gui.components;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
+import cz.matysekxx.beatbounce.model.game.ReviveManager;
 import cz.matysekxx.beatbounce.model.game.state.GameState;
 import cz.matysekxx.beatbounce.model.score.ScoreManager;
 
@@ -472,7 +473,7 @@ public class GameUIRenderer {
             g2d.drawString(reviveText, (width - g2d.getFontMetrics().stringWidth(reviveText)) / 2, currentY);
         } else {
             g2d.setColor(GAMEOVER_RED_LIGHT);
-            final String reason = gameEngine.getRevivesUsed() >= GameEngine.MAX_REVIVES ? "No revives left" : "Not enough orbs";
+            final String reason = gameEngine.getRevivesUsed() >= ReviveManager.MAX_REVIVES ? "No revives left" : "Not enough orbs";
             final String reviveText = "CANNOT REVIVE (" + reason + ")";
             g2d.drawString(reviveText, (width - g2d.getFontMetrics().stringWidth(reviveText)) / 2, currentY);
         }
@@ -499,7 +500,7 @@ public class GameUIRenderer {
             case PAUSED -> drawPauseScreen(g2d, width, height);
             case FINISHED -> drawFinishedScreen(g2d, width, height);
             case GAME_OVER -> {
-                if (gameEngine.getRevivesUsed() < GameEngine.MAX_REVIVES && !gameEngine.isReviveDeclined()) {
+                if (gameEngine.getRevivesUsed() < ReviveManager.MAX_REVIVES && !gameEngine.isReviveDeclined()) {
                     drawReviveScreen(g2d, width, height);
                 } else {
                     drawGameOverScreen(g2d, width, height);

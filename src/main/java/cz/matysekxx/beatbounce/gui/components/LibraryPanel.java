@@ -3,16 +3,12 @@ package cz.matysekxx.beatbounce.gui.components;
 import cz.matysekxx.beatbounce.api.AudiusClient;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
-import cz.matysekxx.beatbounce.gui.screen.GameScreen;
 import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
-import cz.matysekxx.beatbounce.model.score.ScoreManager;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

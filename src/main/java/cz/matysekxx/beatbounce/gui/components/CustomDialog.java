@@ -1,7 +1,6 @@
 package cz.matysekxx.beatbounce.gui.components;
 
 import cz.matysekxx.beatbounce.gui.RenderCache;
-import cz.matysekxx.beatbounce.gui.RenderUtils;
 
 import javax.swing.*;
 import java.awt.*;

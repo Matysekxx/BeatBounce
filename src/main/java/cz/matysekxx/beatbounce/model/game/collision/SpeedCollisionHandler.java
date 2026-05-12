@@ -4,8 +4,9 @@ import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.SpeedTile;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
 
-public class SpeedCollisionHandler extends  CollisionHandler {
+public class SpeedCollisionHandler extends CollisionHandler {
     private static final double SPEED_EFFECT_DURATION = 3.0;
+
     protected SpeedCollisionHandler(GameEngine gameEngine) {
         super(gameEngine);
     }

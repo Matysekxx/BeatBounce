@@ -11,21 +11,39 @@ public class CollisionEngine {
     private static final double SMALL_HALF_WIDTH = 30.0;
     private final HashMap<Class<? extends AbstractTile>, CollisionHandler> collisionHandlers = new HashMap<>();
     private final GameEngine gameEngine;
+    private boolean onLongTile = false;
+
 
     public CollisionEngine(GameEngine gameEngine) {
         this.gameEngine = gameEngine;
         collisionHandlers.put(BreakableTile.class, new BreakableCollisionHandler(gameEngine));
         collisionHandlers.put(SpeedTile.class, new SpeedCollisionHandler(gameEngine));
-        collisionHandlers.put(LongTile.class, new LongCollisionHandler(gameEngine));
+        collisionHandlers.put(LongTile.class, new LongCollisionHandler(gameEngine, this));
         collisionHandlers.put(SmallTile.class, new SmallCollisionHandler(gameEngine));
         collisionHandlers.put(NormalTile.class, new NormalCollisionHandler(gameEngine));
         collisionHandlers.put(MovingTile.class, new MovingCollisionHandler(gameEngine));
     }
 
+    public AbstractTile getNextTile() {
+        return gameEngine.getLevel().tiles().get(gameEngine.getCurrentTileIndex() + 1);
+    }
+
+    public void setOnLongTile(boolean onLongTile) {
+        this.onLongTile = onLongTile;
+    }
+
+    public AbstractTile getCurrentTile() {
+        return gameEngine.getLevel().tiles().get(gameEngine.getCurrentTileIndex());
+    }
+
+    public int getTilesSize() {
+        return gameEngine.getLevel().tiles().size();
+    }
+
     public void handleCollisions() {
         if (isLastTile()) return;
 
-        final AbstractTile nextTile = gameEngine.getNextTile();
+        final AbstractTile nextTile = getNextTile();
 
         if (handleLongTile(nextTile)) return;
 
@@ -40,18 +58,18 @@ public class CollisionEngine {
     }
 
     private boolean isLastTile() {
-        return gameEngine.getCurrentTileIndex() + 1 >= gameEngine.getTilesSize();
+        return gameEngine.getCurrentTileIndex() + 1 >= getTilesSize();
     }
 
     private boolean handleLongTile(AbstractTile nextTile) {
-        if (!gameEngine.isOnLongTile() || gameEngine.getCurrentTileIndex() < 0) {
-            gameEngine.setOnLongTile(false);
+        if (!onLongTile || gameEngine.getCurrentTileIndex() < 0) {
+            onLongTile = false;
             return false;
         }
 
-        final AbstractTile curTile = gameEngine.getCurrentTile();
+        final AbstractTile curTile = getCurrentTile();
         if (!(curTile instanceof LongTile lt)) {
-            gameEngine.setOnLongTile(false);
+            onLongTile = false;
             return false;
         }
 
@@ -66,7 +84,7 @@ public class CollisionEngine {
             return true;
         }
 
-        gameEngine.setOnLongTile(false);
+        onLongTile = false;
         gameEngine.startNextJump(gameEngine.getSmoothedAudioTime());
         return false;
     }

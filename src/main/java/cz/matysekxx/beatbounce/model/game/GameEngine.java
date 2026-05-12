@@ -6,16 +6,16 @@ import cz.matysekxx.beatbounce.model.game.state.*;
 import cz.matysekxx.beatbounce.model.level.Level;
 import cz.matysekxx.beatbounce.model.level.LevelGenerator;
 import cz.matysekxx.beatbounce.model.score.ScoreManager;
+import cz.matysekxx.beatbounce.util.LevelUtil;
 
 import javax.sound.sampled.Clip;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The core logic of the game, managing the game state, player movement, score, and level progress.
  */
 public class GameEngine {
-    public static final int MAX_REVIVES = 3;
-
     private final Level level;
     private final Sphere sphere;
     private final Camera3D cam;
@@ -23,6 +23,12 @@ public class GameEngine {
     private final double zUnitsPerSecond;
     private final List<Orb> orbs = new ArrayList<>();
     private final List<AbstractTile> updatableTiles;
+    private final GameStateHandler countdownHandler;
+    private final GameStateHandler playingHandler;
+    private final GameStateHandler levelEndAnimationHandler;
+    private final GameStateHandler fallingHandler;
+    private final ReviveManager reviveManager;
+    private final OrbSpawner orbSpawner;
     private volatile GameState gameState = GameState.COUNTDOWN;
     private int currentTileIndex = -1;
     private double gameZProgress;
@@ -33,18 +39,11 @@ public class GameEngine {
     private float neonFlashAlpha = 0f;
     private int collectedOrbs = 0;
     private double smoothedAudioTime = 0;
-    private boolean onLongTile = false;
     private int longTileScoreAccum = 0;
     private boolean speedEffectActive = false;
     private double speedEffectTimeRemaining = 0.0;
     private double activeSpeedMultiplier = 1.0;
-    private int revivesUsed = 0;
     private boolean reviveDeclined = false;
-    private final GameStateHandler countdownHandler;
-    private final GameStateHandler playingHandler;
-    private final GameStateHandler levelEndAnimationHandler;
-    private final GameStateHandler fallingHandler;
-
 
     public GameEngine(Level level, Sphere sphere, Camera3D cam, Clip clip) {
         this.level = level;
@@ -57,10 +56,12 @@ public class GameEngine {
                 .filter(t -> t instanceof MovingTile || t instanceof BreakableTile)
                 .toList();
 
-        countdownHandler = new CountdownHandler(this);
-        playingHandler = new PlayingHandler(this, clip);
-        levelEndAnimationHandler = new LevelEndAnimationHandler(this, cam, sphere);
-        fallingHandler = new FallingHandler(this, sphere);
+        this.reviveManager = new ReviveManager(this, sphere);
+        this.orbSpawner = new OrbSpawner();
+        this.countdownHandler = new CountdownHandler(this);
+        this.playingHandler = new PlayingHandler(this, clip);
+        this.levelEndAnimationHandler = new LevelEndAnimationHandler(this, cam, sphere);
+        this.fallingHandler = new FallingHandler(this, sphere);
     }
 
     public void init() {
@@ -71,12 +72,11 @@ public class GameEngine {
         this.fallStartZ = 0;
         this.score = 0;
         this.smoothedAudioTime = 0;
-        this.onLongTile = false;
         this.longTileScoreAccum = 0;
         this.speedEffectActive = false;
         this.speedEffectTimeRemaining = 0.0;
         this.activeSpeedMultiplier = 1.0;
-        this.revivesUsed = 0;
+        this.reviveManager.setRevivesUsed(0);
         this.reviveDeclined = false;
         this.sphere.reset();
 
@@ -89,38 +89,9 @@ public class GameEngine {
 
         level.tiles().forEach(AbstractTile::reset);
 
-        spawnOrbs();
+        orbSpawner.spawnOrbs(level, clip, zUnitsPerSecond, orbs);
         startNextJump(0);
         clip.setFramePosition(0);
-    }
-
-    private void spawnOrbs() {
-        final double totalSeconds = clip.getMicrosecondLength() / 1_000_000.0;
-        final int numOrbs;
-        if (totalSeconds < 30) numOrbs = 2;
-        else if (totalSeconds < 60) numOrbs = 3;
-        else {
-            final double roll = new Random().nextDouble();
-            if (roll < 0.7) numOrbs = 4;
-            else if (roll < 0.9) numOrbs = 5;
-            else numOrbs = 6;
-        }
-
-        final double maxOrbZ = totalSeconds * zUnitsPerSecond;
-        final List<AbstractTile> validTiles = new ArrayList<>();
-        for (AbstractTile t : level.tiles()) {
-            if (t instanceof NormalTile && t.getZ() > 2000 && t.getZ() < maxOrbZ) {
-                validTiles.add(t);
-            }
-        }
-        final int toSpawn = Math.min(numOrbs, validTiles.size());
-        if (toSpawn > 0) {
-            Collections.shuffle(validTiles, new Random());
-            for (int i = 0; i < toSpawn; i++) {
-                final AbstractTile t = validTiles.get(i);
-                orbs.add(new Orb(t.getX(), 110, t.getZ(), 20));
-            }
-        }
     }
 
     public void stopClip() {
@@ -145,30 +116,16 @@ public class GameEngine {
         this.reviveDeclined = true;
     }
 
-    public void revive() {
-        if (revivesUsed >= MAX_REVIVES) return;
-        final int cost = getReviveCost();
-        if (ScoreManager.getCurrency() >= cost) {
-            ScoreManager.addCurrency(-cost);
-            revivesUsed++;
-            this.gameState = GameState.COUNTDOWN;
-            this.countdownTime = 2.99;
-            this.fallStartZ = 0;
-            this.sphere.revive();
-            final long microPos = clip.getMicrosecondPosition();
-            clip.setMicrosecondPosition(Math.max(0, microPos - 1_500_000));
-            this.smoothedAudioTime = clip.getMicrosecondPosition() / 1_000_000.0;
-            this.gameZProgress = smoothedAudioTime * zUnitsPerSecond;
-
-        }
+    public boolean revive() {
+        return reviveManager.revive();
     }
 
     public boolean canRevive() {
-        return revivesUsed < MAX_REVIVES && ScoreManager.getCurrency() >= getReviveCost();
+        return reviveManager.canRevive();
     }
 
     public boolean isNewHighScore() {
-        return ScoreManager.isHighScore(getCleanSongName(), score);
+        return ScoreManager.isHighScore(LevelUtil.getCleanSongName(level), score);
     }
 
     public void update(double currentTime, double deltaTime) {
@@ -180,32 +137,12 @@ public class GameEngine {
         }
     }
 
-    public int getTilesSize() {
-        return level.tiles().size();
-    }
-
     public int getCurrentTileIndex() {
         return currentTileIndex;
     }
 
     public void setCurrentTileIndex(int currentTileIndex) {
         this.currentTileIndex = currentTileIndex;
-    }
-
-    public AbstractTile getNextTile() {
-        return level.tiles().get(currentTileIndex + 1);
-    }
-
-    public AbstractTile getCurrentTile() {
-        return level.tiles().get(currentTileIndex);
-    }
-
-    public boolean isOnLongTile() {
-        return onLongTile;
-    }
-
-    public void setOnLongTile(boolean onLongTile) {
-        this.onLongTile = onLongTile;
     }
 
     public double getzUnitsPerSecond() {
@@ -231,12 +168,10 @@ public class GameEngine {
         final var tiles = level.tiles();
         final int nextIdx = currentTileIndex + 1;
         if (nextIdx >= tiles.size()) return;
-
         final AbstractTile nextTile = tiles.get(nextIdx);
 
-        double startZ = gameZProgress;
         final double endZ = nextTile.getZ();
-        double distanceZ = endZ - startZ;
+        double distanceZ = endZ - gameZProgress;
         if (distanceZ < 10) distanceZ = 10;
 
         double duration = distanceZ / zUnitsPerSecond;
@@ -244,12 +179,6 @@ public class GameEngine {
         duration /= activeSpeedMultiplier;
         final double height = 100.0;
         sphere.startJump(currentTime, duration, height);
-    }
-
-    public String getCleanSongName() {
-        final String name = level.songName();
-        final int dot = name.lastIndexOf('.');
-        return dot > 0 ? name.substring(0, dot) : name;
     }
 
     public Clip getClip() {
@@ -348,6 +277,10 @@ public class GameEngine {
         return fallStartZ;
     }
 
+    public void setFallStartZ(double fallStartZ) {
+        this.fallStartZ = fallStartZ;
+    }
+
     public Integer getScore() {
         return score;
     }
@@ -373,14 +306,14 @@ public class GameEngine {
     }
 
     public int getRevivesUsed() {
-        return revivesUsed;
-    }
-
-    public int getReviveCost() {
-        return 10 * (int) Math.pow(2, revivesUsed);
+        return reviveManager.getRevivesUsed();
     }
 
     public boolean isReviveDeclined() {
         return reviveDeclined;
+    }
+
+    public int getReviveCost() {
+        return reviveManager.getReviveCost();
     }
 }

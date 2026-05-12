@@ -8,6 +8,7 @@ import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.WindowData;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
+import cz.matysekxx.beatbounce.model.game.ReviveManager;
 import cz.matysekxx.beatbounce.model.game.state.GameState;
 import cz.matysekxx.beatbounce.model.level.Level;
 
@@ -179,7 +180,7 @@ public class GamePanel extends JPanel implements Runnable {
                         }
                     }
                     case GAME_OVER -> {
-                        if (gameEngine.getRevivesUsed() < GameEngine.MAX_REVIVES && !gameEngine.isReviveDeclined()) {
+                        if (gameEngine.getRevivesUsed() < ReviveManager.MAX_REVIVES && !gameEngine.isReviveDeclined()) {
                             if (e.getKeyCode() == KeyEvent.VK_V) {
                                 gameEngine.revive();
                             } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_ENTER) {

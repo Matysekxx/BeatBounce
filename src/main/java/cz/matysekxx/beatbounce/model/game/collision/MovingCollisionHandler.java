@@ -3,7 +3,7 @@ package cz.matysekxx.beatbounce.model.game.collision;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
 
-public class MovingCollisionHandler extends CollisionHandler{
+public class MovingCollisionHandler extends CollisionHandler {
     protected MovingCollisionHandler(GameEngine gameEngine) {
         super(gameEngine);
     }

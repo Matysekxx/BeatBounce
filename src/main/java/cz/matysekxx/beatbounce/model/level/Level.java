@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.matysekxx.beatbounce.model.audio.AudioData;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
-import cz.matysekxx.beatbounce.util.Lazy;
 
 import java.io.File;
 import java.io.IOException;

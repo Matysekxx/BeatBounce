@@ -4,6 +4,7 @@ import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
 import cz.matysekxx.beatbounce.model.score.ScoreManager;
+import cz.matysekxx.beatbounce.util.LevelUtil;
 
 public class LevelEndAnimationHandler implements GameStateHandler {
     private static final double TOTAL_ANIMATION_DURATION = 3.0;
@@ -51,7 +52,7 @@ public class LevelEndAnimationHandler implements GameStateHandler {
     private void updateSphereAndProgress(double deltaTime) {
         double newZProgress = gameEngine.getGameZProgress() + gameEngine.getZUnitsPerSecond() * deltaTime;
         gameEngine.setGameZProgress(newZProgress);
-        
+
         sphere.setZ(newZProgress);
         sphere.setScaleMultiplier(1.0f);
         sphere.setAlpha(1.0f);
@@ -77,7 +78,7 @@ public class LevelEndAnimationHandler implements GameStateHandler {
         gameEngine.setNeonFlashAlpha(0f);
         cam.setY(0);
         gameEngine.stopClip();
-        ScoreManager.updateScore(gameEngine.getCleanSongName(), gameEngine.getScore());
+        ScoreManager.updateScore(LevelUtil.getCleanSongName(gameEngine.getLevel()), gameEngine.getScore());
         ScoreManager.addCurrency(gameEngine.getCollectedOrbs());
     }
 }

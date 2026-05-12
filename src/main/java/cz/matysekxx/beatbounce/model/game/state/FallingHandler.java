@@ -3,6 +3,7 @@ package cz.matysekxx.beatbounce.model.game.state;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
 import cz.matysekxx.beatbounce.model.score.ScoreManager;
+import cz.matysekxx.beatbounce.util.LevelUtil;
 
 public class FallingHandler implements GameStateHandler {
     private final GameEngine gameEngine;
@@ -20,7 +21,7 @@ public class FallingHandler implements GameStateHandler {
         gameEngine.getCam().setZ(gameEngine.getGameZProgress() - 500);
         if (sphere.getCurrentY() > 500) {
             gameEngine.setGameState(GameState.GAME_OVER);
-            ScoreManager.updateScore(gameEngine.getCleanSongName(), gameEngine.getScore());
+            ScoreManager.updateScore(LevelUtil.getCleanSongName(gameEngine.getLevel()), gameEngine.getScore());
         }
     }
 }

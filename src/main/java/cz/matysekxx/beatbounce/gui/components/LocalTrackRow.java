@@ -31,12 +31,11 @@ public class LocalTrackRow extends JPanel {
      * The best score achieved by the user on this song.
      */
     private final String bestScore;
+    private final ScreenManager screenManager;
     /**
      * Whether the mouse is currently hovering over this row.
      */
     private boolean hovered = false;
-
-    private final ScreenManager screenManager;
 
     /**
      * Constructs a LocalTrackRow for the given song path.

@@ -5,8 +5,6 @@ import cz.matysekxx.beatbounce.util.ScreenUtil;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
 
 /**
  * Abstract base class for all game screens.

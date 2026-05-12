@@ -5,6 +5,7 @@ import cz.matysekxx.beatbounce.model.audio.AudioAnalyzer;
 import cz.matysekxx.beatbounce.model.audio.AudioData;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 
+import java.io.FileReader;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -19,12 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * </p>
  */
 public class LevelGenerator {
-
-    /**
-     * In-memory cache to store generated tile lists for specific audio files and speed multipliers.
-     */
-    // TODO: Consider extracting the caching logic into a separate LevelCacheManager class to simplify LevelGenerator.
-    private static final Map<CacheKey, List<AbstractTile>> levelCache = new ConcurrentHashMap<>();
 
     /**
      * Returns the base movement speed along the Z-axis.
@@ -54,7 +49,7 @@ public class LevelGenerator {
      * <p>
      * This method follows a multi-tier loading strategy:
      * <ol>
-     *     <li>Checks the in-memory {@link #levelCache}.</li>
+     *     <li>Checks the in-memory levelCache.</li>
      *     <li>Attempts to load from the local disk cache.</li>
      *     <li>Performs fresh audio analysis and procedural generation if no cache is found.</li>
      * </ol>
@@ -65,9 +60,9 @@ public class LevelGenerator {
      * @return a fully initialized {@link Level}
      */
     public static Level generateLevel(AudioData audioData, float speedMultiplier, int stars) {
-        final CacheKey key = new CacheKey(audioData.file().getAbsolutePath(), speedMultiplier);
-        if (levelCache.containsKey(key))
-            return new Level(levelCache.get(key), audioData, audioData.file().getName(), stars);
+        final LevelCacheKey key = LevelCacheKey.of(audioData.file().getAbsolutePath(), speedMultiplier);
+        if (LevelCacheManager.contains(key))
+            return new Level(LevelCacheManager.get(key), audioData, audioData.file().getName(), stars);
 
         final Optional<LevelCacheData> cachedLevelOpt = LevelFileCache.fromFile(audioData.file(), speedMultiplier);
         if (cachedLevelOpt.isPresent()) {
@@ -77,7 +72,7 @@ public class LevelGenerator {
                     diskCachedLevel.songName(),
                     diskCachedLevel.stars() > 0 ? diskCachedLevel.stars() : stars
             );
-            levelCache.put(key, loadedLevel.tiles());
+            LevelCacheManager.put(key, loadedLevel.tiles());
             return loadedLevel;
         }
 
@@ -85,18 +80,9 @@ public class LevelGenerator {
         final Level generatedLevel = new GenerationContext(
                 audioAnalyzer.analyze(), audioData.file().getName(), audioData, stars
         ).generate();
-        levelCache.put(key, generatedLevel.tiles());
+        LevelCacheManager.put(key, generatedLevel.tiles());
         LevelFileCache.toFile(generatedLevel, speedMultiplier);
 
         return generatedLevel;
-    }
-
-    /**
-     * Internal record used as a key for the memory cache.
-     *
-     * @param filePath        the absolute path to the audio file
-     * @param speedMultiplier the speed multiplier used for generation
-     */
-    private record CacheKey(String filePath, float speedMultiplier) {
     }
 }

@@ -23,6 +23,7 @@ public class LevelGenerator {
     /**
      * In-memory cache to store generated tile lists for specific audio files and speed multipliers.
      */
+    // TODO: Consider extracting the caching logic into a separate LevelCacheManager class to simplify LevelGenerator.
     private static final Map<CacheKey, List<AbstractTile>> levelCache = new ConcurrentHashMap<>();
 
     /**
@@ -68,7 +69,7 @@ public class LevelGenerator {
         if (levelCache.containsKey(key))
             return new Level(levelCache.get(key), audioData, audioData.file().getName(), stars);
 
-        final Optional<LevelCacheData> cachedLevelOpt = Level.fromFile(audioData.file(), speedMultiplier);
+        final Optional<LevelCacheData> cachedLevelOpt = LevelFileCache.fromFile(audioData.file(), speedMultiplier);
         if (cachedLevelOpt.isPresent()) {
             final LevelCacheData diskCachedLevel = cachedLevelOpt.get();
             final Level loadedLevel = new Level(
@@ -85,7 +86,7 @@ public class LevelGenerator {
                 audioAnalyzer.analyze(), audioData.file().getName(), audioData, stars
         ).generate();
         levelCache.put(key, generatedLevel.tiles());
-        Level.toFile(generatedLevel, speedMultiplier);
+        LevelFileCache.toFile(generatedLevel, speedMultiplier);
 
         return generatedLevel;
     }

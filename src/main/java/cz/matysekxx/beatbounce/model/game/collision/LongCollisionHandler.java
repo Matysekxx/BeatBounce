@@ -5,21 +5,44 @@ import cz.matysekxx.beatbounce.model.entity.LongTile;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
 
 public class LongCollisionHandler extends CollisionHandler {
-    private final CollisionEngine collisionEngine;
+    boolean onLongTile = false;
 
-    protected LongCollisionHandler(GameEngine gameEngine, CollisionEngine collisionEngine) {
+    public LongCollisionHandler(GameEngine gameEngine) {
         super(gameEngine);
-        this.collisionEngine = collisionEngine;
+    }
+
+    public boolean isOnLongTile() {
+        return onLongTile;
     }
 
     @Override
     public void handle(AbstractTile tile) {
         if (tile instanceof LongTile) {
+            this.onLongTile = true;
             gameEngine.setCurrentTileIndex(gameEngine.getCurrentTileIndex() + 1);
-            collisionEngine.setOnLongTile(true);
             gameEngine.setLongTileScoreAccum(0);
-            gameEngine.setScore(gameEngine.getScore() + 5);
-            gameEngine.getSphere().cancelJump();
+        }
+    }
+
+    public boolean processContinuous(AbstractTile currentTile, AbstractTile nextTile) {
+        if (!onLongTile || !(currentTile instanceof LongTile lt)) {
+            this.onLongTile = false;
+            return false;
+        }
+
+        final double timeToNextTile = (nextTile.getZ() - gameEngine.getGameZProgress()) / gameEngine.getzUnitsPerSecond();
+        final boolean shouldJumpEarly = timeToNextTile <= 0.25;
+
+        if (gameEngine.getGameZProgress() <= lt.getZ() + lt.getLengthInZ() && !shouldJumpEarly) {
+            gameEngine.setLongTileScoreAccum(gameEngine.getLongTileScoreAccum() + 1);
+            if (gameEngine.getLongTileScoreAccum() % 6 == 0) {
+                gameEngine.setScore(gameEngine.getScore() + 1);
+            }
+            return true;
+        } else {
+            this.onLongTile = false;
+            gameEngine.startNextJump(gameEngine.getSmoothedAudioTime());
+            return false;
         }
     }
 }

@@ -30,6 +30,8 @@ public class GameEngine {
     private final ReviveManager reviveManager;
     private final OrbSpawner orbSpawner;
     private volatile GameState gameState = GameState.COUNTDOWN;
+    
+    // TODO: Vytvořit třídu pro správu statistik a postupu hrou (např. ProgressManager nebo GameStateData) místo těchto volných proměnných pro zjednodušení logiky
     private int currentTileIndex = -1;
     private double gameZProgress;
     private double fallStartZ = 0;
@@ -40,6 +42,8 @@ public class GameEngine {
     private int collectedOrbs = 0;
     private double smoothedAudioTime = 0;
     private int longTileScoreAccum = 0;
+    
+    // TODO: Vytvořit třídu pro správu efektů (např. EffectManager) pro logiku zrychlení a dalších budoucích efektů
     private boolean speedEffectActive = false;
     private double speedEffectTimeRemaining = 0.0;
     private double activeSpeedMultiplier = 1.0;

@@ -53,6 +53,8 @@ class GenerationContext {
     private final double maxZ;
     private final TempoMap tempoMap;
     private final List<SectionDetector.SongSection> sections;
+    
+    // TODO: Vytvořit třídu pro správu stavu generátoru (např. GeneratorState), která by obsahovala tyto proměnné
     private int currentLane = 0;
     private int consecutiveInLane = 0;
     private int tilesGenerated = 0;
@@ -360,4 +362,3 @@ class GenerationContext {
         return newLane;
     }
 }
-

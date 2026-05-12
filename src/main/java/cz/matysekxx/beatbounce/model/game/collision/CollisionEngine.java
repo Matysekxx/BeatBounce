@@ -9,16 +9,16 @@ public class CollisionEngine {
     private static final int LANE_WIDTH = 120;
     private static final double NORMAL_HALF_WIDTH = LANE_WIDTH / 2.0;
     private static final double SMALL_HALF_WIDTH = 30.0;
+    // TODO: Consider moving Handler mappings to a separate Registry/Factory class to simplify CollisionEngine
     private final HashMap<Class<? extends AbstractTile>, CollisionHandler> collisionHandlers = new HashMap<>();
     private final GameEngine gameEngine;
-    private boolean onLongTile = false;
 
 
     public CollisionEngine(GameEngine gameEngine) {
         this.gameEngine = gameEngine;
         collisionHandlers.put(BreakableTile.class, new BreakableCollisionHandler(gameEngine));
         collisionHandlers.put(SpeedTile.class, new SpeedCollisionHandler(gameEngine));
-        collisionHandlers.put(LongTile.class, new LongCollisionHandler(gameEngine, this));
+        collisionHandlers.put(LongTile.class, new LongCollisionHandler(gameEngine));
         collisionHandlers.put(SmallTile.class, new SmallCollisionHandler(gameEngine));
         collisionHandlers.put(NormalTile.class, new NormalCollisionHandler(gameEngine));
         collisionHandlers.put(MovingTile.class, new MovingCollisionHandler(gameEngine));
@@ -26,10 +26,6 @@ public class CollisionEngine {
 
     public AbstractTile getNextTile() {
         return gameEngine.getLevel().tiles().get(gameEngine.getCurrentTileIndex() + 1);
-    }
-
-    public void setOnLongTile(boolean onLongTile) {
-        this.onLongTile = onLongTile;
     }
 
     public AbstractTile getCurrentTile() {
@@ -42,13 +38,22 @@ public class CollisionEngine {
 
     public void handleCollisions() {
         if (isLastTile()) return;
-
         final AbstractTile nextTile = getNextTile();
-
-        if (handleLongTile(nextTile)) return;
-
+        if (nextTile == null) return;
+        final LongCollisionHandler longCollisionHandler = (LongCollisionHandler) collisionHandlers.get(LongTile.class);
+        if (longCollisionHandler.isOnLongTile()) {
+            final AbstractTile currentTile = getCurrentTile();
+            if (currentTile == null) {
+                longCollisionHandler.onLongTile = false;
+                return;
+            }
+            if (longCollisionHandler.processContinuous(currentTile, nextTile)) {
+                return;
+            }
+        }
         if (gameEngine.getGameZProgress() < nextTile.getZ()) return;
 
+        // TODO: Refactor player bounds checking into a PhysicsEngine class
         if (isPlayerFalling(nextTile)) {
             gameEngine.startFalling();
             return;
@@ -59,34 +64,6 @@ public class CollisionEngine {
 
     private boolean isLastTile() {
         return gameEngine.getCurrentTileIndex() + 1 >= getTilesSize();
-    }
-
-    private boolean handleLongTile(AbstractTile nextTile) {
-        if (!onLongTile || gameEngine.getCurrentTileIndex() < 0) {
-            onLongTile = false;
-            return false;
-        }
-
-        final AbstractTile curTile = getCurrentTile();
-        if (!(curTile instanceof LongTile lt)) {
-            onLongTile = false;
-            return false;
-        }
-
-        final double timeToNextTile = (nextTile.getZ() - gameEngine.getGameZProgress()) / gameEngine.getzUnitsPerSecond();
-        final boolean shouldJumpEarly = timeToNextTile <= 0.25;
-
-        if (gameEngine.getGameZProgress() <= lt.getZ() + lt.getLengthInZ() && !shouldJumpEarly) {
-            gameEngine.setLongTileScoreAccum(gameEngine.getLongTileScoreAccum() + 1);
-            if (gameEngine.getLongTileScoreAccum() % 6 == 0) {
-                gameEngine.setScore(gameEngine.getScore() + 1);
-            }
-            return true;
-        }
-
-        onLongTile = false;
-        gameEngine.startNextJump(gameEngine.getSmoothedAudioTime());
-        return false;
     }
 
     private boolean isPlayerFalling(AbstractTile nextTile) {

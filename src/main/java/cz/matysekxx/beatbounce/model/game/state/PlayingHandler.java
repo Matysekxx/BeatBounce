@@ -31,10 +31,12 @@ public class PlayingHandler implements GameStateHandler {
         }
 
         updateAudioAndProgress(deltaTime);
+        // TODO: Refactor state-modifying logic into a separate class (e.g., EffectManager / ProgressManager)
         updateSpeedEffect(deltaTime);
         updateTiles(deltaTime);
         updateCameraAndSphere();
         collisionEngine.handleCollisions();
+        // TODO: Refactor entity collision logic into a separate class (e.g., OrbCollisionEngine)
         checkOrbCollisions();
 
         gameEngine.getSphere().update(gameEngine.getSmoothedAudioTime(), deltaTime);
@@ -75,6 +77,7 @@ public class PlayingHandler implements GameStateHandler {
     }
 
     private void updateTiles(double deltaTime) {
+        // TODO: Move tile updating logic into a dedicated TileManager class
         for (AbstractTile tile : gameEngine.getUpdatableTiles()) {
             switch (tile) {
                 case MovingTile movingTile -> {
@@ -97,6 +100,7 @@ public class PlayingHandler implements GameStateHandler {
     }
 
     private void updateCameraAndSphere() {
+        // TODO: Extract camera tracking logic to a separate class (e.g., CameraController)
         gameEngine.getSphere().setZ(gameEngine.getGameZProgress());
         gameEngine.getCam().setZ(gameEngine.getGameZProgress() - 500);
 

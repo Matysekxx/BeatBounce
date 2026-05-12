@@ -19,6 +19,7 @@ public class CollisionEngine {
         collisionHandlers.put(LongTile.class, new LongCollisionHandler(gameEngine));
         collisionHandlers.put(SmallTile.class, new SmallCollisionHandler(gameEngine));
         collisionHandlers.put(NormalTile.class, new NormalCollisionHandler(gameEngine));
+        collisionHandlers.put(MovingTile.class, new MovingCollisionHandler(gameEngine));
     }
 
     public void handleCollisions() {

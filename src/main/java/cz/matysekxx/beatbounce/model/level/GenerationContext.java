@@ -101,7 +101,7 @@ class GenerationContext {
     }
 
     private static int clampLane(int lane, int max) {
-        return Math.max(-max, Math.min(max, lane));
+        return Math.clamp(lane, -max, max);
     }
 
     /**
@@ -119,7 +119,7 @@ class GenerationContext {
     public Level generate() {
         final List<PlacedBeat> rawBeats = collectBeats();
         final List<PlacedBeat> filledBeats = fillGaps(rawBeats);
-        for (PlacedBeat beat : filledBeats) processBeat(beat);
+        filledBeats.forEach(this::processBeat);
         tiles.removeIf(t -> t.getZ() >= maxZ);
         return new Level(tiles, audioData, songName, profile.stars());
     }

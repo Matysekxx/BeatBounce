@@ -1,11 +1,6 @@
 package cz.matysekxx.beatbounce.model.game.state;
 
 import cz.matysekxx.beatbounce.configuration.Settings;
-import cz.matysekxx.beatbounce.gui.RenderUtils;
-import cz.matysekxx.beatbounce.model.entity.AbstractTile;
-import cz.matysekxx.beatbounce.model.entity.BreakableTile;
-import cz.matysekxx.beatbounce.model.entity.MovingTile;
-import cz.matysekxx.beatbounce.model.entity.Orb;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
 import cz.matysekxx.beatbounce.model.game.OrbCollisionEngine;
 import cz.matysekxx.beatbounce.model.game.TileManager;
@@ -18,7 +13,7 @@ public class PlayingHandler implements GameStateHandler {
     private final Clip clip;
     private final CollisionEngine collisionEngine;
     private final TileManager tileManager;
-    private final OrbCollisionEngine  orbCollisionEngine;
+    private final OrbCollisionEngine orbCollisionEngine;
 
     public PlayingHandler(GameEngine gameEngine, Clip clip, TileManager tileManager) {
         this.gameEngine = gameEngine;

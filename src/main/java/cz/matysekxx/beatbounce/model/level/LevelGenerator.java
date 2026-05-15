@@ -3,13 +3,8 @@ package cz.matysekxx.beatbounce.model.level;
 import cz.matysekxx.beatbounce.event.BeatEvent;
 import cz.matysekxx.beatbounce.model.audio.AudioAnalyzer;
 import cz.matysekxx.beatbounce.model.audio.AudioData;
-import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 
-import java.io.FileReader;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Utility class for generating game levels based on audio analysis.

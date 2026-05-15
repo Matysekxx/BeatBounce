@@ -6,7 +6,6 @@ import cz.matysekxx.beatbounce.model.entity.Orb;
 import cz.matysekxx.beatbounce.model.level.Level;
 
 import javax.sound.sampled.Clip;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;

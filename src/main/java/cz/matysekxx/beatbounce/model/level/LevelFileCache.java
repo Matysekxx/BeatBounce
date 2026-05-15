@@ -26,6 +26,7 @@ public class LevelFileCache {
             LOG.severe("Could not create level cache directory: " + e.getMessage());
         }
     }
+
     /**
      * Attempts to load level data from a cache file.
      *

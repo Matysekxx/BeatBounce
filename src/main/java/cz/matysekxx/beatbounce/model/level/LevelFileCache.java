@@ -1,6 +1,8 @@
 package cz.matysekxx.beatbounce.model.level;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,8 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class LevelFileCache {
     private static final Logger LOG = LoggerFactory.getLogger(LevelFileCache.class);

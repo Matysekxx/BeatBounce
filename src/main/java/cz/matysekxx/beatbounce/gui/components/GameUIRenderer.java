@@ -35,14 +35,24 @@ public class GameUIRenderer {
     private static final Color PROGRESS_BG = new Color(255, 255, 255, 22);
     private final GameEngine gameEngine;
     private final Clip clip;
+    private final java.util.List<SimulatedButton> activeButtons = new java.util.ArrayList<>();
     private GameState lastState = GameState.COUNTDOWN;
     private float screenAppearTimer = 0f;
-
-    private final java.util.List<SimulatedButton> activeButtons = new java.util.ArrayList<>();
     private java.util.List<SimulatedButton> renderedButtons = Collections.emptyList();
     private int currentTranslateY = 0;
     private int mouseX = -1;
     private int mouseY = -1;
+
+    /**
+     * Constructs a new GameUIRenderer.
+     *
+     * @param gameEngine the game model to retrieve state and score from
+     * @param clip       the audio clip to track progress
+     */
+    public GameUIRenderer(GameEngine gameEngine, Clip clip) {
+        this.gameEngine = gameEngine;
+        this.clip = clip;
+    }
 
     public void setMousePosition(int mx, int my) {
         this.mouseX = mx;
@@ -56,17 +66,6 @@ public class GameUIRenderer {
             }
         }
         return UIAction.NONE;
-    }
-
-    /**
-     * Constructs a new GameUIRenderer.
-     *
-     * @param gameEngine the game model to retrieve state and score from
-     * @param clip       the audio clip to track progress
-     */
-    public GameUIRenderer(GameEngine gameEngine, Clip clip) {
-        this.gameEngine = gameEngine;
-        this.clip = clip;
     }
 
     /**

@@ -53,6 +53,16 @@ public class ButtonFactory {
         return createButton("CREDITS", YELLOW_TOP_FILL, YELLOW_TOP_GLOW, YELLOW_FRONT_SIDE, listener);
     }
 
+    /**
+     * Creates a generic isometric button with the specified text, colors, and listener.
+     *
+     * @param text      the text to display on the button
+     * @param topFill   the fill color of the top face of the button
+     * @param topGlow   the glow color of the top face of the button
+     * @param frontSide the color of the front side of the button
+     * @param listener  the listener to be notified when the button is clicked
+     * @return a new {@link IsometricButton} instance
+     */
     private static JButton createButton(String text, Color topFill, Color topGlow, Color frontSide, ActionListener listener) {
         final IsometricButton button = new IsometricButton(
                 text, frontSide, topFill, topGlow, 10, 40, new Dimension(220, 80)
@@ -62,9 +72,16 @@ public class ButtonFactory {
         return button;
     }
 
-    public static JButton createSecondaryButton(String close, ActionListener actionListener) {
+    /**
+     * Creates a red styled secondary button.
+     *
+     * @param text           the text to display on the button
+     * @param actionListener the listener to be notified when the button is clicked
+     * @return a {@link JButton} configured with secondary button styling
+     */
+    public static JButton createSecondaryButton(String text, ActionListener actionListener) {
         final IsometricButton button = new IsometricButton(
-            close, RED_FRONT_SIDE, RED_TOP_FILL, RED_TOP_GLOW, 10, 40, new Dimension(220, 80)
+                text, RED_FRONT_SIDE, RED_TOP_FILL, RED_TOP_GLOW, 10, 40, new Dimension(220, 80)
         );
         button.addActionListener(actionListener);
         button.setOpaque(false);

@@ -1,5 +1,8 @@
 package cz.matysekxx.beatbounce.configuration;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
 import java.io.File;
@@ -7,8 +10,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Manages the application settings, including graphics, sound, and general preferences.

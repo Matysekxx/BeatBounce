@@ -6,9 +6,17 @@ import cz.matysekxx.beatbounce.gui.RenderUtils;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * A custom content pane for dialogs, featuring a rounded, semi-transparent background and a colored border.
+ */
 public class DialogContentPane extends JPanel {
     private final Color borderColor;
 
+    /**
+     * Constructs a new DialogContentPane.
+     *
+     * @param borderColor the color of the border
+     */
     public DialogContentPane(Color borderColor) {
         this.borderColor = borderColor;
         this.setOpaque(false);

@@ -4,6 +4,9 @@ import cz.matysekxx.beatbounce.api.AudiusClient;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
+import cz.matysekxx.beatbounce.util.ExceptionHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -13,9 +16,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import cz.matysekxx.beatbounce.util.ExceptionHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.util.stream.Stream;
 
 /**

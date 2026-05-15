@@ -1,5 +1,8 @@
 package cz.matysekxx.beatbounce.api;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -12,8 +15,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A client for interacting with the Audius API to search, list, and download music.

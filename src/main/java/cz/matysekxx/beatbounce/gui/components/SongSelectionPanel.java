@@ -6,6 +6,9 @@ import cz.matysekxx.beatbounce.api.AudiusClient;
 import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
+import cz.matysekxx.beatbounce.util.ExceptionHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -16,9 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
-import cz.matysekxx.beatbounce.util.ExceptionHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
 /**

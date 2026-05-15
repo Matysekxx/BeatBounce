@@ -5,15 +5,15 @@ import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.screen.GameScreen;
 import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
 import cz.matysekxx.beatbounce.model.score.ScoreManager;
+import cz.matysekxx.beatbounce.util.ExceptionHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
-import cz.matysekxx.beatbounce.util.ExceptionHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A UI component representing a single song in the library.

@@ -35,7 +35,7 @@ public class ExceptionHandler {
                         new Color(255, 50, 50)
                 );
 
-                final JButton closeButton = ButtonFactory.createSecondaryButton("Close", (e) -> dialog.dispose());
+                final JButton closeButton = ButtonFactory.createSecondaryButton("Close", (_) -> dialog.dispose());
                 dialog.addButton(closeButton);
 
                 dialog.pack();

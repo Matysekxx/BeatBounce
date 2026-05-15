@@ -194,7 +194,8 @@ public class GamePanel extends JPanel implements Runnable {
                             }
                             case REVIVE -> gameEngine.revive();
                             case DECLINE_REVIVE -> gameEngine.declineRevive();
-                            default -> {}
+                            default -> {
+                            }
                         }
                     }).start();
                 }

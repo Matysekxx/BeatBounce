@@ -41,6 +41,14 @@ public class GameWorldRenderer {
     private final int[] projScratch = new int[2];
     private BufferedImage bgCache;
 
+    /**
+     * Constructs a new GameWorldRenderer.
+     *
+     * @param cam        the camera used for 3D projection
+     * @param gameEngine the game engine
+     * @param level      the current level
+     * @param sphere     the player's sphere
+     */
     public GameWorldRenderer(Camera3D cam, GameEngine gameEngine, Level level, Sphere sphere) {
         this.cam = cam;
         this.gameEngine = gameEngine;
@@ -48,6 +56,14 @@ public class GameWorldRenderer {
         this.sphere = sphere;
     }
 
+    /**
+     * Draws the background of the game world.
+     *
+     * @param g2d      the graphics context
+     * @param width    the width of the screen
+     * @param height   the height of the screen
+     * @param horizonY the y-coordinate of the horizon
+     */
     public void drawBackground(Graphics2D g2d, int width, int height, int horizonY) {
         if (bgCache == null || bgCache.getWidth() != width || bgCache.getHeight() != height) {
             this.bgCache = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -60,6 +76,16 @@ public class GameWorldRenderer {
         g2d.drawImage(bgCache, 0, 0, null);
     }
 
+    /**
+     * Draws the planet and the neon grid.
+     *
+     * @param g2d       the graphics context
+     * @param width     the width of the screen
+     * @param height    the height of the screen
+     * @param horizonY  the y-coordinate of the horizon
+     * @param time      the current time
+     * @param globalHue the global hue for coloring
+     */
     public void drawPlanetAndGrid(Graphics2D g2d, int width, int height, int horizonY, long time, float globalHue) {
         drawPlanet(g2d, width, horizonY, time, globalHue);
         RenderUtils.drawHorizonLine(g2d, width, horizonY);
@@ -150,6 +176,12 @@ public class GameWorldRenderer {
         g2d.setStroke(RenderCache.STROKE_1);
     }
 
+    /**
+     * Draws all game objects, including tiles, orbs, and the player sphere.
+     *
+     * @param g2d        the graphics context
+     * @param windowData the window data
+     */
     public void drawGameObjects(Graphics2D g2d, WindowData windowData) {
         if (gameEngine == null || gameEngine.getGameState() != GameState.FINISHED) {
             final List<AbstractTile> tiles = level.tiles();

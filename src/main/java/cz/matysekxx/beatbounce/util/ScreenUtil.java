@@ -6,7 +6,15 @@ import cz.matysekxx.beatbounce.gui.screen.Screen;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Utility class for screen-related operations.
+ */
 public class ScreenUtil {
+    /**
+     * Applies fullscreen mode to the given screen on the monitor specified in the settings.
+     *
+     * @param screen the screen to apply fullscreen to
+     */
     public static void applyFullscreen(Screen screen) {
         final GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
         final GraphicsDevice device = (Settings.monitorIndex >= 0 && Settings.monitorIndex < devices.length) ? devices[Settings.monitorIndex] : devices[0];
@@ -15,6 +23,11 @@ public class ScreenUtil {
         screen.setBounds(bounds);
     }
 
+    /**
+     * Applies the default windowed size and position to the given screen on the monitor specified in the settings.
+     *
+     * @param screen the screen to apply the default size to
+     */
     public static void applyDefaultSize(Screen screen) {
         screen.setExtendedState(JFrame.NORMAL);
         screen.setSize(1024, 768);

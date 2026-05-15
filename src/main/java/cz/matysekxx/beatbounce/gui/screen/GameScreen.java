@@ -4,13 +4,13 @@ import cz.matysekxx.beatbounce.gui.components.GamePanel;
 import cz.matysekxx.beatbounce.gui.components.LoadingPanel;
 import cz.matysekxx.beatbounce.model.audio.AudioData;
 import cz.matysekxx.beatbounce.model.level.LevelGenerator;
+import cz.matysekxx.beatbounce.util.ExceptionHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
 import java.nio.file.Path;
-import cz.matysekxx.beatbounce.util.ExceptionHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The screen where the actual gameplay takes place.

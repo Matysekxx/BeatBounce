@@ -40,9 +40,6 @@ public class GameEngine {
     private int collectedOrbs = 0;
     private double smoothedAudioTime = 0;
     private int longTileScoreAccum = 0;
-    private boolean speedEffectActive = false;
-    private double speedEffectTimeRemaining = 0.0;
-    private double activeSpeedMultiplier = 1.0;
     private boolean reviveDeclined = false;
 
     public GameEngine(Level level, Sphere sphere, Camera3D cam, Clip clip) {
@@ -73,9 +70,6 @@ public class GameEngine {
         this.score = 0;
         this.smoothedAudioTime = 0;
         this.longTileScoreAccum = 0;
-        this.speedEffectActive = false;
-        this.speedEffectTimeRemaining = 0.0;
-        this.activeSpeedMultiplier = 1.0;
         this.reviveManager.setRevivesUsed(0);
         this.reviveDeclined = false;
         this.sphere.reset();
@@ -176,7 +170,6 @@ public class GameEngine {
 
         double duration = distanceZ / zUnitsPerSecond;
         if (duration <= 0) duration = 0.2;
-        duration /= activeSpeedMultiplier;
         final double height = 100.0;
         sphere.startJump(currentTime, duration, height);
     }
@@ -233,25 +226,6 @@ public class GameEngine {
         return zUnitsPerSecond;
     }
 
-    public boolean isSpeedEffectActive() {
-        return speedEffectActive;
-    }
-
-    public void setSpeedEffectActive(boolean speedEffectActive) {
-        this.speedEffectActive = speedEffectActive;
-    }
-
-    public double getSpeedEffectTimeRemaining() {
-        return speedEffectTimeRemaining;
-    }
-
-    public void setSpeedEffectTimeRemaining(double speedEffectTimeRemaining) {
-        this.speedEffectTimeRemaining = speedEffectTimeRemaining;
-    }
-
-    public void setActiveSpeedMultiplier(double activeSpeedMultiplier) {
-        this.activeSpeedMultiplier = activeSpeedMultiplier;
-    }
 
     public List<AbstractTile> getUpdatableTiles() {
         return updatableTiles;

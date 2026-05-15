@@ -100,7 +100,13 @@ public class FrequencyBandAnalyzer {
         FrequencyBand dominant = FrequencyBand.BASS;
         double maxEnergy = -1.0;
         for (FrequencyBand band : FrequencyBand.values()) {
-            final double e = energies.get(band);
+            double weight = 1.0;
+            if (band == FrequencyBand.HIGH_MID || band == FrequencyBand.HIGH) {
+                weight = 500.0;
+            } else if (band == FrequencyBand.MID || band == FrequencyBand.LOW_MID) {
+                weight = 50.0;
+            }
+            final double e = energies.get(band) * weight;
             if (e > maxEnergy) {
                 maxEnergy = e;
                 dominant = band;

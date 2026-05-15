@@ -28,9 +28,5 @@ public enum TileType {
     /**
      * Shatters after one landing; the second touch causes a fall.
      */
-    BREAKABLE,
-    /**
-     * Temporarily changes the game's scroll speed on contact.
-     */
-    SPEED
+    BREAKABLE
 }

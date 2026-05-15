@@ -23,8 +23,8 @@ public class AudioProcessor {
     public static final int BUFFER_SIZE = 2048;
     public static final int OVERLAP = 1024;
 
-    private static final double HIGH_INTENSITY_THRESHOLD = 0.15;
-    private static final double LOW_INTENSITY_THRESHOLD = 0.08;
+    private static final double HIGH_INTENSITY_THRESHOLD = 0.10;
+    private static final double LOW_INTENSITY_THRESHOLD = 0.05;
     private static final double SMOOTHING_FACTOR = 0.93;
     private static final double MIN_BEAT_INTERVAL = 0.08;
     private static final double DEDUP_WINDOW = 0.025;

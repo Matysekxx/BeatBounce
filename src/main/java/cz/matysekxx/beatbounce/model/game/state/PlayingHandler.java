@@ -32,7 +32,6 @@ public class PlayingHandler implements GameStateHandler {
         }
 
         updateAudioAndProgress(deltaTime);
-        updateSpeedEffect(deltaTime);
         tileManager.update(deltaTime);
         updateCameraAndSphere();
         collisionEngine.handleCollisions();
@@ -65,15 +64,6 @@ public class PlayingHandler implements GameStateHandler {
         gameEngine.setGameZProgress(gameEngine.getSmoothedAudioTime() * gameEngine.getZUnitsPerSecond());
     }
 
-    private void updateSpeedEffect(double deltaTime) {
-        if (gameEngine.isSpeedEffectActive()) {
-            gameEngine.setSpeedEffectTimeRemaining(gameEngine.getSpeedEffectTimeRemaining() - deltaTime);
-            if (gameEngine.getSpeedEffectTimeRemaining() <= 0) {
-                gameEngine.setSpeedEffectActive(false);
-                gameEngine.setActiveSpeedMultiplier(1.0);
-            }
-        }
-    }
 
     private void updateCameraAndSphere() {
         gameEngine.getSphere().setZ(gameEngine.getGameZProgress());

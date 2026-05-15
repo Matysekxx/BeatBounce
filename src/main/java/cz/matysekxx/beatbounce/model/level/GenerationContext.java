@@ -60,6 +60,7 @@ class GenerationContext {
     private int consecutiveSame = 0;
     private SectionDetector.SectionType currentSection = SectionDetector.SectionType.VERSE;
     private boolean isHighIntensity = false;
+    private double skipUntilZ = 0.0;
 
     /**
      * Constructs a new GenerationContext.
@@ -173,6 +174,10 @@ class GenerationContext {
 
     private void processBeat(PlacedBeat beat) {
         final double tileZ = beat.timestamp() * zUnitsPerSecond;
+        if (tileZ < skipUntilZ) {
+            return;
+        }
+
         currentLane = getNextLane(currentLane, beat);
         currentSection = beat.sectionType();
 
@@ -184,7 +189,12 @@ class GenerationContext {
         }
 
         final AbstractTile tile = decideTile(beat, tileZ);
-        if (tile != null) addTile(tile);
+        if (tile != null) {
+            addTile(tile);
+            if (tile instanceof LongTile) {
+                skipUntilZ = tileZ + tile.getLengthInZ() + 100.0;
+            }
+        }
         tilesGenerated++;
     }
 
@@ -196,7 +206,6 @@ class GenerationContext {
             case SmallTile _ -> trackType(TileType.SMALL);
             case MovingTile _ -> trackType(TileType.MOVING);
             case BreakableTile _ -> trackType(TileType.BREAKABLE);
-            case SpeedTile _ -> trackType(TileType.SPEED);
             default -> {
             }
         }
@@ -222,21 +231,22 @@ class GenerationContext {
                 && consecutiveSame < 3
                 && rng.nextDouble() < profile.longTileChance()) {
             final double zSpeed = zUnitsPerSecond;
-            final double len = Math.min(beat.duration() * zSpeed, zSpeed * 4.0);
-            return TileFactory.createLongTile(e, laneX, 0, tileZ, Math.max(100, len));
+            final double currentLen = Math.min(beat.duration() * zSpeed, zSpeed * 2.0);
+            final double minLen = Math.max(100, currentLen);
+            final double maxLen = Math.max(minLen + 100, zSpeed * 3.0);
+            double len = minLen + rng.nextDouble() * (maxLen - minLen);
+            if (tileZ + len > maxZ) {
+                len = maxZ - tileZ;
+            }
+            if (len < 50) {
+                return TileFactory.createNormalTile(e, laneX, 0, tileZ);
+            }
+            return TileFactory.createLongTile(e, laneX, 0, tileZ, len);
         }
         if (beat.eventType() == EventType.BEAT_HIHAT
                 && profile.allows(TileType.SMALL)
                 && rng.nextDouble() < profile.smallTileChance()) {
             return TileFactory.createSmallTile(e, laneX, 0, tileZ);
-        }
-        if (currentSection == SectionDetector.SectionType.CHORUS
-                && beat.isHighIntensity()
-                && profile.allows(TileType.SPEED)
-                && consecutiveSame < 2
-                && rng.nextDouble() < profile.speedTileChance()) {
-            final float mult = rng.nextBoolean() ? 1.3f : 0.75f;
-            return TileFactory.createSpeedTile(e, laneX, 0, tileZ, mult);
         }
         if (beat.isHighIntensity()
                 && profile.allows(TileType.MOVING)

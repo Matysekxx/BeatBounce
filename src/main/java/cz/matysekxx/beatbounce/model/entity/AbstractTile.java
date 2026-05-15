@@ -24,8 +24,7 @@ import java.awt.*;
         @JsonSubTypes.Type(value = MovingTile.class, name = "moving"),
         @JsonSubTypes.Type(value = LongTile.class, name = "long"),
         @JsonSubTypes.Type(value = SmallTile.class, name = "small"),
-        @JsonSubTypes.Type(value = BreakableTile.class, name = "breakable"),
-        @JsonSubTypes.Type(value = SpeedTile.class, name = "speed")
+        @JsonSubTypes.Type(value = BreakableTile.class, name = "breakable")
 })
 public abstract class AbstractTile extends Entity implements Paintable {
     /**

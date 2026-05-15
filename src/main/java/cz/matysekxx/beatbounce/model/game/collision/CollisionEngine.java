@@ -16,7 +16,6 @@ public class CollisionEngine {
     public CollisionEngine(GameEngine gameEngine) {
         this.gameEngine = gameEngine;
         collisionHandlers.put(BreakableTile.class, new BreakableCollisionHandler(gameEngine));
-        collisionHandlers.put(SpeedTile.class, new SpeedCollisionHandler(gameEngine));
         collisionHandlers.put(LongTile.class, new LongCollisionHandler(gameEngine));
         collisionHandlers.put(SmallTile.class, new SmallCollisionHandler(gameEngine));
         collisionHandlers.put(NormalTile.class, new NormalCollisionHandler(gameEngine));

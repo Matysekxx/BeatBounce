@@ -100,17 +100,4 @@ public final class TileFactory {
         return new BreakableTile(event, x, y, z);
     }
 
-    /**
-     * Creates a {@link SpeedTile} that temporarily modifies the scroll speed.
-     *
-     * @param event           the beat event
-     * @param x               world X position
-     * @param y               world Y position
-     * @param z               world Z position
-     * @param speedMultiplier factor applied to game speed (e.g. 1.5 or 0.7)
-     * @return a new {@link SpeedTile}
-     */
-    public static SpeedTile createSpeedTile(BeatEvent event, int x, int y, double z, float speedMultiplier) {
-        return new SpeedTile(event, x, y, z, speedMultiplier);
-    }
 }

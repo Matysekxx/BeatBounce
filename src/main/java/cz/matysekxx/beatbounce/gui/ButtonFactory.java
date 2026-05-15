@@ -19,6 +19,9 @@ public class ButtonFactory {
     private static final Color YELLOW_TOP_GLOW = new Color(255, 255, 150);
     private static final Color YELLOW_TOP_FILL = new Color(255, 215, 0);
     private static final Color YELLOW_FRONT_SIDE = new Color(120, 100, 0);
+    private static final Color RED_TOP_GLOW = new Color(255, 120, 120);
+    private static final Color RED_TOP_FILL = new Color(230, 0, 0);
+    private static final Color RED_FRONT_SIDE = new Color(110, 0, 0);
 
     /**
      * Creates a magenta styled "START" button.
@@ -55,6 +58,15 @@ public class ButtonFactory {
                 text, frontSide, topFill, topGlow, 10, 40, new Dimension(220, 80)
         );
         button.addActionListener(listener);
+        button.setOpaque(false);
+        return button;
+    }
+
+    public static JButton createSecondaryButton(String close, ActionListener actionListener) {
+        final IsometricButton button = new IsometricButton(
+            close, RED_FRONT_SIDE, RED_TOP_FILL, RED_TOP_GLOW, 10, 40, new Dimension(220, 80)
+        );
+        button.addActionListener(actionListener);
         button.setOpaque(false);
         return button;
     }

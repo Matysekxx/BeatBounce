@@ -16,8 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import cz.matysekxx.beatbounce.util.ExceptionHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
 /**
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
  * It includes search functionality and genre filters.
  */
 public class SongSelectionPanel extends JPanel implements Runnable {
-    private static final Logger LOG = Logger.getLogger(SongSelectionPanel.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(SongSelectionPanel.class);
 
     /**
      * Client for interacting with the Audius API.
@@ -277,7 +278,7 @@ public class SongSelectionPanel extends JPanel implements Runnable {
                 selectTrack(filteredTracks.getFirst());
             }
         } catch (Exception exception) {
-            LOG.log(Level.WARNING, "Failed to load tracks", exception);
+            ExceptionHandler.handle("Failed to load tracks", exception);
         }
     }
 

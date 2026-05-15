@@ -9,7 +9,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Manages game scores, currency, and persistence.
@@ -17,7 +18,7 @@ import java.util.logging.Logger;
  * Handles loading and saving of high scores and total currency from/to JSON files.
  */
 public class ScoreManager {
-    private static final Logger LOG = Logger.getLogger(ScoreManager.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(ScoreManager.class);
     private static final String SAVE_FILE = "save_data.json";
     private static final String CURRENCY_FILE = "currency.json";
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -44,7 +45,7 @@ public class ScoreManager {
                 scores = mapper.readValue(file, new TypeReference<HashMap<String, Integer>>() {
                 });
             } catch (IOException e) {
-                LOG.warning("Failed to load scores: " + e.getMessage());
+                LOG.warn("Failed to load scores: " + e.getMessage());
                 scores = new HashMap<>();
             }
         } else {
@@ -64,7 +65,7 @@ public class ScoreManager {
             }
             mapper.writeValue(file, scores);
         } catch (IOException e) {
-            LOG.warning("Failed to save scores: " + e.getMessage());
+            LOG.warn("Failed to save scores: " + e.getMessage());
         }
     }
 
@@ -123,7 +124,7 @@ public class ScoreManager {
                 });
                 totalCurrency = data.getOrDefault("currency", 0);
             } catch (IOException e) {
-                LOG.warning("Failed to load currency: " + e.getMessage());
+                LOG.warn("Failed to load currency: " + e.getMessage());
                 totalCurrency = 0;
             }
         } else {
@@ -145,7 +146,7 @@ public class ScoreManager {
             data.put("currency", totalCurrency);
             mapper.writeValue(file, data);
         } catch (IOException e) {
-            LOG.warning("Failed to save currency: " + e.getMessage());
+            LOG.warn("Failed to save currency: " + e.getMessage());
         }
     }
 

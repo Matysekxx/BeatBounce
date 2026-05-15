@@ -13,15 +13,16 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import cz.matysekxx.beatbounce.util.ExceptionHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A UI component representing a single track in the song selection list.
  * It handles rendering track info, selection expansion, and initiating downloads/play.
  */
 public class TrackRow extends JPanel {
-    private static final Logger LOG = Logger.getLogger(TrackRow.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(TrackRow.class);
 
     private final TrackData data;
     private final AudiusClient audiusClient;
@@ -215,7 +216,7 @@ public class TrackRow extends JPanel {
                 });
             }).exceptionally(ex -> {
                 data.downloading = false;
-                LOG.log(Level.WARNING, "Download failed for " + data.title, ex);
+                ExceptionHandler.handle("Download failed for " + data.title, ex);
                 return null;
             });
         }
@@ -237,7 +238,7 @@ public class TrackRow extends JPanel {
                         gs.setupGamePanel(audioPath, stars);
                         data.starting = false;
                     } catch (Exception ex) {
-                        LOG.log(Level.SEVERE, "Failed to launch game", ex);
+                        ExceptionHandler.handle("Failed to launch game", ex);
                     }
                 });
             } catch (InterruptedException ignored) {

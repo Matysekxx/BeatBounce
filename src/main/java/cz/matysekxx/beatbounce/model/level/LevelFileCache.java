@@ -8,10 +8,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LevelFileCache {
-    private static final Logger LOG = Logger.getLogger(LevelFileCache.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(LevelFileCache.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final Path CACHE_DIR;
     private static final int CACHE_VERSION = 2;
@@ -23,7 +24,7 @@ public class LevelFileCache {
         try {
             if (!Files.exists(CACHE_DIR)) Files.createDirectories(CACHE_DIR);
         } catch (IOException e) {
-            LOG.severe("Could not create level cache directory: " + e.getMessage());
+            LOG.error("Could not create level cache directory: " + e.getMessage());
         }
     }
 
@@ -43,7 +44,7 @@ public class LevelFileCache {
             }
             return Optional.empty();
         } catch (IOException e) {
-            LOG.warning("Failed to load level from cache: " + e.getMessage());
+            LOG.warn("Failed to load level from cache: " + e.getMessage());
             return Optional.empty();
         }
     }
@@ -63,7 +64,7 @@ public class LevelFileCache {
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(cacheFile, cacheData);
             LOG.info("Level saved to cache: " + cacheFile.getAbsolutePath());
         } catch (IOException e) {
-            LOG.warning("Failed to save level to cache: " + e.getMessage());
+            LOG.warn("Failed to save level to cache: " + e.getMessage());
         }
     }
 

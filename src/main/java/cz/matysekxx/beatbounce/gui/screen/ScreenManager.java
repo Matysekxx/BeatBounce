@@ -129,4 +129,13 @@ public class ScreenManager {
     private void applyDefaultSize(Screen screen) {
         ScreenUtil.applyDefaultSize(screen);
     }
+
+    /**
+     * Retrieves the currently active screen.
+     *
+     * @return the active screen instance
+     */
+    public Screen getActiveScreen() {
+        return activeWindow;
+    }
 }

@@ -13,8 +13,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import cz.matysekxx.beatbounce.util.ExceptionHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.stream.Stream;
 
 /**
@@ -25,7 +26,7 @@ public class LibraryPanel extends JPanel {
     /**
      * Logger for this class.
      */
-    private static final Logger LOG = Logger.getLogger(LibraryPanel.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(LibraryPanel.class);
     /**
      * Client used to interact with the Audius API.
      */
@@ -153,8 +154,7 @@ public class LibraryPanel extends JPanel {
                 Files.copy(source, dest, StandardCopyOption.REPLACE_EXISTING);
                 loadLibrary();
             } catch (IOException ex) {
-                LOG.log(Level.SEVERE, "Failed to copy custom song", ex);
-                JOptionPane.showMessageDialog(this, "Failed to add song: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                ExceptionHandler.handle("Failed to copy custom song", ex);
             }
         }
     }
@@ -185,7 +185,7 @@ public class LibraryPanel extends JPanel {
                     listPanel.add(Box.createRigidArea(new Dimension(0, 15)));
                 });
             } catch (IOException e) {
-                LOG.log(Level.SEVERE, "Failed to load library", e);
+                ExceptionHandler.handle("Failed to load library", e);
             }
         }
 

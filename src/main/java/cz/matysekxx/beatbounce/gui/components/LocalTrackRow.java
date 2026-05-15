@@ -11,14 +11,15 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import cz.matysekxx.beatbounce.util.ExceptionHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A UI component representing a single song in the library.
  */
 public class LocalTrackRow extends JPanel {
-    private static final Logger LOG = Logger.getLogger(LocalTrackRow.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(LocalTrackRow.class);
     /**
      * The difficulty level of the song (1-5).
      */
@@ -89,7 +90,7 @@ public class LocalTrackRow extends JPanel {
             screenManager.showScreen(GameScreen.class);
             gs.setupGamePanel(audioPath, stars);
         } catch (Exception ex) {
-            LOG.log(Level.SEVERE, "Failed to launch game", ex);
+            ExceptionHandler.handle("Failed to launch game", ex);
         }
     }
 

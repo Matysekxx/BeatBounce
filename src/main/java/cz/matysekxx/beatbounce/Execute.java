@@ -49,6 +49,15 @@ public class Execute implements Runnable {
     }
 
     /**
+     * Returns the screen manager.
+     *
+     * @return the screen manager
+     */
+    public ScreenManager getScreenManager() {
+        return screenManager;
+    }
+
+    /**
      * Starts the application's primary execution flow.
      * <p>
      * This method is responsible for bootstrapping the initial user interface

@@ -7,7 +7,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Manages the application settings, including graphics, sound, and general preferences.
@@ -17,7 +18,7 @@ import java.util.logging.Logger;
  * </p>
  */
 public class Settings {
-    private static final Logger LOG = Logger.getLogger(Settings.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(Settings.class);
     /**
      * The name of the configuration file where settings are stored.
      */
@@ -108,7 +109,7 @@ public class Settings {
                 gainControl.setValue(Math.clamp(dB, gainControl.getMinimum(), gainControl.getMaximum()));
             }
         } catch (Exception e) {
-            LOG.warning("Failed to apply volume: " + e.getMessage());
+            LOG.warn("Failed to apply volume: " + e.getMessage());
         }
     }
 
@@ -135,7 +136,7 @@ public class Settings {
                 bloomEnabled = Boolean.parseBoolean(properties.getProperty("bloomEnabled", "true"));
                 muteOnFocusLoss = Boolean.parseBoolean(properties.getProperty("muteOnFocusLoss", "false"));
             } catch (Exception e) {
-                LOG.warning("Failed to load settings: " + e.getMessage());
+                LOG.warn("Failed to load settings: " + e.getMessage());
             }
         } else {
             save();
@@ -167,7 +168,7 @@ public class Settings {
         try (FileOutputStream fos = new FileOutputStream(configFile)) {
             properties.store(fos, "BeatBounce Configuration");
         } catch (IOException e) {
-            LOG.warning("Failed to save settings: " + e.getMessage());
+            LOG.warn("Failed to save settings: " + e.getMessage());
         }
     }
 

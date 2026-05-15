@@ -27,19 +27,6 @@ public class LevelGenerator {
     }
 
     /**
-     * Generates a level based on a list of events.
-     *
-     * @param events   the beat events to use for generation
-     * @param songName the name of the song
-     * @return a procedurally generated {@link Level}
-     * @deprecated Use {@link #generateLevel(AudioData, float, int)} for better integration with caching.
-     */
-    @Deprecated
-    public static Level generateLevel(Iterable<BeatEvent> events, String songName) {
-        return new GenerationContext(events, songName, null, 1).generate();
-    }
-
-    /**
      * Generates a level for the specified audio data, speed, and difficulty.
      * <p>
      * This method follows a multi-tier loading strategy:

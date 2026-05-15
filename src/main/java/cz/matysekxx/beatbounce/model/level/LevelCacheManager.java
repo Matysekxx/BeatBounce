@@ -23,4 +23,8 @@ public class LevelCacheManager {
     public static List<AbstractTile> get(LevelCacheKey key) {
         return levelCache.get(key);
     }
+
+    public static void clear() {
+        levelCache.clear();
+    }
 }

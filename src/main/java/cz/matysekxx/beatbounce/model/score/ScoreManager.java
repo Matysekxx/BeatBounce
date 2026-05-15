@@ -45,7 +45,7 @@ public class ScoreManager {
                 scores = mapper.readValue(file, new TypeReference<HashMap<String, Integer>>() {
                 });
             } catch (IOException e) {
-                LOG.warn("Failed to load scores: " + e.getMessage());
+                LOG.warn("Failed to load scores: {}", e.getMessage());
                 scores = new HashMap<>();
             }
         } else {
@@ -65,7 +65,7 @@ public class ScoreManager {
             }
             mapper.writeValue(file, scores);
         } catch (IOException e) {
-            LOG.warn("Failed to save scores: " + e.getMessage());
+            LOG.warn("Failed to save scores: {}", e.getMessage());
         }
     }
 
@@ -124,7 +124,7 @@ public class ScoreManager {
                 });
                 totalCurrency = data.getOrDefault("currency", 0);
             } catch (IOException e) {
-                LOG.warn("Failed to load currency: " + e.getMessage());
+                LOG.warn("Failed to load currency: {}", e.getMessage());
                 totalCurrency = 0;
             }
         } else {
@@ -146,7 +146,7 @@ public class ScoreManager {
             data.put("currency", totalCurrency);
             mapper.writeValue(file, data);
         } catch (IOException e) {
-            LOG.warn("Failed to save currency: " + e.getMessage());
+            LOG.warn("Failed to save currency: {}", e.getMessage());
         }
     }
 

@@ -15,10 +15,7 @@ import cz.matysekxx.beatbounce.model.level.Level;
 import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
@@ -166,6 +163,45 @@ public class GamePanel extends JPanel implements Runnable {
         this.uiRenderer = new GameUIRenderer(gameEngine, clip);
         this.worldRenderer = new GameWorldRenderer(cam, gameEngine, level, sphere);
         this.addMouseMotionListener(new GameController(cam, sphere));
+        final MouseAdapter uiMouseAdapter = new MouseAdapter() {
+            @Override
+            public void mouseMoved(java.awt.event.MouseEvent e) {
+                if (uiRenderer == null) return;
+                final double REFERENCE_HEIGHT = 1440.0;
+                final double uiScale = getHeight() / REFERENCE_HEIGHT;
+                final int virtualX = (int) (e.getX() / uiScale);
+                final int virtualY = (int) (e.getY() / uiScale);
+                uiRenderer.setMousePosition(virtualX, virtualY);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (uiRenderer == null || gameEngine == null) return;
+                final double REFERENCE_HEIGHT = 1440.0;
+                final double uiScale = getHeight() / REFERENCE_HEIGHT;
+                final int virtualX = (int) (e.getX() / uiScale);
+                final int virtualY = (int) (e.getY() / uiScale);
+
+                final UIAction action = uiRenderer.handleClick(virtualX, virtualY);
+                if (action != UIAction.NONE) {
+                    new Thread(() -> {
+                        switch (action) {
+                            case RESUME -> gameEngine.togglePause();
+                            case RESTART -> gameEngine.init();
+                            case QUIT -> {
+                                stopGame();
+                                if (onExit != null) onExit.run();
+                            }
+                            case REVIVE -> gameEngine.revive();
+                            case DECLINE_REVIVE -> gameEngine.declineRevive();
+                            default -> {}
+                        }
+                    }).start();
+                }
+            }
+        };
+        this.addMouseListener(uiMouseAdapter);
+        this.addMouseMotionListener(uiMouseAdapter);
         this.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {

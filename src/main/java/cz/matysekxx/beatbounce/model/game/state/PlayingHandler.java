@@ -7,6 +7,8 @@ import cz.matysekxx.beatbounce.model.entity.BreakableTile;
 import cz.matysekxx.beatbounce.model.entity.MovingTile;
 import cz.matysekxx.beatbounce.model.entity.Orb;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
+import cz.matysekxx.beatbounce.model.game.OrbCollisionEngine;
+import cz.matysekxx.beatbounce.model.game.TileManager;
 import cz.matysekxx.beatbounce.model.game.collision.CollisionEngine;
 
 import javax.sound.sampled.Clip;
@@ -15,11 +17,15 @@ public class PlayingHandler implements GameStateHandler {
     private final GameEngine gameEngine;
     private final Clip clip;
     private final CollisionEngine collisionEngine;
+    private final TileManager tileManager;
+    private final OrbCollisionEngine  orbCollisionEngine;
 
-    public PlayingHandler(GameEngine gameEngine, Clip clip) {
+    public PlayingHandler(GameEngine gameEngine, Clip clip, TileManager tileManager) {
         this.gameEngine = gameEngine;
         this.clip = clip;
         this.collisionEngine = new CollisionEngine(gameEngine);
+        this.tileManager = tileManager;
+        this.orbCollisionEngine = new OrbCollisionEngine(gameEngine);
     }
 
     @Override
@@ -31,13 +37,11 @@ public class PlayingHandler implements GameStateHandler {
         }
 
         updateAudioAndProgress(deltaTime);
-        // TODO: Refactor state-modifying logic into a separate class (e.g., EffectManager / ProgressManager)
         updateSpeedEffect(deltaTime);
-        updateTiles(deltaTime);
+        tileManager.update(deltaTime);
         updateCameraAndSphere();
         collisionEngine.handleCollisions();
-        // TODO: Refactor entity collision logic into a separate class (e.g., OrbCollisionEngine)
-        checkOrbCollisions();
+        orbCollisionEngine.checkOrbCollisions();
 
         gameEngine.getSphere().update(gameEngine.getSmoothedAudioTime(), deltaTime);
     }
@@ -76,49 +80,10 @@ public class PlayingHandler implements GameStateHandler {
         }
     }
 
-    private void updateTiles(double deltaTime) {
-        // TODO: Move tile updating logic into a dedicated TileManager class
-        for (AbstractTile tile : gameEngine.getUpdatableTiles()) {
-            switch (tile) {
-                case MovingTile movingTile -> {
-                    final double distance = gameEngine.getCam().getDistanceTo(tile.getZ());
-                    if (distance <= 0 || distance > 3000) continue;
-
-                    movingTile.update(deltaTime);
-                    int newX = movingTile.getX();
-
-                    if (newX < -RenderUtils.ROAD_WIDTH) newX = -RenderUtils.ROAD_WIDTH;
-                    else if (newX > RenderUtils.ROAD_WIDTH) newX = RenderUtils.ROAD_WIDTH;
-
-                    movingTile.setLocation(newX, movingTile.getY());
-                }
-                case BreakableTile bt when bt.isBroken() -> bt.updateBreakAnimation(deltaTime);
-                default -> {
-                }
-            }
-        }
-    }
-
     private void updateCameraAndSphere() {
-        // TODO: Extract camera tracking logic to a separate class (e.g., CameraController)
         gameEngine.getSphere().setZ(gameEngine.getGameZProgress());
         gameEngine.getCam().setZ(gameEngine.getGameZProgress() - 500);
-
         final double targetCamX = gameEngine.getSphere().getX() * 0.2;
         gameEngine.getCam().setX(gameEngine.getCam().getX() + (targetCamX - gameEngine.getCam().getX()) * 0.05);
-    }
-
-    private void checkOrbCollisions() {
-        for (Orb orb : gameEngine.getOrbs()) {
-            if (!orb.isCollected()) {
-                final double dz = orb.getZ() - gameEngine.getSphere().getZ();
-                final double dx = orb.getX() - gameEngine.getSphere().getX();
-                final double dy = orb.getY() - gameEngine.getSphere().getCurrentY();
-                if (dz * dz + dx * dx + dy * dy < 6400) {
-                    orb.setCollected(true);
-                    gameEngine.incrementCollectedOrbs();
-                }
-            }
-        }
     }
 }

@@ -9,7 +9,6 @@ public class CollisionEngine {
     private static final int LANE_WIDTH = 120;
     private static final double NORMAL_HALF_WIDTH = LANE_WIDTH / 2.0;
     private static final double SMALL_HALF_WIDTH = 30.0;
-    // TODO: Consider moving Handler mappings to a separate Registry/Factory class to simplify CollisionEngine
     private final HashMap<Class<? extends AbstractTile>, CollisionHandler> collisionHandlers = new HashMap<>();
     private final GameEngine gameEngine;
 
@@ -52,8 +51,6 @@ public class CollisionEngine {
             }
         }
         if (gameEngine.getGameZProgress() < nextTile.getZ()) return;
-
-        // TODO: Refactor player bounds checking into a PhysicsEngine class
         if (isPlayerFalling(nextTile)) {
             gameEngine.startFalling();
             return;

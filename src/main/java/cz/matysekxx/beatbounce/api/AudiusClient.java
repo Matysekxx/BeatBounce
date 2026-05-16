@@ -192,6 +192,12 @@ public class AudiusClient {
                     final String sanitizedFileName = fileName.replaceAll("[\\\\/:*?\"<>|]", "_");
                     final Path destination = downloadDirectory.resolve(sanitizedFileName + extension);
 
+                    try {
+                        Files.createDirectories(downloadDirectory);
+                    } catch (IOException e) {
+                        throw new RuntimeException("Error while creating download directory", e);
+                    }
+
                     try (var inputStream = response.body()) {
                         Files.copy(inputStream, destination, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
                         return destination;

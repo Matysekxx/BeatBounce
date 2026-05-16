@@ -8,7 +8,7 @@ import java.util.HashMap;
 public class CollisionEngine {
     private static final int LANE_WIDTH = 120;
     private static final double NORMAL_HALF_WIDTH = LANE_WIDTH / 2.0;
-    private static final double SMALL_HALF_WIDTH = 30.0;
+    private static final double SMALL_HALF_WIDTH = 25.0;
     private final HashMap<Class<? extends AbstractTile>, CollisionHandler> collisionHandlers = new HashMap<>();
     private final GameEngine gameEngine;
 

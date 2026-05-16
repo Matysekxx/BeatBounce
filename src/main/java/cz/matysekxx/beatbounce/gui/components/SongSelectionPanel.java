@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -112,6 +114,12 @@ public class SongSelectionPanel extends JPanel implements Runnable {
 
         final JScrollPane scrollPane = buildScrollPane(songListPanel);
         add(scrollPane, BorderLayout.CENTER);
+
+        addComponentListener(new ComponentAdapter() {
+            @Override public void componentResized(ComponentEvent e) {
+                songListPanel.revalidate();
+            }
+        });
 
         loadTracks("allTime", null);
     }

@@ -11,6 +11,6 @@ public class SmallCollisionHandler extends CollisionHandler {
     @Override
     public void handle(AbstractTile tile) {
         final int scoreIncrease = 15;
-        advanceTile(scoreIncrease);
+        advanceTile(tile, scoreIncrease);
     }
 }

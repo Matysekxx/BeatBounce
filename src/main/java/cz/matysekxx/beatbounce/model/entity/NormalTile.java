@@ -24,6 +24,8 @@ public class NormalTile extends AbstractTile {
     private Color baseColorAlpha120;
     private Color baseColorAlpha180;
     private Color baseColorAlpha230;
+    private Color lightenedColor;
+    private Color lightenedColorAlpha230;
 
     /**
      * Default constructor for {@code NormalTile}.
@@ -87,6 +89,8 @@ public class NormalTile extends AbstractTile {
         this.baseColorAlpha120 = RenderCache.customColorWithAlpha(baseDimColor, 120);
         this.baseColorAlpha180 = RenderCache.customColorWithAlpha(baseDimColor, 180);
         this.baseColorAlpha230 = RenderCache.customColorWithAlpha(baseColor, 230);
+        this.lightenedColor = Color.getHSBColor(h, 0.6f, 1.0f);
+        this.lightenedColorAlpha230 = RenderCache.customColorWithAlpha(lightenedColor, 230);
     }
 
     /**
@@ -114,7 +118,7 @@ public class NormalTile extends AbstractTile {
 
             for (int offset : fakeLaneOffsets) {
                 final Polygon fakePoly = new Polygon(
-                        createXPoints(cam, windowData.width(), scaleFront, scaleBack, this.getX() + (offset * LANE_WIDTH)),
+                        createXPoints(cam, windowData.width(), scaleFront, scaleBack, this.getX() + (offset * LANE_WIDTH), 1.0),
                         createYPoints(cam, scaleFront, scaleBack, windowData.height() / 3),
                         4
                 );
@@ -143,32 +147,9 @@ public class NormalTile extends AbstractTile {
         g2d.setStroke(RenderCache.STROKE_1);
     }
 
-    /**
-     * Renders the main 3D polygon of the tile.
-     * Includes cyan neon effects if graphics quality is not set to LOW.
-     *
-     * @param g2d     the graphics context to paint on
-     * @param polygon the polygon representing the tile's shape on screen
-     */
     @Override
     public void paint3D(Graphics2D g2d, Polygon polygon) {
-        if (!Settings.graphicsQuality.equals("LOW")) {
-            g2d.setStroke(RenderCache.STROKE_8);
-            g2d.setColor(RenderCache.cyanWithAlpha(40));
-            g2d.drawPolygon(polygon);
-
-            if (Settings.graphicsQuality.equals("HIGH")) {
-                g2d.setStroke(RenderCache.STROKE_4);
-                g2d.setColor(RenderCache.cyanWithAlpha(100));
-                g2d.drawPolygon(polygon);
-            }
-
-            g2d.setStroke(RenderCache.STROKE_2);
-            g2d.setColor(RenderCache.cyanWithAlpha(180));
-            g2d.drawPolygon(polygon);
-        }
-
-        g2d.setColor(baseColorAlpha230);
+        g2d.setColor(isActivated ? lightenedColorAlpha230 : baseColorAlpha230);
         g2d.fillPolygon(polygon);
 
         g2d.setStroke(RenderCache.STROKE_1_5);

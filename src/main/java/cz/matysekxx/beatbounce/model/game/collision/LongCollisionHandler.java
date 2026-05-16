@@ -4,6 +4,8 @@ import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.LongTile;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
 
+import java.awt.*;
+
 public class LongCollisionHandler extends CollisionHandler {
     boolean onLongTile = false;
 
@@ -18,6 +20,7 @@ public class LongCollisionHandler extends CollisionHandler {
     @Override
     public void handle(AbstractTile tile) {
         if (tile instanceof LongTile) {
+            tile.onLanding();
             this.onLongTile = true;
             gameEngine.setCurrentTileIndex(gameEngine.getCurrentTileIndex() + 1);
             gameEngine.setLongTileScoreAccum(0);

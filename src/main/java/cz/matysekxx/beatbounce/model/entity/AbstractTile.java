@@ -36,6 +36,18 @@ public abstract class AbstractTile extends Entity implements Paintable {
      */
     protected double lengthInZ;
     /**
+     * Current impact animation time.
+     */
+    protected double impactTime = 0;
+    /**
+     * Duration of the impact animation in seconds.
+     */
+    protected static final double IMPACT_DURATION = 0.25;
+    /**
+     * Whether the tile has been activated (landed on).
+     */
+    protected boolean isActivated = false;
+    /**
      * The beat event associated with this tile.
      */
     private BeatEvent beatEvent;
@@ -100,15 +112,33 @@ public abstract class AbstractTile extends Entity implements Paintable {
      */
     @Override
     public void paint3D(Graphics2D g2d, Camera3D cam, WindowData windowData) {
+        double pulseScale = 1.0;
+        if (impactTime > 0) {
+            double progress = impactTime / IMPACT_DURATION;
+            pulseScale = 1.0 + 0.15 * Math.sin(progress * Math.PI);
+        }
+
         final double scaleFront = cam.getScale(this.getZ());
         final double scaleBack = cam.getScale(this.getZ() + getLengthInZ());
-        this.paint3D(g2d, new Polygon(
+        final Polygon polygon = new Polygon(
                 createXPoints(
-                        cam, windowData.width(), scaleFront, scaleBack, this.getX()),
+                        cam, windowData.width(), scaleFront, scaleBack, this.getX(), pulseScale),
                 createYPoints(
                         cam, scaleFront, scaleBack, windowData.height() / 3),
                 4
-        ));
+        );
+        if (!cz.matysekxx.beatbounce.configuration.Settings.graphicsQuality.equals("LOW")) {
+            g2d.setStroke(cz.matysekxx.beatbounce.gui.RenderCache.STROKE_4);
+            g2d.setColor(new Color(255, 255, 255, isActivated ? 180 : 60));
+            g2d.drawPolygon(polygon);
+        }
+
+        this.paint3D(g2d, polygon);
+        if (impactTime > 0) {
+            double progress = impactTime / IMPACT_DURATION;
+            g2d.setColor(new Color(255, 255, 255, (int) (180 * progress)));
+            g2d.fillPolygon(polygon);
+        }
     }
 
     /**
@@ -121,8 +151,9 @@ public abstract class AbstractTile extends Entity implements Paintable {
      * @return an array of Y-coordinates for the polygon vertices
      */
     protected int[] createYPoints(Camera3D cam, double scaleFront, double scaleBack, int horizonY) {
-        final int screenYFront = (int) (horizonY + ((150 - cam.getY()) * scaleFront));
-        final int screenYBack = (int) (horizonY + ((150 - cam.getY()) * scaleBack));
+        double baseHeight = 150 - cam.getY();
+        final int screenYFront = (int) (horizonY + (baseHeight * scaleFront));
+        final int screenYBack = (int) (horizonY + (baseHeight * scaleBack));
         return new int[]{
                 screenYFront, screenYFront, screenYBack, screenYBack
         };
@@ -136,16 +167,17 @@ public abstract class AbstractTile extends Entity implements Paintable {
      * @param scaleFront the scale factor for the front edge of the tile
      * @param scaleBack  the scale factor for the back edge of the tile
      * @param targetX    the horizontal position of the tile in the world
+     * @param pulseScale the current pulse scale multiplier
      * @return an array of X-coordinates for the polygon vertices
      */
-    protected int[] createXPoints(Camera3D cam, int width, double scaleFront, double scaleBack, int targetX) {
+    protected int[] createXPoints(Camera3D cam, int width, double scaleFront, double scaleBack, int targetX, double pulseScale) {
         final double centerScreenFront = calculateCenterScreen(
                 targetX, (int) cam.getX(), width, scaleFront);
         final double centerScreenBack = calculateCenterScreen(
                 targetX, (int) cam.getX(), width, scaleBack);
 
-        final double frontWidth = 100 * scaleFront;
-        final double backWidth = 100 * scaleBack;
+        final double frontWidth = 100 * scaleFront * pulseScale;
+        final double backWidth = 100 * scaleBack * pulseScale;
 
         return new int[]{
                 (int) (centerScreenFront - frontWidth / 2),
@@ -183,5 +215,27 @@ public abstract class AbstractTile extends Entity implements Paintable {
      * Resets the internal state of the tile. By default does nothing.
      */
     public void reset() {
+        this.impactTime = 0;
+        this.isActivated = false;
+    }
+
+    /**
+     * Triggers the impact animation for this tile.
+     */
+    public void onLanding() {
+        this.impactTime = IMPACT_DURATION;
+        this.isActivated = true;
+    }
+
+    /**
+     * Updates the impact animation state.
+     *
+     * @param deltaTime the time elapsed since the last update
+     */
+    public void updateImpact(double deltaTime) {
+        if (impactTime > 0) {
+            impactTime -= deltaTime;
+            if (impactTime < 0) impactTime = 0;
+        }
     }
 }

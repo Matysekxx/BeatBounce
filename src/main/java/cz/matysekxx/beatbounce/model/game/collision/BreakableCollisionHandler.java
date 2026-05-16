@@ -18,7 +18,7 @@ public class BreakableCollisionHandler extends CollisionHandler {
                 return;
             }
             bt.breakTile();
-            advanceTile(12);
+            advanceTile(tile, 12);
         }
     }
 }

@@ -15,6 +15,7 @@ import java.awt.*;
 public class LongTile extends AbstractTile {
     private final Color baseColor;
     private final Color baseColorAlpha220;
+    private final Color lightenedColor;
 
     @JsonCreator
     public LongTile(
@@ -27,30 +28,27 @@ public class LongTile extends AbstractTile {
         float h = (float) ((z % 5000) / 5000.0);
         this.baseColor = Color.getHSBColor(h, 0.8f, 0.9f);
         this.baseColorAlpha220 = new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), 220);
+        this.lightenedColor = Color.getHSBColor(h, 0.5f, 1.0f);
     }
-
     @Override
     public void paint3D(Graphics2D g2d, Polygon polygon) {
-        if (!Settings.graphicsQuality.equals("LOW")) {
+        final boolean isLow = Settings.graphicsQuality.equals("LOW");
+        final Color displayColor = isActivated ? lightenedColor : baseColor;
+
+        if (!isLow) {
             final Polygon thicknessPoly = new Polygon(polygon.xpoints, polygon.ypoints, polygon.npoints);
             thicknessPoly.translate(0, 10);
             g2d.setColor(new Color(10, 10, 20, 180));
             g2d.fillPolygon(thicknessPoly);
-            g2d.setStroke(RenderCache.STROKE_8);
-            g2d.setColor(new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), 30));
-            g2d.drawPolygon(polygon);
         }
 
         final Rectangle bounds = polygon.getBounds();
         final GradientPaint gp = new GradientPaint(
-                bounds.x, bounds.y, baseColor.brighter(),
-                bounds.x, bounds.y + bounds.height, baseColorAlpha220
+                bounds.x, bounds.y, displayColor.brighter(),
+                bounds.x, bounds.y + bounds.height, isActivated ? lightenedColor : baseColorAlpha220
         );
         g2d.setPaint(gp);
         g2d.fillPolygon(polygon);
-
-        g2d.setColor(new Color(255, 255, 255, 40));
-        g2d.setStroke(new BasicStroke(1.0f));
 
         g2d.setStroke(RenderCache.STROKE_2);
         g2d.setColor(Color.WHITE);

@@ -18,7 +18,10 @@ public class MovingTile extends AbstractTile {
     private double speed;
     private double time;
     private float hueOffset;
+    private Color baseColor;
     private Color baseColorAlpha220;
+    private Color lightenedColor;
+    private Color lightenedColorAlpha220;
 
     /**
      * Default constructor for {@code MovingTile}.
@@ -59,8 +62,10 @@ public class MovingTile extends AbstractTile {
      */
     private void calculateColors() {
         final float h = 0.1f + (hueOffset * 0.1f);
-        final Color baseColor = Color.getHSBColor(h, 1.0f, 1.0f);
+        this.baseColor = Color.getHSBColor(h, 1.0f, 1.0f);
         this.baseColorAlpha220 = RenderCache.customColorWithAlpha(baseColor, 220);
+        this.lightenedColor = Color.getHSBColor(h, 0.7f, 1.0f);
+        this.lightenedColorAlpha220 = RenderCache.customColorWithAlpha(lightenedColor, 220);
     }
 
     /**
@@ -73,7 +78,7 @@ public class MovingTile extends AbstractTile {
         double phase = 0;
         if (amplitude > 0) {
             double ratio = startX / (double) amplitude;
-            ratio = Math.max(-1.0, Math.min(1.0, ratio));
+            ratio = Math.clamp(ratio, -1.0, 1.0);
             phase = Math.asin(ratio);
         }
 
@@ -117,21 +122,7 @@ public class MovingTile extends AbstractTile {
      */
     @Override
     public void paint3D(Graphics2D g2d, Polygon polygon) {
-        if (!Settings.graphicsQuality.equals("LOW")) {
-            final Color neonColor = new Color(255, 165, 0);
-
-            g2d.setStroke(RenderCache.STROKE_6);
-            g2d.setColor(RenderCache.customColorWithAlpha(neonColor, 60));
-            g2d.drawPolygon(polygon);
-
-            if (Settings.graphicsQuality.equals("HIGH")) {
-                g2d.setStroke(RenderCache.STROKE_3);
-                g2d.setColor(RenderCache.customColorWithAlpha(neonColor, 120));
-                g2d.drawPolygon(polygon);
-            }
-        }
-
-        g2d.setColor(baseColorAlpha220);
+        g2d.setColor(isActivated ? lightenedColorAlpha220 : baseColorAlpha220);
         g2d.fillPolygon(polygon);
 
         g2d.setStroke(RenderCache.STROKE_2);

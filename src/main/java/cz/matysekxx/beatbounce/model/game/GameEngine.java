@@ -11,6 +11,7 @@ import cz.matysekxx.beatbounce.util.LevelUtil;
 import javax.sound.sampled.Clip;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * The core logic of the game, managing the game state, player movement, score, and level progress.

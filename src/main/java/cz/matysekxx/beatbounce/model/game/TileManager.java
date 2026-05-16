@@ -13,6 +13,10 @@ public class TileManager {
     }
 
     public void update(double deltaTime) {
+        for (AbstractTile tile : gameEngine.getLevel().tiles()) {
+            tile.updateImpact(deltaTime);
+        }
+
         for (AbstractTile tile : gameEngine.getUpdatableTiles()) {
             switch (tile) {
                 case MovingTile movingTile -> {

@@ -1,6 +1,7 @@
 package cz.matysekxx.beatbounce.model.game;
 
 import cz.matysekxx.beatbounce.gui.Camera3D;
+import cz.matysekxx.beatbounce.gui.components.ScorePopup;
 import cz.matysekxx.beatbounce.model.entity.*;
 import cz.matysekxx.beatbounce.model.game.state.*;
 import cz.matysekxx.beatbounce.model.level.Level;
@@ -23,6 +24,7 @@ public class GameEngine {
     private final Clip clip;
     private final double zUnitsPerSecond;
     private final List<Orb> orbs = new ArrayList<>();
+    private final List<cz.matysekxx.beatbounce.gui.components.ScorePopup> scorePopups = new CopyOnWriteArrayList<>();
     private final List<AbstractTile> updatableTiles;
     private final GameStateHandler countdownHandler;
     private final GameStateHandler playingHandler;
@@ -124,6 +126,11 @@ public class GameEngine {
     }
 
     public void update(double currentTime, double deltaTime) {
+        scorePopups.removeIf(ScorePopup::isFinished);
+        for (ScorePopup popup : scorePopups) {
+            popup.update(deltaTime);
+        }
+
         switch (gameState) {
             case FALLING -> fallingHandler.handle(currentTime, deltaTime);
             case PLAYING -> playingHandler.handle(currentTime, deltaTime);
@@ -286,6 +293,14 @@ public class GameEngine {
 
     public boolean isReviveDeclined() {
         return reviveDeclined;
+    }
+
+    public List<cz.matysekxx.beatbounce.gui.components.ScorePopup> getScorePopups() {
+        return scorePopups;
+    }
+
+    public void addScorePopup(cz.matysekxx.beatbounce.gui.components.ScorePopup popup) {
+        scorePopups.add(popup);
     }
 
     public int getReviveCost() {

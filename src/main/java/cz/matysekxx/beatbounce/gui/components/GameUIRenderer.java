@@ -388,6 +388,7 @@ public class GameUIRenderer {
 
         g2d.setColor(ORBS_TEXT_COLOR);
         g2d.drawString(orbsText, boxX + 35, boxY + 28);
+        gameEngine.getScorePopups().forEach(popup -> popup.paint(g2d, width));
     }
 
     /**

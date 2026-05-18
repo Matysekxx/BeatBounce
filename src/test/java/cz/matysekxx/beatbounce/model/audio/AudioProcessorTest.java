@@ -12,11 +12,37 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 
+import java.util.concurrent.Flow;
+
 /**
  * Test class for {@link AudioProcessor}.
  * Verifies that audio chunks are correctly processed to detect intensity changes and beats.
  */
 public class AudioProcessorTest {
+
+    /**
+         * Helper subscriber for tests.
+         */
+        private record TestSubscriber(List<BeatEvent> events) implements Flow.Subscriber<BeatEvent> {
+
+        @Override
+            public void onSubscribe(Flow.Subscription subscription) {
+                subscription.request(Long.MAX_VALUE);
+            }
+
+            @Override
+            public void onNext(BeatEvent item) {
+                events.add(item);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+            }
+
+            @Override
+            public void onComplete() {
+            }
+        }
 
     /**
      * Tests the intensity detection logic of {@link AudioProcessor}.
@@ -27,7 +53,8 @@ public class AudioProcessorTest {
         AudioFormat format = new AudioFormat(44100, 16, 1, true, false);
         List<BeatEvent> detectedEvents = new ArrayList<>();
 
-        AudioProcessor processor = new AudioProcessor(format, 1.0f, detectedEvents::add);
+        AudioProcessor processor = new AudioProcessor(format, 1.0f);
+        processor.subscribe(new TestSubscriber(detectedEvents));
 
         short[] silence = new short[2048];
         processor.processChunk(silence);
@@ -57,17 +84,24 @@ public class AudioProcessorTest {
      */
     @Test
     public void testBeatFiltering() {
-        AudioFormat format = new AudioFormat(44100, 16, 1, true, false);
-        List<BeatEvent> detectedEvents = new ArrayList<>();
+        final AudioFormat format = new AudioFormat(44100, 16, 1, true, false);
+        final List<BeatEvent> detectedEvents = new ArrayList<>();
+        final AudioProcessor processor = new AudioProcessor(format, 1.0f);
+        processor.subscribe(new TestSubscriber(detectedEvents));
 
-        AudioProcessor processor = new AudioProcessor(format, 1.0f, detectedEvents::add);
+        final short[] chunk = new short[2048];
+        for (int i = 0; i < 5; i++) {
+            processor.processChunk(chunk);
+        }
 
-        short[] chunk = new short[2048];
-        processor.processChunk(chunk);
-        int countBefore = detectedEvents.size();
+        final int countAfterWarmup = detectedEvents.size();
+        for (int i = 0; i < 5; i++) {
+            processor.processChunk(chunk);
+        }
 
-        processor.processChunk(chunk);
-        assertEquals("Consecutive empty chunks should not necessarily trigger new beats",
-                countBefore, detectedEvents.size());
+        final int countAfterMoreSilence = detectedEvents.size();
+
+        assertEquals("Consecutive empty chunks should not trigger additional duplicate beats",
+                countAfterWarmup, countAfterMoreSilence);
     }
 }

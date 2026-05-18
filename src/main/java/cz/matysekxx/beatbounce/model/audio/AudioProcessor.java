@@ -8,18 +8,35 @@ import cz.matysekxx.beatbounce.event.BeatEvent;
 import cz.matysekxx.beatbounce.event.EventType;
 
 import javax.sound.sampled.AudioFormat;
+import java.io.Closeable;
 import java.util.Arrays;
+import java.util.concurrent.Flow;
+import java.util.concurrent.SubmissionPublisher;
 import java.util.function.Consumer;
 
 /**
  * Core Digital Signal Processing (DSP) engine for real-time audio chunk analysis.
  * <p>
- * Uses the TarsosDSP library for onset detection and a {@link FrequencyBandAnalyzer}
- * for per-chunk FFT decomposition. Detected beats are classified by their dominant
- * frequency band (kick, snare, hi-hat, melodic). Sustained tonal segments are tracked
- * and emitted as {@link EventType#SUSTAINED_NOTE} events for long-tile generation.
+ * This class implements {@link java.util.concurrent.Flow.Publisher}, providing a reactive stream of {@link BeatEvent}s.
+ * It uses a {@link SubmissionPublisher} to asynchronously broadcast events to any subscribed observers.
+ * </p>
+ * <p>
+ * Pipeline features:
+ * <ul>
+ *   <li>Onset detection via TarsosDSP (Percussion and Complex).</li>
+ *   <li>Frequency analysis for beat classification (Kick, Snare, etc.).</li>
+ *   <li>Intensity tracking for section markers.</li>
+ *   <li>Sustained note detection for long tiles.</li>
+ * </ul>
+ * </p>
  */
-public class AudioProcessor {
+public class AudioProcessor implements Flow.Publisher<BeatEvent>, Closeable {
+    /**
+     * The internal publisher used to manage subscribers and submit events.
+     * SubmissionPublisher is a standard implementation of Flow.Publisher that handles
+     * buffering and asynchronous delivery.
+     */
+    private final SubmissionPublisher<BeatEvent> publisher = new SubmissionPublisher<>();
     public static final int BUFFER_SIZE = 2048;
     public static final int OVERLAP = 1024;
 
@@ -50,7 +67,6 @@ public class AudioProcessor {
     private final ComplexOnsetDetector complexDetector;
     private final FrequencyBandAnalyzer bandAnalyzer;
     private final TarsosDSPAudioFormat tarsosFormat;
-    private final Consumer<BeatEvent> onBeatDetected;
     private final float sampleRate;
     private final int channels;
 
@@ -80,12 +96,10 @@ public class AudioProcessor {
      *
      * @param format          The audio format (sample rate, channels, etc.).
      * @param speedMultiplier Current game speed multiplier to scale timestamps.
-     * @param onBeatDetected  Callback invoked whenever a valid event is detected.
      */
-    public AudioProcessor(AudioFormat format, float speedMultiplier, Consumer<BeatEvent> onBeatDetected) {
+    public AudioProcessor(AudioFormat format, float speedMultiplier) {
         this.sampleRate = format.getSampleRate();
         this.channels = format.getChannels();
-        this.onBeatDetected = onBeatDetected;
 
         this.tarsosFormat = new TarsosDSPAudioFormat(
                 sampleRate, format.getSampleSizeInBits(),
@@ -146,7 +160,7 @@ public class AudioProcessor {
     }
 
     private void acceptBeat(double time, double salience) {
-        onBeatDetected.accept(classifyBeat(time, salience));
+        publisher.submit(classifyBeat(time, salience));
         lastAcceptedBeatTime = time;
         consecutiveFallbacks = 0;
         recordBeatForBpm(time);
@@ -188,7 +202,7 @@ public class AudioProcessor {
     private void emitSustainedNote() {
         final double duration = currentTime - sustainedStartTime;
         if (duration > 0.1) {
-            onBeatDetected.accept(BeatEvent.ofSustained(sustainedStartTime, 0.7, duration, "MID"));
+            publisher.submit(BeatEvent.ofSustained(sustainedStartTime, 0.7, duration, "MID"));
         }
         sustainedFrameCount = 0;
     }
@@ -229,7 +243,7 @@ public class AudioProcessor {
         if (est > 0.05 && est < 2.0) lastFallbackInterval = est;
         final double interval = Math.max(lastFallbackInterval, MIN_BEAT_INTERVAL * 2);
 
-        onBeatDetected.accept(BeatEvent.of(currentTime, 0.1));
+        publisher.submit(BeatEvent.of(currentTime, 0.1));
         lastAcceptedBeatTime = currentTime;
         consecutiveFallbacks++;
         nextFallbackBeatTime = currentTime + interval;
@@ -239,20 +253,20 @@ public class AudioProcessor {
         smoothedRms = smoothedRms * SMOOTHING_FACTOR + rms * (1.0 - SMOOTHING_FACTOR);
 
         if (smoothedRms > HIGH_INTENSITY_THRESHOLD && !inHighIntensity) {
-            onBeatDetected.accept(BeatEvent.of(currentTime, EventType.INTENSITY_HIGH_START, smoothedRms));
+            publisher.submit(BeatEvent.of(currentTime, EventType.INTENSITY_HIGH_START, smoothedRms));
             inHighIntensity = true;
             inLowIntensity = false;
         } else if (smoothedRms <= HIGH_INTENSITY_THRESHOLD && inHighIntensity) {
-            onBeatDetected.accept(BeatEvent.of(currentTime, EventType.INTENSITY_HIGH_END, smoothedRms));
+            publisher.submit(BeatEvent.of(currentTime, EventType.INTENSITY_HIGH_END, smoothedRms));
             inHighIntensity = false;
         }
 
         if (smoothedRms < LOW_INTENSITY_THRESHOLD && !inLowIntensity) {
-            onBeatDetected.accept(BeatEvent.of(currentTime, EventType.INTENSITY_LOW_START, smoothedRms));
+            publisher.submit(BeatEvent.of(currentTime, EventType.INTENSITY_LOW_START, smoothedRms));
             inLowIntensity = true;
             inHighIntensity = false;
         } else if (smoothedRms >= LOW_INTENSITY_THRESHOLD && inLowIntensity) {
-            onBeatDetected.accept(BeatEvent.of(currentTime, EventType.INTENSITY_LOW_END, smoothedRms));
+            publisher.submit(BeatEvent.of(currentTime, EventType.INTENSITY_LOW_END, smoothedRms));
             inLowIntensity = false;
         }
     }
@@ -267,5 +281,18 @@ public class AudioProcessor {
         double sum = 0.0;
         for (float s : buffer) sum += s * s;
         return Math.sqrt(sum / buffer.length);
+    }
+
+    @Override
+    public void subscribe(Flow.Subscriber<? super BeatEvent> subscriber) {
+        publisher.subscribe(subscriber);
+    }
+
+    /**
+     * Closes the publisher, signaling that no more events will be emitted.
+     */
+    @Override
+    public void close() {
+        publisher.close();
     }
 }

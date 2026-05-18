@@ -8,6 +8,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Flow;
+
 /**
  * High-level orchestrator for analyzing an entire audio track.
  * <p>
@@ -53,20 +56,27 @@ public class AudioAnalyzer {
     /**
      * Analyzes the audio track and extracts a sorted list of beat events.
      * <p>
-     * Includes standard beat events, intensity-change markers,
-     * sustained-note events, and section-change events.
+     * This method uses a reactive approach via the Java Flow API:
+     * <ol>
+     *   <li>It initializes an {@link AudioProcessor} as a Publisher.</li>
+     *   <li>It subscribes to the processor to collect {@link BeatEvent}s into a synchronized list.</li>
+     *   <li>It uses a {@link CountDownLatch} to synchronize the asynchronous nature of the Flow API,
+     *       ensuring all events are received before the method returns.</li>
+     * </ol>
+     * </p>
      *
      * @return a chronologically sorted list of detected {@link BeatEvent}s.
      */
     public List<BeatEvent> analyze() {
         final List<BeatEvent> beatEvents = Collections.synchronizedList(new ArrayList<>());
+        final CountDownLatch latch = new CountDownLatch(1);
 
         final BpmDetector bpmDetector = new BpmDetector(audioData.format());
         tempoMap = bpmDetector.detectTempo(audioData.samples());
 
-        final AudioProcessor processor = new AudioProcessor(
-                audioData.format(), speedMultiplier, beatEvents::add
-        );
+        final AudioProcessor processor = new AudioProcessor(audioData.format(), speedMultiplier);
+
+        processor.subscribe(new AudioSubscriber(beatEvents, latch));
 
         final short[] samples = audioData.samples();
         final int bufferSize = AudioProcessor.BUFFER_SIZE;
@@ -77,6 +87,14 @@ public class AudioAnalyzer {
             final short[] chunk = new short[bufferSize];
             System.arraycopy(samples, i, chunk, 0, bufferSize);
             processor.processChunk(chunk);
+        }
+
+        processor.close();
+        
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
 
         beatEvents.sort(Comparator.comparingDouble(BeatEvent::timestamp));

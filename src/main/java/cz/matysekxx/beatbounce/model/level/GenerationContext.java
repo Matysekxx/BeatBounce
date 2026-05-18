@@ -27,10 +27,6 @@ import static cz.matysekxx.beatbounce.model.level.LevelGenerator.getZSpeed;
 class GenerationContext {
 
     /**
-     * Duration (in seconds) a speed-tile effect persists.
-     */
-    public static final double SPEED_EFFECT_DURATION = 3.0;
-    /**
      * Width of one lane in world units. 5 lanes: -2,-1,0,1,2 → X= -240,-120,0,120,240 (road half-width = 300).
      */
     private static final int LANE_WIDTH = 120;
@@ -252,7 +248,7 @@ class GenerationContext {
                 && profile.allows(TileType.MOVING)
                 && rng.nextDouble() < profile.movingChance()) {
             final int amp = profile.maxLanes() * LANE_WIDTH;
-            final double sp = (profile.stars() * 0.15) + rng.nextDouble() * 0.4;
+            final double sp = (profile.stars() * 0.25) + 0.3 + rng.nextDouble();
             return TileFactory.createMovingTile(e, laneX, 0, tileZ, amp, sp);
         }
         if (tilesGenerated > 10

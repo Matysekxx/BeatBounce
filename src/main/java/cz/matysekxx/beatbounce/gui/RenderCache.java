@@ -45,42 +45,141 @@ public final class RenderCache {
      */
     public static final BasicStroke STROKE_8 = new BasicStroke(8.0f);
 
+    /**
+     * Monospaced Bold font, size 11.
+     */
     public static final Font MONO_BOLD_11 = new Font("Monospaced", Font.BOLD, 11);
+    /**
+     * Monospaced Bold font, size 12.
+     */
     public static final Font MONO_BOLD_12 = new Font("Monospaced", Font.BOLD, 12);
+    /**
+     * Monospaced Bold font, size 16.
+     */
     public static final Font MONO_BOLD_16 = new Font("Monospaced", Font.BOLD, 16);
+    /**
+     * Monospaced Bold font, size 17.
+     */
     public static final Font MONO_BOLD_17 = new Font("Monospaced", Font.BOLD, 17);
+    /**
+     * Monospaced Bold font, size 24.
+     */
     public static final Font MONO_BOLD_24 = new Font("Monospaced", Font.BOLD, 24);
+    /**
+     * Monospaced Bold font, size 85.
+     */
     public static final Font MONO_BOLD_85 = new Font("Monospaced", Font.BOLD, 85);
+    /**
+     * Monospaced Bold font, size 150.
+     */
     public static final Font MONO_BOLD_150 = new Font("Monospaced", Font.BOLD, 150);
 
+    /**
+     * Monospaced Italic Bold font, size 24.
+     */
     public static final Font MONO_ITALIC_BOLD_24 = new Font("Monospaced", Font.BOLD | Font.ITALIC, 24);
+    /**
+     * Monospaced Italic Bold font, size 48.
+     */
     public static final Font MONO_ITALIC_BOLD_48 = new Font("Monospaced", Font.BOLD | Font.ITALIC, 48);
+    /**
+     * Monospaced Italic Bold font, size 60.
+     */
     public static final Font MONO_ITALIC_BOLD_60 = new Font("Monospaced", Font.BOLD | Font.ITALIC, 60);
+    /**
+     * Monospaced Italic Bold font, size 65.
+     */
     public static final Font MONO_ITALIC_BOLD_65 = new Font("Monospaced", Font.BOLD | Font.ITALIC, 65);
+    /**
+     * Monospaced Italic Bold font, size 78.
+     */
     public static final Font MONO_ITALIC_BOLD_78 = new Font("Monospaced", Font.BOLD | Font.ITALIC, 78);
+    /**
+     * Monospaced Italic Bold font, size 150.
+     */
     public static final Font MONO_ITALIC_BOLD_150 = new Font("Monospaced", Font.BOLD | Font.ITALIC, 150);
 
+    /**
+     * SansSerif Plain font, size 13.
+     */
     public static final Font SANS_PLAIN_13 = new Font("SansSerif", Font.PLAIN, 13);
+    /**
+     * SansSerif Plain font, size 14.
+     */
     public static final Font SANS_PLAIN_14 = new Font("SansSerif", Font.PLAIN, 14);
+    /**
+     * SansSerif Plain font, size 15.
+     */
     public static final Font SANS_PLAIN_15 = new Font("SansSerif", Font.PLAIN, 15);
+    /**
+     * SansSerif Plain font, size 16.
+     */
     public static final Font SANS_PLAIN_16 = new Font("SansSerif", Font.PLAIN, 16);
+    /**
+     * SansSerif Plain font, size 17.
+     */
     public static final Font SANS_PLAIN_17 = new Font("SansSerif", Font.PLAIN, 17);
+    /**
+     * SansSerif Plain font, size 18.
+     */
     public static final Font SANS_PLAIN_18 = new Font("SansSerif", Font.PLAIN, 18);
+    /**
+     * SansSerif Plain font, size 20.
+     */
     public static final Font SANS_PLAIN_20 = new Font("SansSerif", Font.PLAIN, 20);
 
+    /**
+     * SansSerif Bold font, size 11.
+     */
     public static final Font SANS_BOLD_11 = new Font("SansSerif", Font.BOLD, 11);
+    /**
+     * SansSerif Bold font, size 13.
+     */
     public static final Font SANS_BOLD_13 = new Font("SansSerif", Font.BOLD, 13);
+    /**
+     * SansSerif Bold font, size 14.
+     */
     public static final Font SANS_BOLD_14 = new Font("SansSerif", Font.BOLD, 14);
+    /**
+     * SansSerif Bold font, size 15.
+     */
     public static final Font SANS_BOLD_15 = new Font("SansSerif", Font.BOLD, 15);
+    /**
+     * SansSerif Bold font, size 16.
+     */
     public static final Font SANS_BOLD_16 = new Font("SansSerif", Font.BOLD, 16);
+    /**
+     * SansSerif Bold font, size 18.
+     */
     public static final Font SANS_BOLD_18 = new Font("SansSerif", Font.BOLD, 18);
+    /**
+     * SansSerif Bold font, size 20.
+     */
     public static final Font SANS_BOLD_20 = new Font("SansSerif", Font.BOLD, 20);
+    /**
+     * SansSerif Bold font, size 22.
+     */
     public static final Font SANS_BOLD_22 = new Font("SansSerif", Font.BOLD, 22);
+    /**
+     * SansSerif Bold font, size 26.
+     */
     public static final Font SANS_BOLD_26 = new Font("SansSerif", Font.BOLD, 26);
+    /**
+     * SansSerif Bold font, size 28.
+     */
     public static final Font SANS_BOLD_28 = new Font("SansSerif", Font.BOLD, 28);
+    /**
+     * SansSerif Bold font, size 36.
+     */
     public static final Font SANS_BOLD_36 = new Font("SansSerif", Font.BOLD, 36);
+    /**
+     * SansSerif Bold font, size 56.
+     */
     public static final Font SANS_BOLD_56 = new Font("SansSerif", Font.BOLD, 56);
 
+    /**
+     * SansSerif Italic font, size 22.
+     */
     public static final Font SANS_ITALIC_22 = new Font("SansSerif", Font.ITALIC, 22);
 
     /**
@@ -95,6 +194,9 @@ public final class RenderCache {
      * A hexagon shape.
      */
     public static final Shape SHAPE_HEXAGON;
+    /**
+     * Monospaced Bold font, size 65.
+     */
     public static final Font MONO_BOLD_65 = new Font("Monospaced", Font.BOLD, 65);
 
     private static final Color[] CYAN_ALPHA = new Color[256];
@@ -151,7 +253,7 @@ public final class RenderCache {
      * @return the color
      */
     public static Color cyanWithAlpha(int alpha) {
-        return CYAN_ALPHA[Math.max(0, Math.min(255, alpha))];
+        return CYAN_ALPHA[Math.clamp(alpha, 0, 255)];
     }
 
     /**
@@ -161,7 +263,7 @@ public final class RenderCache {
      * @return the color
      */
     public static Color magentaWithAlpha(int alpha) {
-        return MAGENTA_ALPHA[Math.max(0, Math.min(255, alpha))];
+        return MAGENTA_ALPHA[Math.clamp(alpha, 0, 255)];
     }
 
     /**
@@ -171,7 +273,7 @@ public final class RenderCache {
      * @return the color
      */
     public static Color yellowWithAlpha(int alpha) {
-        return YELLOW_ALPHA[Math.max(0, Math.min(255, alpha))];
+        return YELLOW_ALPHA[Math.clamp(alpha, 0, 255)];
     }
 
     /**
@@ -181,7 +283,7 @@ public final class RenderCache {
      * @return the color
      */
     public static Color redWithAlpha(int alpha) {
-        return RED_ALPHA[Math.max(0, Math.min(255, alpha))];
+        return RED_ALPHA[Math.clamp(alpha, 0, 255)];
     }
 
     /**
@@ -191,7 +293,7 @@ public final class RenderCache {
      * @return the color
      */
     public static Color whiteWithAlpha(int alpha) {
-        return WHITE_ALPHA[Math.max(0, Math.min(255, alpha))];
+        return WHITE_ALPHA[Math.clamp(alpha, 0, 255)];
     }
 
     /**
@@ -201,7 +303,7 @@ public final class RenderCache {
      * @return the color
      */
     public static Color blackWithAlpha(int alpha) {
-        return BLACK_ALPHA[Math.max(0, Math.min(255, alpha))];
+        return BLACK_ALPHA[Math.clamp(alpha, 0, 255)];
     }
 
     /**
@@ -212,6 +314,6 @@ public final class RenderCache {
      * @return the color
      */
     public static Color customColorWithAlpha(Color color, int alpha) {
-        return new Color(color.getRed(), color.getGreen(), color.getBlue(), Math.max(0, Math.min(255, alpha)));
+        return new Color(color.getRed(), color.getGreen(), color.getBlue(), Math.clamp(alpha, 0, 255));
     }
 }

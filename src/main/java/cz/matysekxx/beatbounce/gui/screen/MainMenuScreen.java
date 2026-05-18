@@ -60,7 +60,7 @@ public class MainMenuScreen extends Screen {
         backgroundPanel.add(cardPanel, BorderLayout.CENTER);
 
         songSelectionPanel = new SongSelectionPanel(audiusClient, objectMapper, screenManager);
-        libraryPanel = new LibraryPanel(audiusClient, screenManager);
+        libraryPanel = new LibraryPanel(screenManager);
         final SettingsPanel settingsPanel = new SettingsPanel(screenManager);
 
         cardPanel.add(songSelectionPanel, "SONGS");

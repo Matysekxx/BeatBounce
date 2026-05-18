@@ -1,6 +1,7 @@
 package cz.matysekxx.beatbounce.util;
 
 import java.time.Duration;
+import java.util.concurrent.locks.LockSupport;
 
 /**
  * Utility class providing static methods for time-related operations.
@@ -55,5 +56,24 @@ public final class Time {
      */
     public static void sleep(Duration duration) {
         sleep(duration.toMillis());
+    }
+
+    /**
+     * Delays the current thread to maintain a target frame rate.
+     *
+     * @param optimalTimeNanos the target duration for a single frame in nanoseconds
+     * @param loopStartTime    the time when the loop iteration started in nanoseconds
+     */
+    public static void delay(long optimalTimeNanos, long loopStartTime) {
+        final long timeTakenNanos = System.nanoTime() - loopStartTime;
+        final long sleepNanos = optimalTimeNanos - timeTakenNanos;
+
+        if (sleepNanos > 0) {
+            final long targetTime = System.nanoTime() + sleepNanos;
+            if (sleepNanos > 2_000_000L) {
+                LockSupport.parkNanos(sleepNanos - 2_000_000L);
+            }
+            while (System.nanoTime() < targetTime) ;
+        }
     }
 }

@@ -5,14 +5,26 @@ import cz.matysekxx.beatbounce.configuration.SwingConfiguration;
 
 import javax.swing.*;
 
+/**
+ * The entry point for the BeatBounce application.
+ * This class handles low-level system property configuration for rendering,
+ * High DPI support, and bootstraps the application execution.
+ */
 public class Main {
 
+    /**
+     * Configures system properties for High DPI support on Windows and other platforms.
+     */
     static void setupHighDPI() {
         System.setProperty("sun.java2d.dpiaware", "true");
         System.setProperty("sun.java2d.uiScale.enabled", "false");
         System.setProperty("sun.java2d.uiScale", "1");
     }
 
+    /**
+     * Configures JVM system properties to optimize rendering based on OS and settings.
+     * Enables hardware acceleration (OpenGL/Direct3D) and adjusts anti-aliasing.
+     */
     static void setupRenderingProperties() {
         String os = System.getProperty("os.name").toLowerCase();
         final boolean isWindows = os.contains("win");
@@ -48,6 +60,9 @@ public class Main {
         }
     }
 
+    /**
+     * Main method that initializes settings, rendering, and starts the Swing event loop.
+     */
     static void main() {
         setupHighDPI();
         SwingConfiguration.setup();

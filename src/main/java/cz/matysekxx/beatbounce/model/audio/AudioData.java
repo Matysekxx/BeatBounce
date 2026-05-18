@@ -1,6 +1,7 @@
 package cz.matysekxx.beatbounce.model.audio;
 
 import javax.sound.sampled.*;
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
@@ -22,7 +23,17 @@ public record AudioData(
         AudioFormat format,
         Clip clip,
         File file
-) {
+) implements Closeable {
+    /**
+     * Closes the underlying audio clip to release system resources.
+     */
+    @Override
+    public void close() {
+        if (clip != null) {
+            if (clip.isRunning()) clip.stop();
+            if (clip.isOpen()) clip.close();
+        }
+    }
 
     /**
      * Converts the audio stream of a given file into a standardized format.

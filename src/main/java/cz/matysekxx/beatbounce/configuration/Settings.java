@@ -1,14 +1,16 @@
 package cz.matysekxx.beatbounce.configuration;
 
+import cz.matysekxx.beatbounce.system.FileSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Properties;
 
 /**
@@ -20,11 +22,6 @@ import java.util.Properties;
  */
 public class Settings {
     private static final Logger LOG = LoggerFactory.getLogger(Settings.class);
-    /**
-     * The name of the configuration file where settings are stored.
-     */
-    private static final String CONFIG_FILE = System.getProperty("user.home")
-            + File.separator + ".beatbounce" + File.separator + "config" + File.separator + "config.properties";
 
     /**
      * The {@link Properties} object used to manage configuration key-value pairs.
@@ -55,6 +52,11 @@ public class Settings {
      * The target frames per second (FPS) for the rendering loop.
      */
     public static int targetFps = 60;
+
+    /**
+     * The audio offset in milliseconds for calibration.
+     */
+    public static int audioOffset = 0;
 
     /**
      * Whether to display the current FPS on the screen.
@@ -121,15 +123,16 @@ public class Settings {
      * </p>
      */
     public static void load() {
-        final File file = new File(CONFIG_FILE);
-        if (file.exists()) {
-            try (FileInputStream fis = new FileInputStream(file)) {
+        final Path path = FileSystem.getConfigFile();
+        if (Files.exists(path)) {
+            try (FileInputStream fis = new FileInputStream(path.toFile())) {
                 properties.load(fis);
                 vsync = Boolean.parseBoolean(properties.getProperty("vsync", "false"));
                 opengl = Boolean.parseBoolean(properties.getProperty("opengl", "true"));
                 fullscreen = Boolean.parseBoolean(properties.getProperty("fullscreen", "true"));
                 soundVolume = Integer.parseInt(properties.getProperty("soundVolume", "100"));
                 targetFps = Integer.parseInt(properties.getProperty("targetFps", "60"));
+                audioOffset = Integer.parseInt(properties.getProperty("audioOffset", "0"));
                 showFps = Boolean.parseBoolean(properties.getProperty("showFps", "false"));
                 graphicsQuality = properties.getProperty("graphicsQuality", "HIGH");
                 monitorIndex = Integer.parseInt(properties.getProperty("monitorIndex", "0"));
@@ -137,7 +140,7 @@ public class Settings {
                 bloomEnabled = Boolean.parseBoolean(properties.getProperty("bloomEnabled", "true"));
                 muteOnFocusLoss = Boolean.parseBoolean(properties.getProperty("muteOnFocusLoss", "false"));
             } catch (Exception e) {
-                LOG.warn("Failed to load settings: " + e.getMessage());
+                LOG.warn("Failed to load settings: {}", e.getMessage());
             }
         } else {
             save();
@@ -153,6 +156,7 @@ public class Settings {
         properties.setProperty("fullscreen", String.valueOf(fullscreen));
         properties.setProperty("soundVolume", String.valueOf(soundVolume));
         properties.setProperty("targetFps", String.valueOf(targetFps));
+        properties.setProperty("audioOffset", String.valueOf(audioOffset));
         properties.setProperty("showFps", String.valueOf(showFps));
         properties.setProperty("graphicsQuality", graphicsQuality);
         properties.setProperty("monitorIndex", String.valueOf(monitorIndex));
@@ -160,13 +164,9 @@ public class Settings {
         properties.setProperty("bloomEnabled", String.valueOf(bloomEnabled));
         properties.setProperty("muteOnFocusLoss", String.valueOf(muteOnFocusLoss));
 
-        final File configFile = new File(CONFIG_FILE);
-        final File parentDir = configFile.getParentFile();
-        if (parentDir != null && !parentDir.exists()) {
-            parentDir.mkdirs();
-        }
+        final Path path = FileSystem.getConfigFile();
 
-        try (FileOutputStream fos = new FileOutputStream(configFile)) {
+        try (FileOutputStream fos = new FileOutputStream(path.toFile())) {
             properties.store(fos, "BeatBounce Configuration");
         } catch (IOException e) {
             LOG.warn("Failed to save settings: " + e.getMessage());
@@ -184,6 +184,7 @@ public class Settings {
         Settings.graphicsQuality = "HIGH";
         Settings.monitorIndex = 0;
         Settings.targetFps = 60;
+        Settings.audioOffset = 0;
         Settings.soundVolume = 100;
         Settings.particlesEnabled = true;
         Settings.bloomEnabled = true;

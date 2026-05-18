@@ -1,9 +1,11 @@
 package cz.matysekxx.beatbounce.gui.components;
 
+import cz.matysekxx.beatbounce.api.AudiusClient;
 import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
+import cz.matysekxx.beatbounce.system.FileSystem;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,6 +32,7 @@ public class SettingsPanel extends JPanel {
     private final StepSelector fpsSelector;
     private final CustomSlider soundSlider;
     private JLabel infoLabel;
+    private final AudiusClient audiusClient;
 
     /**
      * Constructs a new SettingsPanel.
@@ -38,6 +41,7 @@ public class SettingsPanel extends JPanel {
      */
     public SettingsPanel(ScreenManager screenManager) {
         this.screenManager = screenManager;
+        this.audiusClient = new AudiusClient();
         setOpaque(false);
         setLayout(new BorderLayout());
 
@@ -113,8 +117,20 @@ public class SettingsPanel extends JPanel {
         soundSlider.setMaximumSize(new Dimension(250, 45));
         soundSlider.addChangeListener(_ -> soundLabel.setText("Music Volume: " + soundSlider.getValue() + "%"));
         audioGroup.add(createLabeledComponent(soundLabel, soundSlider));
-        audioGroup.add(Box.createRigidArea(new Dimension(0, 40)));
+        audioGroup.add(Box.createRigidArea(new Dimension(0, 20)));
         audioGroup.add(focusLossCheck = new CustomCheckBox("Mute on Focus Loss", Settings.muteOnFocusLoss));
+        
+        final JButton clearCacheBtn = getStyledButton("CLEAR CACHE", new Color(180, 40, 40), Color.WHITE);
+        clearCacheBtn.setPreferredSize(new Dimension(200, 40));
+        clearCacheBtn.setMaximumSize(new Dimension(200, 40));
+        clearCacheBtn.addActionListener(_ -> {
+            FileSystem.clearCache().thenRun(() -> SwingUtilities.invokeLater(() -> {
+                infoLabel.setText("Cache cleared successfully!");
+                infoLabel.setForeground(RenderUtils.green);
+            }));
+        });
+        audioGroup.add(Box.createRigidArea(new Dimension(0, 20)));
+        audioGroup.add(createLabeledComponent("Downloaded Music:", clearCacheBtn));
 
         final JPanel gameplayGroup = createGroupPanel("GAMEPLAY & EFFECTS");
         gameplayGroup.add(particlesCheck = new CustomCheckBox("Enable Background Particles", Settings.particlesEnabled));

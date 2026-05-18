@@ -13,15 +13,57 @@ import java.nio.file.Path;
  * It stores track information, download status, and UI-related state.
  */
 public class TrackData {
-    String id, title, artist;
-    int stars, best;
+    /**
+     * Unique identifier for the track from the Audius API.
+     */
+    String id;
+    /**
+     * The title of the music track.
+     */
+    String title;
+    /**
+     * The name of the artist who created the track.
+     */
+    String artist;
+    /**
+     * The difficulty rating or "stars" assigned to the track.
+     */
+    int stars;
+    /**
+     * The player's best score on this track.
+     */
+    int best;
+    /**
+     * A hash of the track ID used for visual accents and randomization.
+     */
     int hash;
+    /**
+     * A formatted string representation of the track duration (e.g., "3:45").
+     */
     String duration;
+    /**
+     * Whether the track row is currently expanded in the UI.
+     */
     boolean expanded = false;
+    /**
+     * The current expansion progress (0.0 to 1.0) for animation.
+     */
     float expansion = 0f;
+    /**
+     * Whether the track is currently being downloaded.
+     */
     boolean downloading = false;
+    /**
+     * The current download progress (0.0 to 1.0).
+     */
     float downloadProgress = 0f;
+    /**
+     * Whether the level generation / start process has begun.
+     */
     boolean starting = false;
+    /**
+     * The progress of the level starting animation or preparation.
+     */
     float startingProgress = 0f;
 
     /**

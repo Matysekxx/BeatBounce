@@ -1,12 +1,10 @@
 package cz.matysekxx.beatbounce.gui.components;
 
-import cz.matysekxx.beatbounce.api.AudiusClient;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
+import cz.matysekxx.beatbounce.system.FileSystem;
 import cz.matysekxx.beatbounce.util.ExceptionHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -16,21 +14,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.stream.Stream;
 
 /**
  * A panel that displays the user's local song library.
  * It allows users to view downloaded songs and add new local audio files.
  */
 public class LibraryPanel extends JPanel {
-    /**
-     * Logger for this class.
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(LibraryPanel.class);
-    /**
-     * Client used to interact with the Audius API.
-     */
-    private final AudiusClient audiusClient;
     /**
      * Manager used to switch between different screens.
      */
@@ -43,11 +32,9 @@ public class LibraryPanel extends JPanel {
     /**
      * Constructs a new LibraryPanel.
      *
-     * @param audiusClient  the client used for audio operations
      * @param screenManager the screen manager used for navigation
      */
-    public LibraryPanel(AudiusClient audiusClient, ScreenManager screenManager) {
-        this.audiusClient = audiusClient;
+    public LibraryPanel(ScreenManager screenManager) {
         this.screenManager = screenManager;
 
         setOpaque(false);
@@ -149,7 +136,7 @@ public class LibraryPanel extends JPanel {
 
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             final Path source = fileChooser.getSelectedFile().toPath();
-            final Path dest = audiusClient.getDownloadDirectory().resolve(source.getFileName());
+            final Path dest = FileSystem.getMusicDir().resolve(source.getFileName());
             try {
                 Files.copy(source, dest, StandardCopyOption.REPLACE_EXISTING);
                 loadLibrary();
@@ -167,27 +154,11 @@ public class LibraryPanel extends JPanel {
     public void loadLibrary() {
         listPanel.removeAll();
         listPanel.setBorder(new EmptyBorder(10, 40, 20, 40));
-        final Path dir = audiusClient.getDownloadDirectory();
 
-        if (Files.exists(dir)) {
-            try (final Stream<Path> stream = Files.list(dir)) {
-                stream.filter(p -> {
-                    final String name = p.getFileName().toString().toLowerCase();
-                    return name.endsWith(".mp3") || name.endsWith(".wav") || name.endsWith(".ogg") || name.endsWith(".flac");
-                }).sorted((p1, p2) -> {
-                    try {
-                        return Files.getLastModifiedTime(p2).compareTo(Files.getLastModifiedTime(p1));
-                    } catch (IOException e) {
-                        return 0;
-                    }
-                }).forEach(p -> {
-                    listPanel.add(new LocalTrackRow(p, screenManager));
-                    listPanel.add(Box.createRigidArea(new Dimension(0, 15)));
-                });
-            } catch (IOException e) {
-                ExceptionHandler.handle("Failed to load library", e);
-            }
-        }
+        FileSystem.listMusicFiles().forEach(p -> {
+            listPanel.add(new LocalTrackRow(p, screenManager));
+            listPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        });
 
         if (listPanel.getComponentCount() == 0) {
             final JLabel empty = new JLabel("No songs downloaded yet.");

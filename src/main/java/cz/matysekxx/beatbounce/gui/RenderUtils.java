@@ -103,6 +103,13 @@ public final class RenderUtils {
         applyNoiseOverlay(g2d, 0, 0, w, h);
     }
 
+    /**
+     * Draws a rounded background for menu panels with a gradient and border.
+     *
+     * @param g2 the graphics context
+     * @param w  the width of the panel
+     * @param h  the height of the panel
+     */
     public static void drawMenuBackground(Graphics2D g2, int w, int h) {
         RenderUtils.initGraphics2D(g2);
         g2.setPaint(new LinearGradientPaint(0, 0, w, h,
@@ -133,6 +140,13 @@ public final class RenderUtils {
         g2d.fillRect(0, 0, w, h);
     }
 
+    /**
+     * Draws a field of stars for the background.
+     *
+     * @param g2d the graphics context
+     * @param w   the width of the area
+     * @param h   the height of the area
+     */
     private static void drawStars(Graphics2D g2d, int w, int h) {
         if (starCache == null) {
             final Random rng = new Random(0xABCDEF42L);
@@ -146,25 +160,6 @@ public final class RenderUtils {
         for (int[] star : starCache) {
             g2d.setColor(RenderCache.whiteWithAlpha(star[2]));
             g2d.fillRect(star[0] % w, star[1] % h, 1, 1);
-        }
-    }
-
-    /**
-     * Delays the current thread to maintain a target frame rate.
-     *
-     * @param optimalTimeNanos the target duration for a single frame in nanoseconds
-     * @param loopStartTime    the time when the loop iteration started in nanoseconds
-     */
-    public static void delay(long optimalTimeNanos, long loopStartTime) {
-        final long timeTakenNanos = System.nanoTime() - loopStartTime;
-        final long sleepNanos = optimalTimeNanos - timeTakenNanos;
-
-        if (sleepNanos > 0) {
-            final long targetTime = System.nanoTime() + sleepNanos;
-            if (sleepNanos > 2_000_000L) {
-                LockSupport.parkNanos(sleepNanos - 2_000_000L);
-            }
-            while (System.nanoTime() < targetTime) ;
         }
     }
 

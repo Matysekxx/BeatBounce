@@ -7,6 +7,7 @@ import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
 import cz.matysekxx.beatbounce.util.ExceptionHandler;
+import cz.matysekxx.beatbounce.util.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -353,9 +354,10 @@ public class SongSelectionPanel extends JPanel implements Runnable {
      */
     @Override
     public void run() {
+        final long optimalTimeNanos = 1_000_000_000L / Settings.targetFps;
         long lastTime = System.nanoTime();
         while (running) {
-            long now = System.nanoTime();
+            final long now = System.nanoTime();
             final float dt = (now - lastTime) / 1_000_000_000f;
             lastTime = now;
 
@@ -381,12 +383,9 @@ public class SongSelectionPanel extends JPanel implements Runnable {
             }
 
             repaint();
-            try {
-                final long frameTimeMs = (long) (1000.0 / Settings.targetFps);
-                Thread.sleep(frameTimeMs);
-            } catch (InterruptedException e) {
-                break;
-            }
+            if (Settings.vsync) Toolkit.getDefaultToolkit().sync();
+            
+            Time.delay(optimalTimeNanos, now);
         }
     }
 

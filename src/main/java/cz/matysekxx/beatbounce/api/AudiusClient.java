@@ -1,5 +1,6 @@
 package cz.matysekxx.beatbounce.api;
 
+import cz.matysekxx.beatbounce.system.FileSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +13,6 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 
@@ -59,16 +59,7 @@ public class AudiusClient {
                 .connectTimeout(Duration.ofSeconds(30))
                 .build();
 
-        final String userHome = System.getProperty("user.home");
-        this.downloadDirectory = Paths.get(userHome, ".beatbounce", "music");
-
-        try {
-            if (!Files.exists(this.downloadDirectory)) {
-                Files.createDirectories(this.downloadDirectory);
-            }
-        } catch (IOException e) {
-            LOG.error("Could not create download directory: " + e.getMessage());
-        }
+        this.downloadDirectory = FileSystem.getMusicDir();
     }
 
     /**
@@ -79,17 +70,7 @@ public class AudiusClient {
     public AudiusClient(HttpClient httpClient) {
         this.httpClient = httpClient;
         this.appName = "BeatBounce";
-
-        final String userHome = System.getProperty("user.home");
-        this.downloadDirectory = Paths.get(userHome, ".beatbounce", "music");
-
-        try {
-            if (!Files.exists(this.downloadDirectory)) {
-                Files.createDirectories(this.downloadDirectory);
-            }
-        } catch (IOException e) {
-            LOG.error("Could not create download directory: " + e.getMessage());
-        }
+        this.downloadDirectory = FileSystem.getMusicDir();
     }
 
     /**
@@ -191,12 +172,6 @@ public class AudiusClient {
 
                     final String sanitizedFileName = fileName.replaceAll("[\\\\/:*?\"<>|]", "_");
                     final Path destination = downloadDirectory.resolve(sanitizedFileName + extension);
-
-                    try {
-                        Files.createDirectories(downloadDirectory);
-                    } catch (IOException e) {
-                        throw new RuntimeException("Error while creating download directory", e);
-                    }
 
                     try (var inputStream = response.body()) {
                         Files.copy(inputStream, destination, java.nio.file.StandardCopyOption.REPLACE_EXISTING);

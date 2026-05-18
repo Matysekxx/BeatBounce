@@ -54,14 +54,16 @@ public class MainMenuPanel extends JPanel implements Runnable {
      */
     @Override
     public void run() {
+        final long optimalTimeNanos = 1_000_000_000L / Settings.targetFps;
         long lastFpsTime = System.currentTimeMillis();
         while (running) {
+            final long loopStartTime = System.nanoTime();
             repaint();
             if (System.currentTimeMillis() - lastFpsTime >= 1000) {
                 lastFpsTime = System.currentTimeMillis();
             }
-            final long frameTimeMs = (long) (1000.0 / Settings.targetFps);
-            Time.sleep(frameTimeMs);
+            if (Settings.vsync) Toolkit.getDefaultToolkit().sync();
+            Time.delay(optimalTimeNanos, loopStartTime);
         }
     }
 

@@ -11,6 +11,7 @@ import cz.matysekxx.beatbounce.model.game.GameEngine;
 import cz.matysekxx.beatbounce.model.game.ReviveManager;
 import cz.matysekxx.beatbounce.model.game.state.GameState;
 import cz.matysekxx.beatbounce.model.level.Level;
+import cz.matysekxx.beatbounce.util.Time;
 
 import javax.sound.sampled.Clip;
 import javax.swing.*;
@@ -304,7 +305,7 @@ public class GamePanel extends JPanel implements Runnable {
             }
             renderGame();
 
-            RenderUtils.delay(optimalTimeNanos, loopStartTime);
+            Time.delay(optimalTimeNanos, loopStartTime);
         }
     }
 
@@ -339,6 +340,9 @@ public class GamePanel extends JPanel implements Runnable {
 
         if (gameEngine != null) {
             gameEngine.stop();
+            if (gameEngine.getLevel() != null && gameEngine.getLevel().audioData() != null) {
+                gameEngine.getLevel().audioData().close();
+            }
         }
         if (gameThread != null) {
             gameThread.interrupt();

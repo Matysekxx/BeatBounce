@@ -1,5 +1,6 @@
 package cz.matysekxx.beatbounce.model.score;
 
+import cz.matysekxx.beatbounce.system.FileSystem;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -8,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,8 +19,6 @@ import java.util.Map;
  */
 public class ScoreManager {
     private static final Logger LOG = LoggerFactory.getLogger(ScoreManager.class);
-    private static final String SAVE_FILE = "save_data.json";
-    private static final String CURRENCY_FILE = "currency.json";
     private static final ObjectMapper mapper = new ObjectMapper();
     private static final Path savePath;
     private static final Path currencyPath;
@@ -28,9 +26,8 @@ public class ScoreManager {
     private static int totalCurrency = 0;
 
     static {
-        final String userHome = System.getProperty("user.home");
-        savePath = Paths.get(userHome, ".beatbounce", SAVE_FILE);
-        currencyPath = Paths.get(userHome, ".beatbounce", CURRENCY_FILE);
+        savePath = FileSystem.getSaveDataFile();
+        currencyPath = FileSystem.getCurrencyFile();
         loadScores();
         loadCurrency();
     }
@@ -59,11 +56,7 @@ public class ScoreManager {
      */
     public static void saveScores() {
         try {
-            File file = savePath.toFile();
-            if (!file.getParentFile().exists()) {
-                file.getParentFile().mkdirs();
-            }
-            mapper.writeValue(file, scores);
+            mapper.writeValue(savePath.toFile(), scores);
         } catch (IOException e) {
             LOG.warn("Failed to save scores: {}", e.getMessage());
         }
@@ -138,13 +131,9 @@ public class ScoreManager {
      */
     public static void saveCurrency() {
         try {
-            final File file = currencyPath.toFile();
-            if (!file.getParentFile().exists()) {
-                file.getParentFile().mkdirs();
-            }
             final Map<String, Integer> data = new HashMap<>();
             data.put("currency", totalCurrency);
-            mapper.writeValue(file, data);
+            mapper.writeValue(currencyPath.toFile(), data);
         } catch (IOException e) {
             LOG.warn("Failed to save currency: {}", e.getMessage());
         }

@@ -1,32 +1,20 @@
 package cz.matysekxx.beatbounce.model.level;
 
+import cz.matysekxx.beatbounce.system.FileSystem;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Optional;
 
 public class LevelFileCache {
     private static final Logger LOG = LoggerFactory.getLogger(LevelFileCache.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
-    private static final Path CACHE_DIR;
+    private static final Path CACHE_DIR = FileSystem.getCacheDir();
     private static final int CACHE_VERSION = 2;
-
-
-    static {
-        final String userHome = System.getProperty("user.home");
-        CACHE_DIR = Paths.get(userHome, ".beatbounce", "cache", "levels");
-        try {
-            if (!Files.exists(CACHE_DIR)) Files.createDirectories(CACHE_DIR);
-        } catch (IOException e) {
-            LOG.error("Could not create level cache directory: " + e.getMessage());
-        }
-    }
 
     /**
      * Attempts to load level data from a cache file.
@@ -44,7 +32,7 @@ public class LevelFileCache {
             }
             return Optional.empty();
         } catch (IOException e) {
-            LOG.warn("Failed to load level from cache: " + e.getMessage());
+            LOG.warn("Failed to load level from cache: {}", e.getMessage());
             return Optional.empty();
         }
     }
@@ -62,9 +50,9 @@ public class LevelFileCache {
                     level.tiles(), level.songName(), level.stars(),
                     LevelCacheData.CURRENT_VERSION, 0.0, 0);
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(cacheFile, cacheData);
-            LOG.info("Level saved to cache: " + cacheFile.getAbsolutePath());
+            LOG.info("Level saved to cache: {}", cacheFile.getAbsolutePath());
         } catch (IOException e) {
-            LOG.warn("Failed to save level to cache: " + e.getMessage());
+            LOG.warn("Failed to save level to cache: {}", e.getMessage());
         }
     }
 

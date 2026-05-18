@@ -3,6 +3,7 @@ package cz.matysekxx.beatbounce.gui.components;
 import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
+import cz.matysekxx.beatbounce.util.Time;
 
 import javax.swing.*;
 import java.awt.*;
@@ -108,7 +109,7 @@ public class IntroPanel extends JPanel implements Runnable {
             }
             repaint();
 
-            RenderUtils.delay(optimalTimeNanos, loopStartTime);
+            Time.delay(optimalTimeNanos, loopStartTime);
         }
     }
 

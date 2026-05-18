@@ -18,9 +18,7 @@ public class MovingTile extends AbstractTile {
     private double speed;
     private double time;
     private float hueOffset;
-    private Color baseColor;
     private Color baseColorAlpha220;
-    private Color lightenedColor;
     private Color lightenedColorAlpha220;
 
     /**
@@ -62,9 +60,9 @@ public class MovingTile extends AbstractTile {
      */
     private void calculateColors() {
         final float h = 0.1f + (hueOffset * 0.1f);
-        this.baseColor = Color.getHSBColor(h, 1.0f, 1.0f);
+        final Color baseColor = Color.getHSBColor(h, 1.0f, 1.0f);
         this.baseColorAlpha220 = RenderCache.customColorWithAlpha(baseColor, 220);
-        this.lightenedColor = Color.getHSBColor(h, 0.7f, 1.0f);
+        final Color lightenedColor = Color.getHSBColor(h, 0.7f, 1.0f);
         this.lightenedColorAlpha220 = RenderCache.customColorWithAlpha(lightenedColor, 220);
     }
 
@@ -121,7 +119,7 @@ public class MovingTile extends AbstractTile {
      * @param polygon the polygon representing the tile's shape on screen
      */
     @Override
-    public void paint3D(Graphics2D g2d, Polygon polygon) {
+    public void paint3D(Graphics2D g2d, Polygon polygon, double scale) {
         g2d.setColor(isActivated ? lightenedColorAlpha220 : baseColorAlpha220);
         g2d.fillPolygon(polygon);
 

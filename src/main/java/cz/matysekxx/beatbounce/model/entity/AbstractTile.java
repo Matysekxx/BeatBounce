@@ -133,13 +133,16 @@ public abstract class AbstractTile extends Entity implements Paintable {
             g2d.drawPolygon(polygon);
         }
 
-        this.paint3D(g2d, polygon);
+        this.paint3D(g2d, polygon, scaleFront);
         if (impactTime > 0) {
             double progress = impactTime / IMPACT_DURATION;
             g2d.setColor(new Color(255, 255, 255, (int) (180 * progress)));
             g2d.fillPolygon(polygon);
         }
     }
+
+    @Override
+    public abstract void paint3D(Graphics2D g2d, Polygon polygon, double scale);
 
     /**
      * Calculates the Y-coordinates for the vertices of the tile's 3D projection.
@@ -172,9 +175,9 @@ public abstract class AbstractTile extends Entity implements Paintable {
      */
     protected int[] createXPoints(Camera3D cam, int width, double scaleFront, double scaleBack, int targetX, double pulseScale) {
         final double centerScreenFront = calculateCenterScreen(
-                targetX, (int) cam.getX(), width, scaleFront);
+                targetX, cam.getX(), width, scaleFront);
         final double centerScreenBack = calculateCenterScreen(
-                targetX, (int) cam.getX(), width, scaleBack);
+                targetX, cam.getX(), width, scaleBack);
 
         final double frontWidth = 100 * scaleFront * pulseScale;
         final double backWidth = 100 * scaleBack * pulseScale;
@@ -196,7 +199,7 @@ public abstract class AbstractTile extends Entity implements Paintable {
      * @param scale   the scale factor based on depth
      * @return the screen-space X-coordinate of the center of the object
      */
-    private double calculateCenterScreen(int targetX, int camX, int width, double scale) {
+    private double calculateCenterScreen(int targetX, double camX, int width, double scale) {
         return ((double) width / 2) + ((targetX - camX) * scale);
     }
 

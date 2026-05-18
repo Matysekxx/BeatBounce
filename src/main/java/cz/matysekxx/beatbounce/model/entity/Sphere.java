@@ -294,13 +294,14 @@ public class Sphere extends Entity implements Paintable {
     }
 
     /**
-     * Implementation of {@link Paintable#paint3D(Graphics2D, Polygon)}.
+     * Implementation of {@link Paintable#paint3D(Graphics2D, Polygon, double)}.
      * Currently, does nothing for {@code Sphere}.
      *
      * @param g2d     the graphics context
      * @param polygon the polygon to paint
+     * @param scale   the scale factor
      */
     @Override
-    public void paint3D(Graphics2D g2d, Polygon polygon) {
+    public void paint3D(Graphics2D g2d, Polygon polygon, double scale) {
     }
 }

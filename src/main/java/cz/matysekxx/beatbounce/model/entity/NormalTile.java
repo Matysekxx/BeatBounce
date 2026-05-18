@@ -148,7 +148,7 @@ public class NormalTile extends AbstractTile {
     }
 
     @Override
-    public void paint3D(Graphics2D g2d, Polygon polygon) {
+    public void paint3D(Graphics2D g2d, Polygon polygon, double scale) {
         g2d.setColor(isActivated ? lightenedColorAlpha230 : baseColorAlpha230);
         g2d.fillPolygon(polygon);
 

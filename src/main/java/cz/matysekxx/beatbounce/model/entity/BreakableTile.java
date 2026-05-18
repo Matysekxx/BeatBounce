@@ -33,7 +33,6 @@ public class BreakableTile extends AbstractTile {
     private float breakProgress = 0.0f;
 
     private Color baseColor;
-    private Color baseColorAlpha;
 
     /**
      * Required for Jackson deserialization.
@@ -63,7 +62,6 @@ public class BreakableTile extends AbstractTile {
     private void calculateColors() {
         final float h = (float) ((z % 5000) / 5000.0);
         this.baseColor = Color.getHSBColor(h, 0.9f, 0.7f);
-        this.baseColorAlpha = new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), 200);
     }
 
     /**
@@ -111,7 +109,7 @@ public class BreakableTile extends AbstractTile {
     }
 
     @Override
-    public void paint3D(Graphics2D g2d, Polygon polygon) {
+    public void paint3D(Graphics2D g2d, Polygon polygon, double scale) {
         if (breakProgress >= 1.0f) return;
         final float alpha = 1.0f - breakProgress * 0.9f;
         final int alphaInt = (int) (200 * alpha);

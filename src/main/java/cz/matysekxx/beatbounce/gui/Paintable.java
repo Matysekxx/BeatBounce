@@ -20,6 +20,7 @@ public interface Paintable {
      *
      * @param g2d     the graphics context to paint with
      * @param polygon the polygon to paint
+     * @param scale   the scale factor for rendering effects
      */
-    void paint3D(Graphics2D g2d, Polygon polygon);
+    void paint3D(Graphics2D g2d, Polygon polygon, double scale);
 }

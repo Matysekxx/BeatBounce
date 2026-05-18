@@ -40,7 +40,17 @@ public class SmallTile extends AbstractTile {
     }
 
     @Override
-    public void paint3D(Graphics2D g2d, Polygon polygon) {
+    public void paint3D(Graphics2D g2d, Polygon polygon, double scale) {
+        if (!Settings.graphicsQuality.equals("LOW")) {
+            final Polygon thicknessPoly = new Polygon(polygon.xpoints, polygon.ypoints, polygon.npoints);
+            final int thickness = (int) (6 * scale);
+            if (thickness > 0) {
+                thicknessPoly.translate(0, thickness);
+                g2d.setColor(new Color(20, 20, 30, 150));
+                g2d.fillPolygon(thicknessPoly);
+            }
+        }
+
         g2d.setColor(isActivated ? new Color(180, 255, 255, 230) : new Color(255, 255, 255, 180));
         g2d.fillPolygon(polygon);
 

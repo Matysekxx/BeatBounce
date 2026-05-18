@@ -31,15 +31,18 @@ public class LongTile extends AbstractTile {
         this.lightenedColor = Color.getHSBColor(h, 0.5f, 1.0f);
     }
     @Override
-    public void paint3D(Graphics2D g2d, Polygon polygon) {
+    public void paint3D(Graphics2D g2d, Polygon polygon, double scale) {
         final boolean isLow = Settings.graphicsQuality.equals("LOW");
         final Color displayColor = isActivated ? lightenedColor : baseColor;
 
         if (!isLow) {
             final Polygon thicknessPoly = new Polygon(polygon.xpoints, polygon.ypoints, polygon.npoints);
-            thicknessPoly.translate(0, 10);
-            g2d.setColor(new Color(10, 10, 20, 180));
-            g2d.fillPolygon(thicknessPoly);
+            final int thickness = (int) (10 * scale);
+            if (thickness > 0) {
+                thicknessPoly.translate(0, thickness);
+                g2d.setColor(new Color(10, 10, 20, 180));
+                g2d.fillPolygon(thicknessPoly);
+            }
         }
 
         final Rectangle bounds = polygon.getBounds();

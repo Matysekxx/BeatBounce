@@ -110,7 +110,7 @@ public class NormalTile extends AbstractTile {
      * @param windowData the {@link WindowData} containing screen dimensions
      */
     @Override
-    public void paint3D(Graphics2D g2d, Camera3D cam, WindowData windowData) {
+    public void render(Graphics2D g2d, Camera3D cam, WindowData windowData) {
         if (fakeLaneOffsets != null && !fakeLaneOffsets.isEmpty()) {
             final double scaleFront = cam.getScale(this.getZ());
             final double scaleBack = cam.getScale(this.getZ() + getLengthInZ());
@@ -125,7 +125,7 @@ public class NormalTile extends AbstractTile {
                 drawFakePolygon(g2d, fakePoly);
             }
         }
-        super.paint3D(g2d, cam, windowData);
+        super.render(g2d, cam, windowData);
     }
 
     /**
@@ -148,7 +148,7 @@ public class NormalTile extends AbstractTile {
     }
 
     @Override
-    public void paint3D(Graphics2D g2d, Polygon polygon, double scale) {
+    public void drawTile(Graphics2D g2d, Polygon polygon, double scale) {
         g2d.setColor(isActivated ? lightenedColorAlpha230 : baseColorAlpha230);
         g2d.fillPolygon(polygon);
 

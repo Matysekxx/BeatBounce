@@ -190,19 +190,19 @@ public class GameWorldRenderer {
                 final double distance = cam.getDistanceTo(tile.getZ());
                 final double tileDepth = distance + tile.getLengthInZ();
                 if (tileDepth <= 0 || distance > 3000) continue;
-                tile.paint3D(g2d, cam, windowData);
+                tile.render(g2d, cam, windowData);
             }
 
             if (gameEngine != null) {
                 for (Orb orb : gameEngine.getOrbs()) {
                     final double distance = cam.getDistanceTo(orb.getZ());
                     if (distance > 0 && distance < 3000) {
-                        orb.paint3D(g2d, cam, windowData);
+                        orb.render(g2d, cam, windowData);
                     }
                 }
             }
         }
-        sphere.paint3D(g2d, cam, windowData);
+        sphere.render(g2d, cam, windowData);
     }
 
     private boolean project(double x, double z, int width, int horizonY) {

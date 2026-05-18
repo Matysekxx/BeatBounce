@@ -31,7 +31,7 @@ public class LongTile extends AbstractTile {
         this.lightenedColor = Color.getHSBColor(h, 0.5f, 1.0f);
     }
     @Override
-    public void paint3D(Graphics2D g2d, Polygon polygon, double scale) {
+    public void drawTile(Graphics2D g2d, Polygon polygon, double scale) {
         final boolean isLow = Settings.graphicsQuality.equals("LOW");
         final Color displayColor = isActivated ? lightenedColor : baseColor;
 

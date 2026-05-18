@@ -119,7 +119,7 @@ public class MovingTile extends AbstractTile {
      * @param polygon the polygon representing the tile's shape on screen
      */
     @Override
-    public void paint3D(Graphics2D g2d, Polygon polygon, double scale) {
+    public void drawTile(Graphics2D g2d, Polygon polygon, double scale) {
         g2d.setColor(isActivated ? lightenedColorAlpha220 : baseColorAlpha220);
         g2d.fillPolygon(polygon);
 

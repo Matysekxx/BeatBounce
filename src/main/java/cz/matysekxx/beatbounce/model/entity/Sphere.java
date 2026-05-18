@@ -1,17 +1,16 @@
 package cz.matysekxx.beatbounce.model.entity;
 
 import cz.matysekxx.beatbounce.gui.Camera3D;
-import cz.matysekxx.beatbounce.gui.Paintable;
 import cz.matysekxx.beatbounce.gui.WindowData;
 
 import java.awt.*;
 
 /**
  * The {@code Sphere} class represents the player character in the game.
- * It extends {@link Entity} and implements {@link Paintable}.
+ * It extends {@link Entity}.
  * The sphere can jump, fall, and has various visual properties like alpha, vibration, and stretch.
  */
-public class Sphere extends Entity implements Paintable {
+public class Sphere extends Entity {
     private final int radius;
     private double z;
     private double targetX;
@@ -257,8 +256,7 @@ public class Sphere extends Entity implements Paintable {
      * @param cam        the {@link Camera3D} used for perspective calculations
      * @param windowData the {@link WindowData} containing screen dimensions
      */
-    @Override
-    public void paint3D(Graphics2D g2d, Camera3D cam, WindowData windowData) {
+    public void render(Graphics2D g2d, Camera3D cam, WindowData windowData) {
         final double scale = cam.getScale(z);
         if (scale <= 0) return;
         final double vx = 0;
@@ -291,17 +289,5 @@ public class Sphere extends Entity implements Paintable {
             g2d.setColor(new Color(0, 0, 0, (int) (255 * shadowAlpha)));
             g2d.fillOval(shadowScreenX - shadowSizeX, shadowScreenY - shadowSizeY / 2, shadowSizeX * 2, shadowSizeY);
         }
-    }
-
-    /**
-     * Implementation of {@link Paintable#paint3D(Graphics2D, Polygon, double)}.
-     * Currently, does nothing for {@code Sphere}.
-     *
-     * @param g2d     the graphics context
-     * @param polygon the polygon to paint
-     * @param scale   the scale factor
-     */
-    @Override
-    public void paint3D(Graphics2D g2d, Polygon polygon, double scale) {
     }
 }

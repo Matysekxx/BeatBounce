@@ -40,7 +40,7 @@ public class SmallTile extends AbstractTile {
     }
 
     @Override
-    public void paint3D(Graphics2D g2d, Polygon polygon, double scale) {
+    public void drawTile(Graphics2D g2d, Polygon polygon, double scale) {
         if (!Settings.graphicsQuality.equals("LOW")) {
             final Polygon thicknessPoly = new Polygon(polygon.xpoints, polygon.ypoints, polygon.npoints);
             final int thickness = (int) (6 * scale);

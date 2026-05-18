@@ -2,16 +2,17 @@ package cz.matysekxx.beatbounce.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.event.BeatEvent;
 import cz.matysekxx.beatbounce.gui.Camera3D;
-import cz.matysekxx.beatbounce.gui.Paintable;
+import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.WindowData;
 
 import java.awt.*;
 
 /**
  * The {@code AbstractTile} class represents a generic tile in the 3D game space.
- * It extends {@link Entity} and implements {@link Paintable} to provide 3D rendering capabilities.
+ * It extends {@link Entity} to provide 3D rendering capabilities.
  * Tiles are associated with a {@link BeatEvent} and have a depth position {@code z}.
  */
 @JsonTypeInfo(
@@ -26,7 +27,7 @@ import java.awt.*;
         @JsonSubTypes.Type(value = SmallTile.class, name = "small"),
         @JsonSubTypes.Type(value = BreakableTile.class, name = "breakable")
 })
-public abstract class AbstractTile extends Entity implements Paintable {
+public abstract class AbstractTile extends Entity {
     /**
      * The depth position of the tile in the 3D space.
      */
@@ -110,8 +111,7 @@ public abstract class AbstractTile extends Entity implements Paintable {
      * @param cam        the {@link Camera3D} used for perspective calculations
      * @param windowData the {@link WindowData} containing screen dimensions
      */
-    @Override
-    public void paint3D(Graphics2D g2d, Camera3D cam, WindowData windowData) {
+    public void render(Graphics2D g2d, Camera3D cam, WindowData windowData) {
         double pulseScale = 1.0;
         if (impactTime > 0) {
             double progress = impactTime / IMPACT_DURATION;
@@ -127,22 +127,28 @@ public abstract class AbstractTile extends Entity implements Paintable {
                         cam, scaleFront, scaleBack, windowData.height() / 3),
                 4
         );
-        if (!cz.matysekxx.beatbounce.configuration.Settings.graphicsQuality.equals("LOW")) {
-            g2d.setStroke(cz.matysekxx.beatbounce.gui.RenderCache.STROKE_4);
+        if (!Settings.graphicsQuality.equals("LOW")) {
+            g2d.setStroke(RenderCache.STROKE_4);
             g2d.setColor(new Color(255, 255, 255, isActivated ? 180 : 60));
             g2d.drawPolygon(polygon);
         }
 
-        this.paint3D(g2d, polygon, scaleFront);
+        this.drawTile(g2d, polygon, scaleFront);
         if (impactTime > 0) {
-            double progress = impactTime / IMPACT_DURATION;
+            final double progress = impactTime / IMPACT_DURATION;
             g2d.setColor(new Color(255, 255, 255, (int) (180 * progress)));
             g2d.fillPolygon(polygon);
         }
     }
 
-    @Override
-    public abstract void paint3D(Graphics2D g2d, Polygon polygon, double scale);
+    /**
+     * Internal rendering method for subclasses to define their appearance.
+     *
+     * @param g2d     the graphics context
+     * @param polygon the projected 2D polygon
+     * @param scale   the scale factor at the front of the tile
+     */
+    public abstract void drawTile(Graphics2D g2d, Polygon polygon, double scale);
 
     /**
      * Calculates the Y-coordinates for the vertices of the tile's 3D projection.

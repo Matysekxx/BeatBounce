@@ -109,7 +109,7 @@ public class BreakableTile extends AbstractTile {
     }
 
     @Override
-    public void paint3D(Graphics2D g2d, Polygon polygon, double scale) {
+    public void drawTile(Graphics2D g2d, Polygon polygon, double scale) {
         if (breakProgress >= 1.0f) return;
         final float alpha = 1.0f - breakProgress * 0.9f;
         final int alphaInt = (int) (200 * alpha);
@@ -161,8 +161,8 @@ public class BreakableTile extends AbstractTile {
     }
 
     @Override
-    public void paint3D(Graphics2D g2d, Camera3D cam, WindowData windowData) {
+    public void render(Graphics2D g2d, Camera3D cam, WindowData windowData) {
         if (breakProgress >= 1.0f) return;
-        super.paint3D(g2d, cam, windowData);
+        super.render(g2d, cam, windowData);
     }
 }

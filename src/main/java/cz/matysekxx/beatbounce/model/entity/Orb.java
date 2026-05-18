@@ -2,18 +2,14 @@ package cz.matysekxx.beatbounce.model.entity;
 
 import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.Camera3D;
-import cz.matysekxx.beatbounce.gui.Paintable;
-import cz.matysekxx.beatbounce.gui.WindowData;
-
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 
 /**
  * The {@code Orb} class represents a collectible item in the game world.
  * Orbs have a 3D position (x, y, z) and a radius.
- * They implement {@link Paintable} for 3D rendering with pulsing glow effects.
  */
-public class Orb implements Paintable {
+public class Orb {
     private final double x;
     private final double y;
     private final double z;
@@ -102,10 +98,9 @@ public class Orb implements Paintable {
      *
      * @param g2d the graphics context to paint on
      * @param cam the {@link Camera3D} used for perspective calculations
-     * @param win the {@link WindowData} containing screen dimensions
+     * @param win the {@link cz.matysekxx.beatbounce.gui.WindowData} containing screen dimensions
      */
-    @Override
-    public void paint3D(Graphics2D g2d, Camera3D cam, WindowData win) {
+    public void render(Graphics2D g2d, Camera3D cam, cz.matysekxx.beatbounce.gui.WindowData win) {
         if (collected) return;
 
         double scale = cam.getScale(z);
@@ -139,18 +134,5 @@ public class Orb implements Paintable {
         final int highlightR = (int) (pr * 0.4);
         highlightEllipse.setFrame(px - pr * 0.3, py - pr * 0.3, highlightR, highlightR);
         g2d.fill(highlightEllipse);
-    }
-
-    /**
-     * Implementation of {@link Paintable#paint3D(Graphics2D, Polygon, double)}.
-     * Currently, does nothing for {@code Orb}.
-     *
-     * @param g2d     the graphics context
-     * @param polygon the polygon to paint
-     * @param scale   the scale factor
-     */
-    @Override
-    public void paint3D(Graphics2D g2d, Polygon polygon, double scale) {
-
     }
 }

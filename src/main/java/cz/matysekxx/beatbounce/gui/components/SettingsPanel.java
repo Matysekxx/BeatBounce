@@ -31,6 +31,7 @@ public class SettingsPanel extends JPanel {
     private final CycleButton monitorCycle;
     private final StepSelector fpsSelector;
     private final CustomSlider soundSlider;
+    private final CustomSlider menuSlider;
     private final CustomSlider sfxSlider;
     private JLabel infoLabel;
 
@@ -116,6 +117,18 @@ public class SettingsPanel extends JPanel {
         soundSlider.setMaximumSize(new Dimension(250, 45));
         soundSlider.addChangeListener(_ -> soundLabel.setText("Music Volume: " + soundSlider.getValue() + "%"));
 
+        final JLabel menuLabel = new JLabel("Menu Music: " + Settings.menuVolume + "%");
+        styleLabel(menuLabel);
+        menuSlider = new CustomSlider(0, 100, Settings.menuVolume);
+        menuSlider.setMinimumSize(new Dimension(250, 45));
+        menuSlider.setPreferredSize(new Dimension(250, 45));
+        menuSlider.setMaximumSize(new Dimension(250, 45));
+        menuSlider.addChangeListener(_ -> {
+            menuLabel.setText("Menu Music: " + menuSlider.getValue() + "%");
+            Settings.menuVolume = menuSlider.getValue();
+            AudioManager.applyMenuVolume(null);
+        });
+
         final JLabel sfxLabel = new JLabel("SFX Volume: " + Settings.sfxVolume + "%");
         styleLabel(sfxLabel);
         sfxSlider = new CustomSlider(0, 100, Settings.sfxVolume);
@@ -125,6 +138,8 @@ public class SettingsPanel extends JPanel {
         sfxSlider.addChangeListener(_ -> sfxLabel.setText("SFX Volume: " + sfxSlider.getValue() + "%"));
 
         audioGroup.add(createLabeledComponent(soundLabel, soundSlider));
+        audioGroup.add(Box.createRigidArea(new Dimension(0, 15)));
+        audioGroup.add(createLabeledComponent(menuLabel, menuSlider));
         audioGroup.add(Box.createRigidArea(new Dimension(0, 15)));
         audioGroup.add(createLabeledComponent(sfxLabel, sfxSlider));
         audioGroup.add(Box.createRigidArea(new Dimension(0, 20)));
@@ -270,11 +285,13 @@ public class SettingsPanel extends JPanel {
         Settings.monitorIndex = monitorCycle.getSelectedIndex();
         Settings.targetFps = fpsSelector.getSelectedValue();
         Settings.soundVolume = soundSlider.getValue();
+        Settings.menuVolume = menuSlider.getValue();
         Settings.sfxVolume = sfxSlider.getValue();
         Settings.particlesEnabled = particlesCheck.isSelected();
         Settings.bloomEnabled = bloomCheck.isSelected();
         Settings.muteOnFocusLoss = focusLossCheck.isSelected();
         Settings.save();
+        AudioManager.updateMenuVolume();
         screenManager.applySettings();
 
         if (restartReq) {
@@ -362,6 +379,7 @@ public class SettingsPanel extends JPanel {
         monitorCycle.setText(monitorCycle.options[0]);
         fpsSelector.setSelectedIndexByValue(60);
         soundSlider.setValue(100);
+        menuSlider.setValue(80);
         sfxSlider.setValue(100);
         particlesCheck.setSelected(true);
         bloomCheck.setSelected(true);

@@ -11,6 +11,7 @@ public class CollisionEngine {
     private static final double SMALL_HALF_WIDTH = 25.0;
     private final HashMap<Class<? extends AbstractTile>, CollisionHandler> collisionHandlers = new HashMap<>();
     private final GameEngine gameEngine;
+    private double lastZProgress = -1;
 
 
     public CollisionEngine(GameEngine gameEngine) {
@@ -38,24 +39,32 @@ public class CollisionEngine {
         if (isLastTile()) return;
         final AbstractTile nextTile = getNextTile();
         if (nextTile == null) return;
+
+        final double currentZ = gameEngine.getGameZProgress();
+        if (lastZProgress < 0) {
+            lastZProgress = currentZ;
+            return;
+        }
+
         final LongCollisionHandler longCollisionHandler = (LongCollisionHandler) collisionHandlers.get(LongTile.class);
         if (longCollisionHandler.isOnLongTile()) {
             final AbstractTile currentTile = getCurrentTile();
             if (currentTile == null) {
                 longCollisionHandler.onLongTile = false;
+                lastZProgress = currentZ;
                 return;
             }
             if (longCollisionHandler.processContinuous(currentTile, nextTile)) {
+                lastZProgress = currentZ;
                 return;
             }
         }
-        if (gameEngine.getGameZProgress() < nextTile.getZ()) return;
-        if (isPlayerFalling(nextTile)) {
-            gameEngine.startFalling();
-            return;
-        }
 
-        processTileCollision(nextTile);
+        if (nextTile.getZ() >= lastZProgress && nextTile.getZ() <= currentZ) {
+            if (isPlayerFalling(nextTile)) gameEngine.startFalling();
+            else processTileCollision(nextTile);
+        }
+        lastZProgress = currentZ;
     }
 
     private boolean isLastTile() {

@@ -60,25 +60,25 @@ public record DifficultyProfile(
         final int s = Math.clamp(stars, 1, 10);
         return switch (s) {
             case 1 ->
-                    p(1, 1, 0.65, 1.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, false, false, 0.25, EnumSet.of(TileType.NORMAL));
+                    p(1, 1, 0.55, 0.95, 0.05, 0.00, 0.00, 0.00, 0.02, 0.00, false, false, 0.35, EnumSet.of(TileType.NORMAL));
             case 2 ->
-                    p(2, 1, 0.55, 0.95, 0.08, 0.00, 0.00, 0.00, 0.02, 0.00, false, false, 0.35, EnumSet.of(TileType.NORMAL, TileType.LONG));
+                    p(2, 1, 0.45, 0.90, 0.12, 0.10, 0.00, 0.00, 0.05, 0.00, false, false, 0.45, EnumSet.of(TileType.NORMAL, TileType.LONG));
             case 3 ->
-                    p(3, 1, 0.45, 0.85, 0.12, 0.12, 0.00, 0.00, 0.04, 0.00, false, true, 0.45, EnumSet.of(TileType.NORMAL, TileType.LONG, TileType.SMALL));
+                    p(3, 1, 0.38, 0.80, 0.15, 0.15, 0.05, 0.00, 0.08, 0.00, false, true, 0.55, EnumSet.of(TileType.NORMAL, TileType.LONG, TileType.SMALL));
             case 4 ->
-                    p(4, 2, 0.40, 0.80, 0.15, 0.18, 0.06, 0.00, 0.06, 0.00, false, true, 0.50, EnumSet.of(TileType.NORMAL, TileType.LONG, TileType.SMALL, TileType.MOVING));
+                    p(4, 2, 0.32, 0.75, 0.18, 0.22, 0.10, 0.05, 0.10, 0.00, false, true, 0.65, EnumSet.of(TileType.NORMAL, TileType.LONG, TileType.SMALL, TileType.MOVING));
             case 5 ->
-                    p(5, 2, 0.35, 0.72, 0.18, 0.22, 0.08, 0.08, 0.08, 0.00, true, true, 0.55, EnumSet.of(TileType.NORMAL, TileType.LONG, TileType.SMALL, TileType.MOVING, TileType.BREAKABLE));
+                    p(5, 2, 0.28, 0.65, 0.22, 0.26, 0.12, 0.12, 0.12, 0.02, true, true, 0.75, EnumSet.of(TileType.NORMAL, TileType.LONG, TileType.SMALL, TileType.MOVING, TileType.BREAKABLE));
             case 6 ->
-                    p(6, 2, 0.30, 0.65, 0.20, 0.28, 0.10, 0.10, 0.10, 0.00, true, true, 0.60, EnumSet.of(TileType.NORMAL, TileType.LONG, TileType.SMALL, TileType.MOVING, TileType.BREAKABLE));
+                    p(6, 2, 0.24, 0.60, 0.24, 0.32, 0.15, 0.15, 0.14, 0.04, true, true, 0.80, EnumSet.of(TileType.NORMAL, TileType.LONG, TileType.SMALL, TileType.MOVING, TileType.BREAKABLE));
             case 7 ->
-                    p(7, 2, 0.26, 0.58, 0.22, 0.35, 0.15, 0.14, 0.12, 0.03, true, true, 0.75, EnumSet.allOf(TileType.class));
+                    p(7, 2, 0.22, 0.52, 0.26, 0.40, 0.20, 0.18, 0.16, 0.06, true, true, 0.88, EnumSet.allOf(TileType.class));
             case 8 ->
-                    p(8, 2, 0.22, 0.54, 0.22, 0.40, 0.18, 0.18, 0.14, 0.06, true, true, 0.85, EnumSet.allOf(TileType.class));
+                    p(8, 2, 0.20, 0.48, 0.28, 0.45, 0.22, 0.22, 0.18, 0.10, true, true, 0.95, EnumSet.allOf(TileType.class));
             case 9 ->
-                    p(9, 2, 0.18, 0.48, 0.22, 0.45, 0.22, 0.22, 0.16, 0.10, true, true, 0.95, EnumSet.allOf(TileType.class));
+                    p(9, 2, 0.18, 0.44, 0.30, 0.50, 0.26, 0.26, 0.20, 0.15, true, true, 1.00, EnumSet.allOf(TileType.class));
             case 10 ->
-                    p(10, 2, 0.15, 0.40, 0.22, 0.50, 0.28, 0.28, 0.20, 0.15, true, true, 1.00, EnumSet.allOf(TileType.class));
+                    p(10, 2, 0.18, 0.35, 0.30, 0.55, 0.32, 0.32, 0.27, 0.20, true, true, 1.10, EnumSet.allOf(TileType.class));
             default -> forStars(5);
         };
     }

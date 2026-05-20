@@ -54,9 +54,9 @@ class GenerationContext {
     private int tilesGenerated = 0;
     private TileType lastTileType = TileType.NORMAL;
     private int consecutiveSame = 0;
-    private SectionDetector.SectionType currentSection = SectionDetector.SectionType.VERSE;
     private boolean isHighIntensity = false;
     private double skipUntilZ = 0.0;
+    private double lastBeatTimestamp = -1.0;
 
     /**
      * Constructs a new GenerationContext.
@@ -174,8 +174,9 @@ class GenerationContext {
             return;
         }
 
-        currentLane = getNextLane(currentLane, beat);
-        currentSection = beat.sectionType();
+        final double timeSinceLast = (lastBeatTimestamp < 0) ? 1.0 : (beat.timestamp() - lastBeatTimestamp);
+        currentLane = getNextLane(currentLane, beat, timeSinceLast);
+        lastBeatTimestamp = beat.timestamp();
 
         if (beat.isFill()) {
             addTile(TileFactory.createNormalTile(
@@ -336,21 +337,23 @@ class GenerationContext {
         return count == 0 ? 0.5 : sum / count;
     }
 
-    private int getNextLane(int lane, PlacedBeat beat) {
+    private int getNextLane(int lane, PlacedBeat beat, double timeSinceLast) {
         final int max = maxLane();
+        final int maxMoveDistance = Math.max(1, (int) (timeSinceLast / 0.08));
+
         if (profile.allowZigZag()
                 && beat.isHighIntensity()
                 && beat.sectionType() == SectionDetector.SectionType.CHORUS
                 && consecutiveInLane >= 1) {
             final int move = (lane == 0) ? (rng.nextBoolean() ? 1 : -1) : -Integer.signum(lane);
-            return clampLane(lane + move, max);
+            return clampLane(lane + Math.clamp(move, -maxMoveDistance, maxMoveDistance), max);
         }
         if (profile.allowStaircase()
                 && consecutiveInLane == 0
                 && beat.sectionType() == SectionDetector.SectionType.VERSE
                 && rng.nextDouble() < 0.25) {
             final int step = (lane < max) ? 1 : -1;
-            return clampLane(lane + step, max);
+            return clampLane(lane + Math.clamp(step, -maxMoveDistance, maxMoveDistance), max);
         }
         int move;
         if (consecutiveInLane >= 2) {
@@ -361,7 +364,11 @@ class GenerationContext {
             if (lane + move > max) move = -1;
             if (lane + move < -max) move = 1;
         }
-        final int newLane = clampLane(lane + move, max);
+
+        final int rawNewLane = clampLane(lane + move, max);
+        final int clampedMove = Math.clamp(rawNewLane - lane, -maxMoveDistance, maxMoveDistance);
+        final int newLane = clampLane(lane + clampedMove, max);
+
         consecutiveInLane = (newLane == lane) ? consecutiveInLane + 1 : 1;
         return newLane;
     }

@@ -185,6 +185,7 @@ public class GamePanel extends JPanel implements Runnable {
 
                 final UIAction action = uiRenderer.handleClick(virtualX, virtualY);
                 if (action != UIAction.NONE) {
+                    Settings.playSFX("/click-sound.mp3");
                     new Thread(() -> {
                         switch (action) {
                             case RESUME -> gameEngine.togglePause();
@@ -314,6 +315,7 @@ public class GamePanel extends JPanel implements Runnable {
      */
     public void startGame() {
         if (!this.running) {
+            Settings.stopMenuMusic();
             this.running = true;
             gameEngine.init();
             this.lastFrameTime = System.nanoTime();

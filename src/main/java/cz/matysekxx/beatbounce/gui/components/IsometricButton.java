@@ -1,5 +1,6 @@
 package cz.matysekxx.beatbounce.gui.components;
 
+import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 
@@ -66,6 +67,7 @@ public class IsometricButton extends JButton {
             @Override
             public void mousePressed(MouseEvent e) {
                 currentPressOffset = 4;
+                Settings.playSFX("/click-sound.mp3");
                 repaint();
             }
 

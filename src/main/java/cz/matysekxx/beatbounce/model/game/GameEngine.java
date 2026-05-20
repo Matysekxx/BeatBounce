@@ -24,7 +24,7 @@ public class GameEngine {
     private final Clip clip;
     private final double zUnitsPerSecond;
     private final List<Orb> orbs = new ArrayList<>();
-    private final List<cz.matysekxx.beatbounce.gui.components.ScorePopup> scorePopups = new CopyOnWriteArrayList<>();
+    private final List<ScorePopup> scorePopups = new CopyOnWriteArrayList<>();
     private final List<AbstractTile> updatableTiles;
     private final GameStateHandler countdownHandler;
     private final GameStateHandler playingHandler;

@@ -1,6 +1,5 @@
 package cz.matysekxx.beatbounce.gui.components;
 
-import cz.matysekxx.beatbounce.api.AudiusClient;
 import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
@@ -31,8 +30,8 @@ public class SettingsPanel extends JPanel {
     private final CycleButton monitorCycle;
     private final StepSelector fpsSelector;
     private final CustomSlider soundSlider;
+    private final CustomSlider sfxSlider;
     private JLabel infoLabel;
-    private final AudiusClient audiusClient;
 
     /**
      * Constructs a new SettingsPanel.
@@ -41,7 +40,6 @@ public class SettingsPanel extends JPanel {
      */
     public SettingsPanel(ScreenManager screenManager) {
         this.screenManager = screenManager;
-        this.audiusClient = new AudiusClient();
         setOpaque(false);
         setLayout(new BorderLayout());
 
@@ -116,7 +114,18 @@ public class SettingsPanel extends JPanel {
         soundSlider.setPreferredSize(new Dimension(250, 45));
         soundSlider.setMaximumSize(new Dimension(250, 45));
         soundSlider.addChangeListener(_ -> soundLabel.setText("Music Volume: " + soundSlider.getValue() + "%"));
+
+        final JLabel sfxLabel = new JLabel("SFX Volume: " + Settings.sfxVolume + "%");
+        styleLabel(sfxLabel);
+        sfxSlider = new CustomSlider(0, 100, Settings.sfxVolume);
+        sfxSlider.setMinimumSize(new Dimension(250, 45));
+        sfxSlider.setPreferredSize(new Dimension(250, 45));
+        sfxSlider.setMaximumSize(new Dimension(250, 45));
+        sfxSlider.addChangeListener(_ -> sfxLabel.setText("SFX Volume: " + sfxSlider.getValue() + "%"));
+
         audioGroup.add(createLabeledComponent(soundLabel, soundSlider));
+        audioGroup.add(Box.createRigidArea(new Dimension(0, 15)));
+        audioGroup.add(createLabeledComponent(sfxLabel, sfxSlider));
         audioGroup.add(Box.createRigidArea(new Dimension(0, 20)));
         audioGroup.add(focusLossCheck = new CustomCheckBox("Mute on Focus Loss", Settings.muteOnFocusLoss));
         
@@ -124,6 +133,7 @@ public class SettingsPanel extends JPanel {
         clearCacheBtn.setPreferredSize(new Dimension(200, 40));
         clearCacheBtn.setMaximumSize(new Dimension(200, 40));
         clearCacheBtn.addActionListener(_ -> {
+            cz.matysekxx.beatbounce.configuration.Settings.playSFX("/click-sound.mp3");
             FileSystem.clearCache().thenRun(() -> SwingUtilities.invokeLater(() -> {
                 infoLabel.setText("Cache cleared successfully!");
                 infoLabel.setForeground(RenderUtils.green);
@@ -229,8 +239,14 @@ public class SettingsPanel extends JPanel {
         final JButton saveBtn = getStyledButton("SAVE & APPLY", RenderUtils.cyan, Color.BLACK);
         final JButton resetBtn = getStyledButton("RESET DEFAULTS", Color.DARK_GRAY, Color.WHITE);
 
-        saveBtn.addActionListener(_ -> saveSettings());
-        resetBtn.addActionListener(_ -> showResetDialog());
+        saveBtn.addActionListener(_ -> {
+            Settings.playSFX("/click-sound.mp3");
+            saveSettings();
+        });
+        resetBtn.addActionListener(_ -> {
+            Settings.playSFX("/click-sound.mp3");
+            showResetDialog();
+        });
 
         buttonsPanel.add(resetBtn);
         buttonsPanel.add(saveBtn);
@@ -253,6 +269,7 @@ public class SettingsPanel extends JPanel {
         Settings.monitorIndex = monitorCycle.getSelectedIndex();
         Settings.targetFps = fpsSelector.getSelectedValue();
         Settings.soundVolume = soundSlider.getValue();
+        Settings.sfxVolume = sfxSlider.getValue();
         Settings.particlesEnabled = particlesCheck.isSelected();
         Settings.bloomEnabled = bloomCheck.isSelected();
         Settings.muteOnFocusLoss = focusLossCheck.isSelected();
@@ -278,6 +295,7 @@ public class SettingsPanel extends JPanel {
         final JButton laterBtn = getStyledButton("LATER", Color.DARK_GRAY, Color.WHITE);
         laterBtn.setPreferredSize(new Dimension(150, 45));
         laterBtn.addActionListener(_ -> {
+            Settings.playSFX("/click-sound.mp3");
             dialog.dispose();
             infoLabel.setText("Changes saved. Restart for full effect!");
             infoLabel.setForeground(Color.ORANGE);
@@ -286,6 +304,7 @@ public class SettingsPanel extends JPanel {
         final JButton restartBtn = getStyledButton("RESTART NOW", RenderUtils.cyan, Color.BLACK);
         restartBtn.setPreferredSize(new Dimension(180, 45));
         restartBtn.addActionListener(_ -> {
+            Settings.playSFX("/click-sound.mp3");
             dialog.dispose();
             try {
                 restart();
@@ -310,11 +329,15 @@ public class SettingsPanel extends JPanel {
 
         final JButton cancelBtn = getStyledButton("CANCEL", Color.DARK_GRAY, Color.WHITE);
         cancelBtn.setPreferredSize(new Dimension(150, 45));
-        cancelBtn.addActionListener(_ -> dialog.dispose());
+        cancelBtn.addActionListener(_ -> {
+            Settings.playSFX("/click-sound.mp3");
+            dialog.dispose();
+        });
 
         final JButton resetConfirmBtn = getStyledButton("RESET", new Color(220, 50, 50), Color.WHITE);
         resetConfirmBtn.setPreferredSize(new Dimension(150, 45));
         resetConfirmBtn.addActionListener(_ -> {
+            Settings.playSFX("/click-sound.mp3");
             dialog.dispose();
             resetToDefaults();
         });
@@ -338,6 +361,7 @@ public class SettingsPanel extends JPanel {
         monitorCycle.setText(monitorCycle.options[0]);
         fpsSelector.setSelectedIndexByValue(60);
         soundSlider.setValue(100);
+        sfxSlider.setValue(100);
         particlesCheck.setSelected(true);
         bloomCheck.setSelected(true);
         focusLossCheck.setSelected(false);

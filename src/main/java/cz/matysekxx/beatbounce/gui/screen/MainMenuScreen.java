@@ -2,6 +2,7 @@ package cz.matysekxx.beatbounce.gui.screen;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.matysekxx.beatbounce.api.AudiusClient;
+import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.components.LibraryPanel;
@@ -112,7 +113,7 @@ public class MainMenuScreen extends Screen {
             p.add(createSidebarButton(name), gbc);
         }
 
-        gbc.gridy = row++;
+        gbc.gridy = row;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.SOUTH;
         gbc.insets = new Insets(0, 20, 30, 0);
@@ -156,6 +157,7 @@ public class MainMenuScreen extends Screen {
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         btn.addActionListener(_ -> {
+            Settings.playSFX("/click-sound.mp3");
             if (title.equals("EXIT")) {
                 screenManager.showScreen(IntroScreen.class);
             } else {
@@ -180,6 +182,7 @@ public class MainMenuScreen extends Screen {
      */
     @Override
     public void start() {
+        Settings.playMenuMusic("/freesound_community-ambient-piano-loop-85bpm-40993.mp3");
         backgroundPanel.startAnimation();
         songSelectionPanel.startAnimations();
     }

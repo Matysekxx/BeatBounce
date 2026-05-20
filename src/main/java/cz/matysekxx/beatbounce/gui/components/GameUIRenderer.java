@@ -38,6 +38,7 @@ public class GameUIRenderer {
     private final java.util.List<SimulatedButton> activeButtons = new java.util.ArrayList<>();
     private GameState lastState = GameState.COUNTDOWN;
     private float screenAppearTimer = 0f;
+    private float tutorialTimer = 0f;
     private java.util.List<SimulatedButton> renderedButtons = Collections.emptyList();
     private int currentTranslateY = 0;
     private int mouseX = -1;
@@ -78,9 +79,71 @@ public class GameUIRenderer {
         if (currentState != lastState) {
             lastState = currentState;
             screenAppearTimer = 0f;
+            if (currentState == GameState.COUNTDOWN) {
+                tutorialTimer = 0f;
+            }
         }
         if (screenAppearTimer < 1f) {
             screenAppearTimer += dt;
+        }
+        if (currentState == GameState.PLAYING || currentState == GameState.COUNTDOWN) {
+            tutorialTimer += dt;
+        }
+    }
+
+    /**
+     * Draws the mouse tutorial at the beginning of the level.
+     *
+     * @param g2d    the graphics context
+     * @param width  the width of the rendering area
+     * @param height the height of the rendering area
+     */
+    public void drawTutorial(Graphics2D g2d, int width, int height) {
+        if (tutorialTimer > 6.0f) return;
+        final float alpha = tutorialTimer > 5.0f ? 1.0f - (tutorialTimer - 5.0f) : 1.0f;
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+
+        final int centerX = width / 2;
+        final int centerY = height / 2 + 180;
+        final int amplitude = 120;
+        final double speed = 3.5;
+
+        for (int i = 1; i <= 5; i++) {
+            final float trailAlpha = (1.0f - (i / 6.0f)) * 0.3f;
+            final double trailTime = tutorialTimer - (i * 0.02);
+            final int trailX = centerX + (int) (Math.sin(trailTime * speed) * amplitude);
+            drawMouseShape(g2d, trailX, centerY, RenderCache.customColorWithAlpha(RenderUtils.cyan, (int) (trailAlpha * 255)), false);
+        }
+
+        final int mX = centerX + (int) (Math.sin(tutorialTimer * speed) * amplitude);
+        drawMouseShape(g2d, mX, centerY, RenderUtils.cyan, true);
+        g2d.setFont(RenderCache.MONO_BOLD_17);
+        final String text = "MOVE MOUSE TO CONTROL";
+        final FontMetrics fm = g2d.getFontMetrics();
+        RenderUtils.drawText(g2d, text, (width - fm.stringWidth(text)) / 2, centerY + 80, RenderUtils.cyan);
+
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+    }
+
+    private void drawMouseShape(Graphics2D g2d, int x, int y, Color color, boolean fullDetail) {
+        final int mouseW = 50;
+        final int mouseH = 70;
+        final int mouseXPos = x - mouseW / 2;
+        final int mouseYPos = y - mouseH / 2;
+
+        if (fullDetail) {
+            g2d.setColor(new Color(0, 0, 0, 160));
+            g2d.fillRoundRect(mouseXPos, mouseYPos, mouseW, mouseH, 24, 24);
+        }
+
+        g2d.setStroke(RenderCache.STROKE_3);
+        g2d.setColor(color);
+        g2d.drawRoundRect(mouseXPos, mouseYPos, mouseW, mouseH, 24, 24);
+
+        if (fullDetail) {
+            g2d.setStroke(RenderCache.STROKE_2);
+            g2d.drawLine(x, mouseYPos, x, mouseYPos + 25);
+            g2d.drawLine(mouseXPos, mouseYPos + 25, mouseXPos + mouseW, mouseYPos + 25);
         }
     }
 
@@ -92,24 +155,22 @@ public class GameUIRenderer {
      * @param height the height of the rendering area
      */
     public void drawCountdown(Graphics2D g2d, int width, int height) {
-        final int count = (int) Math.ceil(gameEngine.getCountdownTime());
-        final String text = String.valueOf(count);
-        final Color color = RenderUtils.cyan;
+        final String text = String.valueOf((int) Math.ceil(gameEngine.getCountdownTime()));
 
         final double countFrac = gameEngine.getCountdownTime() % 1.0;
         final int ringR = (int) (countFrac * 230);
         final int ringAlpha = (int) (220 * (1.0 - countFrac));
 
         if (ringR > 2 && ringAlpha > 0) {
-            drawRing(g2d, width / 2, height / 2, ringR, color, ringAlpha, RenderCache.STROKE_2);
-            drawRing(g2d, width / 2, height / 2, Math.max(0, ringR - 20), color, (int) (ringAlpha * 0.6), RenderCache.STROKE_2);
-            drawRing(g2d, width / 2, height / 2, Math.max(0, ringR - 40), color, (int) (ringAlpha * 0.3), RenderCache.STROKE_1);
+            drawRing(g2d, width / 2, height / 2, ringR, RenderUtils.cyan, ringAlpha, RenderCache.STROKE_2);
+            drawRing(g2d, width / 2, height / 2, Math.max(0, ringR - 20), RenderUtils.cyan, (int) (ringAlpha * 0.6), RenderCache.STROKE_2);
+            drawRing(g2d, width / 2, height / 2, Math.max(0, ringR - 40), RenderUtils.cyan, (int) (ringAlpha * 0.3), RenderCache.STROKE_1);
             g2d.setStroke(RenderCache.STROKE_1);
         }
 
         g2d.setFont(RenderCache.MONO_BOLD_150);
         final FontMetrics fm = g2d.getFontMetrics();
-        RenderUtils.drawText(g2d, text, (width - fm.stringWidth(text)) / 2, (height + fm.getAscent()) / 2, color);
+        RenderUtils.drawText(g2d, text, (width - fm.stringWidth(text)) / 2, (height + fm.getAscent()) / 2, RenderUtils.cyan);
     }
 
     private void drawRing(Graphics2D g2d, int cx, int cy, int r, Color color, int alpha, BasicStroke stroke) {
@@ -505,7 +566,11 @@ public class GameUIRenderer {
     public void renderGameState(Graphics2D g2d, int width, int height, GameState state) {
         activeButtons.clear();
         switch (state) {
-            case COUNTDOWN -> drawCountdown(g2d, width, height);
+            case PLAYING -> drawTutorial(g2d, width, height);
+            case COUNTDOWN -> {
+                drawCountdown(g2d, width, height);
+                drawTutorial(g2d, width, height);
+            }
             case PAUSED -> drawPauseScreen(g2d, width, height);
             case FINISHED -> drawFinishedScreen(g2d, width, height);
             case GAME_OVER -> {

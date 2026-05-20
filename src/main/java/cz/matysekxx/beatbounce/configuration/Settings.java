@@ -4,16 +4,12 @@ import cz.matysekxx.beatbounce.system.FileSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sound.sampled.*;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Manages the application settings, including graphics, sound, and general preferences.
@@ -100,175 +96,8 @@ public class Settings {
      */
     public static boolean isMuted = false;
 
-    private static final Map<String, byte[]> sfxCache = new ConcurrentHashMap<>();
-    private static final Map<String, AudioFormat> formatCache = new ConcurrentHashMap<>();
-    private static Clip menuMusicClip;
-    private static String currentMenuMusicPath;
-
     static {
         load();
-        preloadSFX("/click-sound.mp3");
-    }
-
-    /**
-     * Applies the current sound volume settings to the given {@link Clip}.
-     *
-     * @param clip The audio clip to which the volume should be applied.
-     */
-    public static void applyMusicVolume(Clip clip) {
-        applyVolume(clip, soundVolume);
-    }
-
-    /**
-     * Applies the current effects volume settings to the given {@link Clip}.
-     *
-     * @param clip The audio clip to which the volume should be applied.
-     */
-    public static void applySFXVolume(Clip clip) {
-        applyVolume(clip, sfxVolume);
-    }
-
-    private static void applyVolume(Clip clip, int volumeLevel) {
-        if (clip == null) return;
-        try {
-            if (clip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
-                final FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-                final float volume = (isMuted) ? 0 : (volumeLevel / 100f);
-                final float dB = (float) (Math.log(volume <= 0 ? 0.0001 : volume) / Math.log(10.0) * 20.0);
-                gainControl.setValue(Math.clamp(dB, gainControl.getMinimum(), gainControl.getMaximum()));
-            }
-        } catch (Exception e) {
-            LOG.warn("Failed to apply volume: {}", e.getMessage());
-        }
-    }
-
-    /**
-     * Preloads and decodes a sound effect into memory.
-     *
-     * @param resourcePath The path to the sound effect resource.
-     */
-    public static void preloadSFX(String resourcePath) {
-        if (sfxCache.containsKey(resourcePath)) return;
-        Thread.ofVirtual().start(() -> {
-            try {
-                final URL url = Settings.class.getResource(resourcePath);
-                if (url == null) return;
-                try (AudioInputStream ais = AudioSystem.getAudioInputStream(url)) {
-                    AudioFormat baseFormat = ais.getFormat();
-                    AudioFormat targetFormat = new AudioFormat(
-                            AudioFormat.Encoding.PCM_SIGNED,
-                            baseFormat.getSampleRate(),
-                            16,
-                            baseFormat.getChannels(),
-                            baseFormat.getChannels() * 2,
-                            baseFormat.getSampleRate(),
-                            false
-                    );
-
-                    try (AudioInputStream decodedAis = AudioSystem.getAudioInputStream(targetFormat, ais)) {
-                        final byte[] data = decodedAis.readAllBytes();
-                        sfxCache.put(resourcePath, data);
-                        formatCache.put(resourcePath, targetFormat);
-                    }
-                }
-            } catch (Exception e) {
-                LOG.warn("Failed to preload SFX {}: {}", resourcePath, e.getMessage());
-            }
-        });
-    }
-
-    /**
-     * Plays a sound effect from the resources, using cache if available.
-     *
-     * @param resourcePath The path to the sound effect resource.
-     */
-    public static void playSFX(String resourcePath) {
-        if (sfxCache.containsKey(resourcePath)) {
-            try {
-                final byte[] data = sfxCache.get(resourcePath);
-                final AudioFormat format = formatCache.get(resourcePath);
-                final Clip clip = AudioSystem.getClip();
-                clip.open(format, data, 0, data.length);
-                applySFXVolume(clip);
-                clip.start();
-                clip.addLineListener(event -> {
-                    if (event.getType() == LineEvent.Type.STOP) {
-                        clip.close();
-                    }
-                });
-                return;
-            } catch (Exception e) {
-                LOG.warn("Failed to play cached SFX {}: {}", resourcePath, e.getMessage());
-            }
-        }
-
-        preloadSFX(resourcePath);
-        try {
-            final URL url = Settings.class.getResource(resourcePath);
-            if (url == null) return;
-            final Clip clip = AudioSystem.getClip();
-            clip.open(getAudioInputStream(url));
-            applySFXVolume(clip);
-            clip.start();
-            clip.addLineListener(event -> {
-                if (event.getType() == LineEvent.Type.STOP) {
-                    clip.close();
-                }
-            });
-        } catch (Exception e) {
-            LOG.warn("Failed to play SFX {}: {}", resourcePath, e.getMessage());
-        }
-    }
-
-    private static AudioInputStream getAudioInputStream(URL url) throws UnsupportedAudioFileException, IOException {
-        final AudioInputStream ais = AudioSystem.getAudioInputStream(url);
-        final AudioFormat baseFormat = ais.getFormat();
-        final AudioFormat targetFormat = new AudioFormat(
-                AudioFormat.Encoding.PCM_SIGNED,
-                baseFormat.getSampleRate(),
-                16,
-                baseFormat.getChannels(),
-                baseFormat.getChannels() * 2,
-                baseFormat.getSampleRate(),
-                false
-        );
-        return AudioSystem.getAudioInputStream(targetFormat, ais);
-    }
-
-    /**
-     * Starts playing menu music if not already playing.
-     *
-     * @param resourcePath The path to the music resource.
-     */
-    public static void playMenuMusic(String resourcePath) {
-        if (menuMusicClip != null && menuMusicClip.isRunning() && resourcePath.equals(currentMenuMusicPath)) return;
-
-        stopMenuMusic();
-
-        try {
-            final URL url = Settings.class.getResource(resourcePath);
-            if (url == null) return;
-            menuMusicClip = AudioSystem.getClip();
-            menuMusicClip.open(getAudioInputStream(url));
-            menuMusicClip.loop(Clip.LOOP_CONTINUOUSLY);
-            applyMusicVolume(menuMusicClip);
-            menuMusicClip.start();
-            currentMenuMusicPath = resourcePath;
-        } catch (Exception e) {
-            LOG.warn("Failed to play menu music {}: {}", resourcePath, e.getMessage());
-        }
-    }
-
-    /**
-     * Stops the menu music.
-     */
-    public static void stopMenuMusic() {
-        if (menuMusicClip != null) {
-            if (menuMusicClip.isRunning()) menuMusicClip.stop();
-            menuMusicClip.close();
-            menuMusicClip = null;
-            currentMenuMusicPath = null;
-        }
     }
 
     /**
@@ -326,7 +155,7 @@ public class Settings {
         try (FileOutputStream fos = new FileOutputStream(path.toFile())) {
             properties.store(fos, "BeatBounce Configuration");
         } catch (IOException e) {
-            LOG.warn("Failed to save settings: " + e.getMessage());
+            LOG.warn("Failed to save settings: {}", e.getMessage());
         }
     }
 

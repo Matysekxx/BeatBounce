@@ -1,8 +1,8 @@
 package cz.matysekxx.beatbounce.gui.components;
 
-import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
+import cz.matysekxx.beatbounce.model.audio.AudioManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,7 +41,7 @@ public class CycleButton extends JButton {
         setBorderPainted(false);
         setCursor(new Cursor(Cursor.HAND_CURSOR));
         addActionListener(_ -> {
-            Settings.playSFX("/click-sound.mp3");
+            AudioManager.playSFX("/click-sound.mp3");
             currentIndex = (currentIndex + 1) % options.length;
             setText(this.options[currentIndex]);
         });

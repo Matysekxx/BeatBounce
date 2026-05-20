@@ -3,6 +3,7 @@ package cz.matysekxx.beatbounce.gui.screen;
 import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.ButtonFactory;
 import cz.matysekxx.beatbounce.gui.components.IntroPanel;
+import cz.matysekxx.beatbounce.model.audio.AudioManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -94,7 +95,7 @@ public class IntroScreen extends Screen {
      */
     @Override
     public void start() {
-        Settings.playMenuMusic("/freesound_community-ambient-piano-loop-85bpm-40993.mp3");
+        AudioManager.playMenuMusic("/freesound_community-ambient-piano-loop-85bpm-40993.mp3");
         backgroundPanel.startAnimation();
         this.requestFocusInWindow();
     }

@@ -6,6 +6,7 @@ import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.WindowData;
+import cz.matysekxx.beatbounce.model.audio.AudioManager;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
 import cz.matysekxx.beatbounce.model.game.ReviveManager;
@@ -185,7 +186,7 @@ public class GamePanel extends JPanel implements Runnable {
 
                 final UIAction action = uiRenderer.handleClick(virtualX, virtualY);
                 if (action != UIAction.NONE) {
-                    Settings.playSFX("/click-sound.mp3");
+                    AudioManager.playSFX("/click-sound.mp3");
                     new Thread(() -> {
                         switch (action) {
                             case RESUME -> gameEngine.togglePause();
@@ -315,7 +316,7 @@ public class GamePanel extends JPanel implements Runnable {
      */
     public void startGame() {
         if (!this.running) {
-            Settings.stopMenuMusic();
+            AudioManager.stopMenuMusic();
             this.running = true;
             gameEngine.init();
             this.lastFrameTime = System.nanoTime();

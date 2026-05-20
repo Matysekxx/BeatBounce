@@ -1,6 +1,6 @@
 package cz.matysekxx.beatbounce.model.game.state;
 
-import cz.matysekxx.beatbounce.configuration.Settings;
+import cz.matysekxx.beatbounce.model.audio.AudioManager;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
 import cz.matysekxx.beatbounce.model.game.OrbCollisionEngine;
 import cz.matysekxx.beatbounce.model.game.TileManager;
@@ -25,7 +25,7 @@ public class PlayingHandler implements GameStateHandler {
 
     @Override
     public void handle(double currentTime, double deltaTime) {
-        Settings.applyMusicVolume(clip);
+        AudioManager.applyMusicVolume(clip);
 
         if (checkLevelEnd()) {
             return;

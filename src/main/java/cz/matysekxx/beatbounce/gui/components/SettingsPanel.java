@@ -4,6 +4,7 @@ import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
+import cz.matysekxx.beatbounce.model.audio.AudioManager;
 import cz.matysekxx.beatbounce.system.FileSystem;
 
 import javax.swing.*;
@@ -133,7 +134,7 @@ public class SettingsPanel extends JPanel {
         clearCacheBtn.setPreferredSize(new Dimension(200, 40));
         clearCacheBtn.setMaximumSize(new Dimension(200, 40));
         clearCacheBtn.addActionListener(_ -> {
-            cz.matysekxx.beatbounce.configuration.Settings.playSFX("/click-sound.mp3");
+            AudioManager.playSFX("/click-sound.mp3");
             FileSystem.clearCache().thenRun(() -> SwingUtilities.invokeLater(() -> {
                 infoLabel.setText("Cache cleared successfully!");
                 infoLabel.setForeground(RenderUtils.green);
@@ -240,11 +241,11 @@ public class SettingsPanel extends JPanel {
         final JButton resetBtn = getStyledButton("RESET DEFAULTS", Color.DARK_GRAY, Color.WHITE);
 
         saveBtn.addActionListener(_ -> {
-            Settings.playSFX("/click-sound.mp3");
+            AudioManager.playSFX("/click-sound.mp3");
             saveSettings();
         });
         resetBtn.addActionListener(_ -> {
-            Settings.playSFX("/click-sound.mp3");
+            AudioManager.playSFX("/click-sound.mp3");
             showResetDialog();
         });
 
@@ -295,7 +296,7 @@ public class SettingsPanel extends JPanel {
         final JButton laterBtn = getStyledButton("LATER", Color.DARK_GRAY, Color.WHITE);
         laterBtn.setPreferredSize(new Dimension(150, 45));
         laterBtn.addActionListener(_ -> {
-            Settings.playSFX("/click-sound.mp3");
+            AudioManager.playSFX("/click-sound.mp3");
             dialog.dispose();
             infoLabel.setText("Changes saved. Restart for full effect!");
             infoLabel.setForeground(Color.ORANGE);
@@ -304,7 +305,7 @@ public class SettingsPanel extends JPanel {
         final JButton restartBtn = getStyledButton("RESTART NOW", RenderUtils.cyan, Color.BLACK);
         restartBtn.setPreferredSize(new Dimension(180, 45));
         restartBtn.addActionListener(_ -> {
-            Settings.playSFX("/click-sound.mp3");
+            AudioManager.playSFX("/click-sound.mp3");
             dialog.dispose();
             try {
                 restart();
@@ -330,14 +331,14 @@ public class SettingsPanel extends JPanel {
         final JButton cancelBtn = getStyledButton("CANCEL", Color.DARK_GRAY, Color.WHITE);
         cancelBtn.setPreferredSize(new Dimension(150, 45));
         cancelBtn.addActionListener(_ -> {
-            Settings.playSFX("/click-sound.mp3");
+            AudioManager.playSFX("/click-sound.mp3");
             dialog.dispose();
         });
 
         final JButton resetConfirmBtn = getStyledButton("RESET", new Color(220, 50, 50), Color.WHITE);
         resetConfirmBtn.setPreferredSize(new Dimension(150, 45));
         resetConfirmBtn.addActionListener(_ -> {
-            Settings.playSFX("/click-sound.mp3");
+            AudioManager.playSFX("/click-sound.mp3");
             dialog.dispose();
             resetToDefaults();
         });

@@ -1,6 +1,7 @@
 package cz.matysekxx.beatbounce.model.game.state;
 
 import cz.matysekxx.beatbounce.configuration.Settings;
+import cz.matysekxx.beatbounce.model.audio.AudioManager;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
 
 public class CountdownHandler implements GameStateHandler {
@@ -15,7 +16,7 @@ public class CountdownHandler implements GameStateHandler {
         gameEngine.setCountdownTime(gameEngine.getCountdownTime() - deltaTime);
         if (gameEngine.getCountdownTime() <= 0) {
             gameEngine.setGameState(GameState.PLAYING);
-            Settings.applyMusicVolume(gameEngine.getClip());
+            AudioManager.applyMusicVolume(gameEngine.getClip());
             gameEngine.startClip();
         }
     }

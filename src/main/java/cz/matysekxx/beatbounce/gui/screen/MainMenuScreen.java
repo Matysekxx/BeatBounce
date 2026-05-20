@@ -9,6 +9,7 @@ import cz.matysekxx.beatbounce.gui.components.LibraryPanel;
 import cz.matysekxx.beatbounce.gui.components.MainMenuPanel;
 import cz.matysekxx.beatbounce.gui.components.SettingsPanel;
 import cz.matysekxx.beatbounce.gui.components.SongSelectionPanel;
+import cz.matysekxx.beatbounce.model.audio.AudioManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -129,7 +130,7 @@ public class MainMenuScreen extends Screen {
                 Graphics2D g2 = (Graphics2D) g.create();
                 RenderUtils.initGraphics2D(g2);
 
-                boolean active = activePanel.equals(getText());
+                final boolean active = activePanel.equals(getText());
                 if (active || getModel().isRollover()) {
                     g2.setPaint(new LinearGradientPaint(0, 0, getWidth(), 0,
                             new float[]{0f, 1f},
@@ -142,7 +143,7 @@ public class MainMenuScreen extends Screen {
 
                 g2.setFont(getFont());
                 g2.setColor(active ? Color.WHITE : (getModel().isRollover() ? RenderUtils.cyan : new Color(200, 200, 220)));
-                FontMetrics fm = g2.getFontMetrics();
+                final FontMetrics fm = g2.getFontMetrics();
                 g2.drawString(getText(), 30, (getHeight() + fm.getAscent() - fm.getDescent()) / 2);
 
                 g2.dispose();
@@ -157,7 +158,7 @@ public class MainMenuScreen extends Screen {
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         btn.addActionListener(_ -> {
-            Settings.playSFX("/click-sound.mp3");
+            AudioManager.playSFX("/click-sound.mp3");
             if (title.equals("EXIT")) {
                 screenManager.showScreen(IntroScreen.class);
             } else {
@@ -182,7 +183,7 @@ public class MainMenuScreen extends Screen {
      */
     @Override
     public void start() {
-        Settings.playMenuMusic("/freesound_community-ambient-piano-loop-85bpm-40993.mp3");
+        AudioManager.playMenuMusic("/freesound_community-ambient-piano-loop-85bpm-40993.mp3");
         backgroundPanel.startAnimation();
         songSelectionPanel.startAnimations();
     }

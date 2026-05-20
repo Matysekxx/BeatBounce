@@ -4,8 +4,6 @@ import cz.matysekxx.beatbounce.gui.components.ScorePopup;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
 
-import java.awt.*;
-
 public abstract class CollisionHandler {
     protected final GameEngine gameEngine;
 

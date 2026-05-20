@@ -5,8 +5,6 @@ import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.LongTile;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
 
-import java.awt.*;
-
 public class LongCollisionHandler extends CollisionHandler {
     boolean onLongTile = false;
 

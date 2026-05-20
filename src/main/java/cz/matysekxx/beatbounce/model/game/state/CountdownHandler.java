@@ -1,6 +1,5 @@
 package cz.matysekxx.beatbounce.model.game.state;
 
-import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.model.audio.AudioManager;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
 

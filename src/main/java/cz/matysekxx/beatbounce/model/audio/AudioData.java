@@ -25,17 +25,6 @@ public record AudioData(
         File file
 ) implements Closeable {
     /**
-     * Closes the underlying audio clip to release system resources.
-     */
-    @Override
-    public void close() {
-        if (clip != null) {
-            if (clip.isRunning()) clip.stop();
-            if (clip.isOpen()) clip.close();
-        }
-    }
-
-    /**
      * Converts the audio stream of a given file into a standardized format.
      * <p>
      * If the file is not already in {@code PCM_SIGNED} format, this method converts it
@@ -150,5 +139,16 @@ public record AudioData(
             }
         }
         return bytes;
+    }
+
+    /**
+     * Closes the underlying audio clip to release system resources.
+     */
+    @Override
+    public void close() {
+        if (clip != null) {
+            if (clip.isRunning()) clip.stop();
+            if (clip.isOpen()) clip.close();
+        }
     }
 }

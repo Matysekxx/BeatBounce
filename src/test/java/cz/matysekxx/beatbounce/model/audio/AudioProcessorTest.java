@@ -7,42 +7,16 @@ import org.junit.jupiter.api.Test;
 import javax.sound.sampled.AudioFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Flow;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
-
-
-import java.util.concurrent.Flow;
 
 /**
  * Test class for {@link AudioProcessor}.
  * Verifies that audio chunks are correctly processed to detect intensity changes and beats.
  */
 public class AudioProcessorTest {
-
-    /**
-         * Helper subscriber for tests.
-         */
-        private record TestSubscriber(List<BeatEvent> events) implements Flow.Subscriber<BeatEvent> {
-
-        @Override
-            public void onSubscribe(Flow.Subscription subscription) {
-                subscription.request(Long.MAX_VALUE);
-            }
-
-            @Override
-            public void onNext(BeatEvent item) {
-                events.add(item);
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-            }
-
-            @Override
-            public void onComplete() {
-            }
-        }
 
     /**
      * Tests the intensity detection logic of {@link AudioProcessor}.
@@ -103,5 +77,29 @@ public class AudioProcessorTest {
 
         assertEquals("Consecutive empty chunks should not trigger additional duplicate beats",
                 countAfterWarmup, countAfterMoreSilence);
+    }
+
+    /**
+     * Helper subscriber for tests.
+     */
+    private record TestSubscriber(List<BeatEvent> events) implements Flow.Subscriber<BeatEvent> {
+
+        @Override
+        public void onSubscribe(Flow.Subscription subscription) {
+            subscription.request(Long.MAX_VALUE);
+        }
+
+        @Override
+        public void onNext(BeatEvent item) {
+            events.add(item);
+        }
+
+        @Override
+        public void onError(Throwable throwable) {
+        }
+
+        @Override
+        public void onComplete() {
+        }
     }
 }

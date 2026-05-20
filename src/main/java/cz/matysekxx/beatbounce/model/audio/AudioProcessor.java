@@ -12,7 +12,6 @@ import java.io.Closeable;
 import java.util.Arrays;
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
-import java.util.function.Consumer;
 
 /**
  * Core Digital Signal Processing (DSP) engine for real-time audio chunk analysis.
@@ -31,15 +30,8 @@ import java.util.function.Consumer;
  * </p>
  */
 public class AudioProcessor implements Flow.Publisher<BeatEvent>, Closeable {
-    /**
-     * The internal publisher used to manage subscribers and submit events.
-     * SubmissionPublisher is a standard implementation of Flow.Publisher that handles
-     * buffering and asynchronous delivery.
-     */
-    private final SubmissionPublisher<BeatEvent> publisher = new SubmissionPublisher<>();
     public static final int BUFFER_SIZE = 2048;
     public static final int OVERLAP = 1024;
-
     private static final double HIGH_INTENSITY_THRESHOLD = 0.10;
     private static final double LOW_INTENSITY_THRESHOLD = 0.05;
     private static final double SMOOTHING_FACTOR = 0.93;
@@ -49,7 +41,6 @@ public class AudioProcessor implements Flow.Publisher<BeatEvent>, Closeable {
     private static final double SILENCE_THRESHOLD = 0.006;
     private static final int MAX_CONSECUTIVE_FALLBACKS = 32;
     private static final int BPM_HISTORY_SIZE = 8;
-
     /**
      * Minimum mid-band energy to consider a chunk "tonal" for sustained-note tracking.
      */
@@ -62,7 +53,12 @@ public class AudioProcessor implements Flow.Publisher<BeatEvent>, Closeable {
      * Maximum consecutive tonal frames before forcing a note boundary.
      */
     private static final int SUSTAINED_FRAME_MAX = 40;
-
+    /**
+     * The internal publisher used to manage subscribers and submit events.
+     * SubmissionPublisher is a standard implementation of Flow.Publisher that handles
+     * buffering and asynchronous delivery.
+     */
+    private final SubmissionPublisher<BeatEvent> publisher = new SubmissionPublisher<>();
     private final PercussionOnsetDetector percussionDetector;
     private final ComplexOnsetDetector complexDetector;
     private final FrequencyBandAnalyzer bandAnalyzer;

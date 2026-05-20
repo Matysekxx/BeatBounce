@@ -2,6 +2,7 @@ package cz.matysekxx.beatbounce.model.entity;
 
 import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.Camera3D;
+
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 

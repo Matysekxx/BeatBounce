@@ -117,7 +117,8 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         add(scrollPane, BorderLayout.CENTER);
 
         addComponentListener(new ComponentAdapter() {
-            @Override public void componentResized(ComponentEvent e) {
+            @Override
+            public void componentResized(ComponentEvent e) {
                 songListPanel.revalidate();
             }
         });
@@ -384,7 +385,7 @@ public class SongSelectionPanel extends JPanel implements Runnable {
 
             repaint();
             if (Settings.vsync) Toolkit.getDefaultToolkit().sync();
-            
+
             Time.delay(optimalTimeNanos, now);
         }
     }

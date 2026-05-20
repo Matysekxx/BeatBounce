@@ -1,7 +1,7 @@
 package cz.matysekxx.beatbounce.model.level;
 
-import cz.matysekxx.beatbounce.system.FileSystem;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.matysekxx.beatbounce.system.FileSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

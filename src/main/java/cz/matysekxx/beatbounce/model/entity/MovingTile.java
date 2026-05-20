@@ -2,7 +2,6 @@ package cz.matysekxx.beatbounce.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.event.BeatEvent;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 

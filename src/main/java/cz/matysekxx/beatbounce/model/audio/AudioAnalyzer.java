@@ -7,9 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Flow;
 
 /**
  * High-level orchestrator for analyzing an entire audio track.
@@ -90,7 +88,7 @@ public class AudioAnalyzer {
         }
 
         processor.close();
-        
+
         try {
             latch.await();
         } catch (InterruptedException e) {

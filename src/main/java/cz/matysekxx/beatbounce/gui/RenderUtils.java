@@ -5,7 +5,6 @@ import cz.matysekxx.beatbounce.configuration.Settings;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Random;
-import java.util.concurrent.locks.LockSupport;
 
 /**
  * Utility class for common rendering operations and colors.

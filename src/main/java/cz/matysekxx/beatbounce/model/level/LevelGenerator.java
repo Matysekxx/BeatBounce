@@ -1,6 +1,5 @@
 package cz.matysekxx.beatbounce.model.level;
 
-import cz.matysekxx.beatbounce.event.BeatEvent;
 import cz.matysekxx.beatbounce.model.audio.AudioAnalyzer;
 import cz.matysekxx.beatbounce.model.audio.AudioData;
 

@@ -20,7 +20,7 @@ public class AudioManager {
 
     private static final Map<String, byte[]> sfxCache = new ConcurrentHashMap<>();
     private static final Map<String, AudioFormat> formatCache = new ConcurrentHashMap<>();
-    
+
     private static Clip menuMusicClip;
     private static String currentMenuMusicPath;
 
@@ -35,7 +35,7 @@ public class AudioManager {
      */
     public static void preloadSFX(String resourcePath) {
         if (sfxCache.containsKey(resourcePath)) return;
-        
+
         Thread.ofVirtual().start(() -> {
             try {
                 URL url = getResourceURL(resourcePath);

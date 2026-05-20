@@ -144,7 +144,7 @@ public class SettingsPanel extends JPanel {
         audioGroup.add(createLabeledComponent(sfxLabel, sfxSlider));
         audioGroup.add(Box.createRigidArea(new Dimension(0, 20)));
         audioGroup.add(focusLossCheck = new CustomCheckBox("Mute on Focus Loss", Settings.muteOnFocusLoss));
-        
+
         final JButton clearCacheBtn = getStyledButton("CLEAR CACHE", new Color(180, 40, 40), Color.WHITE);
         clearCacheBtn.setPreferredSize(new Dimension(200, 40));
         clearCacheBtn.setMaximumSize(new Dimension(200, 40));

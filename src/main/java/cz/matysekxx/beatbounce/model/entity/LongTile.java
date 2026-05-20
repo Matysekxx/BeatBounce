@@ -30,6 +30,7 @@ public class LongTile extends AbstractTile {
         this.baseColorAlpha220 = new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), 220);
         this.lightenedColor = Color.getHSBColor(h, 0.5f, 1.0f);
     }
+
     @Override
     public void drawTile(Graphics2D g2d, Polygon polygon, double scale) {
         final boolean isLow = Settings.graphicsQuality.equals("LOW");

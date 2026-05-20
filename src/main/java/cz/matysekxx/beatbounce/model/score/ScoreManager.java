@@ -1,8 +1,8 @@
 package cz.matysekxx.beatbounce.model.score;
 
-import cz.matysekxx.beatbounce.system.FileSystem;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.matysekxx.beatbounce.system.FileSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

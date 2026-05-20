@@ -29,6 +29,10 @@ import java.awt.*;
 })
 public abstract class AbstractTile extends Entity {
     /**
+     * Duration of the impact animation in seconds.
+     */
+    protected static final double IMPACT_DURATION = 0.25;
+    /**
      * The depth position of the tile in the 3D space.
      */
     protected double z;
@@ -40,10 +44,6 @@ public abstract class AbstractTile extends Entity {
      * Current impact animation time.
      */
     protected double impactTime = 0;
-    /**
-     * Duration of the impact animation in seconds.
-     */
-    protected static final double IMPACT_DURATION = 0.25;
     /**
      * Whether the tile has been activated (landed on).
      */

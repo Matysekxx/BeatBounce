@@ -121,15 +121,15 @@ public class FileSystem {
 
         try (Stream<Path> stream = Files.list(MUSIC_DIR)) {
             return stream.filter(p -> {
-                        final String name = p.getFileName().toString().toLowerCase();
-                        return name.endsWith(".mp3") || name.endsWith(".wav") || name.endsWith(".ogg") || name.endsWith(".flac");
-                    }).sorted((p1, p2) -> {
-                        try {
-                            return Files.getLastModifiedTime(p2).compareTo(Files.getLastModifiedTime(p1));
-                        } catch (IOException e) {
-                            return 0;
-                        }
-                    }).toList();
+                final String name = p.getFileName().toString().toLowerCase();
+                return name.endsWith(".mp3") || name.endsWith(".wav") || name.endsWith(".ogg") || name.endsWith(".flac");
+            }).sorted((p1, p2) -> {
+                try {
+                    return Files.getLastModifiedTime(p2).compareTo(Files.getLastModifiedTime(p1));
+                } catch (IOException e) {
+                    return 0;
+                }
+            }).toList();
         } catch (IOException e) {
             LOG.error("Failed to list music files: {}", e.getMessage());
             return java.util.Collections.emptyList();

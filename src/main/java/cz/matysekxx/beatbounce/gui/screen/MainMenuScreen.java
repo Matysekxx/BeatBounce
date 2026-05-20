@@ -2,7 +2,6 @@ package cz.matysekxx.beatbounce.gui.screen;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.matysekxx.beatbounce.api.AudiusClient;
-import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.components.LibraryPanel;
@@ -183,7 +182,7 @@ public class MainMenuScreen extends Screen {
      */
     @Override
     public void start() {
-        AudioManager.playMenuMusic("/freesound_community-ambient-piano-loop-85bpm-40993.mp3");
+        AudioManager.playMenuMusic("/background-sound.mp3");
         backgroundPanel.startAnimation();
         songSelectionPanel.startAnimations();
     }

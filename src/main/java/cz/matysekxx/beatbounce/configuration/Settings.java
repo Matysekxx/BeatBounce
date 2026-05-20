@@ -47,6 +47,11 @@ public class Settings {
     public static int soundVolume = 100;
 
     /**
+     * The menu background music volume level, from 0 to 100.
+     */
+    public static int menuVolume = 80;
+
+    /**
      * The effects sound volume level, from 0 to 100.
      */
     public static int sfxVolume = 100;
@@ -115,6 +120,7 @@ public class Settings {
                 opengl = Boolean.parseBoolean(properties.getProperty("opengl", "true"));
                 fullscreen = Boolean.parseBoolean(properties.getProperty("fullscreen", "true"));
                 soundVolume = Integer.parseInt(properties.getProperty("soundVolume", "100"));
+                menuVolume = Integer.parseInt(properties.getProperty("menuVolume", "80"));
                 sfxVolume = Integer.parseInt(properties.getProperty("sfxVolume", "100"));
                 targetFps = Integer.parseInt(properties.getProperty("targetFps", "60"));
                 audioOffset = Integer.parseInt(properties.getProperty("audioOffset", "0"));
@@ -140,6 +146,7 @@ public class Settings {
         properties.setProperty("opengl", String.valueOf(opengl));
         properties.setProperty("fullscreen", String.valueOf(fullscreen));
         properties.setProperty("soundVolume", String.valueOf(soundVolume));
+        properties.setProperty("menuVolume", String.valueOf(menuVolume));
         properties.setProperty("sfxVolume", String.valueOf(sfxVolume));
         properties.setProperty("targetFps", String.valueOf(targetFps));
         properties.setProperty("audioOffset", String.valueOf(audioOffset));
@@ -172,6 +179,7 @@ public class Settings {
         Settings.targetFps = 60;
         Settings.audioOffset = 0;
         Settings.soundVolume = 100;
+        Settings.menuVolume = 80;
         Settings.sfxVolume = 100;
         Settings.particlesEnabled = true;
         Settings.bloomEnabled = true;

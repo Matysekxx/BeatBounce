@@ -20,6 +20,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * The main panel for the game, handling rendering, user input, and the game loop.
@@ -119,6 +120,10 @@ public class GamePanel extends JPanel implements Runnable {
      * Accumulated time for animations (seconds).
      */
     private float animTime = 0f;
+    /**
+     * Queue for synchronized processing of UI actions.
+     */
+    private final ConcurrentLinkedQueue<Runnable> actionQueue = new ConcurrentLinkedQueue<>(); //TODO: vytvorit samostatnou tridu ktera bude spracovavat akce
 
 
     /**
@@ -187,7 +192,7 @@ public class GamePanel extends JPanel implements Runnable {
                 final UIAction action = uiRenderer.handleClick(virtualX, virtualY);
                 if (action != UIAction.NONE) {
                     AudioManager.playSFX("/click-sound.mp3");
-                    new Thread(() -> {
+                    actionQueue.add(() -> {
                         switch (action) {
                             case RESUME -> gameEngine.togglePause();
                             case RESTART -> gameEngine.init();
@@ -200,7 +205,7 @@ public class GamePanel extends JPanel implements Runnable {
                             default -> {
                             }
                         }
-                    }).start();
+                    });
                 }
             }
         };
@@ -208,40 +213,37 @@ public class GamePanel extends JPanel implements Runnable {
         this.addMouseMotionListener(uiMouseAdapter);
         this.addKeyListener(new KeyAdapter() {
             @Override
-            public void keyPressed(KeyEvent e) {
+            public void keyPressed(KeyEvent e) { //TODO: vytvorit samostatnou tridu na ovladani hry (pause, restart, revive)
                 if (gameEngine == null) return;
                 final GameState state = gameEngine.getGameState();
+                final int key = e.getKeyCode();
+
+                final Runnable quitAction = () -> {
+                    stopGame();
+                    if (onExit != null) onExit.run();
+                };
+
                 switch (state) {
-                    case PLAYING, COUNTDOWN, PAUSED -> {
-                        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) gameEngine.togglePause();
-                        else if (state == GameState.PAUSED && e.getKeyCode() == KeyEvent.VK_ENTER) {
-                            stopGame();
-                            if (onExit != null) onExit.run();
-                        }
+                    case PLAYING, COUNTDOWN -> {
+                        if (key == KeyEvent.VK_ESCAPE) actionQueue.add(gameEngine::togglePause);
+                    }
+                    case PAUSED -> {
+                        if (key == KeyEvent.VK_ESCAPE) actionQueue.add(gameEngine::togglePause);
+                        else if (key == KeyEvent.VK_ENTER) actionQueue.add(quitAction);
                     }
                     case GAME_OVER -> {
                         if (gameEngine.getRevivesUsed() < ReviveManager.MAX_REVIVES && !gameEngine.isReviveDeclined()) {
-                            if (e.getKeyCode() == KeyEvent.VK_V) {
-                                gameEngine.revive();
-                            } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_ENTER) {
-                                gameEngine.declineRevive();
-                            }
+                            if (key == KeyEvent.VK_V) actionQueue.add(gameEngine::revive);
+                            else if (key == KeyEvent.VK_ESCAPE || key == KeyEvent.VK_ENTER)
+                                actionQueue.add(gameEngine::declineRevive);
                         } else {
-                            if (e.getKeyCode() == KeyEvent.VK_R) {
-                                gameEngine.init();
-                            } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_ENTER) {
-                                stopGame();
-                                if (onExit != null) onExit.run();
-                            }
+                            if (key == KeyEvent.VK_R) actionQueue.add(gameEngine::init);
+                            else if (key == KeyEvent.VK_ESCAPE || key == KeyEvent.VK_ENTER) actionQueue.add(quitAction);
                         }
                     }
                     case FINISHED -> {
-                        if (e.getKeyCode() == KeyEvent.VK_R) {
-                            gameEngine.init();
-                        } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_ENTER) {
-                            stopGame();
-                            if (onExit != null) onExit.run();
-                        }
+                        if (key == KeyEvent.VK_R) actionQueue.add(gameEngine::init);
+                        else if (key == KeyEvent.VK_ESCAPE || key == KeyEvent.VK_ENTER) actionQueue.add(quitAction);
                     }
                 }
             }
@@ -260,10 +262,17 @@ public class GamePanel extends JPanel implements Runnable {
         });
     }
 
+    public void processActions() {
+        while (!actionQueue.isEmpty()) {
+            actionQueue.poll().run();
+        }
+    }
+
     @Override
     public void run() {
         final long optimalTimeNanos = 1_000_000_000L / Settings.targetFps;
         while (running) {
+            processActions();
             final long loopStartTime = System.nanoTime();
             final float dt = (float) ((loopStartTime - lastFrameTime) / 1_000_000_000.0);
             lastFrameTime = loopStartTime;

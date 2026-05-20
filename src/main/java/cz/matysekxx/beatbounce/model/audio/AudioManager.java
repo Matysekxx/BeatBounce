@@ -132,7 +132,7 @@ public class AudioManager {
             menuMusicClip = AudioSystem.getClip();
             menuMusicClip.open(getAudioInputStream(resourcePath));
             menuMusicClip.loop(Clip.LOOP_CONTINUOUSLY);
-            applyMusicVolume(menuMusicClip);
+            applyMenuVolume(menuMusicClip);
             menuMusicClip.start();
             currentMenuMusicPath = resourcePath;
         } catch (Exception e) {
@@ -150,6 +150,24 @@ public class AudioManager {
             menuMusicClip = null;
             currentMenuMusicPath = null;
         }
+    }
+
+    /**
+     * Updates the volume of the currently playing menu music clip based on settings.
+     */
+    public static void updateMenuVolume() {
+        if (menuMusicClip != null && menuMusicClip.isOpen()) {
+            applyMenuVolume(menuMusicClip);
+        }
+    }
+
+    /**
+     * Applies the current menu background music volume setting from {@link Settings} to the given clip.
+     *
+     * @param clip The audio clip.
+     */
+    public static void applyMenuVolume(Clip clip) {
+        applyVolume(clip, Settings.menuVolume);
     }
 
     /**

@@ -28,15 +28,25 @@ import java.util.concurrent.CompletableFuture;
  * </p>
  */
 public class AudiusClient {
-    private final static Logger LOG = LoggerFactory.getLogger(AudiusClient.class);
 
     /**
      * The default host URL for the Audius Discovery Provider.
      */
     private static final String DEFAULT_HOST = "https://discoveryprovider.audius.co";
 
+    /**
+     * The HTTP client used for making API requests.
+     */
     private final HttpClient httpClient;
+
+    /**
+     * The application name used for identifying requests to the Audius API.
+     */
     private final String appName;
+
+    /**
+     * The local directory where music tracks are downloaded and stored.
+     */
     private final Path downloadDirectory;
 
     /**

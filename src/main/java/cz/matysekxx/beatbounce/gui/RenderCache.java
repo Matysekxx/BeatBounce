@@ -199,11 +199,34 @@ public final class RenderCache {
      */
     public static final Font MONO_BOLD_65 = new Font("Monospaced", Font.BOLD, 65);
 
+    /**
+     * Cached cyan colors with pre-calculated alpha levels.
+     */
     private static final Color[] CYAN_ALPHA = new Color[256];
+
+    /**
+     * Cached magenta colors with pre-calculated alpha levels.
+     */
     private static final Color[] MAGENTA_ALPHA = new Color[256];
+
+    /**
+     * Cached yellow colors with pre-calculated alpha levels.
+     */
     private static final Color[] YELLOW_ALPHA = new Color[256];
+
+    /**
+     * Cached red colors with pre-calculated alpha levels.
+     */
     private static final Color[] RED_ALPHA = new Color[256];
+
+    /**
+     * Cached white colors with pre-calculated alpha levels.
+     */
     private static final Color[] WHITE_ALPHA = new Color[256];
+
+    /**
+     * Cached black colors with pre-calculated alpha levels.
+     */
     private static final Color[] BLACK_ALPHA = new Color[256];
 
     static {

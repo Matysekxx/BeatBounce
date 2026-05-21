@@ -20,10 +20,29 @@ import java.util.stream.Stream;
 public class FileSystem {
     private static final Logger LOG = LoggerFactory.getLogger(FileSystem.class);
 
+    /**
+     * Name of the application data directory in the user's home folder.
+     */
     private static final String APP_DIR_NAME = ".beatbounce";
+
+    /**
+     * Root path of the application's persistent storage.
+     */
     private static final Path APP_ROOT;
+
+    /**
+     * Path where downloaded music files are kept.
+     */
     private static final Path MUSIC_DIR;
+
+    /**
+     * Path where generated level data is cached.
+     */
     private static final Path CACHE_DIR;
+
+    /**
+     * Path where configuration properties are stored.
+     */
     private static final Path CONFIG_DIR;
 
     static {

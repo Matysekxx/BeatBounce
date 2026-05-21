@@ -10,10 +10,30 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
 
+/**
+ * Manages the persistence of generated level data on disk.
+ * Uses JSON serialization via Jackson to store level tiles and metadata.
+ * This allows reusing generated levels across different application sessions.
+ */
 public class LevelFileCache {
+    /**
+     * Logger for this class.
+     */
     private static final Logger LOG = LoggerFactory.getLogger(LevelFileCache.class);
+
+    /**
+     * Jackson ObjectMapper for JSON processing.
+     */
     private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    /**
+     * The directory where cache files are stored.
+     */
     private static final Path CACHE_DIR = FileSystem.getCacheDir();
+
+    /**
+     * The current version of the cache format.
+     */
     private static final int CACHE_VERSION = 2;
 
     /**

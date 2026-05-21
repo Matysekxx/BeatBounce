@@ -25,37 +25,114 @@ import static cz.matysekxx.beatbounce.model.level.LevelGenerator.getZSpeed;
  * probability constants.
  */
 class GenerationContext {
-
     /**
      * Width of one lane in world units. 5 lanes: -2,-1,0,1,2 → X= -240,-120,0,120,240 (road half-width = 300).
      */
     private static final int LANE_WIDTH = 120;
+
     /**
      * Max lane index: must stay at 2 so tiles never exceed ±240 inside ROAD_WIDTH=300.
      */
     private static final int MAX_LANE_INDEX = 2;
+
     /**
      * Minimum gap between two consecutive tiles before gap-fill kicks in.
      */
     private static final double MAX_ALLOWED_GAP_SECONDS = 2.5;
+
+    /**
+     * List of tiles generated for the level.
+     */
     private final List<AbstractTile> tiles = new ArrayList<>();
+
+    /**
+     * Source beat events from audio analysis.
+     */
     private final Iterable<BeatEvent> events;
+
+    /**
+     * Name of the song being processed.
+     */
     private final String songName;
+
+    /**
+     * Random generator seeded by song name and difficulty.
+     */
     private final Random rng;
+
+    /**
+     * The audio metadata for the level.
+     */
     private final AudioData audioData;
+
+    /**
+     * The difficulty profile defining generation constraints.
+     */
     private final DifficultyProfile profile;
+
+    /**
+     * Speed of world progress (Z units per second).
+     */
     private final double zUnitsPerSecond;
+
+    /**
+     * Total duration of the song in seconds.
+     */
     private final double songDurationSeconds;
+
+    /**
+     * Maximum Z-coordinate for tile placement.
+     */
     private final double maxZ;
+
+    /**
+     * Tempo information including BPM and beat grid.
+     */
     private final TempoMap tempoMap;
+
+    /**
+     * Detected musical sections of the song.
+     */
     private final List<SectionDetector.SongSection> sections;
+
+    /**
+     * The current lane index (-2 to 2).
+     */
     private int currentLane = 0;
+
+    /**
+     * Number of consecutive tiles placed in the same lane.
+     */
     private int consecutiveInLane = 0;
+
+    /**
+     * Total number of tiles generated so far.
+     */
     private int tilesGenerated = 0;
+
+    /**
+     * The type of the last tile generated.
+     */
     private TileType lastTileType = TileType.NORMAL;
+
+    /**
+     * Number of consecutive tiles of the same type.
+     */
     private int consecutiveSame = 0;
+
+    /**
+     * Whether currently in a high-intensity audio section.
+     */
     private boolean isHighIntensity = false;
+
+    /**
+     * The Z-coordinate up to which tile placement should be skipped (used after long tiles).
+     */
     private double skipUntilZ = 0.0;
+
+    /**
+     * The timestamp of the last processed beat.
+     */
     private double lastBeatTimestamp = -1.0;
 
     /**
@@ -97,6 +174,9 @@ class GenerationContext {
         this.maxZ = songDurationSeconds * zUnitsPerSecond;
     }
 
+    /**
+     * Clamps a lane index to stay within the map boundaries.
+     */
     private static int clampLane(int lane, int max) {
         return Math.clamp(lane, -max, max);
     }
@@ -121,6 +201,9 @@ class GenerationContext {
         return new Level(tiles, audioData, songName, profile.stars());
     }
 
+    /**
+     * Filters raw events into valid playable beats.
+     */
     private List<PlacedBeat> collectBeats() {
         final List<PlacedBeat> result = new ArrayList<>();
         double lastTimestamp = -999.0;
@@ -156,18 +239,27 @@ class GenerationContext {
         return result;
     }
 
+    /**
+     * Checks if a beat is eligible for tile placement based on song length and difficulty.
+     */
     private boolean isValidBeat(double timestamp, double lastTimestamp) {
         if (timestamp >= songDurationSeconds) return false;
         final double minTime = profile.minBeatInterval();
         return (timestamp - lastTimestamp) >= minTime;
     }
 
+    /**
+     * Finds the musical section for a specific timestamp.
+     */
     private SectionDetector.SectionType findSection(double timestamp) {
         for (SectionDetector.SongSection s : sections)
             if (s.contains(timestamp)) return s.type();
         return SectionDetector.SectionType.VERSE;
     }
 
+    /**
+     * Maps a PlacedBeat to a physical tile in the level.
+     */
     private void processBeat(PlacedBeat beat) {
         final double tileZ = beat.timestamp() * zUnitsPerSecond;
         if (tileZ < skipUntilZ) {
@@ -195,6 +287,9 @@ class GenerationContext {
         tilesGenerated++;
     }
 
+    /**
+     * Adds a tile to the list and tracks its type for variety control.
+     */
     private void addTile(AbstractTile tile) {
         tiles.add(tile);
         switch (tile) {
@@ -208,6 +303,9 @@ class GenerationContext {
         }
     }
 
+    /**
+     * Updates consecutive tile type tracking.
+     */
     private void trackType(TileType type) {
         consecutiveSame = (type == lastTileType) ? consecutiveSame + 1 : 1;
         lastTileType = type;
@@ -269,6 +367,9 @@ class GenerationContext {
         return TileFactory.createNormalTile(e, laneX, 0, tileZ);
     }
 
+    /**
+     * Places fake distraction tiles in adjacent lanes.
+     */
     private AbstractTile placeFakes(BeatEvent e, int laneX, double tileZ) {
         final List<Integer> offsets = new ArrayList<>();
         final int max = maxLane();
@@ -282,6 +383,9 @@ class GenerationContext {
         return TileFactory.createNormalTileWithFakes(e, laneX, 0, tileZ, offsets);
     }
 
+    /**
+     * Places a "wall" of fake tiles across all lanes except the playable one.
+     */
     private AbstractTile placeAllLaneFakes(BeatEvent e, double tileZ) {
         final int max = maxLane();
         int startLane = -max, endLane = max;
@@ -297,6 +401,9 @@ class GenerationContext {
                 e, currentLane * LANE_WIDTH, 0, tileZ, fakeOffsets);
     }
 
+    /**
+     * Detects large silent gaps in the song and fills them with neutral tiles.
+     */
     private List<PlacedBeat> fillGaps(List<PlacedBeat> input) {
         if (input.isEmpty()) return input;
         final List<PlacedBeat> result = new ArrayList<>();
@@ -323,6 +430,9 @@ class GenerationContext {
         return result;
     }
 
+    /**
+     * Estimates the local tempo to determine fill density.
+     */
     private double estimateLocalInterval(List<PlacedBeat> beats, int index) {
         final int window = 4;
         double sum = 0;
@@ -337,6 +447,9 @@ class GenerationContext {
         return count == 0 ? 0.5 : sum / count;
     }
 
+    /**
+     * Heuristically determines the next lane based on current pattern and time constraints.
+     */
     private int getNextLane(int lane, PlacedBeat beat, double timeSinceLast) {
         final int max = maxLane();
         final int maxMoveDistance = Math.max(1, (int) (timeSinceLast / 0.08));

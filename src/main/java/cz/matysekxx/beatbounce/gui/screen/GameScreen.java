@@ -17,9 +17,24 @@ import java.nio.file.Path;
  * It manages the loading of the level and the game panel.
  */
 public class GameScreen extends Screen {
+    /**
+     * Logger for this class.
+     */
     private static final Logger LOG = LoggerFactory.getLogger(GameScreen.class);
+
+    /**
+     * Panel displayed while the level is loading.
+     */
     private final LoadingPanel loadingPanel;
+
+    /**
+     * Manager for switching between different screens.
+     */
     private final ScreenManager screenManager;
+
+    /**
+     * The active game panel containing the gameplay loop.
+     */
     private GamePanel gamePanel;
 
     /**

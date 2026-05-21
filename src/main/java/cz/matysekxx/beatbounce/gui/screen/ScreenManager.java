@@ -126,6 +126,11 @@ public class ScreenManager {
         ScreenUtil.applyFullscreen(screen);
     }
 
+    /**
+     * Resets the screen to its default windowed size and position.
+     *
+     * @param screen the screen to resize
+     */
     private void applyDefaultSize(Screen screen) {
         ScreenUtil.applyDefaultSize(screen);
     }

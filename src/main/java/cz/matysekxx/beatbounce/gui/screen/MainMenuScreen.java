@@ -20,19 +20,61 @@ import java.awt.*;
  */
 public class MainMenuScreen extends Screen {
 
+    /**
+     * The background panel for the main menu.
+     */
     private final MainMenuPanel backgroundPanel;
+
+    /**
+     * Client for Audius API interactions.
+     */
     private final AudiusClient audiusClient;
+
+    /**
+     * JSON object mapper.
+     */
     private final ObjectMapper objectMapper;
+
+    /**
+     * Layout manager for switching between different sub-panels.
+     */
     private final CardLayout cardLayout;
+
+    /**
+     * The panel that holds the sub-sections (Songs, Library, Settings).
+     */
     private final JPanel cardPanel;
 
+    /**
+     * Sub-panel for browsing and selecting songs.
+     */
     private final SongSelectionPanel songSelectionPanel;
+
+    /**
+     * Sub-panel for managing the local song library.
+     */
     private final LibraryPanel libraryPanel;
+
+    /**
+     * Manager for handling screen transitions.
+     */
     private final ScreenManager screenManager;
+
+    /**
+     * Titles for the primary sidebar navigation buttons.
+     */
     private final String[] buttonsTitles = {
             "SONGS", "LIBRARY", "SETTINGS"
     };
+
+    /**
+     * The sidebar panel containing navigation links.
+     */
     private final JPanel sidebar;
+
+    /**
+     * The name of the currently active sub-panel.
+     */
     private String activePanel = "SONGS";
 
     /**
@@ -69,6 +111,9 @@ public class MainMenuScreen extends Screen {
         cardPanel.add(settingsPanel, "SETTINGS");
     }
 
+    /**
+     * Helper to create a styled transparent JPanel.
+     */
     private static JPanel getJPanel() {
         final JPanel p = new JPanel() {
             @Override
@@ -90,6 +135,9 @@ public class MainMenuScreen extends Screen {
         return p;
     }
 
+    /**
+     * Creates and populates the sidebar navigation panel.
+     */
     private JPanel createSidebar() {
         final JPanel p = getJPanel();
 
@@ -122,6 +170,9 @@ public class MainMenuScreen extends Screen {
         return p;
     }
 
+    /**
+     * Creates a styled button for the sidebar.
+     */
     private JButton createSidebarButton(String title) {
         final JButton btn = new JButton(title) {
             @Override
@@ -170,6 +221,11 @@ public class MainMenuScreen extends Screen {
         return btn;
     }
 
+    /**
+     * Switches the displayed sub-panel.
+     *
+     * @param name the name of the panel to show
+     */
     private void showPanel(String name) {
         if (name.equals("LIBRARY")) {
             libraryPanel.loadLibrary();

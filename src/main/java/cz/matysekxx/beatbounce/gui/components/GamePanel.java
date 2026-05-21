@@ -3,6 +3,7 @@ package cz.matysekxx.beatbounce.gui.components;
 import cz.matysekxx.beatbounce.action.ActionQueue;
 import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.controller.GameController;
+import cz.matysekxx.beatbounce.controller.GameKeyController;
 import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
@@ -10,7 +11,6 @@ import cz.matysekxx.beatbounce.gui.WindowData;
 import cz.matysekxx.beatbounce.model.audio.AudioManager;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
-import cz.matysekxx.beatbounce.model.game.ReviveManager;
 import cz.matysekxx.beatbounce.model.game.state.GameState;
 import cz.matysekxx.beatbounce.model.level.Level;
 import cz.matysekxx.beatbounce.util.Time;
@@ -21,7 +21,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * The main panel for the game, handling rendering, user input, and the game loop.
@@ -244,43 +243,11 @@ public class GamePanel extends JPanel implements Runnable {
         };
         this.addMouseListener(uiMouseAdapter);
         this.addMouseMotionListener(uiMouseAdapter);
-        this.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) { //TODO: vytvorit samostatnou tridu na ovladani hry (pause, restart, revive)
-                if (gameEngine == null) return;
-                final GameState state = gameEngine.getGameState();
-                final int key = e.getKeyCode();
-
-                final Runnable quitAction = () -> {
-                    stopGame();
-                    if (onExit != null) onExit.run();
-                };
-
-                switch (state) {
-                    case PLAYING, COUNTDOWN -> {
-                        if (key == KeyEvent.VK_ESCAPE) actionQueue.add(gameEngine::togglePause);
-                    }
-                    case PAUSED -> {
-                        if (key == KeyEvent.VK_ESCAPE) actionQueue.add(gameEngine::togglePause);
-                        else if (key == KeyEvent.VK_ENTER) actionQueue.add(quitAction);
-                    }
-                    case GAME_OVER -> {
-                        if (gameEngine.getRevivesUsed() < ReviveManager.MAX_REVIVES && !gameEngine.isReviveDeclined()) {
-                            if (key == KeyEvent.VK_V) actionQueue.add(gameEngine::revive);
-                            else if (key == KeyEvent.VK_ESCAPE || key == KeyEvent.VK_ENTER)
-                                actionQueue.add(gameEngine::declineRevive);
-                        } else {
-                            if (key == KeyEvent.VK_R) actionQueue.add(gameEngine::init);
-                            else if (key == KeyEvent.VK_ESCAPE || key == KeyEvent.VK_ENTER) actionQueue.add(quitAction);
-                        }
-                    }
-                    case FINISHED -> {
-                        if (key == KeyEvent.VK_R) actionQueue.add(gameEngine::init);
-                        else if (key == KeyEvent.VK_ESCAPE || key == KeyEvent.VK_ENTER) actionQueue.add(quitAction);
-                    }
-                }
-            }
-        });
+        final Runnable quitAction = () -> {
+            stopGame();
+            if (onExit != null) onExit.run();
+        };
+        this.addKeyListener(new GameKeyController(gameEngine, actionQueue, quitAction));
         this.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {

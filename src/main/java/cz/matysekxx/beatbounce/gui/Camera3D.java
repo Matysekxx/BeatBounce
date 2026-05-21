@@ -1,5 +1,7 @@
 package cz.matysekxx.beatbounce.gui;
 
+import cz.matysekxx.beatbounce.util.UIScale;
+
 /**
  * Represents a 3D camera in the game world, used for projecting 3D coordinates to 2D screen space.
  */
@@ -94,12 +96,13 @@ public class Camera3D {
 
     /**
      * Calculates the scale factor for an object at the specified z-coordinate based on camera distance and field of view.
+     * It also incorporates dynamic UI scaling to maintain consistent world proportions across resolutions.
      *
      * @param objectZ the z-coordinate of the object
      * @return the scale factor for projection
      */
     public double getScale(double objectZ) {
         final double distance = Math.max(0.0, this.getDistanceTo(objectZ));
-        return fieldOfView / (distance + 1);
+        return (fieldOfView * UIScale.getScale()) / (distance + 1);
     }
 }

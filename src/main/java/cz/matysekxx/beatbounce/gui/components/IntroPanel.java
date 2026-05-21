@@ -5,6 +5,8 @@ import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.util.Time;
 
+import cz.matysekxx.beatbounce.util.UIScale;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
@@ -84,6 +86,7 @@ public class IntroPanel extends JPanel implements Runnable {
             public void componentResized(ComponentEvent e) {
                 cachedW = e.getComponent().getWidth();
                 cachedH = e.getComponent().getHeight();
+                UIScale.update(cachedW, cachedH);
             }
         });
     }
@@ -108,6 +111,7 @@ public class IntroPanel extends JPanel implements Runnable {
             running = true;
             if (cachedW == -1) cachedW = getWidth();
             if (cachedH == -1) cachedH = getHeight();
+            if (cachedW > 0 && cachedH > 0) UIScale.update(cachedW, cachedH);
             animatorThread = new Thread(this);
             animatorThread.start();
         }
@@ -165,7 +169,7 @@ public class IntroPanel extends JPanel implements Runnable {
         final Graphics2D g2d = (Graphics2D) g.create();
         RenderUtils.initGraphics2D(g2d);
 
-        final int horizonY = (h >> 1) + 100;
+        final int horizonY = (h >> 1) + UIScale.scale(100);
 
         if (staticBackgroundCache == null || cachedBgW != w || cachedBgH != h) {
             cachedBgW = w;
@@ -226,8 +230,8 @@ public class IntroPanel extends JPanel implements Runnable {
         for (int i = 0; i < shapes; i++) {
             final float phase = time * 0.35f + i * 1.6f;
             final float x = w * 0.15f + (w * 0.7f) * ((float) i / (shapes - 1));
-            final float y = horizonY - 130 - (float) Math.sin(phase) * 50 - i * 12;
-            final float size = 24 + (float) Math.sin(phase * 0.7f) * 8;
+            final float y = horizonY - UIScale.scale(130) - (float) Math.sin(phase) * UIScale.scale(50) - i * UIScale.scale(12);
+            final float size = UIScale.scale(24) + (float) Math.sin(phase * 0.7f) * UIScale.scale(8);
             final float rotation = time * 0.4f + i;
             final float alpha = 0.22f + (float) Math.sin(phase) * 0.1f;
 
@@ -274,7 +278,7 @@ public class IntroPanel extends JPanel implements Runnable {
     private void drawAudioBars(Graphics2D g2d, int w, int horizonY, float globalHue) {
         final int barCount = 120;
         final float barWidth = (float) w / barCount;
-        final int maxHeight = 160;
+        final int maxHeight = UIScale.scale(160);
 
         for (int i = 0; i < barCount; i++) {
             final float height = getHeight(i);
@@ -307,8 +311,8 @@ public class IntroPanel extends JPanel implements Runnable {
         final float freq3 = (float) (Math.sin(time * 1.2 + i * 0.05) * 0.2 + 0.2);
         final float freq4 = (float) (Math.cos(time * 5.0 - i * 0.2) * 0.1 + 0.1);
 
-        final float globalBounce = (float) (Math.sin(time * 4) * 0.5 + 0.5) * 15;
-        return (freq1 * 0.4f + freq2 * 0.3f + freq3 * 0.2f + freq4 * 0.1f) * 160 + globalBounce;
+        final float globalBounce = (float) (Math.sin(time * 4) * 0.5 + 0.5) * UIScale.scale(15);
+        return (freq1 * 0.4f + freq2 * 0.3f + freq3 * 0.2f + freq4 * 0.1f) * UIScale.scale(160) + globalBounce;
     }
 
     /**
@@ -316,14 +320,14 @@ public class IntroPanel extends JPanel implements Runnable {
      */
     private void drawTitle(Graphics2D g2d, int w, int h, float globalHue) {
         final String text = "BEAT BOUNCE";
-        g2d.setFont(RenderCache.MONO_ITALIC_BOLD_150);
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_150));
 
         final FontMetrics fm = g2d.getFontMetrics();
         final int textWidth = fm.stringWidth(text);
         final int drawX = (w - textWidth) / 2;
 
-        final float floatingOffset = (float) (Math.sin(time * 0.8) * 15.0);
-        final int drawY = (int) (h / 4.f + 40 + floatingOffset);
+        final float floatingOffset = (float) (Math.sin(time * 0.8) * UIScale.scale(15.0f));
+        final int drawY = (int) (h / 4.f + UIScale.scale(40) + floatingOffset);
 
         final double pulse = (Math.sin(System.currentTimeMillis() / 400.0) + 1.0) / 2.0;
 
@@ -334,7 +338,7 @@ public class IntroPanel extends JPanel implements Runnable {
         RenderUtils.drawBloom(g2d, text, drawX, drawY, pulse, bloomColor);
 
         g2d.setColor(RenderCache.blackWithAlpha(150));
-        g2d.drawString(text, drawX + 3, drawY + 3);
+        g2d.drawString(text, drawX + UIScale.scale(3), drawY + UIScale.scale(3));
 
         g2d.setColor(faceColor);
         g2d.drawString(text, drawX, drawY);
@@ -351,7 +355,7 @@ public class IntroPanel extends JPanel implements Runnable {
         g2d.setStroke(RenderCache.STROKE_2);
         g2d.setColor(RenderCache.customColorWithAlpha(vertGridColor, 120));
         for (int i = -50; i <= 50; i++) {
-            final int bottomX = vanishingPointX + i * 180;
+            final int bottomX = vanishingPointX + i * UIScale.scale(180);
             g2d.drawLine(vanishingPointX, horizonY, bottomX, h);
         }
         g2d.setStroke(RenderCache.STROKE_1);

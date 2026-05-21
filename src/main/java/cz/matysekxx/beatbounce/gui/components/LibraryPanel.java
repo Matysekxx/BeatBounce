@@ -6,6 +6,8 @@ import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
 import cz.matysekxx.beatbounce.system.FileSystem;
 import cz.matysekxx.beatbounce.util.ExceptionHandler;
 
+import cz.matysekxx.beatbounce.util.UIScale;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -42,10 +44,10 @@ public class LibraryPanel extends JPanel {
 
         final JPanel topBar = new JPanel(new BorderLayout());
         topBar.setOpaque(false);
-        topBar.setBorder(new EmptyBorder(25, 40, 15, 40));
+        topBar.setBorder(new EmptyBorder(UIScale.scale(25), UIScale.scale(40), UIScale.scale(15), UIScale.scale(40)));
 
         final JLabel title = new JLabel("YOUR LIBRARY");
-        title.setFont(RenderCache.SANS_BOLD_36);
+        title.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_36));
         title.setForeground(RenderUtils.cyan);
         topBar.add(title, BorderLayout.CENTER);
 
@@ -67,9 +69,9 @@ public class LibraryPanel extends JPanel {
         vsb.setUI(new ScrollBarUI());
         vsb.setOpaque(false);
         vsb.setBackground(new Color(0, 0, 0, 0));
-        vsb.setPreferredSize(new Dimension(16, 0));
-        vsb.setUnitIncrement(40);
-        vsb.setBlockIncrement(120);
+        vsb.setPreferredSize(new Dimension(UIScale.scale(16), 0));
+        vsb.setUnitIncrement(UIScale.scale(40));
+        vsb.setBlockIncrement(UIScale.scale(120));
 
         add(scrollPane, BorderLayout.CENTER);
 
@@ -96,14 +98,14 @@ public class LibraryPanel extends JPanel {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 RenderUtils.initGraphics2D(g2);
-                boolean hover = getModel().isRollover();
+                final boolean hover = getModel().isRollover();
 
                 g2.setColor(hover ? RenderUtils.cyan : new Color(255, 255, 255, 15));
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), UIScale.scale(12), UIScale.scale(12));
 
                 if (!hover) {
                     g2.setColor(new Color(0, 255, 255, 60));
-                    g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 12, 12);
+                    g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, UIScale.scale(12), UIScale.scale(12));
                 }
 
                 g2.setColor(hover ? Color.BLACK : Color.WHITE);
@@ -112,8 +114,8 @@ public class LibraryPanel extends JPanel {
                 g2.dispose();
             }
         };
-        btn.setPreferredSize(new Dimension(200, 45));
-        btn.setFont(RenderCache.SANS_BOLD_15);
+        btn.setPreferredSize(new Dimension(UIScale.scale(200), UIScale.scale(45)));
+        btn.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_15));
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);
@@ -128,8 +130,9 @@ public class LibraryPanel extends JPanel {
      */
     private void addLocalSong() {
         final JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setMinimumSize(new Dimension(800, 600));
-        fileChooser.setPreferredSize(new Dimension(800, 600));
+        final Dimension fileDim = new Dimension(UIScale.scale(800), UIScale.scale(600));
+        fileChooser.setMinimumSize(fileDim);
+        fileChooser.setPreferredSize(fileDim);
         fileChooser.setDialogTitle("Select Audio File");
         fileChooser.setAcceptAllFileFilterUsed(false);
         fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Audio Files (*.mp3, *.wav, *.ogg, *.flac)", "mp3", "wav", "ogg", "flac"));
@@ -153,19 +156,19 @@ public class LibraryPanel extends JPanel {
      */
     public void loadLibrary() {
         listPanel.removeAll();
-        listPanel.setBorder(new EmptyBorder(10, 40, 20, 40));
+        listPanel.setBorder(new EmptyBorder(UIScale.scale(10), UIScale.scale(40), UIScale.scale(20), UIScale.scale(40)));
 
         FileSystem.listMusicFiles().forEach(p -> {
             listPanel.add(new LocalTrackRow(p, screenManager));
-            listPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+            listPanel.add(Box.createRigidArea(new Dimension(0, UIScale.scale(15))));
         });
 
         if (listPanel.getComponentCount() == 0) {
             final JLabel empty = new JLabel("No songs downloaded yet.");
             empty.setForeground(new Color(255, 255, 255, 80));
-            empty.setFont(RenderCache.SANS_ITALIC_22);
+            empty.setFont(UIScale.scaleFont(RenderCache.SANS_ITALIC_22));
             empty.setAlignmentX(Component.CENTER_ALIGNMENT);
-            listPanel.add(Box.createRigidArea(new Dimension(0, 100)));
+            listPanel.add(Box.createRigidArea(new Dimension(0, UIScale.scale(100))));
             listPanel.add(empty);
         }
         listPanel.revalidate();

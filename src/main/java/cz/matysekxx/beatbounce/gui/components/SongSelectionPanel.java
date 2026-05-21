@@ -11,6 +11,8 @@ import cz.matysekxx.beatbounce.util.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.matysekxx.beatbounce.util.UIScale;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -29,7 +31,6 @@ import java.util.stream.Collectors;
  * It includes search functionality and genre filters.
  */
 public class SongSelectionPanel extends JPanel implements Runnable {
-    private static final Logger LOG = LoggerFactory.getLogger(SongSelectionPanel.class);
 
     /**
      * Client for interacting with the Audius API.
@@ -139,9 +140,9 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         vsb.setUI(new ScrollBarUI());
         vsb.setOpaque(false);
         vsb.setBackground(new Color(0, 0, 0, 0));
-        vsb.setPreferredSize(new Dimension(16, 0));
-        vsb.setUnitIncrement(40);
-        vsb.setBlockIncrement(120);
+        vsb.setPreferredSize(new Dimension(UIScale.scale(16), 0));
+        vsb.setUnitIncrement(UIScale.scale(40));
+        vsb.setBlockIncrement(UIScale.scale(120));
 
         final JScrollBar hsb = sp.getHorizontalScrollBar();
         hsb.setUI(new ScrollBarUI());
@@ -165,8 +166,8 @@ public class SongSelectionPanel extends JPanel implements Runnable {
     private JPanel createTopBar() {
         final JPanel topBar = new JPanel(new BorderLayout());
         topBar.setOpaque(false);
-        topBar.setPreferredSize(new Dimension(0, 56));
-        topBar.setBorder(new EmptyBorder(0, 20, 0, 20));
+        topBar.setPreferredSize(new Dimension(0, UIScale.scale(56)));
+        topBar.setBorder(new EmptyBorder(0, UIScale.scale(20), 0, UIScale.scale(20)));
 
         final JPanel searchContainer = new JPanel(new GridBagLayout());
         searchContainer.setOpaque(false);
@@ -186,10 +187,10 @@ public class SongSelectionPanel extends JPanel implements Runnable {
             }
         };
         searchField.setOpaque(false);
-        searchField.setBorder(new EmptyBorder(0, 15, 0, 15));
+        searchField.setBorder(new EmptyBorder(0, UIScale.scale(15), 0, UIScale.scale(15)));
         searchField.setForeground(Color.WHITE);
         searchField.setCaretColor(Color.WHITE);
-        searchField.setPreferredSize(new Dimension(500, 32));
+        searchField.setPreferredSize(new Dimension(UIScale.scale(500), UIScale.scale(32)));
         searchField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -204,7 +205,7 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         searchContainer.add(searchField);
         topBar.add(searchContainer, BorderLayout.CENTER);
 
-        final JPanel genrePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 12));
+        final JPanel genrePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, UIScale.scale(8), UIScale.scale(12)));
         genrePanel.setOpaque(false);
         final String[] genres = {"All-Time", "Trending", "Electronic", "Hip-Hop", "Pop", "World"};
         for (String g : genres) {
@@ -238,11 +239,11 @@ public class SongSelectionPanel extends JPanel implements Runnable {
                     g2.setColor(new Color(200, 200, 200, 150));
                 }
                 final FontMetrics fm = g2.getFontMetrics();
-                g2.drawString(getText(), (getWidth() - fm.stringWidth(getText())) / 2, getHeight() / 2 + 5);
+                g2.drawString(getText(), (getWidth() - fm.stringWidth(getText())) / 2, getHeight() / 2 + UIScale.scale(5));
                 g2.dispose();
             }
         };
-        btn.setPreferredSize(new Dimension(90, 28));
+        btn.setPreferredSize(new Dimension(UIScale.scale(90), UIScale.scale(28)));
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);

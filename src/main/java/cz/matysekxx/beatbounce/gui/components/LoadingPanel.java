@@ -4,6 +4,8 @@ import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.util.Time;
 
+import cz.matysekxx.beatbounce.util.UIScale;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -158,7 +160,7 @@ public class LoadingPanel extends JPanel implements Runnable {
             drawText = drawText.substring(0, drawText.length() - 3) + ".".repeat(dotsCount);
         }
 
-        g2.setFont(RenderCache.MONO_ITALIC_BOLD_78);
+        g2.setFont(UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_78));
         final FontMetrics fm = g2.getFontMetrics();
         final int x = (w - fm.stringWidth(drawText)) / 2;
         final int y = h / 3;
@@ -180,22 +182,23 @@ public class LoadingPanel extends JPanel implements Runnable {
      * Renders the stylized progress bar.
      */
     private void drawProgressBar(Graphics2D g2, int w, int h, float pulse) {
-        final int barWidth = Math.min(500, (int) (w * 0.4));
+        final int barWidth = Math.min(UIScale.scale(500), (int) (w * 0.4));
         final int barX = (w - barWidth) >> 1;
         final int barY = (int) (h * 0.65);
-        final int arcSize = 10;
+        final int arcSize = UIScale.scale(10);
 
         g2.setColor(new Color(255, 255, 255, 15));
-        g2.fillRoundRect(barX, barY, barWidth, 6, arcSize, arcSize);
+        final int barH = UIScale.scale(6);
+        g2.fillRoundRect(barX, barY, barWidth, barH, arcSize, arcSize);
 
         final int fillWidth = (int) (barWidth * progress);
         if (fillWidth > 4) {
             g2.setColor(new Color(RenderUtils.purple.getRed(), RenderUtils.purple.getGreen(), RenderUtils.purple.getBlue(), (int) (40 + 20 * pulse)));
-            g2.fillRoundRect(barX - 2, barY - 2, fillWidth + 4, 10, arcSize, arcSize);
+            g2.fillRoundRect(barX - UIScale.scale(2), barY - UIScale.scale(2), fillWidth + UIScale.scale(4), UIScale.scale(10), arcSize, arcSize);
 
             final GradientPaint fillGrad = new GradientPaint(barX, barY, RenderUtils.purple, barX + fillWidth, barY, RenderUtils.cyan);
             g2.setPaint(fillGrad);
-            g2.fillRoundRect(barX, barY, fillWidth, 6, arcSize, arcSize);
+            g2.fillRoundRect(barX, barY, fillWidth, barH, arcSize, arcSize);
         }
 
         drawPercentLabel(g2, barX, barY, barWidth);
@@ -205,11 +208,11 @@ public class LoadingPanel extends JPanel implements Runnable {
      * Renders the text label showing the current loading percentage.
      */
     private void drawPercentLabel(Graphics2D g2, int barX, int barY, int barWidth) {
-        g2.setFont(RenderCache.MONO_BOLD_16);
+        g2.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_16));
         final String percentText = (int) (progress * 100) + "%";
         final FontMetrics fm = g2.getFontMetrics();
         final int pctX = barX + (barWidth >> 1) - (fm.stringWidth(percentText) >> 1);
-        final int pctY = barY + 35;
+        final int pctY = barY + UIScale.scale(35);
 
         g2.setColor(PERCENT_SHADOW_COLOR);
         g2.drawString(percentText, pctX - 1, pctY);
@@ -223,10 +226,10 @@ public class LoadingPanel extends JPanel implements Runnable {
      * Renders the footer hint text.
      */
     private void drawFooter(Graphics2D g2, int w, int h) {
-        g2.setFont(RenderCache.SANS_PLAIN_20);
+        g2.setFont(UIScale.scaleFont(RenderCache.SANS_PLAIN_20));
         g2.setColor(FOOTER_COLOR);
         final String hint = "Press ESC to cancel";
         final FontMetrics hintFm = g2.getFontMetrics();
-        g2.drawString(hint, (w - hintFm.stringWidth(hint)) >> 1, h - 40);
+        g2.drawString(hint, (w - hintFm.stringWidth(hint)) >> 1, h - UIScale.scale(40));
     }
 }

@@ -9,6 +9,8 @@ import cz.matysekxx.beatbounce.util.ExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.matysekxx.beatbounce.util.UIScale;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -63,10 +65,9 @@ public class LocalTrackRow extends JPanel {
         this.bestScore = String.valueOf(ScoreManager.getBestScore(fileName));
 
         this.setOpaque(false);
-        this.setPreferredSize(new Dimension(0, 90));
-        this.setMaximumSize(new Dimension(Integer.MAX_VALUE, 90));
+        this.setPreferredSize(new Dimension(0, UIScale.scale(90)));
+        this.setMaximumSize(new Dimension(Integer.MAX_VALUE, UIScale.scale(90)));
         this.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -119,51 +120,52 @@ public class LocalTrackRow extends JPanel {
         } else {
             g2.setColor(new Color(255, 255, 255, 12));
         }
-        g2.fillRoundRect(0, 0, w, h, 18, 18);
+        g2.fillRoundRect(0, 0, w, h, UIScale.scale(18), UIScale.scale(18));
 
         g2.setColor(hovered ? new Color(0, 255, 255, 120) : new Color(255, 255, 255, 25));
-        g2.drawRoundRect(0, 0, w - 1, h - 1, 18, 18);
+        g2.drawRoundRect(0, 0, w - 1, h - 1, UIScale.scale(18), UIScale.scale(18));
 
         g2.setColor(new Color(255, 255, 255, 25));
-        g2.fillRoundRect(18, 15, 60, 60, 12, 12);
-        g2.setFont(RenderCache.SANS_BOLD_26);
+        g2.fillRoundRect(UIScale.scale(18), UIScale.scale(15), UIScale.scale(60), UIScale.scale(60), UIScale.scale(12), UIScale.scale(12));
+        g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_26));
         g2.setColor(hovered ? RenderUtils.cyan : Color.WHITE);
         final String icon = "🎵";
         FontMetrics fmIcon = g2.getFontMetrics();
-        g2.drawString(icon, 18 + (60 - fmIcon.stringWidth(icon)) / 2, 15 + 42);
+        g2.drawString(icon, UIScale.scale(18) + (UIScale.scale(60) - fmIcon.stringWidth(icon)) / 2, UIScale.scale(15) + UIScale.scale(42));
 
-        g2.setFont(RenderCache.SANS_BOLD_22);
+        g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_22));
         g2.setColor(Color.WHITE);
-        g2.drawString(fileName, 100, 42);
+        g2.drawString(fileName, UIScale.scale(100), UIScale.scale(42));
 
-        g2.setFont(RenderCache.SANS_PLAIN_20);
+        g2.setFont(UIScale.scaleFont(RenderCache.SANS_PLAIN_20));
         g2.setColor(new Color(180, 180, 200));
         final String subText = "Stars: " + "★".repeat(stars) + "☆".repeat(10 - stars);
-        g2.drawString(subText, 100, 68);
+        g2.drawString(subText, UIScale.scale(100), UIScale.scale(68));
 
         String scoreText = "BEST: " + bestScore;
-        g2.setFont(RenderCache.MONO_BOLD_17);
+        g2.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_17));
         final FontMetrics fmScore = g2.getFontMetrics();
-        final int scoreW = fmScore.stringWidth(scoreText) + 24;
-        final int scoreX = w - 170 - scoreW;
+        final int scoreW = fmScore.stringWidth(scoreText) + UIScale.scale(24);
+        final int scoreX = w - UIScale.scale(170) - scoreW;
 
         g2.setColor(new Color(255, 255, 255, 20));
-        g2.fillRoundRect(scoreX, (h - 34) / 2, scoreW, 34, 10, 10);
+        final int scoreH = UIScale.scale(34);
+        g2.fillRoundRect(scoreX, (h - scoreH) / 2, scoreW, scoreH, UIScale.scale(10), UIScale.scale(10));
         g2.setColor(RenderUtils.cyan);
-        g2.drawString(scoreText, scoreX + 12, (h - 34) / 2 + 24);
+        g2.drawString(scoreText, scoreX + UIScale.scale(12), (h - scoreH) / 2 + UIScale.scale(24));
 
-        final int btnW = 140, btnH = 50;
-        final int bx = w - 155;
+        final int btnW = UIScale.scale(140), btnH = UIScale.scale(50);
+        final int bx = w - UIScale.scale(155);
         final int by = (h - btnH) / 2;
 
         g2.setColor(hovered ? RenderUtils.cyan : new Color(0, 200, 255));
-        g2.fillRoundRect(bx, by, btnW, btnH, 14, 14);
+        g2.fillRoundRect(bx, by, btnW, btnH, UIScale.scale(14), UIScale.scale(14));
 
         g2.setColor(Color.BLACK);
-        g2.setFont(RenderCache.SANS_BOLD_20);
+        g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_20));
         String playTxt = "PLAY";
         final FontMetrics fmPlay = g2.getFontMetrics();
-        g2.drawString(playTxt, bx + (btnW - fmPlay.stringWidth(playTxt)) / 2, by + 32);
+        g2.drawString(playTxt, bx + (btnW - fmPlay.stringWidth(playTxt)) / 2, by + UIScale.scale(32));
 
         g2.dispose();
     }

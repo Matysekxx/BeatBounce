@@ -2,6 +2,8 @@ package cz.matysekxx.beatbounce.gui.components;
 
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 
+import cz.matysekxx.beatbounce.util.UIScale;
+
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
@@ -13,16 +15,6 @@ import java.awt.event.MouseEvent;
  * It uses {@link RenderUtils} to initialize graphics and follows the game's aesthetic.
  */
 public class ScrollBarUI extends BasicScrollBarUI {
-    /**
-     * Width of the scroll bar thumb in pixels.
-     */
-    private static final int THUMB_WIDTH = 4;
-
-    /**
-     * Arc size for rounding the thumb corners.
-     */
-    private static final int THUMB_ARC = 4;
-
     /**
      * Base color for the scroll bar thumb.
      */
@@ -115,7 +107,7 @@ public class ScrollBarUI extends BasicScrollBarUI {
      */
     @Override
     protected Dimension getMinimumThumbSize() {
-        return new Dimension(THUMB_WIDTH, 32);
+        return new Dimension(UIScale.scale(4), UIScale.scale(32));
     }
 
     /**
@@ -127,12 +119,14 @@ public class ScrollBarUI extends BasicScrollBarUI {
      */
     @Override
     protected void paintTrack(Graphics g, JComponent c, Rectangle bounds) {
-        Graphics2D g2 = (Graphics2D) g.create();
+        final Graphics2D g2 = (Graphics2D) g.create();
         RenderUtils.initGraphics2D(g2);
 
-        final int x = bounds.x + bounds.width - THUMB_WIDTH - 2;
+        final int thumbW = UIScale.scale(4);
+        final int arc = UIScale.scale(4);
+        final int x = bounds.x + bounds.width - thumbW - UIScale.scale(2);
         g2.setColor(TRACK_COLOR);
-        g2.fillRoundRect(x, bounds.y, THUMB_WIDTH, bounds.height, THUMB_ARC, THUMB_ARC);
+        g2.fillRoundRect(x, bounds.y, thumbW, bounds.height, arc, arc);
 
         g2.dispose();
     }
@@ -150,12 +144,14 @@ public class ScrollBarUI extends BasicScrollBarUI {
         Graphics2D g2 = (Graphics2D) g.create();
         RenderUtils.initGraphics2D(g2);
 
-        final int x = bounds.x + bounds.width - THUMB_WIDTH - 2;
-        final int y = bounds.y + 2;
-        final int h = Math.max(bounds.height - 4, 10);
+        final int thumbW = UIScale.scale(4);
+        final int arc = UIScale.scale(4);
+        final int x = bounds.x + bounds.width - thumbW - UIScale.scale(2);
+        final int y = bounds.y + UIScale.scale(2);
+        final int h = Math.max(bounds.height - UIScale.scale(4), UIScale.scale(10));
 
         g2.setColor(hovered ? THUMB_HOVER_COLOR : THUMB_COLOR);
-        g2.fillRoundRect(x, y, THUMB_WIDTH, h, THUMB_ARC, THUMB_ARC);
+        g2.fillRoundRect(x, y, thumbW, h, arc, arc);
 
         g2.dispose();
     }

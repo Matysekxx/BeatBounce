@@ -2,6 +2,8 @@ package cz.matysekxx.beatbounce.gui.components;
 
 import cz.matysekxx.beatbounce.gui.RenderCache;
 
+import cz.matysekxx.beatbounce.util.UIScale;
+
 import java.awt.*;
 import java.util.Random;
 
@@ -45,7 +47,7 @@ public class ScorePopup {
     /**
      * Speed at which the popup floats upwards (pixels per second).
      */
-    private final double speed = 50.0;
+    private final double speed;
 
     /**
      * Random horizontal jitter applied to the popup.
@@ -85,7 +87,8 @@ public class ScorePopup {
         this.x = startX;
         this.y = startY;
         this.color = color;
-        this.xOffset = (RANDOM.nextDouble() - 0.5) * 60;
+        this.speed = UIScale.scale(50.0f);
+        this.xOffset = (RANDOM.nextDouble() - 0.5) * UIScale.scale(60);
     }
 
     /**
@@ -129,7 +132,7 @@ public class ScorePopup {
     public void paint(Graphics2D g2d, int screenWidth) {
         if (alpha <= 0) return;
 
-        g2d.setFont(RenderCache.SANS_BOLD_26);
+        g2d.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_26));
         int alphaInt = (int) (alpha * 255);
 
         double drawX = x;
@@ -139,14 +142,14 @@ public class ScorePopup {
         drawX += xOffset;
 
         g2d.setColor(RenderCache.customColorWithAlpha(color, (int) (alpha * 120)));
-        g2d.drawString(text, (int) drawX - 2, (int) y);
-        g2d.drawString(text, (int) drawX + 2, (int) y);
-        g2d.drawString(text, (int) drawX, (int) y - 2);
-        g2d.drawString(text, (int) drawX, (int) y + 2);
+        g2d.drawString(text, (int) drawX - UIScale.scale(2), (int) y);
+        g2d.drawString(text, (int) drawX + UIScale.scale(2), (int) y);
+        g2d.drawString(text, (int) drawX, (int) y - UIScale.scale(2));
+        g2d.drawString(text, (int) drawX, (int) y + UIScale.scale(2));
 
 
         g2d.setColor(new Color(0, 0, 0, (int) (alpha * 150)));
-        g2d.drawString(text, (int) drawX + 2, (int) y + 2);
+        g2d.drawString(text, (int) drawX + UIScale.scale(2), (int) y + UIScale.scale(2));
 
         g2d.setColor(RenderCache.customColorWithAlpha(Color.WHITE, alphaInt));
         g2d.drawString(text, (int) drawX, (int) y);

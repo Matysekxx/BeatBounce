@@ -10,6 +10,8 @@ import cz.matysekxx.beatbounce.util.ExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.matysekxx.beatbounce.util.UIScale;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -22,10 +24,6 @@ import java.util.function.Consumer;
  * It handles rendering track info, selection expansion, and initiating downloads/play.
  */
 public class TrackRow extends JPanel {
-    /**
-     * Logger for this class.
-     */
-    private static final Logger LOG = LoggerFactory.getLogger(TrackRow.class);
 
     /**
      * Data model for this track row.
@@ -82,9 +80,9 @@ public class TrackRow extends JPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (data.expansion > 0.8f) {
-                    final int btnW = 110, btnH = 32;
-                    final int bx = getWidth() - 20 - btnW;
-                    final int by = 60;
+                    final int btnW = UIScale.scale(110), btnH = UIScale.scale(32);
+                    final int bx = getWidth() - UIScale.scale(20) - btnW;
+                    final int by = UIScale.scale(60);
                     final Rectangle playRect = new Rectangle(bx, by, btnW, btnH);
                     if (playRect.contains(e.getPoint()) && !data.downloading) {
                         handlePlay();
@@ -101,7 +99,7 @@ public class TrackRow extends JPanel {
      */
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension(getWidth(), 64 + (int) (data.expansion * 44));
+        return new Dimension(getWidth(), UIScale.scale(64) + (int) (data.expansion * UIScale.scale(44)));
     }
 
     /**
@@ -142,7 +140,7 @@ public class TrackRow extends JPanel {
             g2.setColor(new Color(acc.getRed(), acc.getGreen(), acc.getBlue(), 38));
             g2.fillRect(0, 0, w, h);
             g2.setColor(acc);
-            g2.fillRect(0, 0, 3, h);
+            g2.fillRect(0, 0, UIScale.scale(3), h);
         } else if (hovered) {
             g2.setColor(new Color(255, 255, 255, 10));
             g2.fillRect(0, 0, w, h);
@@ -156,33 +154,33 @@ public class TrackRow extends JPanel {
      */
     private void drawTrackDetails(Graphics2D g2, int w, int h) {
         final boolean downloaded = data.isDownloaded(audiusClient);
-        g2.setFont(RenderCache.SANS_BOLD_16);
+        g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_16));
         g2.setColor(downloaded ? RenderUtils.cyan : Color.GRAY);
-        g2.drawString(downloaded ? "✓" : "☁", 20, 38);
+        g2.drawString(downloaded ? "✓" : "☁", UIScale.scale(20), UIScale.scale(38));
 
         g2.setColor(Color.WHITE);
-        g2.setFont(RenderCache.SANS_BOLD_20);
-        g2.drawString(data.title, 50, 28);
+        g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_20));
+        g2.drawString(data.title, UIScale.scale(50), UIScale.scale(28));
         g2.setColor(Color.GRAY);
-        g2.setFont(RenderCache.SANS_PLAIN_15);
-        g2.drawString(data.artist, 50, 48);
+        g2.setFont(UIScale.scaleFont(RenderCache.SANS_PLAIN_15));
+        g2.drawString(data.artist, UIScale.scale(50), UIScale.scale(48));
     }
 
     /**
      * Renders track duration, stars and best score.
      */
     private void drawStats(Graphics2D g2, int w, int h) {
-        final int rightX = w - 20;
-        g2.setFont(RenderCache.SANS_PLAIN_20);
+        final int rightX = w - UIScale.scale(20);
+        g2.setFont(UIScale.scaleFont(RenderCache.SANS_PLAIN_20));
         final String sanitizedTitle = data.title.replaceAll("[\\\\/:*?\"<>|]", "_");
         final String info = String.format("%s  •  Best: %d", data.duration, ScoreManager.getBestScore(sanitizedTitle));
         final FontMetrics fm = g2.getFontMetrics();
         g2.setColor(new Color(200, 200, 200));
-        g2.drawString(info, rightX - fm.stringWidth(info), 38);
+        g2.drawString(info, rightX - fm.stringWidth(info), UIScale.scale(38));
 
         final String stars = "★".repeat(data.stars) + "☆".repeat(10 - data.stars);
         g2.setColor(RenderUtils.cyan);
-        g2.drawString(stars, rightX - fm.stringWidth(info) - g2.getFontMetrics().stringWidth(stars) - 15, 38);
+        g2.drawString(stars, rightX - fm.stringWidth(info) - g2.getFontMetrics().stringWidth(stars) - UIScale.scale(15), UIScale.scale(38));
     }
 
     /**
@@ -190,13 +188,13 @@ public class TrackRow extends JPanel {
      */
     private void drawActionButton(Graphics2D g2, int w, int h) {
         if (data.expansion <= 0.5f) return;
-        final int btnW = 110, btnH = 32, bx = w - 20 - btnW, by = 60;
+        final int btnW = UIScale.scale(110), btnH = UIScale.scale(32), bx = w - UIScale.scale(20) - btnW, by = UIScale.scale(60);
 
         if (data.starting) {
             g2.setColor(Color.WHITE);
-            g2.fillRoundRect(bx, by, btnW, btnH, 8, 8);
+            g2.fillRoundRect(bx, by, btnW, btnH, UIScale.scale(8), UIScale.scale(8));
             g2.setColor(new Color(10, 10, 26));
-            g2.setFont(RenderCache.SANS_BOLD_13);
+            g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_13));
             drawCenteredString(g2, "READY!", bx, by, btnW, btnH);
             final float alpha = Math.max(0, 1.0f - data.startingProgress);
             g2.setColor(new Color(255, 255, 255, (int) (alpha * 120)));
@@ -204,18 +202,18 @@ public class TrackRow extends JPanel {
 
         } else if (data.downloading) {
             g2.setColor(new Color(255, 255, 255, 20));
-            g2.fillRoundRect(bx, by, btnW, btnH, 8, 8);
+            g2.fillRoundRect(bx, by, btnW, btnH, UIScale.scale(8), UIScale.scale(8));
             g2.setPaint(new GradientPaint(bx, by, RenderUtils.purple, bx + btnW, by, RenderUtils.cyan));
-            g2.fillRoundRect(bx, by, (int) (btnW * data.downloadProgress), btnH, 8, 8);
+            g2.fillRoundRect(bx, by, (int) (btnW * data.downloadProgress), btnH, UIScale.scale(8), UIScale.scale(8));
             g2.setColor(Color.WHITE);
-            g2.setFont(RenderCache.SANS_BOLD_11);
+            g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_11));
             drawCenteredString(g2, (int) (data.downloadProgress * 100) + "%", bx, by, btnW, btnH);
 
         } else {
             g2.setColor(data.getAccent());
-            g2.fillRoundRect(bx, by, btnW, btnH, 8, 8);
+            g2.fillRoundRect(bx, by, btnW, btnH, UIScale.scale(8), UIScale.scale(8));
             g2.setColor(new Color(10, 10, 26));
-            g2.setFont(RenderCache.SANS_BOLD_13);
+            g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_13));
             drawCenteredString(g2, "PLAY", bx, by, btnW, btnH);
         }
 

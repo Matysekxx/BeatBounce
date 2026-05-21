@@ -4,6 +4,8 @@ import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.model.audio.AudioManager;
 
+import cz.matysekxx.beatbounce.util.UIScale;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -70,12 +72,14 @@ public class IsometricButton extends JButton {
         this.frontSide = frontSide;
         this.topFill = topFill;
         this.topGlow = topGlow;
-        this.depth = depth;
-        this.arc = arc;
+        this.depth = UIScale.scale(depth);
+        this.arc = UIScale.scale(arc);
         this.setCursor(new Cursor(Cursor.HAND_CURSOR));
         this.setForeground(Color.WHITE);
-        this.setFont(RenderCache.MONO_ITALIC_BOLD_24);
-        this.setPreferredSize(size);
+        this.setFont(UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_24));
+        if (size != null) {
+            this.setPreferredSize(new Dimension(UIScale.scale(size.width), UIScale.scale(size.height)));
+        }
         this.setContentAreaFilled(false);
         this.setBorderPainted(false);
         this.setFocusPainted(false);
@@ -100,7 +104,7 @@ public class IsometricButton extends JButton {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                currentPressOffset = 4;
+                currentPressOffset = UIScale.scale(4);
                 AudioManager.playSFX("/click-sound.mp3");
                 repaint();
             }
@@ -168,7 +172,10 @@ public class IsometricButton extends JButton {
 
         g2.setColor(topGlow);
         g2.setStroke(RenderCache.STROKE_3_5);
-        g2.drawRoundRect(2, 2 + currentPressOffset, w - 4, h - depth - 4, arc, arc);
+        final int drawX = UIScale.scale(2);
+        final int drawW = w - UIScale.scale(4);
+        final int drawH = h - depth - UIScale.scale(4);
+        g2.drawRoundRect(drawX, drawX + currentPressOffset, drawW, drawH, arc, arc);
 
         g2.setFont(getFont());
         g2.setColor(getForeground());
@@ -176,7 +183,7 @@ public class IsometricButton extends JButton {
         final int textX = (w - fm.stringWidth(getText())) >> 1;
         final int textY = (((h - depth) + fm.getAscent() - fm.getDescent()) >> 1) + currentPressOffset;
         g2.setColor(new Color(0, 0, 0, 120));
-        g2.drawString(getText(), textX + 2, textY + 2);
+        g2.drawString(getText(), textX + UIScale.scale(2), textY + UIScale.scale(2));
         g2.setColor(getForeground());
         g2.drawString(getText(), textX, textY);
 

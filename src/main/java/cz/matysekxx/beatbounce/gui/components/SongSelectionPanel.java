@@ -8,9 +8,6 @@ import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
 import cz.matysekxx.beatbounce.util.ExceptionHandler;
 import cz.matysekxx.beatbounce.util.Time;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import cz.matysekxx.beatbounce.util.UIScale;
 
 import javax.swing.*;

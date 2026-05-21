@@ -227,7 +227,7 @@ public class SettingsPanel extends JPanel {
         gameplayGroup.add(particlesCheck = new CustomCheckBox("Enable Background Particles", Settings.particlesEnabled));
         gameplayGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(12))));
         gameplayGroup.add(bloomCheck = new CustomCheckBox("Bloom Post-Processing", Settings.bloomEnabled));
-        
+
         audioGroup.setAlignmentX(Component.LEFT_ALIGNMENT);
         gameplayGroup.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -242,6 +242,24 @@ public class SettingsPanel extends JPanel {
         mainContent.add(rightColumn, gbc);
         add(mainContent, BorderLayout.CENTER);
         add(createBottomPanel(), BorderLayout.SOUTH);
+    }
+
+    /**
+     * Restarts the application by spawning a new Java process.
+     */
+    private static void restart() throws IOException {
+        final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+        final File jarFile;
+        try {
+            jarFile = new File(SettingsPanel.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        if (!jarFile.getName().endsWith(".jar")) return;
+        ProcessBuilder pb = new ProcessBuilder(javaBin, "-jar", jarFile.getPath());
+        pb.directory(jarFile.getParentFile());
+        pb.start();
+        System.exit(0);
     }
 
     /**
@@ -532,24 +550,6 @@ public class SettingsPanel extends JPanel {
         btn.setFocusPainted(false);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         return btn;
-    }
-
-    /**
-     * Restarts the application by spawning a new Java process.
-     */
-    private static void restart() throws IOException {
-        final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
-        final File jarFile;
-        try {
-            jarFile = new File(SettingsPanel.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-        if (!jarFile.getName().endsWith(".jar")) return;
-        ProcessBuilder pb = new ProcessBuilder(javaBin, "-jar", jarFile.getPath());
-        pb.directory(jarFile.getParentFile());
-        pb.start();
-        System.exit(0);
     }
 
     /**

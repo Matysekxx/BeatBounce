@@ -14,14 +14,15 @@ import cz.matysekxx.beatbounce.model.game.GameEngine;
 import cz.matysekxx.beatbounce.model.game.state.GameState;
 import cz.matysekxx.beatbounce.model.level.Level;
 import cz.matysekxx.beatbounce.util.Time;
-
 import cz.matysekxx.beatbounce.util.UIScale;
 
 import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.awt.geom.AffineTransform;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
 /**
@@ -58,101 +59,82 @@ public class GamePanel extends JPanel implements Runnable {
      * Particle array for ambient background animation.
      */
     private final Particle[] particles;
-
-    /**
-     * The primary game loop thread.
-     */
-    private Thread gameThread;
-
-    /**
-     * The audio clip for the current level's song.
-     */
-    private Clip clip;
-
-    /**
-     * The core game logic model.
-     */
-    private GameEngine gameEngine;
-
-    /**
-     * Flag indicating if the game loop is active.
-     */
-    private boolean running;
-
-    /**
-     * Timestamp of the previous frame for delta time calculation.
-     */
-    private long lastFrameTime;
-
-    /**
-     * Current state of cursor visibility.
-     */
-    private boolean isCursorHidden = false;
-
-    /**
-     * The score from the previous update, used to trigger animations.
-     */
-    private int lastScore = 0;
-
-    /**
-     * Alpha value for the score "pop" animation.
-     */
-    private float scorePopAlpha = 0f;
-
-    /**
-     * Helper for rendering game-specific UI elements.
-     */
-    private GameUIRenderer uiRenderer;
-
-    /**
-     * Helper for rendering the 3D world environment.
-     */
-    private GameWorldRenderer worldRenderer;
-
-    /**
-     * Cached width of the panel for background re-generation.
-     */
-    private int cachedW = -1;
-
-    /**
-     * Cached height of the panel for background re-generation.
-     */
-    private int cachedH = -1;
-
-    /**
-     * Frame counter for FPS calculation.
-     */
-    private int frames = 0;
-
-    /**
-     * Timestamp of the last FPS update.
-     */
-    private long lastFpsTime = 0;
-
-    /**
-     * The most recently calculated FPS value.
-     */
-    private int currentUpdateFps = 0;
-
-    /**
-     * Off-screen buffer for double-buffered rendering.
-     */
-    private BufferedImage backBuffer;
-
-    /**
-     * Current particle count based on quality settings.
-     */
-    private int particleCount;
-
-    /**
-     * Accumulated time for animations (seconds).
-     */
-    private float animTime = 0f;
-
     /**
      * Queue for synchronized processing of UI actions.
      */
     private final ActionQueue actionQueue;
+    /**
+     * The primary game loop thread.
+     */
+    private Thread gameThread;
+    /**
+     * The audio clip for the current level's song.
+     */
+    private Clip clip;
+    /**
+     * The core game logic model.
+     */
+    private GameEngine gameEngine;
+    /**
+     * Flag indicating if the game loop is active.
+     */
+    private boolean running;
+    /**
+     * Timestamp of the previous frame for delta time calculation.
+     */
+    private long lastFrameTime;
+    /**
+     * Current state of cursor visibility.
+     */
+    private boolean isCursorHidden = false;
+    /**
+     * The score from the previous update, used to trigger animations.
+     */
+    private int lastScore = 0;
+    /**
+     * Alpha value for the score "pop" animation.
+     */
+    private float scorePopAlpha = 0f;
+    /**
+     * Helper for rendering game-specific UI elements.
+     */
+    private GameUIRenderer uiRenderer;
+    /**
+     * Helper for rendering the 3D world environment.
+     */
+    private GameWorldRenderer worldRenderer;
+    /**
+     * Cached width of the panel for background re-generation.
+     */
+    private int cachedW = -1;
+    /**
+     * Cached height of the panel for background re-generation.
+     */
+    private int cachedH = -1;
+    /**
+     * Frame counter for FPS calculation.
+     */
+    private int frames = 0;
+    /**
+     * Timestamp of the last FPS update.
+     */
+    private long lastFpsTime = 0;
+    /**
+     * The most recently calculated FPS value.
+     */
+    private int currentUpdateFps = 0;
+    /**
+     * Off-screen buffer for double-buffered rendering.
+     */
+    private BufferedImage backBuffer;
+    /**
+     * Current particle count based on quality settings.
+     */
+    private int particleCount;
+    /**
+     * Accumulated time for animations (seconds).
+     */
+    private float animTime = 0f;
 
 
     /**

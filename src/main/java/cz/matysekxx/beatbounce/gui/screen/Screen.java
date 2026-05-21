@@ -9,8 +9,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.net.URL;
 
 /**
@@ -41,7 +39,8 @@ public abstract class Screen extends JFrame {
                 final Image icon = ImageIO.read(url);
                 this.setIconImage(icon);
             }
-        } catch (Exception _) {}
+        } catch (Exception _) {
+        }
 
         this.addComponentListener(new ComponentAdapter() {
             @Override

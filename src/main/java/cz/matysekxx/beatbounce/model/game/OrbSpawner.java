@@ -24,10 +24,10 @@ public class OrbSpawner {
     /**
      * Generates and adds orbs to the level's orb list.
      *
-     * @param level            the level being processed
-     * @param clip             the audio clip to determine song length
-     * @param zUnitsPerSecond  the speed of the game
-     * @param orbs             the list to add generated orbs to
+     * @param level           the level being processed
+     * @param clip            the audio clip to determine song length
+     * @param zUnitsPerSecond the speed of the game
+     * @param orbs            the list to add generated orbs to
      */
     public void spawnOrbs(Level level, Clip clip, double zUnitsPerSecond, List<Orb> orbs) {
         final double totalSeconds = clip.getMicrosecondLength() / 1_000_000.0;

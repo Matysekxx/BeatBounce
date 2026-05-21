@@ -21,7 +21,8 @@ public class ActionQueue {
     /**
      * Private constructor to enforce the singleton pattern.
      */
-    private ActionQueue() {}
+    private ActionQueue() {
+    }
 
     /**
      * Retrieves the singleton instance of the {@code ActionQueue}.

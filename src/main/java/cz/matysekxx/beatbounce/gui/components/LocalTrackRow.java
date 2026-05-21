@@ -6,10 +6,9 @@ import cz.matysekxx.beatbounce.gui.screen.GameScreen;
 import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
 import cz.matysekxx.beatbounce.model.score.ScoreManager;
 import cz.matysekxx.beatbounce.util.ExceptionHandler;
+import cz.matysekxx.beatbounce.util.UIScale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import cz.matysekxx.beatbounce.util.UIScale;
 
 import javax.swing.*;
 import java.awt.*;

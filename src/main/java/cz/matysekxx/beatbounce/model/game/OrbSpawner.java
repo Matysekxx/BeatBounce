@@ -11,9 +11,24 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+/**
+ * Responsible for randomly spawning collectible orbs along the level's path.
+ * Orbs are placed on top of valid tiles to ensure they are reachable.
+ */
 public class OrbSpawner {
+    /**
+     * Random generator for tile selection and orb count.
+     */
     private final Random random = new Random();
 
+    /**
+     * Generates and adds orbs to the level's orb list.
+     *
+     * @param level            the level being processed
+     * @param clip             the audio clip to determine song length
+     * @param zUnitsPerSecond  the speed of the game
+     * @param orbs             the list to add generated orbs to
+     */
     public void spawnOrbs(Level level, Clip clip, double zUnitsPerSecond, List<Orb> orbs) {
         final double totalSeconds = clip.getMicrosecondLength() / 1_000_000.0;
         final int numOrbs = calculateNumOrbs(totalSeconds);
@@ -31,6 +46,9 @@ public class OrbSpawner {
         }
     }
 
+    /**
+     * Heuristically determines how many orbs should spawn based on song duration.
+     */
     private int calculateNumOrbs(double totalSeconds) {
         if (totalSeconds < 30) return 2;
         if (totalSeconds < 60) return 3;
@@ -41,6 +59,9 @@ public class OrbSpawner {
         return 6;
     }
 
+    /**
+     * Filters the level's tiles to find those suitable for holding an orb.
+     */
     private List<AbstractTile> getValidTiles(Level level, double maxOrbZ) {
         return level.tiles().stream()
                 .filter(t -> t instanceof NormalTile && t.getZ() > 2000 && t.getZ() < maxOrbZ)

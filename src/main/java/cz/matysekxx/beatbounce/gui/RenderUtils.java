@@ -47,20 +47,80 @@ public final class RenderUtils {
      * A gray color used for text.
      */
     public static final Color TEXT_GRAY = new Color(160, 160, 170);
+
+    /**
+     * Primary background color.
+     */
     private static final Color BG_COLOR = new Color(8, 8, 12);
+
+    /**
+     * Base color for the floor.
+     */
     private static final Color FLOOR_COLOR = new Color(3, 0, 10);
+
+    /**
+     * Magenta component of the horizon glow.
+     */
     private static final Color HORIZON_MAGENTA = new Color(255, 0, 255, 180);
+
+    /**
+     * White component of the horizon glow.
+     */
     private static final Color HORIZON_WHITE = new Color(255, 255, 255, 200);
+
+    /**
+     * Alpha composite for applying the noise texture.
+     */
     private static final AlphaComposite NOISE_COMPOSITE = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f);
+
+    /**
+     * Color used for shadows under text or objects.
+     */
     private static final Color SHADOW_COLOR = new Color(0, 0, 0, 100);
+
+    /**
+     * Foreground color for main titles.
+     */
     private static final Color TITLE_COLOR = new Color(255, 230, 240);
+
+    /**
+     * Pre-generated noise texture for static-like overlays.
+     */
     private static BufferedImage noiseTexture;
+
+    /**
+     * Cached star positions and intensities.
+     */
     private static int[][] starCache = null;
+
+    /**
+     * Cached width for background resources.
+     */
     private static int bgCachedW = -1;
+
+    /**
+     * Cached height for background resources.
+     */
     private static int bgCachedH = -1;
+
+    /**
+     * First radial gradient for background orbs.
+     */
     private static RadialGradientPaint bgOrb1;
+
+    /**
+     * Second radial gradient for background orbs.
+     */
     private static RadialGradientPaint bgOrb2;
+
+    /**
+     * Third radial gradient for background orbs.
+     */
     private static RadialGradientPaint bgOrb3;
+
+    /**
+     * Gradient paint for the floor.
+     */
     private static GradientPaint floorGradient;
 
     static {
@@ -229,6 +289,16 @@ public final class RenderUtils {
         g2d.drawString(text, x, y);
     }
 
+    /**
+     * Draws a bloom effect behind text to simulate light glow.
+     *
+     * @param g2d        the graphics context
+     * @param text       the text to apply bloom to
+     * @param drawX      the x-coordinate
+     * @param drawY      the y-coordinate
+     * @param pulse      pulsation factor (0.0 to 1.0) for dynamic bloom
+     * @param bloomColor the color of the glow
+     */
     public static void drawBloom(Graphics2D g2d, String text, int drawX, int drawY, double pulse, Color bloomColor) {
         if (Settings.bloomEnabled) {
             for (float j = 6f; j >= 1f; j -= 2.5f) {

@@ -11,6 +11,9 @@ import java.awt.*;
  */
 public class CustomDialog extends JDialog {
 
+    /**
+     * Panel containing the buttons at the bottom of the dialog.
+     */
     private final JPanel buttonPanel;
 
     /**

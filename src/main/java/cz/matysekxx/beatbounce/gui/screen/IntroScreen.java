@@ -4,6 +4,8 @@ import cz.matysekxx.beatbounce.gui.ButtonFactory;
 import cz.matysekxx.beatbounce.gui.components.IntroPanel;
 import cz.matysekxx.beatbounce.model.audio.AudioManager;
 
+import cz.matysekxx.beatbounce.util.UIScale;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
@@ -34,7 +36,7 @@ public class IntroScreen extends Screen {
         this.setContentPane(backgroundPanel);
 
         final JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 40, 20));
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, UIScale.scale(40), UIScale.scale(20)));
         buttonPanel.setOpaque(false);
 
         final JButton startButton = ButtonFactory.createStartButton(e -> {

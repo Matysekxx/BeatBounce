@@ -2,9 +2,12 @@ package cz.matysekxx.beatbounce.gui.screen;
 
 import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.util.ScreenUtil;
+import cz.matysekxx.beatbounce.util.UIScale;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 /**
  * Abstract base class for all game screens.
@@ -27,6 +30,14 @@ public abstract class Screen extends JFrame {
             ScreenUtil.applyDefaultSize(this);
         }
         this.addWindowFocusListener(new FocusListener());
+
+        this.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                UIScale.update(getWidth(), getHeight());
+            }
+        });
+        UIScale.update(getWidth(), getHeight());
     }
 
     /**

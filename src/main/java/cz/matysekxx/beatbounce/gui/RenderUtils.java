@@ -2,6 +2,8 @@ package cz.matysekxx.beatbounce.gui;
 
 import cz.matysekxx.beatbounce.configuration.Settings;
 
+import cz.matysekxx.beatbounce.util.UIScale;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Random;
@@ -174,9 +176,10 @@ public final class RenderUtils {
         g2.setPaint(new LinearGradientPaint(0, 0, w, h,
                 new float[]{0f, 1f},
                 new Color[]{new Color(15, 15, 35, 180), new Color(10, 10, 25, 100)}));
-        g2.fillRoundRect(0, 0, w, h, 24, 24);
+        final int arc = UIScale.scale(24);
+        g2.fillRoundRect(0, 0, w, h, arc, arc);
         g2.setColor(new Color(0, 255, 255, 30));
-        g2.drawRoundRect(0, 0, w - 1, h - 1, 24, 24);
+        g2.drawRoundRect(0, 0, w - 1, h - 1, arc, arc);
         g2.dispose();
     }
 

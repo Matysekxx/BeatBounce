@@ -10,6 +10,8 @@ import cz.matysekxx.beatbounce.gui.components.SettingsPanel;
 import cz.matysekxx.beatbounce.gui.components.SongSelectionPanel;
 import cz.matysekxx.beatbounce.model.audio.AudioManager;
 
+import cz.matysekxx.beatbounce.util.UIScale;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -99,7 +101,7 @@ public class MainMenuScreen extends Screen {
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
         cardPanel.setOpaque(false);
-        cardPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        cardPanel.setBorder(BorderFactory.createEmptyBorder(UIScale.scale(20), UIScale.scale(20), UIScale.scale(20), UIScale.scale(20)));
         backgroundPanel.add(cardPanel, BorderLayout.CENTER);
 
         songSelectionPanel = new SongSelectionPanel(audiusClient, objectMapper, screenManager);
@@ -129,7 +131,7 @@ public class MainMenuScreen extends Screen {
                 g2.dispose();
             }
         };
-        p.setPreferredSize(new Dimension(280, 0));
+        p.setPreferredSize(new Dimension(UIScale.scale(280), 0));
         p.setLayout(new GridBagLayout());
         p.setOpaque(false);
         return p;
@@ -145,15 +147,15 @@ public class MainMenuScreen extends Screen {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(40, 0, 50, 0);
+        gbc.insets = new Insets(UIScale.scale(40), 0, UIScale.scale(50), 0);
 
         final JLabel logo = new JLabel("BEAT BOUNCE");
-        logo.setFont(RenderCache.MONO_ITALIC_BOLD_24);
+        logo.setFont(UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_24));
         logo.setForeground(RenderUtils.cyan);
         logo.setHorizontalAlignment(SwingConstants.CENTER);
         p.add(logo, gbc);
 
-        gbc.insets = new Insets(5, 20, 5, 0);
+        gbc.insets = new Insets(UIScale.scale(5), UIScale.scale(20), UIScale.scale(5), 0);
         gbc.weightx = 1.0;
         int row = 1;
         for (String name : buttonsTitles) {
@@ -164,7 +166,7 @@ public class MainMenuScreen extends Screen {
         gbc.gridy = row;
         gbc.weighty = 1.0;
         gbc.anchor = GridBagConstraints.SOUTH;
-        gbc.insets = new Insets(0, 20, 30, 0);
+        gbc.insets = new Insets(0, UIScale.scale(20), UIScale.scale(30), 0);
         p.add(createSidebarButton("EXIT"), gbc);
 
         return p;
@@ -188,19 +190,19 @@ public class MainMenuScreen extends Screen {
                     g2.fillRect(0, 0, getWidth(), getHeight());
 
                     g2.setColor(RenderUtils.cyan);
-                    g2.fillRect(0, 5, 4, getHeight() - 10);
+                    g2.fillRect(0, UIScale.scale(5), UIScale.scale(4), getHeight() - UIScale.scale(10));
                 }
 
                 g2.setFont(getFont());
                 g2.setColor(active ? Color.WHITE : (getModel().isRollover() ? RenderUtils.cyan : new Color(200, 200, 220)));
                 final FontMetrics fm = g2.getFontMetrics();
-                g2.drawString(getText(), 30, (getHeight() + fm.getAscent() - fm.getDescent()) / 2);
+                g2.drawString(getText(), UIScale.scale(30), (getHeight() + fm.getAscent() - fm.getDescent()) / 2);
 
                 g2.dispose();
             }
         };
-        btn.setFont(RenderCache.SANS_BOLD_18);
-        btn.setPreferredSize(new Dimension(260, 55));
+        btn.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_18));
+        btn.setPreferredSize(new Dimension(UIScale.scale(260), UIScale.scale(55)));
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);

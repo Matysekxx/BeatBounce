@@ -1,5 +1,6 @@
 package cz.matysekxx.beatbounce.gui.components;
 
+import cz.matysekxx.beatbounce.action.ActionQueue;
 import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.controller.GameController;
 import cz.matysekxx.beatbounce.gui.Camera3D;
@@ -150,7 +151,7 @@ public class GamePanel extends JPanel implements Runnable {
     /**
      * Queue for synchronized processing of UI actions.
      */
-    private final ConcurrentLinkedQueue<Runnable> actionQueue = new ConcurrentLinkedQueue<>(); //TODO: vytvorit samostatnou tridu ktera bude spracovavat akce
+    private final ActionQueue actionQueue;
 
 
     /**
@@ -159,6 +160,7 @@ public class GamePanel extends JPanel implements Runnable {
      * @param onExit a callback executed when the game is exited
      */
     public GamePanel(Runnable onExit) {
+        this.actionQueue = ActionQueue.getSingleton();
         this.onExit = onExit;
         this.running = false;
         this.setLayout(new BorderLayout());
@@ -192,6 +194,7 @@ public class GamePanel extends JPanel implements Runnable {
      * @param level the level to play
      */
     public void init(Level level) {
+        this.actionQueue.clear();
         this.clip = level.audioData().clip();
         final Sphere sphere = new Sphere(0, 150, 0, 25);
         this.gameEngine = new GameEngine(level, sphere, cam, clip);
@@ -292,20 +295,11 @@ public class GamePanel extends JPanel implements Runnable {
         });
     }
 
-    /**
-     * Processes all pending UI actions in a synchronized manner within the game thread.
-     */
-    public void processActions() {
-        while (!actionQueue.isEmpty()) {
-            actionQueue.poll().run();
-        }
-    }
-
     @Override
     public void run() {
         final long optimalTimeNanos = 1_000_000_000L / Settings.targetFps;
         while (running) {
-            processActions();
+            actionQueue.processActions();
             final long loopStartTime = System.nanoTime();
             final float dt = (float) ((loopStartTime - lastFrameTime) / 1_000_000_000.0);
             lastFrameTime = loopStartTime;

@@ -1,15 +1,36 @@
-package cz.matysekxx.beatbounce.model.game;
+package cz.matysekxx.beatbounce.model.game.collision;
 
 import cz.matysekxx.beatbounce.model.entity.Orb;
+import cz.matysekxx.beatbounce.model.game.GameEngine;
 
+/**
+ * Handles the detection of collisions between the player sphere and collectible orbs.
+ * Implements Continuous Collision Detection (CCD) to ensure no orbs are skipped at high speeds.
+ */
 public class OrbCollisionEngine {
+    /**
+     * The game engine providing state and entity data.
+     */
     private final GameEngine gameEngine;
+
+    /**
+     * The Z-coordinate of the sphere in the previous frame, used for CCD.
+     */
     private double lastSphereZ = -1;
 
+    /**
+     * Constructs a new OrbCollisionEngine.
+     *
+     * @param gameEngine the game engine
+     */
     public OrbCollisionEngine(GameEngine gameEngine) {
         this.gameEngine = gameEngine;
     }
 
+    /**
+     * Checks for collisions between the sphere and all active orbs.
+     * Uses the Z-interval between the last and current frame to prevent tunneling.
+     */
     public void checkOrbCollisions() {
         final double currentZ = gameEngine.getSphere().getZ();
         final double currentX = gameEngine.getSphere().getX();

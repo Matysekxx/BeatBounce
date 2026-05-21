@@ -105,8 +105,6 @@ public class CollisionEngine {
                 return;
             }
         }
-
-        // CCD: Check if the tile's Z coordinate was crossed during this frame
         if (nextTile.getZ() >= lastZProgress && nextTile.getZ() <= currentZ) {
             if (isPlayerFalling(nextTile)) gameEngine.startFalling();
             else processTileCollision(nextTile);

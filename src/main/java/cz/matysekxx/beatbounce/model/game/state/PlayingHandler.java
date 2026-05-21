@@ -2,7 +2,7 @@ package cz.matysekxx.beatbounce.model.game.state;
 
 import cz.matysekxx.beatbounce.model.audio.AudioManager;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
-import cz.matysekxx.beatbounce.model.game.OrbCollisionEngine;
+import cz.matysekxx.beatbounce.model.game.collision.OrbCollisionEngine;
 import cz.matysekxx.beatbounce.model.game.TileManager;
 import cz.matysekxx.beatbounce.model.game.collision.CollisionEngine;
 

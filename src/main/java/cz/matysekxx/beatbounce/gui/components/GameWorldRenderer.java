@@ -12,6 +12,8 @@ import cz.matysekxx.beatbounce.model.game.GameEngine;
 import cz.matysekxx.beatbounce.model.game.state.GameState;
 import cz.matysekxx.beatbounce.model.level.Level;
 
+import cz.matysekxx.beatbounce.util.UIScale;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
@@ -138,8 +140,8 @@ public class GameWorldRenderer {
      */
     private void drawPlanet(Graphics2D g2d, int width, int horizonY, long time, float globalHue) {
         final int cx = width / 2;
-        final int cy = horizonY - 150;
-        final int r = 100;
+        final int cy = horizonY - UIScale.scale(150);
+        final int r = UIScale.scale(100);
         final float t = time / 1000.0f;
         final float pulse = (float) ((Math.sin(t * 1.5) + 1.0) / 2.0);
 
@@ -153,10 +155,10 @@ public class GameWorldRenderer {
                 new Color[]{RenderCache.customColorWithAlpha(baseColor, glowAlpha), TRANSPARENT}));
         g2d.fillOval(cx - glowR, cy - glowR, glowR * 2, glowR * 2);
 
-        final int ry = cy + (int) (Math.sin(t * 0.4) * 8);
+        final int ry = cy + (int) (Math.sin(t * 0.4) * UIScale.scale(8));
 
-        drawRing(g2d, cx, ry, r * 1.8f, 28, 0, RenderCache.customColorWithAlpha(secondaryColor, 60), RenderCache.STROKE_1);
-        drawRing(g2d, cx, ry, r * 1.4f, 18, 0, RenderCache.customColorWithAlpha(baseColor, 40), RenderCache.STROKE_1);
+        drawRing(g2d, cx, ry, r * 1.8f, UIScale.scale(28), 0, RenderCache.customColorWithAlpha(secondaryColor, 60), RenderCache.STROKE_1);
+        drawRing(g2d, cx, ry, r * 1.4f, UIScale.scale(18), 0, RenderCache.customColorWithAlpha(baseColor, 40), RenderCache.STROKE_1);
 
         g2d.setPaint(new RadialGradientPaint(cx - r / 2.5f, cy - r / 2.5f, r * 1.5f,
                 new float[]{0f, 1f}, new Color[]{PLANET_BODY_LIGHT, PLANET_BODY_DARK}));
@@ -167,9 +169,9 @@ public class GameWorldRenderer {
             g2d.setStroke(RenderCache.STROKE_2_5);
             g2d.drawOval(cx - r, cy - r, r * 2, r * 2);
 
-            drawRing(g2d, cx, ry, r * 1.4f, 18, 180, RenderCache.customColorWithAlpha(baseColor, (int) (180 + 75 * pulse)), RenderCache.STROKE_2);
-            drawRing(g2d, cx, ry, r * 1.8f, 28, 180, RenderCache.customColorWithAlpha(secondaryColor, (int) (140 + 60 * pulse)), RenderCache.STROKE_2_5);
-            drawRing(g2d, cx, ry, r * 1.8f, 28, 180, PLANET_RING_INNER, RenderCache.STROKE_1);
+            drawRing(g2d, cx, ry, r * 1.4f, UIScale.scale(18), 180, RenderCache.customColorWithAlpha(baseColor, (int) (180 + 75 * pulse)), RenderCache.STROKE_2);
+            drawRing(g2d, cx, ry, r * 1.8f, UIScale.scale(28), 180, RenderCache.customColorWithAlpha(secondaryColor, (int) (140 + 60 * pulse)), RenderCache.STROKE_2_5);
+            drawRing(g2d, cx, ry, r * 1.8f, UIScale.scale(28), 180, PLANET_RING_INNER, RenderCache.STROKE_1);
         }
         g2d.setStroke(RenderCache.STROKE_1);
     }

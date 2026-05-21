@@ -10,17 +10,64 @@ import java.awt.event.ActionListener;
  * Factory class for creating styled isometric buttons used in the application.
  */
 public class ButtonFactory {
+    /**
+     * Glow color for magenta-themed buttons.
+     */
     private static final Color MAGENTA_TOP_GLOW = new Color(255, 100, 200);
+
+    /**
+     * Fill color for magenta-themed buttons.
+     */
     private static final Color MAGENTA_TOP_FILL = new Color(255, 0, 128);
+
+    /**
+     * Front face color for magenta-themed buttons.
+     */
     private static final Color MAGENTA_FRONT_SIDE = new Color(100, 0, 50);
+
+    /**
+     * Glow color for cyan-themed buttons.
+     */
     private static final Color CYAN_TOP_GLOW = new Color(100, 255, 255);
+
+    /**
+     * Fill color for cyan-themed buttons.
+     */
     private static final Color CYAN_TOP_FILL = new Color(0, 200, 255);
+
+    /**
+     * Front face color for cyan-themed buttons.
+     */
     private static final Color CYAN_FRONT_SIDE = new Color(0, 70, 100);
+
+    /**
+     * Glow color for yellow-themed buttons.
+     */
     private static final Color YELLOW_TOP_GLOW = new Color(255, 255, 150);
+
+    /**
+     * Fill color for yellow-themed buttons.
+     */
     private static final Color YELLOW_TOP_FILL = new Color(255, 215, 0);
+
+    /**
+     * Front face color for yellow-themed buttons.
+     */
     private static final Color YELLOW_FRONT_SIDE = new Color(120, 100, 0);
+
+    /**
+     * Glow color for red-themed buttons.
+     */
     private static final Color RED_TOP_GLOW = new Color(255, 120, 120);
+
+    /**
+     * Fill color for red-themed buttons.
+     */
     private static final Color RED_TOP_FILL = new Color(230, 0, 0);
+
+    /**
+     * Front face color for red-themed buttons.
+     */
     private static final Color RED_FRONT_SIDE = new Color(110, 0, 0);
 
     /**

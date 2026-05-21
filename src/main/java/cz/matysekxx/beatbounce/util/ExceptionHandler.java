@@ -14,6 +14,9 @@ import java.awt.*;
  * Centralized exception handling utility that logs errors and displays them to the player.
  */
 public class ExceptionHandler {
+    /**
+     * Logger for this class.
+     */
     private static final Logger LOG = LoggerFactory.getLogger(ExceptionHandler.class);
 
     /**

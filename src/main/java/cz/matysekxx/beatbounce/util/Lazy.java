@@ -35,7 +35,14 @@ import java.util.function.Supplier;
  * @param <T> The type of the value.
  */
 public class Lazy<T> {
+    /**
+     * The provider function used to compute the value.
+     */
     private final Supplier<T> supplier;
+
+    /**
+     * The cached value after computation, or null if not yet initialized.
+     */
     private volatile T value;
 
     /**

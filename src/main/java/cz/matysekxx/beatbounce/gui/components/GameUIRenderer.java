@@ -7,6 +7,8 @@ import cz.matysekxx.beatbounce.model.game.ReviveManager;
 import cz.matysekxx.beatbounce.model.game.state.GameState;
 import cz.matysekxx.beatbounce.model.score.ScoreManager;
 
+import cz.matysekxx.beatbounce.util.UIScale;
+
 import javax.sound.sampled.Clip;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
@@ -220,8 +222,8 @@ public class GameUIRenderer {
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
 
         final int centerX = width / 2;
-        final int centerY = height / 2 + 180;
-        final int amplitude = 120;
+        final int centerY = height / 2 + UIScale.scale(180);
+        final int amplitude = UIScale.scale(120);
         final double speed = 3.5;
 
         for (int i = 1; i <= 5; i++) {
@@ -233,10 +235,10 @@ public class GameUIRenderer {
 
         final int mX = centerX + (int) (Math.sin(tutorialTimer * speed) * amplitude);
         drawMouseShape(g2d, mX, centerY, RenderUtils.cyan, true);
-        g2d.setFont(RenderCache.MONO_BOLD_17);
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_17));
         final String text = "MOVE MOUSE TO CONTROL";
         final FontMetrics fm = g2d.getFontMetrics();
-        RenderUtils.drawText(g2d, text, (width - fm.stringWidth(text)) / 2, centerY + 80, RenderUtils.cyan);
+        RenderUtils.drawText(g2d, text, (width - fm.stringWidth(text)) / 2, centerY + UIScale.scale(80), RenderUtils.cyan);
 
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
     }
@@ -245,24 +247,24 @@ public class GameUIRenderer {
      * Renders a mouse icon for the tutorial.
      */
     private void drawMouseShape(Graphics2D g2d, int x, int y, Color color, boolean fullDetail) {
-        final int mouseW = 50;
-        final int mouseH = 70;
+        final int mouseW = UIScale.scale(50);
+        final int mouseH = UIScale.scale(70);
         final int mouseXPos = x - mouseW / 2;
         final int mouseYPos = y - mouseH / 2;
 
         if (fullDetail) {
             g2d.setColor(new Color(0, 0, 0, 160));
-            g2d.fillRoundRect(mouseXPos, mouseYPos, mouseW, mouseH, 24, 24);
+            g2d.fillRoundRect(mouseXPos, mouseYPos, mouseW, mouseH, UIScale.scale(24), UIScale.scale(24));
         }
 
         g2d.setStroke(RenderCache.STROKE_3);
         g2d.setColor(color);
-        g2d.drawRoundRect(mouseXPos, mouseYPos, mouseW, mouseH, 24, 24);
+        g2d.drawRoundRect(mouseXPos, mouseYPos, mouseW, mouseH, UIScale.scale(24), UIScale.scale(24));
 
         if (fullDetail) {
             g2d.setStroke(RenderCache.STROKE_2);
-            g2d.drawLine(x, mouseYPos, x, mouseYPos + 25);
-            g2d.drawLine(mouseXPos, mouseYPos + 25, mouseXPos + mouseW, mouseYPos + 25);
+            g2d.drawLine(x, mouseYPos, x, mouseYPos + UIScale.scale(25));
+            g2d.drawLine(mouseXPos, mouseYPos + UIScale.scale(25), mouseXPos + mouseW, mouseYPos + UIScale.scale(25));
         }
     }
 
@@ -277,17 +279,17 @@ public class GameUIRenderer {
         final String text = String.valueOf((int) Math.ceil(gameEngine.getCountdownTime()));
 
         final double countFrac = gameEngine.getCountdownTime() % 1.0;
-        final int ringR = (int) (countFrac * 230);
+        final int ringR = (int) (countFrac * UIScale.scale(230));
         final int ringAlpha = (int) (220 * (1.0 - countFrac));
 
         if (ringR > 2 && ringAlpha > 0) {
             drawRing(g2d, width / 2, height / 2, ringR, RenderUtils.cyan, ringAlpha, RenderCache.STROKE_2);
-            drawRing(g2d, width / 2, height / 2, Math.max(0, ringR - 20), RenderUtils.cyan, (int) (ringAlpha * 0.6), RenderCache.STROKE_2);
-            drawRing(g2d, width / 2, height / 2, Math.max(0, ringR - 40), RenderUtils.cyan, (int) (ringAlpha * 0.3), RenderCache.STROKE_1);
+            drawRing(g2d, width / 2, height / 2, Math.max(0, ringR - UIScale.scale(20)), RenderUtils.cyan, (int) (ringAlpha * 0.6), RenderCache.STROKE_2);
+            drawRing(g2d, width / 2, height / 2, Math.max(0, ringR - UIScale.scale(40)), RenderUtils.cyan, (int) (ringAlpha * 0.3), RenderCache.STROKE_1);
             g2d.setStroke(RenderCache.STROKE_1);
         }
 
-        g2d.setFont(RenderCache.MONO_BOLD_150);
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_150));
         final FontMetrics fm = g2d.getFontMetrics();
         RenderUtils.drawText(g2d, text, (width - fm.stringWidth(text)) / 2, (height + fm.getAscent()) / 2, RenderUtils.cyan);
     }
@@ -309,18 +311,18 @@ public class GameUIRenderer {
         final int cardY = (height - cardH) / 2;
 
         g2d.setPaint(new RadialGradientPaint(width / 2f, height / 2f, cardW * 0.7f, new float[]{0f, 1f}, new Color[]{RenderCache.customColorWithAlpha(accentColor, (int) (18 + 15 * pulse)), new Color(0, 0, 0, 0)}));
-        g2d.fillRoundRect(cardX - 20, cardY - 20, cardW + 40, cardH + 40, 30, 30);
+        g2d.fillRoundRect(cardX - UIScale.scale(20), cardY - UIScale.scale(20), cardW + UIScale.scale(40), cardH + UIScale.scale(40), UIScale.scale(30), UIScale.scale(30));
 
         g2d.setColor(new Color(6, 0, 18, 230));
-        g2d.fillRoundRect(cardX, cardY, cardW, cardH, 18, 18);
+        g2d.fillRoundRect(cardX, cardY, cardW, cardH, UIScale.scale(18), UIScale.scale(18));
 
         g2d.setColor(RenderCache.customColorWithAlpha(accentColor, (int) (110 + 100 * pulse)));
         g2d.setStroke(RenderCache.STROKE_2);
-        g2d.drawRoundRect(cardX, cardY, cardW, cardH, 18, 18);
+        g2d.drawRoundRect(cardX, cardY, cardW, cardH, UIScale.scale(18), UIScale.scale(18));
 
         g2d.setColor(RenderCache.customColorWithAlpha(accentColor, (int) (25 + 15 * pulse)));
         g2d.setStroke(RenderCache.STROKE_1);
-        g2d.drawRoundRect(cardX + 4, cardY + 4, cardW - 8, cardH - 8, 14, 14);
+        g2d.drawRoundRect(cardX + UIScale.scale(4), cardY + UIScale.scale(4), cardW - UIScale.scale(8), cardH - UIScale.scale(8), UIScale.scale(14), UIScale.scale(14));
     }
 
     /**
@@ -336,7 +338,7 @@ public class GameUIRenderer {
     private int setupScreenCard(Graphics2D g2d, int width, int height, int cardW, int cardH, Color accentColor, float pulse) {
         final float appearProgress = Math.min(1f, screenAppearTimer / 0.4f);
         final float easedAppear = 1f - (float) Math.pow(1f - appearProgress, 3);
-        final int offsetY = (int) (-50 * (1f - easedAppear));
+        final int offsetY = (int) (UIScale.scale(-50) * (1f - easedAppear));
         g2d.translate(0, offsetY);
         this.currentTranslateY = offsetY;
 
@@ -351,7 +353,7 @@ public class GameUIRenderer {
     private void teardownScreenCard(Graphics2D g2d) {
         final float appearProgress = Math.min(1f, screenAppearTimer / 0.4f);
         final float easedAppear = 1f - (float) Math.pow(1f - appearProgress, 3);
-        final int offsetY = (int) (-50 * (1f - easedAppear));
+        final int offsetY = (int) (UIScale.scale(-50) * (1f - easedAppear));
         g2d.translate(0, -offsetY);
         this.currentTranslateY = 0;
     }
@@ -362,7 +364,7 @@ public class GameUIRenderer {
     private void drawCardLine(Graphics2D g2d, int width, int cardW, int y, Color color, float pulse) {
         g2d.setColor(RenderCache.customColorWithAlpha(color, (int) (70 + 50 * pulse)));
         g2d.setStroke(RenderCache.STROKE_2);
-        g2d.drawLine((width - cardW) / 2 + 40, y, (width + cardW) / 2 - 40, y);
+        g2d.drawLine((width - cardW) / 2 + UIScale.scale(40), y, (width + cardW) / 2 - UIScale.scale(40), y);
         g2d.setStroke(RenderCache.STROKE_1);
     }
 
@@ -370,8 +372,8 @@ public class GameUIRenderer {
      * Helper to draw two buttons side-by-side at the bottom of an end screen.
      */
     private void drawEndScreenButtons(Graphics2D g2d, int width, int y, String l1, UIAction a1, String l2, UIAction a2) {
-        drawButton(g2d, l1, width / 2 - 230, y, 220, a1);
-        drawButton(g2d, l2, width / 2 + 10, y, 220, a2);
+        drawButton(g2d, l1, width / 2 - UIScale.scale(230), y, UIScale.scale(220), a1);
+        drawButton(g2d, l2, width / 2 + UIScale.scale(10), y, UIScale.scale(220), a2);
     }
 
     /**
@@ -386,21 +388,21 @@ public class GameUIRenderer {
         g2d.fillRect(0, 0, width, height);
 
         final float pulse = getPulse(700.0);
-        final int cardW = 600;
-        final int cardH = 340;
+        final int cardW = UIScale.scale(600);
+        final int cardH = UIScale.scale(340);
         final int cardY = (height - cardH) / 2;
 
         drawGlassCard(g2d, width, height, cardW, cardH, RenderUtils.cyan, pulse);
 
-        g2d.setFont(RenderCache.MONO_ITALIC_BOLD_78);
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_78));
         final String title = "PAUSED";
-        RenderUtils.drawText(g2d, title, (width - g2d.getFontMetrics().stringWidth(title)) / 2, cardY + 110, RenderUtils.cyan);
+        RenderUtils.drawText(g2d, title, (width - g2d.getFontMetrics().stringWidth(title)) / 2, cardY + UIScale.scale(110), RenderUtils.cyan);
 
         g2d.setStroke(RenderCache.STROKE_1);
         g2d.setColor(PAUSE_LINE);
-        g2d.drawLine((width - cardW) / 2 + 40, cardY + 135, (width + cardW) / 2 - 40, cardY + 135);
+        g2d.drawLine((width - cardW) / 2 + UIScale.scale(40), cardY + UIScale.scale(135), (width + cardW) / 2 - UIScale.scale(40), cardY + UIScale.scale(135));
 
-        drawEndScreenButtons(g2d, width, cardY + 240, "Resume", UIAction.RESUME, "Quit to Menu", UIAction.QUIT);
+        drawEndScreenButtons(g2d, width, cardY + UIScale.scale(240), "Resume", UIAction.RESUME, "Quit to Menu", UIAction.QUIT);
     }
 
     /**
@@ -415,17 +417,17 @@ public class GameUIRenderer {
         g2d.setColor(FINISHED_BG);
         g2d.fillRect(0, 0, width, height);
 
-        final int cardW = 750;
-        final int cardH = gameEngine.isNewHighScore() ? 520 : 480;
+        final int cardW = UIScale.scale(750);
+        final int cardH = gameEngine.isNewHighScore() ? UIScale.scale(520) : UIScale.scale(480);
         final int cardY = setupScreenCard(g2d, width, height, cardW, cardH, RenderUtils.yellow, pulse);
 
         final String text = "LEVEL COMPLETE";
-        g2d.setFont(RenderCache.MONO_ITALIC_BOLD_78);
-        RenderUtils.drawText(g2d, text, (width - g2d.getFontMetrics().stringWidth(text)) / 2, cardY + 110, RenderUtils.yellow);
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_78));
+        RenderUtils.drawText(g2d, text, (width - g2d.getFontMetrics().stringWidth(text)) / 2, cardY + UIScale.scale(110), RenderUtils.yellow);
 
-        drawCardLine(g2d, width, cardW, cardY + 140, FINISHED_YELLOW_LINE, pulse);
-        drawPostGameScore(g2d, cardY + 100, width, RenderUtils.yellow);
-        drawEndScreenButtons(g2d, width, cardY + cardH - 80, "Restart", UIAction.RESTART, "Continue", UIAction.QUIT);
+        drawCardLine(g2d, width, cardW, cardY + UIScale.scale(140), FINISHED_YELLOW_LINE, pulse);
+        drawPostGameScore(g2d, cardY + UIScale.scale(100), width, RenderUtils.yellow);
+        drawEndScreenButtons(g2d, width, cardY + cardH - UIScale.scale(80), "Restart", UIAction.RESTART, "Continue", UIAction.QUIT);
 
         teardownScreenCard(g2d);
     }
@@ -443,21 +445,21 @@ public class GameUIRenderer {
         g2d.setColor(GAMEOVER_BG);
         g2d.fillRect(0, 0, width, height);
         g2d.setColor(GAMEOVER_LINES);
-        for (int sy = 0; sy < height; sy += 4) {
+        for (int sy = 0; sy < height; sy += UIScale.scale(4)) {
             g2d.drawLine(0, sy, width, sy);
         }
 
-        final int cardW = 720;
-        final int cardH = gameEngine.isNewHighScore() ? 520 : 480;
+        final int cardW = UIScale.scale(720);
+        final int cardH = gameEngine.isNewHighScore() ? UIScale.scale(520) : UIScale.scale(480);
         final int cardY = setupScreenCard(g2d, width, height, cardW, cardH, GAMEOVER_RED, pulse);
 
         final String text = "GAME OVER";
-        g2d.setFont(RenderCache.MONO_BOLD_85);
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_85));
         final int x = (width - g2d.getFontMetrics().stringWidth(text)) / 2;
-        final int y = cardY + 120;
+        final int y = cardY + UIScale.scale(120);
 
         final long t = System.currentTimeMillis();
-        final int glitchOffset = (int) (4 + Math.sin(t / 80.0) * 2);
+        final int glitchOffset = (int) (UIScale.scale(4) + Math.sin(t / 80.0) * UIScale.scale(2));
         g2d.setColor(GLITCH_CYAN);
         g2d.drawString(text, x - glitchOffset, y + 1);
         g2d.setColor(GLITCH_RED);
@@ -465,9 +467,9 @@ public class GameUIRenderer {
 
         RenderUtils.drawText(g2d, text, x, y, GAMEOVER_RED);
 
-        drawCardLine(g2d, width, cardW, cardY + 150, GAMEOVER_RED, pulse);
-        drawPostGameScore(g2d, cardY + 110, width, GAMEOVER_RED_LIGHT);
-        drawEndScreenButtons(g2d, width, cardY + cardH - 80, "Restart", UIAction.RESTART, "Main Menu", UIAction.QUIT);
+        drawCardLine(g2d, width, cardW, cardY + UIScale.scale(150), GAMEOVER_RED, pulse);
+        drawPostGameScore(g2d, cardY + UIScale.scale(110), width, GAMEOVER_RED_LIGHT);
+        drawEndScreenButtons(g2d, width, cardY + cardH - UIScale.scale(80), "Restart", UIAction.RESTART, "Main Menu", UIAction.QUIT);
 
         teardownScreenCard(g2d);
     }
@@ -479,43 +481,43 @@ public class GameUIRenderer {
         final String label = "F I N A L   S C O R E";
         final String scoreText = String.format("%,d", gameEngine.getScore());
 
-        int currentY = titleY + 40;
+        int currentY = titleY + UIScale.scale(40);
 
-        g2d.setFont(RenderCache.MONO_BOLD_16);
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_16));
         g2d.setColor(SCORE_LABEL_COLOR);
         g2d.drawString(label, (width - g2d.getFontMetrics().stringWidth(label)) / 2, currentY);
 
-        currentY += 60;
-        g2d.setFont(RenderCache.MONO_ITALIC_BOLD_60);
+        currentY += UIScale.scale(60);
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_60));
         RenderUtils.drawText(g2d, scoreText, (width - g2d.getFontMetrics().stringWidth(scoreText)) / 2, currentY, accentColor);
 
-        currentY += 60;
+        currentY += UIScale.scale(60);
 
         if (gameEngine.isNewHighScore()) {
             final double t = System.currentTimeMillis() / 300.0;
             final float glow = (float) ((Math.sin(t) + 1.0) / 2.0);
-            g2d.setFont(RenderCache.MONO_BOLD_24);
+            g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_24));
             g2d.setColor(RenderCache.customColorWithAlpha(RenderUtils.yellow, (int) (150 + 105 * glow)));
             final String hsText = "NEW HIGH SCORE!";
             g2d.drawString(hsText, (width - g2d.getFontMetrics().stringWidth(hsText)) / 2, currentY);
         } else {
-            g2d.setFont(RenderCache.MONO_BOLD_24);
+            g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_24));
             g2d.setColor(new Color(150, 150, 150));
             String songId = gameEngine.getLevel().songName();
             if (songId.contains(".")) songId = songId.substring(0, songId.lastIndexOf('.'));
             final String bestText = "BEST: " + String.format("%,d", ScoreManager.getBestScore(songId));
             g2d.drawString(bestText, (width - g2d.getFontMetrics().stringWidth(bestText)) / 2, currentY);
         }
-        currentY += 40;
+        currentY += UIScale.scale(40);
 
         final String orbsLabel = "ORBS COLLECTED: " + gameEngine.getCollectedOrbs();
-        g2d.setFont(RenderCache.MONO_BOLD_16);
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_16));
         g2d.setColor(ORBS_COLOR);
         g2d.drawString(orbsLabel, (width - g2d.getFontMetrics().stringWidth(orbsLabel)) / 2, currentY);
-        currentY += 30;
+        currentY += UIScale.scale(30);
 
         final String totalOrbsLabel = "TOTAL ORBS: " + ScoreManager.getCurrency();
-        g2d.setFont(RenderCache.SANS_PLAIN_16);
+        g2d.setFont(UIScale.scaleFont(RenderCache.SANS_PLAIN_16));
         g2d.setColor(TOTAL_ORBS_COLOR);
         g2d.drawString(totalOrbsLabel, (width - g2d.getFontMetrics().stringWidth(totalOrbsLabel)) / 2, currentY);
     }
@@ -538,60 +540,61 @@ public class GameUIRenderer {
             default -> RenderUtils.yellow;
         };
 
-        final int haloR = (int) (70 + pulse * 18);
-        g2d.setPaint(new RadialGradientPaint(width / 2f, 68, haloR, new float[]{0f, 1f}, new Color[]{RenderCache.customColorWithAlpha(c, (int) (50 + 30 * pulse)), new Color(0, 0, 0, 0)}));
-        g2d.fillOval(width / 2 - haloR, 68 - haloR, haloR * 2, haloR * 2);
+        final int haloR = (int) (UIScale.scale(70) + pulse * UIScale.scale(18));
+        final int centerY = UIScale.scale(68);
+        g2d.setPaint(new RadialGradientPaint(width / 2f, centerY, haloR, new float[]{0f, 1f}, new Color[]{RenderCache.customColorWithAlpha(c, (int) (50 + 30 * pulse)), new Color(0, 0, 0, 0)}));
+        g2d.fillOval(width / 2 - haloR, centerY - haloR, haloR * 2, haloR * 2);
 
         if (scorePopAlpha > 0) {
-            final int popR = (int) (90 + (1f - scorePopAlpha) * 60);
-            drawRing(g2d, width / 2, 68, popR, c, (int) (scorePopAlpha * 80), RenderCache.STROKE_2);
+            final int popR = (int) (UIScale.scale(90) + (1f - scorePopAlpha) * UIScale.scale(60));
+            drawRing(g2d, width / 2, centerY, popR, c, (int) (scorePopAlpha * 80), RenderCache.STROKE_2);
             g2d.setStroke(RenderCache.STROKE_1);
         }
 
         final String label = "S  C  O  R  E";
-        g2d.setFont(RenderCache.MONO_BOLD_11);
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_11));
         g2d.setColor(SCORE_TEXT_COLOR);
-        g2d.drawString(label, (width - g2d.getFontMetrics().stringWidth(label)) / 2, 30);
+        g2d.drawString(label, (width - g2d.getFontMetrics().stringWidth(label)) / 2, UIScale.scale(30));
 
         g2d.setColor(RenderCache.customColorWithAlpha(c, (int) (100 + 80 * pulse)));
-        g2d.drawLine(width / 2 - 35, 35, width / 2 + 35, 35);
+        g2d.drawLine(width / 2 - UIScale.scale(35), UIScale.scale(35), width / 2 + UIScale.scale(35), UIScale.scale(35));
 
         final String text = Integer.toString(score);
-        g2d.setFont(RenderCache.MONO_ITALIC_BOLD_60);
-        RenderUtils.drawText(g2d, text, (width - g2d.getFontMetrics().stringWidth(text)) / 2, 88, c);
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_60));
+        RenderUtils.drawText(g2d, text, (width - g2d.getFontMetrics().stringWidth(text)) / 2, UIScale.scale(88), c);
 
         final String orbsText = String.valueOf(gameEngine.getCollectedOrbs());
-        g2d.setFont(RenderCache.MONO_BOLD_24);
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_24));
         final int orbsW = g2d.getFontMetrics().stringWidth(orbsText);
 
-        final int boxW = orbsW + 50;
-        final int boxH = 40;
-        final int boxX = 20;
-        final int boxY = 20;
+        final int boxW = orbsW + UIScale.scale(50);
+        final int boxH = UIScale.scale(40);
+        final int boxX = UIScale.scale(20);
+        final int boxY = UIScale.scale(20);
 
         g2d.setPaint(new RadialGradientPaint(
                 boxX + boxW / 2f, boxY + boxH / 2f, boxW * 0.8f,
                 new float[]{0f, 1f},
                 new Color[]{RenderCache.customColorWithAlpha(ORBS_COLOR, 30), new Color(0, 0, 0, 0)}
         ));
-        g2d.fill(new RoundRectangle2D.Float(boxX - 10, boxY - 10, boxW + 20, boxH + 20, 20, 20));
+        g2d.fill(new RoundRectangle2D.Float(boxX - UIScale.scale(10), boxY - UIScale.scale(10), boxW + UIScale.scale(20), boxH + UIScale.scale(20), UIScale.scale(20), UIScale.scale(20)));
 
         g2d.setColor(new Color(0, 0, 0, 150));
-        g2d.fill(new RoundRectangle2D.Float(boxX, boxY, boxW, boxH, 15, 15));
+        g2d.fill(new RoundRectangle2D.Float(boxX, boxY, boxW, boxH, UIScale.scale(15), UIScale.scale(15)));
 
         g2d.setColor(RenderCache.customColorWithAlpha(ORBS_COLOR, (int) (100 + 50 * pulse)));
         g2d.setStroke(RenderCache.STROKE_2);
-        g2d.draw(new RoundRectangle2D.Float(boxX, boxY, boxW, boxH, 15, 15));
+        g2d.draw(new RoundRectangle2D.Float(boxX, boxY, boxW, boxH, UIScale.scale(15), UIScale.scale(15)));
         g2d.setStroke(RenderCache.STROKE_1);
 
         g2d.setColor(ORBS_COLOR);
-        final int orbR = 8;
-        final int orbX = boxX + 16;
+        final int orbR = UIScale.scale(8);
+        final int orbX = boxX + UIScale.scale(16);
         final int orbY = boxY + boxH / 2;
         g2d.fillOval(orbX - orbR, orbY - orbR, orbR * 2, orbR * 2);
 
         g2d.setColor(ORBS_TEXT_COLOR);
-        g2d.drawString(orbsText, boxX + 35, boxY + 28);
+        g2d.drawString(orbsText, boxX + UIScale.scale(35), boxY + UIScale.scale(28));
         gameEngine.getScorePopups().forEach(popup -> popup.paint(g2d, width));
     }
 
@@ -608,21 +611,22 @@ public class GameUIRenderer {
         final double total = clip.getMicrosecondLength() / 1_000_000.0;
         final double progress = Math.min(1.0, current / total);
 
-        final int barY = height - 16;
+        final int barY = height - UIScale.scale(16);
+        final int barH = UIScale.scale(15);
         g2d.setColor(PROGRESS_BG);
-        g2d.fillRoundRect(0, barY, width, 15, 3, 3);
+        g2d.fillRoundRect(0, barY, width, barH, UIScale.scale(3), UIScale.scale(3));
 
         final int fillW = (int) (width * progress);
         if (fillW > 3) {
             g2d.setPaint(new LinearGradientPaint(0, barY, width, barY, new float[]{0f, 0.5f, 1f}, new Color[]{RenderUtils.cyan, RenderUtils.purple, RenderUtils.yellow}));
-            g2d.fillRoundRect(0, barY, fillW, 15, 3, 3);
+            g2d.fillRoundRect(0, barY, fillW, barH, UIScale.scale(3), UIScale.scale(3));
             if (fillW < width) {
-                g2d.setPaint(new RadialGradientPaint(fillW, barY + 7.5f, 14, new float[]{0f, 1f}, new Color[]{RenderCache.whiteWithAlpha(200), RenderCache.whiteWithAlpha(0)}));
-                g2d.fillOval(fillW - 14, barY - 9, 28, 33);
+                g2d.setPaint(new RadialGradientPaint(fillW, barY + barH / 2f, UIScale.scale(14), new float[]{0f, 1f}, new Color[]{RenderCache.whiteWithAlpha(200), RenderCache.whiteWithAlpha(0)}));
+                g2d.fillOval(fillW - UIScale.scale(14), barY - UIScale.scale(9), UIScale.scale(28), UIScale.scale(33));
             }
         }
 
-        g2d.setFont(RenderCache.MONO_BOLD_16);
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_16));
         g2d.setColor(RenderCache.whiteWithAlpha(150));
         final StringBuilder sb = new StringBuilder();
         sb.append((int) current / 60).append(":");
@@ -633,15 +637,15 @@ public class GameUIRenderer {
         int totalSec = (int) total % 60;
         if (totalSec < 10) sb.append("0");
         sb.append(totalSec);
-        g2d.drawString(sb.toString(), 10, barY - 7);
+        g2d.drawString(sb.toString(), UIScale.scale(10), barY - UIScale.scale(7));
     }
 
     /**
      * Renders a simulated button region.
      */
     private void drawButton(Graphics2D g2d, String label, int x, int y, int width, UIAction action) {
-        final int btnHeight = 55;
-        final int btnY = y - 40;
+        final int btnHeight = UIScale.scale(55);
+        final int btnY = y - UIScale.scale(40);
         SimulatedButton button = new SimulatedButton(label, x, btnY, width, btnHeight, action);
         button.draw(g2d, mouseX, mouseY, currentTranslateY);
 
@@ -662,8 +666,8 @@ public class GameUIRenderer {
         g2d.setColor(GAMEOVER_BG);
         g2d.fillRect(0, 0, width, height);
 
-        final int cardW = 680;
-        final int cardH = 500;
+        final int cardW = UIScale.scale(680);
+        final int cardH = UIScale.scale(500);
 
         final boolean canRevive = gameEngine.canRevive();
         final Color cardColor = canRevive ? ORBS_COLOR : GAMEOVER_RED;
@@ -671,24 +675,24 @@ public class GameUIRenderer {
         final int cardY = setupScreenCard(g2d, width, height, cardW, cardH, cardColor, pulse);
 
         final String text = "YOU FELL";
-        g2d.setFont(RenderCache.MONO_BOLD_85);
-        RenderUtils.drawText(g2d, text, (width - g2d.getFontMetrics().stringWidth(text)) / 2, cardY + 110, cardColor);
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_85));
+        RenderUtils.drawText(g2d, text, (width - g2d.getFontMetrics().stringWidth(text)) / 2, cardY + UIScale.scale(110), cardColor);
 
-        drawCardLine(g2d, width, cardW, cardY + 135, cardColor, pulse);
+        drawCardLine(g2d, width, cardW, cardY + UIScale.scale(135), cardColor, pulse);
 
-        int currentY = cardY + 185;
-        g2d.setFont(RenderCache.MONO_BOLD_16);
+        int currentY = cardY + UIScale.scale(185);
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_16));
         g2d.setColor(SCORE_TEXT_COLOR);
         final String scoreText = "Score so far: " + String.format("%,d", gameEngine.getScore());
         g2d.drawString(scoreText, (width - g2d.getFontMetrics().stringWidth(scoreText)) / 2, currentY);
 
-        currentY += 35;
+        currentY += UIScale.scale(35);
         g2d.setColor(ORBS_COLOR);
         final String orbsText = "Orbs collected: " + gameEngine.getCollectedOrbs();
         g2d.drawString(orbsText, (width - g2d.getFontMetrics().stringWidth(orbsText)) / 2, currentY);
 
-        currentY += 55;
-        g2d.setFont(RenderCache.MONO_ITALIC_BOLD_24);
+        currentY += UIScale.scale(55);
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_24));
         if (canRevive) {
             g2d.setColor(ORBS_TEXT_COLOR);
             final String reviveText = "REVIVE? Cost: " + gameEngine.getReviveCost() + " orbs";
@@ -700,17 +704,17 @@ public class GameUIRenderer {
             g2d.drawString(reviveText, (width - g2d.getFontMetrics().stringWidth(reviveText)) / 2, currentY);
         }
 
-        currentY += 35;
-        g2d.setFont(RenderCache.SANS_PLAIN_16);
+        currentY += UIScale.scale(35);
+        g2d.setFont(UIScale.scaleFont(RenderCache.SANS_PLAIN_16));
         g2d.setColor(TOTAL_ORBS_COLOR);
         final String totalOrbs = "Your orbs: " + ScoreManager.getCurrency();
         g2d.drawString(totalOrbs, (width - g2d.getFontMetrics().stringWidth(totalOrbs)) / 2, currentY);
 
-        final int hintY = cardY + cardH - 80;
+        final int hintY = cardY + cardH - UIScale.scale(80);
         if (canRevive) {
             drawEndScreenButtons(g2d, width, hintY, "Revive", UIAction.REVIVE, "Quit", UIAction.DECLINE_REVIVE);
         } else {
-            drawButton(g2d, "Quit", width / 2 - 110, hintY, 220, UIAction.DECLINE_REVIVE);
+            drawButton(g2d, "Quit", width / 2 - UIScale.scale(110), hintY, UIScale.scale(220), UIAction.DECLINE_REVIVE);
         }
 
         teardownScreenCard(g2d);

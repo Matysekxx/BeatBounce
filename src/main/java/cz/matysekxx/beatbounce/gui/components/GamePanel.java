@@ -15,6 +15,8 @@ import cz.matysekxx.beatbounce.model.game.state.GameState;
 import cz.matysekxx.beatbounce.model.level.Level;
 import cz.matysekxx.beatbounce.util.Time;
 
+import cz.matysekxx.beatbounce.util.UIScale;
+
 import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
@@ -174,6 +176,20 @@ public class GamePanel extends JPanel implements Runnable {
         for (int i = 0; i < particles.length; i++)
             particles[i] = new Particle(1920, 540);
         updateParticleCount();
+
+        this.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                final int w = e.getComponent().getWidth();
+                final int h = e.getComponent().getHeight();
+                cachedW = w;
+                cachedH = h;
+                UIScale.update(w, h);
+                if (backBuffer == null || backBuffer.getWidth(null) != w || backBuffer.getHeight(null) != h) {
+                    backBuffer = gc.createCompatibleImage(w, h, Transparency.OPAQUE);
+                }
+            }
+        });
     }
 
     /**
@@ -206,22 +222,13 @@ public class GamePanel extends JPanel implements Runnable {
             @Override
             public void mouseMoved(java.awt.event.MouseEvent e) {
                 if (uiRenderer == null) return;
-                final double REFERENCE_HEIGHT = 1440.0;
-                final double uiScale = getHeight() / REFERENCE_HEIGHT;
-                final int virtualX = (int) (e.getX() / uiScale);
-                final int virtualY = (int) (e.getY() / uiScale);
-                uiRenderer.setMousePosition(virtualX, virtualY);
+                uiRenderer.setMousePosition(e.getX(), e.getY());
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
                 if (uiRenderer == null || gameEngine == null) return;
-                final double REFERENCE_HEIGHT = 1440.0;
-                final double uiScale = getHeight() / REFERENCE_HEIGHT;
-                final int virtualX = (int) (e.getX() / uiScale);
-                final int virtualY = (int) (e.getY() / uiScale);
-
-                final UIAction action = uiRenderer.handleClick(virtualX, virtualY);
+                final UIAction action = uiRenderer.handleClick(e.getX(), e.getY());
                 if (action != UIAction.NONE) {
                     AudioManager.playSFX("/click-sound.mp3");
                     actionQueue.add(() -> {
@@ -248,18 +255,6 @@ public class GamePanel extends JPanel implements Runnable {
             if (onExit != null) onExit.run();
         };
         this.addKeyListener(new GameKeyController(gameEngine, actionQueue, quitAction));
-        this.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                final int w = e.getComponent().getWidth();
-                final int h = e.getComponent().getHeight();
-                if (w != cachedW) cachedW = w;
-                if (h != cachedH) cachedH = h;
-                if (backBuffer == null || backBuffer.getWidth(null) != w || backBuffer.getHeight(null) != h) {
-                    backBuffer = gc.createCompatibleImage(w, h, Transparency.OPAQUE);
-                }
-            }
-        });
     }
 
     @Override
@@ -281,11 +276,7 @@ public class GamePanel extends JPanel implements Runnable {
             if (Settings.particlesEnabled) {
                 final int w = (cachedW > 0) ? cachedW : 1920;
                 final int h = (cachedH > 0) ? cachedH : 1080;
-                final double REFERENCE_HEIGHT = 1440.0;
-                final double scale = h / REFERENCE_HEIGHT;
-                final int virtualW = (int) (w / scale);
-                final int virtualH = (int) (h / scale);
-                Particle.updateAll(particles, particleCount, dt, virtualW, virtualH);
+                Particle.updateAll(particles, particleCount, dt, w, h);
             }
 
             final int currentScore = gameEngine.getScore();
@@ -401,34 +392,25 @@ public class GamePanel extends JPanel implements Runnable {
         if (gameEngine.getGameState() != GameState.FINISHED) {
             worldRenderer.drawBackground(g2d, w, h, horizonY);
         }
-        final double REFERENCE_HEIGHT = 1440.0;
-        final double uiScale = h / REFERENCE_HEIGHT;
-        final int virtualW = (int) (w / uiScale);
-        final int virtualH = (int) (h / uiScale);
-        final int virtualHorizonY = virtualH / 3;
 
-        final AffineTransform oldTransform = g2d.getTransform();
-        g2d.scale(uiScale, uiScale);
         if (gameEngine.getGameState() != GameState.FINISHED) {
-            worldRenderer.drawPlanetAndGrid(g2d, virtualW, virtualH, virtualHorizonY, time, globalHue);
+            worldRenderer.drawPlanetAndGrid(g2d, w, h, horizonY, time, globalHue);
             if (Settings.particlesEnabled) {
                 Particle.drawAll(g2d, particles, particleCount);
             }
-            final WindowData virtualWindowData = WindowData.of(virtualW, virtualH);
-            worldRenderer.drawGameObjects(g2d, virtualWindowData);
-            uiRenderer.drawProgressBar(g2d, virtualW, virtualH);
-            uiRenderer.drawScore(g2d, virtualW, scorePopAlpha);
+            final WindowData windowData = WindowData.of(w, h);
+            worldRenderer.drawGameObjects(g2d, windowData);
+            uiRenderer.drawProgressBar(g2d, w, h);
+            uiRenderer.drawScore(g2d, w, scorePopAlpha);
         }
 
         if (gameEngine != null && gameEngine.getNeonFlashAlpha() > 0) {
             final int flashAlpha = Math.min(255, (int) (gameEngine.getNeonFlashAlpha() * 255));
             g2d.setColor(RenderCache.blackWithAlpha(flashAlpha));
-            g2d.fillRect(0, 0, virtualW, virtualH);
+            g2d.fillRect(0, 0, w, h);
         }
         assert gameEngine != null;
-        uiRenderer.renderGameState(g2d, virtualW, virtualH, gameEngine.getGameState());
-
-        g2d.setTransform(oldTransform);
+        uiRenderer.renderGameState(g2d, w, h, gameEngine.getGameState());
 
         if (Settings.showFps) {
             g2d.setColor(Color.YELLOW);
@@ -442,3 +424,4 @@ public class GamePanel extends JPanel implements Runnable {
         if (Settings.vsync) Toolkit.getDefaultToolkit().sync();
     }
 }
+

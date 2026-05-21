@@ -19,10 +19,29 @@ import java.util.Map;
  */
 public class ScoreManager {
     private static final Logger LOG = LoggerFactory.getLogger(ScoreManager.class);
+    /**
+     * Jackson ObjectMapper for JSON processing.
+     */
     private static final ObjectMapper mapper = new ObjectMapper();
+
+    /**
+     * Path to the file where high scores are saved.
+     */
     private static final Path savePath;
+
+    /**
+     * Path to the file where total currency is saved.
+     */
     private static final Path currencyPath;
+
+    /**
+     * Mapping of song identifiers to the user's best achieved score.
+     */
     private static Map<String, Integer> scores = new HashMap<>();
+
+    /**
+     * The total count of orbs (currency) collected by the user.
+     */
     private static int totalCurrency = 0;
 
     static {

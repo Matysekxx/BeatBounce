@@ -4,6 +4,8 @@ import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.model.audio.AudioManager;
 
+import cz.matysekxx.beatbounce.util.UIScale;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -34,7 +36,7 @@ public class CycleButton extends JButton {
         this.options = options;
         this.currentIndex = initialIndex;
         setText(options[currentIndex]);
-        setFont(RenderCache.SANS_BOLD_20);
+        setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_20));
         setOpaque(false);
         setFocusPainted(false);
         setContentAreaFilled(false);
@@ -71,9 +73,9 @@ public class CycleButton extends JButton {
         RenderUtils.initGraphics2D(g2);
         boolean hover = getModel().isRollover();
         g2.setColor(hover ? new Color(40, 40, 70) : new Color(30, 30, 50));
-        g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
+        g2.fillRoundRect(0, 0, getWidth(), getHeight(), UIScale.scale(12), UIScale.scale(12));
         g2.setColor(hover ? Color.WHITE : RenderUtils.cyan);
-        g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 12, 12);
+        g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, UIScale.scale(12), UIScale.scale(12));
         g2.setColor(Color.WHITE);
         g2.setFont(getFont());
         FontMetrics fm = g2.getFontMetrics();

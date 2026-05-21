@@ -3,6 +3,8 @@ package cz.matysekxx.beatbounce.gui.components;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 
+import cz.matysekxx.beatbounce.util.UIScale;
+
 import java.awt.*;
 
 /**
@@ -29,9 +31,11 @@ public class StepSelector extends javax.swing.JComponent {
     public StepSelector(int[] values, int currentValue) {
         this.values = values;
         setSelectedIndexByValue(currentValue);
-        setMinimumSize(new Dimension(450, 60));
-        setPreferredSize(new Dimension(450, 60));
-        setMaximumSize(new Dimension(450, 60));
+        final int w = UIScale.scale(450);
+        final int h = UIScale.scale(60);
+        setMinimumSize(new Dimension(w, h));
+        setPreferredSize(new Dimension(w, h));
+        setMaximumSize(new Dimension(w, h));
         setCursor(new Cursor(Cursor.HAND_CURSOR));
         addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -80,25 +84,25 @@ public class StepSelector extends javax.swing.JComponent {
         Graphics2D g2 = (Graphics2D) g.create();
         RenderUtils.initGraphics2D(g2);
         int w = getWidth() / values.length;
-        int margin = 4;
+        int margin = UIScale.scale(4);
 
         for (int i = 0; i < values.length; i++) {
             int x = i * w + margin;
             int itemW = w - margin * 2;
 
             g2.setColor(i == selectedIndex ? RenderUtils.cyan : new Color(40, 40, 45));
-            g2.fillRoundRect(x, 4, itemW, 30, 12, 12);
+            g2.fillRoundRect(x, UIScale.scale(4), itemW, UIScale.scale(30), UIScale.scale(12), UIScale.scale(12));
 
             if (i == selectedIndex) {
                 g2.setColor(new Color(0, 255, 255, 40));
-                g2.fillRoundRect(x - 2, 2, itemW + 4, 34, 14, 14);
+                g2.fillRoundRect(x - UIScale.scale(2), UIScale.scale(2), itemW + UIScale.scale(4), UIScale.scale(34), UIScale.scale(14), UIScale.scale(14));
             }
 
             g2.setColor(i == selectedIndex ? Color.WHITE : Color.GRAY);
-            g2.setFont(i == selectedIndex ? RenderCache.SANS_BOLD_16 : RenderCache.SANS_PLAIN_16);
+            g2.setFont(i == selectedIndex ? UIScale.scaleFont(RenderCache.SANS_BOLD_16) : UIScale.scaleFont(RenderCache.SANS_PLAIN_16));
             String s = String.valueOf(values[i]);
             FontMetrics fm = g2.getFontMetrics();
-            g2.drawString(s, x + (itemW - fm.stringWidth(s)) / 2, 25);
+            g2.drawString(s, x + (itemW - fm.stringWidth(s)) / 2, UIScale.scale(25));
         }
         g2.dispose();
     }

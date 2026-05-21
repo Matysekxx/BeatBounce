@@ -2,6 +2,8 @@ package cz.matysekxx.beatbounce.gui.components;
 
 import cz.matysekxx.beatbounce.gui.RenderCache;
 
+import cz.matysekxx.beatbounce.util.UIScale;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -31,21 +33,21 @@ public class CustomDialog extends JDialog {
 
         final DialogContentPane dialogContentPane = new DialogContentPane(borderColor);
         final JLabel titleLabel = new JLabel(titleText);
-        titleLabel.setFont(RenderCache.SANS_BOLD_28);
+        titleLabel.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_28));
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, UIScale.scale(20), 0));
         dialogContentPane.add(titleLabel, BorderLayout.NORTH);
 
         final JLabel messageLabel = new JLabel(message);
-        messageLabel.setFont(RenderCache.SANS_PLAIN_18);
+        messageLabel.setFont(UIScale.scaleFont(RenderCache.SANS_PLAIN_18));
         messageLabel.setForeground(new Color(200, 200, 200));
         messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         dialogContentPane.add(messageLabel, BorderLayout.CENTER);
 
-        buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+        buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, UIScale.scale(20), 0));
         buttonPanel.setOpaque(false);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(UIScale.scale(30), 0, 0, 0));
         dialogContentPane.add(buttonPanel, BorderLayout.SOUTH);
         setContentPane(dialogContentPane);
     }

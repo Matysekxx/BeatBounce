@@ -6,6 +6,7 @@ import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
 import cz.matysekxx.beatbounce.model.audio.AudioManager;
 import cz.matysekxx.beatbounce.system.FileSystem;
+import cz.matysekxx.beatbounce.util.UIScale;
 
 import javax.swing.*;
 import java.awt.*;
@@ -105,18 +106,18 @@ public class SettingsPanel extends JPanel {
         setLayout(new BorderLayout());
 
         final JLabel mainTitle = new JLabel("SETTINGS");
-        mainTitle.setFont(RenderCache.SANS_BOLD_36);
+        mainTitle.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_36));
         mainTitle.setForeground(RenderUtils.cyan);
         mainTitle.setHorizontalAlignment(SwingConstants.CENTER);
-        mainTitle.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        mainTitle.setBorder(BorderFactory.createEmptyBorder(UIScale.scale(10), 0, UIScale.scale(25), 0));
         add(mainTitle, BorderLayout.NORTH);
 
         final JPanel mainContent = new JPanel(new GridBagLayout());
         mainContent.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(0, 15, 0, 15);
+        gbc.insets = new Insets(0, UIScale.scale(25), 0, UIScale.scale(25));
         gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 0.5;
+        gbc.weightx = 1.0;
         gbc.weighty = 1.0;
 
         final JPanel leftColumn = new JPanel();
@@ -131,34 +132,36 @@ public class SettingsPanel extends JPanel {
             monitorNames[i] = "Monitor " + (i + 1) + " (" + devices[i].getDisplayMode().getWidth() + "x" + devices[i].getDisplayMode().getHeight() + ")";
         }
         monitorCycle = new CycleButton(monitorNames, Math.min(Settings.monitorIndex, monitorNames.length - 1));
-        monitorCycle.setMinimumSize(new Dimension(240, 40));
-        monitorCycle.setPreferredSize(new Dimension(240, 40));
-        monitorCycle.setMaximumSize(new Dimension(240, 40));
+        final Dimension cycleDim = new Dimension(UIScale.scale(260), UIScale.scale(42));
+        monitorCycle.setMinimumSize(cycleDim);
+        monitorCycle.setPreferredSize(cycleDim);
+        monitorCycle.setMaximumSize(cycleDim);
 
         qualityCycle = new CycleButton(new String[]{"LOW", "MEDIUM", "HIGH"}, getQualityIndex());
-        qualityCycle.setMinimumSize(new Dimension(240, 40));
-        qualityCycle.setPreferredSize(new Dimension(240, 40));
-        qualityCycle.setMaximumSize(new Dimension(240, 40));
+        qualityCycle.setMinimumSize(cycleDim);
+        qualityCycle.setPreferredSize(cycleDim);
+        qualityCycle.setMaximumSize(cycleDim);
 
         fpsSelector = new StepSelector(new int[]{30, 60, 90, 120, 165, 240}, Settings.targetFps);
-        fpsSelector.setMinimumSize(new Dimension(300, 45));
-        fpsSelector.setPreferredSize(new Dimension(300, 45));
-        fpsSelector.setMaximumSize(new Dimension(300, 45));
+        final Dimension fpsDim = new Dimension(UIScale.scale(320), UIScale.scale(48));
+        fpsSelector.setMinimumSize(fpsDim);
+        fpsSelector.setPreferredSize(fpsDim);
+        fpsSelector.setMaximumSize(fpsDim);
 
         displayGroup.add(createLabeledComponent("Monitor:", monitorCycle));
-        displayGroup.add(Box.createRigidArea(new Dimension(0, 25)));
+        displayGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(20))));
         displayGroup.add(createLabeledComponent("Quality:", qualityCycle));
-        displayGroup.add(Box.createRigidArea(new Dimension(0, 25)));
+        displayGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(20))));
         displayGroup.add(createLabeledComponent("Target FPS:", fpsSelector));
-        displayGroup.add(Box.createRigidArea(new Dimension(0, 35)));
+        displayGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(30))));
 
         displayGroup.add(fullscreenCheck = new CustomCheckBox("Fullscreen (Borderless)", Settings.fullscreen));
-        displayGroup.add(Box.createRigidArea(new Dimension(0, 15)));
-        displayGroup.add(openglCheck = new CustomCheckBox("OpenGL Hardware Acceleration", Settings.opengl));
-        displayGroup.add(Box.createRigidArea(new Dimension(0, 15)));
-        displayGroup.add(vsyncCheck = new CustomCheckBox("V-Sync", Settings.vsync));
-        displayGroup.add(Box.createRigidArea(new Dimension(0, 15)));
-        displayGroup.add(showFpsCheck = new CustomCheckBox("Show FPS Overlay", Settings.showFps));
+        displayGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(12))));
+        displayGroup.add(openglCheck = new CustomCheckBox("OpenGL HW Acceleration", Settings.opengl));
+        displayGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(12))));
+        displayGroup.add(vsyncCheck = new CustomCheckBox("V-Sync (Triple Buffering)", Settings.vsync));
+        displayGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(12))));
+        displayGroup.add(showFpsCheck = new CustomCheckBox("Show FPS Counter", Settings.showFps));
 
         leftColumn.add(displayGroup);
         leftColumn.add(Box.createVerticalGlue());
@@ -171,17 +174,18 @@ public class SettingsPanel extends JPanel {
         final JLabel soundLabel = new JLabel("Music Volume: " + Settings.soundVolume + "%");
         styleLabel(soundLabel);
         soundSlider = new CustomSlider(0, 100, Settings.soundVolume);
-        soundSlider.setMinimumSize(new Dimension(250, 45));
-        soundSlider.setPreferredSize(new Dimension(250, 45));
-        soundSlider.setMaximumSize(new Dimension(250, 45));
+        final Dimension sliderDim = new Dimension(UIScale.scale(280), UIScale.scale(48));
+        soundSlider.setMinimumSize(sliderDim);
+        soundSlider.setPreferredSize(sliderDim);
+        soundSlider.setMaximumSize(sliderDim);
         soundSlider.addChangeListener(_ -> soundLabel.setText("Music Volume: " + soundSlider.getValue() + "%"));
 
         final JLabel menuLabel = new JLabel("Menu Music: " + Settings.menuVolume + "%");
         styleLabel(menuLabel);
         menuSlider = new CustomSlider(0, 100, Settings.menuVolume);
-        menuSlider.setMinimumSize(new Dimension(250, 45));
-        menuSlider.setPreferredSize(new Dimension(250, 45));
-        menuSlider.setMaximumSize(new Dimension(250, 45));
+        menuSlider.setMinimumSize(sliderDim);
+        menuSlider.setPreferredSize(sliderDim);
+        menuSlider.setMaximumSize(sliderDim);
         menuSlider.addChangeListener(_ -> {
             menuLabel.setText("Menu Music: " + menuSlider.getValue() + "%");
             Settings.menuVolume = menuSlider.getValue();
@@ -191,22 +195,24 @@ public class SettingsPanel extends JPanel {
         final JLabel sfxLabel = new JLabel("SFX Volume: " + Settings.sfxVolume + "%");
         styleLabel(sfxLabel);
         sfxSlider = new CustomSlider(0, 100, Settings.sfxVolume);
-        sfxSlider.setMinimumSize(new Dimension(250, 45));
-        sfxSlider.setPreferredSize(new Dimension(250, 45));
-        sfxSlider.setMaximumSize(new Dimension(250, 45));
+        sfxSlider.setMinimumSize(sliderDim);
+        sfxSlider.setPreferredSize(sliderDim);
+        sfxSlider.setMaximumSize(sliderDim);
         sfxSlider.addChangeListener(_ -> sfxLabel.setText("SFX Volume: " + sfxSlider.getValue() + "%"));
 
         audioGroup.add(createLabeledComponent(soundLabel, soundSlider));
-        audioGroup.add(Box.createRigidArea(new Dimension(0, 15)));
+        audioGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(12))));
         audioGroup.add(createLabeledComponent(menuLabel, menuSlider));
-        audioGroup.add(Box.createRigidArea(new Dimension(0, 15)));
+        audioGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(12))));
         audioGroup.add(createLabeledComponent(sfxLabel, sfxSlider));
-        audioGroup.add(Box.createRigidArea(new Dimension(0, 20)));
+        audioGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(18))));
         audioGroup.add(focusLossCheck = new CustomCheckBox("Mute on Focus Loss", Settings.muteOnFocusLoss));
 
         final JButton clearCacheBtn = getStyledButton("CLEAR CACHE", new Color(180, 40, 40), Color.WHITE);
-        clearCacheBtn.setPreferredSize(new Dimension(200, 40));
-        clearCacheBtn.setMaximumSize(new Dimension(200, 40));
+        final Dimension btnDim = new Dimension(UIScale.scale(180), UIScale.scale(40));
+        clearCacheBtn.setMinimumSize(btnDim);
+        clearCacheBtn.setPreferredSize(btnDim);
+        clearCacheBtn.setMaximumSize(btnDim);
         clearCacheBtn.addActionListener(_ -> {
             AudioManager.playSFX("/click-sound.mp3");
             FileSystem.clearCache().thenRun(() -> SwingUtilities.invokeLater(() -> {
@@ -214,44 +220,28 @@ public class SettingsPanel extends JPanel {
                 infoLabel.setForeground(RenderUtils.green);
             }));
         });
-        audioGroup.add(Box.createRigidArea(new Dimension(0, 20)));
-        audioGroup.add(createLabeledComponent("Downloaded Music:", clearCacheBtn));
+        audioGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(15))));
+        audioGroup.add(createLabeledComponent("Downloaded Tracks:", clearCacheBtn));
 
-        final JPanel gameplayGroup = createGroupPanel("GAMEPLAY & EFFECTS");
+        final JPanel gameplayGroup = createGroupPanel("EFFECTS");
         gameplayGroup.add(particlesCheck = new CustomCheckBox("Enable Background Particles", Settings.particlesEnabled));
-        gameplayGroup.add(Box.createRigidArea(new Dimension(0, 20)));
+        gameplayGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(12))));
         gameplayGroup.add(bloomCheck = new CustomCheckBox("Bloom Post-Processing", Settings.bloomEnabled));
+        
         audioGroup.setAlignmentX(Component.LEFT_ALIGNMENT);
         gameplayGroup.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         rightColumn.add(audioGroup);
-        rightColumn.add(Box.createRigidArea(new Dimension(0, 40)));
+        rightColumn.add(Box.createRigidArea(new Dimension(0, UIScale.scale(30))));
         rightColumn.add(gameplayGroup);
         rightColumn.add(Box.createVerticalGlue());
+
         gbc.gridx = 0;
         mainContent.add(leftColumn, gbc);
         gbc.gridx = 1;
         mainContent.add(rightColumn, gbc);
         add(mainContent, BorderLayout.CENTER);
         add(createBottomPanel(), BorderLayout.SOUTH);
-    }
-
-    /**
-     * Restarts the application by spawning a new Java process.
-     */
-    private static void restart() throws IOException {
-        final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
-        final File jarFile;
-        try {
-            jarFile = new File(SettingsPanel.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-        if (!jarFile.getName().endsWith(".jar")) return;
-        ProcessBuilder pb = new ProcessBuilder(javaBin, "-jar", jarFile.getPath());
-        pb.directory(jarFile.getParentFile());
-        pb.start();
-        System.exit(0);
     }
 
     /**
@@ -278,28 +268,29 @@ public class SettingsPanel extends JPanel {
                 Graphics2D g2 = (Graphics2D) g.create();
                 RenderUtils.initGraphics2D(g2);
                 g2.setColor(new Color(255, 255, 255, 10));
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
+                final int arc = UIScale.scale(15);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), arc, arc);
                 g2.setColor(new Color(0, 255, 220, 30));
-                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 15, 15);
+                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, arc, arc);
                 g2.dispose();
             }
         };
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
         p.setOpaque(false);
-        p.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+        p.setBorder(BorderFactory.createEmptyBorder(UIScale.scale(20), UIScale.scale(30), UIScale.scale(20), UIScale.scale(30)));
 
         final JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         titlePanel.setOpaque(false);
 
         final JLabel t = new JLabel(title);
-        t.setFont(RenderCache.SANS_BOLD_22);
+        t.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_22));
         t.setForeground(RenderUtils.cyan);
-        t.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+        t.setBorder(BorderFactory.createEmptyBorder(0, 0, UIScale.scale(20), 0));
         titlePanel.add(t);
 
-        titlePanel.setMinimumSize(new Dimension(0, 45));
-        titlePanel.setPreferredSize(new Dimension(520, 45));
-        titlePanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 45));
+        titlePanel.setMinimumSize(new Dimension(0, UIScale.scale(45)));
+        titlePanel.setPreferredSize(new Dimension(UIScale.scale(520), UIScale.scale(45)));
+        titlePanel.setMaximumSize(new Dimension(Short.MAX_VALUE, UIScale.scale(45)));
         titlePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         p.add(titlePanel);
@@ -315,9 +306,9 @@ public class SettingsPanel extends JPanel {
         final JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.Y_AXIS));
         bottomPanel.setOpaque(false);
-        bottomPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 30, 0));
+        bottomPanel.setBorder(BorderFactory.createEmptyBorder(UIScale.scale(20), 0, UIScale.scale(30), 0));
 
-        final JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 0));
+        final JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, UIScale.scale(30), 0));
         buttonsPanel.setOpaque(false);
 
         final JButton saveBtn = getStyledButton("SAVE & APPLY", RenderUtils.cyan, Color.BLACK);
@@ -335,9 +326,9 @@ public class SettingsPanel extends JPanel {
         buttonsPanel.add(resetBtn);
         buttonsPanel.add(saveBtn);
         bottomPanel.add(buttonsPanel);
-        bottomPanel.add(Box.createRigidArea(new Dimension(0, 25)));
+        bottomPanel.add(Box.createRigidArea(new Dimension(0, UIScale.scale(25))));
         bottomPanel.add(infoLabel = new JLabel(" "));
-        infoLabel.setFont(RenderCache.SANS_PLAIN_20);
+        infoLabel.setFont(UIScale.scaleFont(RenderCache.SANS_PLAIN_20));
         infoLabel.setForeground(Color.YELLOW);
         infoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         return bottomPanel;
@@ -385,7 +376,7 @@ public class SettingsPanel extends JPanel {
         );
 
         final JButton laterBtn = getStyledButton("LATER", Color.DARK_GRAY, Color.WHITE);
-        laterBtn.setPreferredSize(new Dimension(150, 45));
+        laterBtn.setPreferredSize(new Dimension(UIScale.scale(150), UIScale.scale(45)));
         laterBtn.addActionListener(_ -> {
             AudioManager.playSFX("/click-sound.mp3");
             dialog.dispose();
@@ -394,7 +385,7 @@ public class SettingsPanel extends JPanel {
         });
 
         final JButton restartBtn = getStyledButton("RESTART NOW", RenderUtils.cyan, Color.BLACK);
-        restartBtn.setPreferredSize(new Dimension(180, 45));
+        restartBtn.setPreferredSize(new Dimension(UIScale.scale(180), UIScale.scale(45)));
         restartBtn.addActionListener(_ -> {
             AudioManager.playSFX("/click-sound.mp3");
             dialog.dispose();
@@ -423,14 +414,14 @@ public class SettingsPanel extends JPanel {
         );
 
         final JButton cancelBtn = getStyledButton("CANCEL", Color.DARK_GRAY, Color.WHITE);
-        cancelBtn.setPreferredSize(new Dimension(150, 45));
+        cancelBtn.setPreferredSize(new Dimension(UIScale.scale(150), UIScale.scale(45)));
         cancelBtn.addActionListener(_ -> {
             AudioManager.playSFX("/click-sound.mp3");
             dialog.dispose();
         });
 
         final JButton resetConfirmBtn = getStyledButton("RESET", new Color(220, 50, 50), Color.WHITE);
-        resetConfirmBtn.setPreferredSize(new Dimension(150, 45));
+        resetConfirmBtn.setPreferredSize(new Dimension(UIScale.scale(150), UIScale.scale(45)));
         resetConfirmBtn.addActionListener(_ -> {
             AudioManager.playSFX("/click-sound.mp3");
             dialog.dispose();
@@ -480,11 +471,13 @@ public class SettingsPanel extends JPanel {
      * Styles a label for consistent look across settings groups.
      */
     private void styleLabel(JLabel l) {
-        l.setFont(RenderCache.SANS_PLAIN_18);
-        l.setForeground(Color.WHITE);
-        l.setPreferredSize(new Dimension(200, 40));
-        l.setMinimumSize(new Dimension(200, 40));
-        l.setMaximumSize(new Dimension(200, 40));
+        l.setFont(UIScale.scaleFont(RenderCache.SANS_PLAIN_18));
+        l.setForeground(new Color(210, 210, 215));
+        final Dimension labelDim = new Dimension(UIScale.scale(210), UIScale.scale(40));
+        l.setPreferredSize(labelDim);
+        l.setMinimumSize(labelDim);
+        l.setMaximumSize(labelDim);
+        l.setHorizontalAlignment(SwingConstants.RIGHT);
     }
 
     /**
@@ -504,13 +497,14 @@ public class SettingsPanel extends JPanel {
         p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
         p.setOpaque(false);
         p.add(l);
-        p.add(Box.createRigidArea(new Dimension(10, 0)));
+        p.add(Box.createRigidArea(new Dimension(UIScale.scale(20), 0)));
         p.add(comp);
 
         p.setAlignmentX(Component.LEFT_ALIGNMENT);
-        p.setMinimumSize(new Dimension(0, 50));
-        p.setPreferredSize(new Dimension(520, 50));
-        p.setMaximumSize(new Dimension(Short.MAX_VALUE, 50));
+        final int h = UIScale.scale(50);
+        p.setMinimumSize(new Dimension(0, h));
+        p.setPreferredSize(new Dimension(UIScale.scale(540), h));
+        p.setMaximumSize(new Dimension(Short.MAX_VALUE, h));
         return p;
     }
 
@@ -524,20 +518,38 @@ public class SettingsPanel extends JPanel {
                 Graphics2D g2 = (Graphics2D) g.create();
                 RenderUtils.initGraphics2D(g2);
                 g2.setColor(getModel().isRollover() ? bg.brighter() : bg);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 16, 16);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), UIScale.scale(16), UIScale.scale(16));
                 g2.setColor(fg);
                 FontMetrics fm = g2.getFontMetrics();
                 g2.drawString(getText(), (getWidth() - fm.stringWidth(getText())) / 2, (getHeight() - fm.getHeight()) / 2 + fm.getAscent());
                 g2.dispose();
             }
         };
-        btn.setFont(RenderCache.SANS_BOLD_18);
-        btn.setPreferredSize(new Dimension(200, 50));
+        btn.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_18));
+        btn.setPreferredSize(new Dimension(UIScale.scale(200), UIScale.scale(50)));
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         return btn;
+    }
+
+    /**
+     * Restarts the application by spawning a new Java process.
+     */
+    private static void restart() throws IOException {
+        final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+        final File jarFile;
+        try {
+            jarFile = new File(SettingsPanel.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        if (!jarFile.getName().endsWith(".jar")) return;
+        ProcessBuilder pb = new ProcessBuilder(javaBin, "-jar", jarFile.getPath());
+        pb.directory(jarFile.getParentFile());
+        pb.start();
+        System.exit(0);
     }
 
     /**

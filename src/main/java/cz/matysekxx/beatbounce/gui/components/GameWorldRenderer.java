@@ -21,11 +21,29 @@ import java.util.List;
  * neon grid (floor and ceiling), and game entities.
  */
 public class GameWorldRenderer {
+    /**
+     * Primary light color for the planet body.
+     */
     private static final Color PLANET_BODY_LIGHT = new Color(45, 15, 80);
+
+    /**
+     * Secondary dark color for the planet body.
+     */
     private static final Color PLANET_BODY_DARK = new Color(10, 0, 25);
+
+    /**
+     * Inner glow color for the planet rings.
+     */
     private static final Color PLANET_RING_INNER = new Color(255, 200, 255, 200);
+
+    /**
+     * Fully transparent color.
+     */
     private static final Color TRANSPARENT = new Color(0, 0, 0, 0);
 
+    /**
+     * Cached colors for the entire HSB hue range to improve performance.
+     */
     private static final Color[] HUE_CACHE = new Color[360];
 
     static {
@@ -34,11 +52,34 @@ public class GameWorldRenderer {
         }
     }
 
+    /**
+     * The camera used for 3D projections.
+     */
     private final Camera3D cam;
+
+    /**
+     * The game engine providing state and entity data.
+     */
     private final GameEngine gameEngine;
+
+    /**
+     * The level data containing tiles and metadata.
+     */
     private final Level level;
+
+    /**
+     * The player sphere entity.
+     */
     private final Sphere sphere;
+
+    /**
+     * Scratch array for storing projected screen coordinates [x, y].
+     */
     private final int[] projScratch = new int[2];
+
+    /**
+     * Off-screen buffer for the static background elements.
+     */
     private BufferedImage bgCache;
 
     /**
@@ -92,6 +133,9 @@ public class GameWorldRenderer {
         drawNeonGrid(g2d, width, height, horizonY, globalHue);
     }
 
+    /**
+     * Renders the stylized planet with pulsatile glow and rings.
+     */
     private void drawPlanet(Graphics2D g2d, int width, int horizonY, long time, float globalHue) {
         final int cx = width / 2;
         final int cy = horizonY - 150;
@@ -130,12 +174,18 @@ public class GameWorldRenderer {
         g2d.setStroke(RenderCache.STROKE_1);
     }
 
+    /**
+     * Renders a segment of a 3D ring.
+     */
     private void drawRing(Graphics2D g2d, int cx, int cy, float rx, int ry, int startAngle, Color color, BasicStroke stroke) {
         g2d.setColor(color);
         g2d.setStroke(stroke);
         g2d.drawArc(cx - (int) rx, cy - ry, (int) (rx * 2), ry * 2, startAngle, 180);
     }
 
+    /**
+     * Coordinates the drawing of horizontal and vertical grid lines.
+     */
     private void drawNeonGrid(Graphics2D g2d, int width, int height, int horizonY, float globalHue) {
         final double camZ = cam.getZ();
         final double camZmod = camZ % 150;
@@ -143,6 +193,9 @@ public class GameWorldRenderer {
         drawVerticalGrid(g2d, width, horizonY, globalHue, camZ);
     }
 
+    /**
+     * Renders horizontal grid lines with perspective fading.
+     */
     private void drawHorizontalGrid(Graphics2D g2d, int width, int height, int horizonY, float globalHue, double camZ, double camZmod) {
         for (int z = 0; z < 3000; z += 150) {
             final double distance = z - camZmod;
@@ -158,6 +211,9 @@ public class GameWorldRenderer {
         }
     }
 
+    /**
+     * Renders vertical grid lines extending into the distance.
+     */
     private void drawVerticalGrid(Graphics2D g2d, int width, int horizonY, float globalHue, double camZ) {
         g2d.setStroke(RenderCache.STROKE_2);
         for (int lx = -1200; lx <= 1200; lx += 120) {
@@ -205,6 +261,10 @@ public class GameWorldRenderer {
         sphere.render(g2d, cam, windowData);
     }
 
+    /**
+     * Projects a 3D coordinate [x, z] to 2D screen coordinates using the camera.
+     * Results are stored in {@code projScratch}.
+     */
     private boolean project(double x, double z, int width, int horizonY) {
         final double scale = cam.getScale(z);
         if (scale <= 0) return false;
@@ -213,6 +273,9 @@ public class GameWorldRenderer {
         return true;
     }
 
+    /**
+     * Retrieves a color from the hue cache based on a float value (0.0 to 1.0).
+     */
     private Color getCachedColor(float hue) {
         int index = (int) ((hue % 1.0f) * 359);
         if (index < 0) index += 360;

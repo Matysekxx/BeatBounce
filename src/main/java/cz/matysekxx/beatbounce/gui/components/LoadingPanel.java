@@ -12,13 +12,44 @@ import java.awt.*;
  * It uses a separate thread for the loading animation.
  */
 public class LoadingPanel extends JPanel implements Runnable {
+    /**
+     * Shadow color for the percentage text.
+     */
     private static final Color PERCENT_SHADOW_COLOR = new Color(0, 255, 220, 30);
+
+    /**
+     * Color for the percentage text.
+     */
     private static final Color PERCENT_TEXT_COLOR = new Color(255, 255, 255, 200);
+
+    /**
+     * Color for the footer hint text.
+     */
     private static final Color FOOTER_COLOR = new Color(180, 180, 200, 120);
+
+    /**
+     * Internal animation timer in seconds.
+     */
     private float time = 0.f;
+
+    /**
+     * Current loading progress (0.0 to 1.0).
+     */
     private float progress = 0.f;
+
+    /**
+     * The thread driving the loading animation.
+     */
     private Thread animationThread;
+
+    /**
+     * Flag indicating if the animation loop is running.
+     */
     private volatile boolean running = false;
+
+    /**
+     * The main title text to display.
+     */
     private String text = "Loading Level...";
 
     /**
@@ -83,6 +114,9 @@ public class LoadingPanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * Updates the internal progress and timer state.
+     */
     private void updateLogic(float dt) {
         time += dt;
         if (progress < 0.99f) {
@@ -114,6 +148,9 @@ public class LoadingPanel extends JPanel implements Runnable {
         g2.dispose();
     }
 
+    /**
+     * Renders the animated loading title with pulsing glow.
+     */
     private void drawTitle(Graphics2D g2, int w, int h, float pulse) {
         final int dotsCount = (int) (time * 2.5f) % 4;
         String drawText = text == null ? "" : text;
@@ -139,6 +176,9 @@ public class LoadingPanel extends JPanel implements Runnable {
         g2.drawString(drawText, x, y - 1);
     }
 
+    /**
+     * Renders the stylized progress bar.
+     */
     private void drawProgressBar(Graphics2D g2, int w, int h, float pulse) {
         final int barWidth = Math.min(500, (int) (w * 0.4));
         final int barX = (w - barWidth) >> 1;
@@ -161,6 +201,9 @@ public class LoadingPanel extends JPanel implements Runnable {
         drawPercentLabel(g2, barX, barY, barWidth);
     }
 
+    /**
+     * Renders the text label showing the current loading percentage.
+     */
     private void drawPercentLabel(Graphics2D g2, int barX, int barY, int barWidth) {
         g2.setFont(RenderCache.MONO_BOLD_16);
         final String percentText = (int) (progress * 100) + "%";
@@ -176,6 +219,9 @@ public class LoadingPanel extends JPanel implements Runnable {
         g2.drawString(percentText, pctX, pctY);
     }
 
+    /**
+     * Renders the footer hint text.
+     */
     private void drawFooter(Graphics2D g2, int w, int h) {
         g2.setFont(RenderCache.SANS_PLAIN_20);
         g2.setColor(FOOTER_COLOR);

@@ -14,13 +14,44 @@ import java.awt.event.MouseEvent;
  * Features a depth effect, top glow on hover, and a "press" animation that shifts the button downwards.
  */
 public class IsometricButton extends JButton {
+    /**
+     * Color of the front face (simulating depth).
+     */
     private final Color frontSide;
+
+    /**
+     * Base fill color of the top surface.
+     */
     private final Color topFill;
+
+    /**
+     * Color used for the inner glow/border of the top surface.
+     */
     private final Color topGlow;
+
+    /**
+     * Vertical depth of the 3D effect in pixels.
+     */
     private final int depth;
+
+    /**
+     * Corner arc size for rounding.
+     */
     private final int arc;
+
+    /**
+     * Current vertical offset for the press animation.
+     */
     private int currentPressOffset = 0;
+
+    /**
+     * Current alpha level of the hover glow animation (0.0 to 1.0).
+     */
     private float glowAlpha = 0f;
+
+    /**
+     * Timer responsible for driving the glow fade-in/out animation.
+     */
     private Timer glowTimer;
 
     /**
@@ -52,6 +83,9 @@ public class IsometricButton extends JButton {
         setAnimations();
     }
 
+    /**
+     * Initializes mouse listeners for interaction animations.
+     */
     private void setAnimations() {
         this.addMouseListener(new MouseAdapter() {
             @Override
@@ -79,6 +113,11 @@ public class IsometricButton extends JButton {
         });
     }
 
+    /**
+     * Starts the fade-in or fade-out animation for the hover glow.
+     *
+     * @param fadeIn true to fade in, false to fade out
+     */
     private void startGlowAnimation(boolean fadeIn) {
         if (glowTimer != null && glowTimer.isRunning()) glowTimer.stop();
         glowTimer = new Timer(16, _ -> {

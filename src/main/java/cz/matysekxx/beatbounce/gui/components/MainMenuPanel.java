@@ -13,10 +13,29 @@ import java.awt.image.BufferedImage;
  * It handles background rendering and animations.
  */
 public class MainMenuPanel extends JPanel implements Runnable {
+    /**
+     * Flag indicating if the animation loop is active.
+     */
     private boolean running = false;
+
+    /**
+     * The thread responsible for driving the menu background animation.
+     */
     private Thread animatorThread;
+
+    /**
+     * Off-screen buffer for the static background elements.
+     */
     private BufferedImage bgCache;
+
+    /**
+     * Cached width of the panel.
+     */
     private int cachedW = -1;
+
+    /**
+     * Cached height of the panel.
+     */
     private int cachedH = -1;
 
     /**

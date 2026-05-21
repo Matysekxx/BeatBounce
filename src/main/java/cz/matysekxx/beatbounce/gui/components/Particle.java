@@ -10,8 +10,34 @@ import java.awt.*;
  * Particles move and fade to create a dynamic visual effect.
  */
 public class Particle {
-    float x, y, speed, opacity;
+    /**
+     * Horizontal position of the particle.
+     */
+    float x;
+
+    /**
+     * Vertical position of the particle.
+     */
+    float y;
+
+    /**
+     * Movement speed of the particle.
+     */
+    float speed;
+
+    /**
+     * Opacity level (0.0 to 1.0) of the particle.
+     */
+    float opacity;
+
+    /**
+     * Base color of the particle.
+     */
     Color color;
+
+    /**
+     * Pre-calculated color with alpha for rendering.
+     */
     Color renderedColor;
 
     /**

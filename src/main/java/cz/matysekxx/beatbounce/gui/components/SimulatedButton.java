@@ -10,15 +10,49 @@ import java.awt.*;
  * It is used for custom rendering within a {@link JPanel} and handles its own hit detection and drawing.
  */
 public class SimulatedButton {
+    /**
+     * Background color for the button in its normal state.
+     */
     private static final Color HINT_BG = new Color(255, 255, 255, 15);
+
+    /**
+     * Border color for the button.
+     */
     private static final Color HINT_BORDER = new Color(255, 255, 255, 30);
+
+    /**
+     * Label color for the button in its normal state.
+     */
     private static final Color HINT_LABEL = new Color(220, 220, 220);
 
+    /**
+     * The text label to display on the button.
+     */
     private final String label;
+
+    /**
+     * The x-coordinate of the button's top-left corner.
+     */
     private final int x;
+
+    /**
+     * The y-coordinate of the button's top-left corner.
+     */
     private final int y;
+
+    /**
+     * The width of the button in pixels.
+     */
     private final int width;
+
+    /**
+     * The height of the button in pixels.
+     */
     private final int height;
+
+    /**
+     * The action to be triggered when this button is clicked.
+     */
     private final UIAction action;
 
     /**

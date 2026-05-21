@@ -10,6 +10,9 @@ import java.awt.*;
  * A custom content pane for dialogs, featuring a rounded, semi-transparent background and a colored border.
  */
 public class DialogContentPane extends JPanel {
+    /**
+     * The color used for the component's border.
+     */
     private final Color borderColor;
 
     /**

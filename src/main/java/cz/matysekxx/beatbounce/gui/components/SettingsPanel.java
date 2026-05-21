@@ -19,20 +19,79 @@ import java.net.URISyntaxException;
  */
 public class SettingsPanel extends JPanel {
 
+    /**
+     * Manager used for applying settings and switching screens.
+     */
     private final ScreenManager screenManager;
+
+    /**
+     * Checkbox for toggling fullscreen mode.
+     */
     private final JCheckBox fullscreenCheck;
+
+    /**
+     * Checkbox for toggling OpenGL hardware acceleration.
+     */
     private final JCheckBox openglCheck;
+
+    /**
+     * Checkbox for toggling vertical synchronization.
+     */
     private final JCheckBox vsyncCheck;
+
+    /**
+     * Checkbox for toggling the FPS overlay visibility.
+     */
     private final JCheckBox showFpsCheck;
+
+    /**
+     * Checkbox for toggling background particle effects.
+     */
     private final JCheckBox particlesCheck;
+
+    /**
+     * Checkbox for toggling the bloom post-processing effect.
+     */
     private final JCheckBox bloomCheck;
+
+    /**
+     * Checkbox for toggling automatic muting when focus is lost.
+     */
     private final JCheckBox focusLossCheck;
+
+    /**
+     * Cycle button for selecting graphical quality presets.
+     */
     private final CycleButton qualityCycle;
+
+    /**
+     * Cycle button for selecting the target monitor.
+     */
     private final CycleButton monitorCycle;
+
+    /**
+     * Selector for picking the target frame rate.
+     */
     private final StepSelector fpsSelector;
+
+    /**
+     * Slider for controlling in-game music volume.
+     */
     private final CustomSlider soundSlider;
+
+    /**
+     * Slider for controlling menu background music volume.
+     */
     private final CustomSlider menuSlider;
+
+    /**
+     * Slider for controlling sound effect (SFX) volume.
+     */
     private final CustomSlider sfxSlider;
+
+    /**
+     * Label used for displaying status information to the user.
+     */
     private JLabel infoLabel;
 
     /**
@@ -177,6 +236,9 @@ public class SettingsPanel extends JPanel {
         add(createBottomPanel(), BorderLayout.SOUTH);
     }
 
+    /**
+     * Restarts the application by spawning a new Java process.
+     */
     private static void restart() throws IOException {
         final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
         final File jarFile;
@@ -206,6 +268,9 @@ public class SettingsPanel extends JPanel {
         super.paintComponent(g);
     }
 
+    /**
+     * Creates a styled panel for grouping related settings.
+     */
     private JPanel createGroupPanel(String title) {
         final JPanel p = new JPanel() {
             @Override
@@ -243,6 +308,9 @@ public class SettingsPanel extends JPanel {
         return p;
     }
 
+    /**
+     * Creates the bottom panel containing the Save and Reset buttons.
+     */
     private JPanel createBottomPanel() {
         final JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.Y_AXIS));
@@ -275,6 +343,9 @@ public class SettingsPanel extends JPanel {
         return bottomPanel;
     }
 
+    /**
+     * Saves the current UI states into global settings and applies them.
+     */
     private void saveSettings() {
         final boolean restartReq = (Settings.opengl != openglCheck.isSelected()) || !Settings.graphicsQuality.equals(qualityCycle.getSelectedOption());
         Settings.fullscreen = fullscreenCheck.isSelected();
@@ -302,6 +373,9 @@ public class SettingsPanel extends JPanel {
         }
     }
 
+    /**
+     * Displays a dialog informing the user that a restart is required.
+     */
     private void showRestartDialog() {
         final CustomDialog dialog = new CustomDialog(
                 (Frame) SwingUtilities.getWindowAncestor(this),
@@ -337,6 +411,9 @@ public class SettingsPanel extends JPanel {
         dialog.setVisible(true);
     }
 
+    /**
+     * Displays a confirmation dialog for resetting settings to defaults.
+     */
     private void showResetDialog() {
         final CustomDialog dialog = new CustomDialog(
                 (Frame) SwingUtilities.getWindowAncestor(this),
@@ -367,6 +444,9 @@ public class SettingsPanel extends JPanel {
         dialog.setVisible(true);
     }
 
+    /**
+     * Restores all settings to their default values and saves them.
+     */
     private void resetToDefaults() {
         final boolean restartReq = (!Settings.opengl) || !Settings.graphicsQuality.equals("HIGH");
         fullscreenCheck.setSelected(true);
@@ -396,6 +476,9 @@ public class SettingsPanel extends JPanel {
         }
     }
 
+    /**
+     * Styles a label for consistent look across settings groups.
+     */
     private void styleLabel(JLabel l) {
         l.setFont(RenderCache.SANS_PLAIN_18);
         l.setForeground(Color.WHITE);
@@ -404,12 +487,18 @@ public class SettingsPanel extends JPanel {
         l.setMaximumSize(new Dimension(200, 40));
     }
 
+    /**
+     * Creates a horizontal panel with a label and a component.
+     */
     private JPanel createLabeledComponent(String labelText, JComponent comp) {
         final JLabel l = new JLabel(labelText);
         styleLabel(l);
         return createLabeledComponent(l, comp);
     }
 
+    /**
+     * Creates a horizontal panel with a label and a component.
+     */
     private JPanel createLabeledComponent(JLabel l, JComponent comp) {
         final JPanel p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
@@ -425,6 +514,9 @@ public class SettingsPanel extends JPanel {
         return p;
     }
 
+    /**
+     * Returns a styled JButton with custom background and foreground colors.
+     */
     private JButton getStyledButton(String text, Color bg, Color fg) {
         final JButton btn = new JButton(text) {
             @Override
@@ -448,6 +540,9 @@ public class SettingsPanel extends JPanel {
         return btn;
     }
 
+    /**
+     * Map graphical quality string to internal index.
+     */
     private int getQualityIndex() {
         if (Settings.graphicsQuality.equals("LOW")) return 0;
         if (Settings.graphicsQuality.equals("MEDIUM")) return 1;

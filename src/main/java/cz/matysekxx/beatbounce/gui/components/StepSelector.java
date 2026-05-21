@@ -10,7 +10,14 @@ import java.awt.*;
  * It is used for settings like Target FPS.
  */
 public class StepSelector extends javax.swing.JComponent {
+    /**
+     * The array of discrete integer values that can be selected.
+     */
     private final int[] values;
+
+    /**
+     * The index of the currently selected value in the array.
+     */
     private int selectedIndex;
 
     /**

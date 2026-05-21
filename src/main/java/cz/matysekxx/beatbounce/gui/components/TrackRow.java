@@ -22,11 +22,29 @@ import java.util.function.Consumer;
  * It handles rendering track info, selection expansion, and initiating downloads/play.
  */
 public class TrackRow extends JPanel {
+    /**
+     * Logger for this class.
+     */
     private static final Logger LOG = LoggerFactory.getLogger(TrackRow.class);
 
+    /**
+     * Data model for this track row.
+     */
     private final TrackData data;
+
+    /**
+     * Client for handling track downloads.
+     */
     private final AudiusClient audiusClient;
+
+    /**
+     * Manager for screen navigation.
+     */
     private final ScreenManager screenManager;
+
+    /**
+     * Whether the mouse is currently hovering over this row.
+     */
     private boolean hovered = false;
 
     /**
@@ -115,6 +133,9 @@ public class TrackRow extends JPanel {
         g2.dispose();
     }
 
+    /**
+     * Renders the background highlight based on hover and expansion state.
+     */
     private void drawBackground(Graphics2D g2, int w, int h) {
         if (data.expanded) {
             Color acc = data.getAccent();
@@ -130,6 +151,9 @@ public class TrackRow extends JPanel {
         g2.drawLine(0, h - 1, w, h - 1);
     }
 
+    /**
+     * Renders title, artist and download status icon.
+     */
     private void drawTrackDetails(Graphics2D g2, int w, int h) {
         final boolean downloaded = data.isDownloaded(audiusClient);
         g2.setFont(RenderCache.SANS_BOLD_16);
@@ -144,6 +168,9 @@ public class TrackRow extends JPanel {
         g2.drawString(data.artist, 50, 48);
     }
 
+    /**
+     * Renders track duration, stars and best score.
+     */
     private void drawStats(Graphics2D g2, int w, int h) {
         final int rightX = w - 20;
         g2.setFont(RenderCache.SANS_PLAIN_20);
@@ -158,6 +185,9 @@ public class TrackRow extends JPanel {
         g2.drawString(stars, rightX - fm.stringWidth(info) - g2.getFontMetrics().stringWidth(stars) - 15, 38);
     }
 
+    /**
+     * Renders the PLAY / DOWNLOADING / READY button.
+     */
     private void drawActionButton(Graphics2D g2, int w, int h) {
         if (data.expansion <= 0.5f) return;
         final int btnW = 110, btnH = 32, bx = w - 20 - btnW, by = 60;
@@ -196,11 +226,17 @@ public class TrackRow extends JPanel {
         }
     }
 
+    /**
+     * Helper method to draw a centered string within a box.
+     */
     private void drawCenteredString(Graphics2D g2, String text, int x, int y, int w, int h) {
         final FontMetrics fm = g2.getFontMetrics();
         g2.drawString(text, x + (w - fm.stringWidth(text)) / 2, y + (h + fm.getAscent()) / 2 - 2);
     }
 
+    /**
+     * Logic for clicking the action button. Triggers download or launches the level.
+     */
     private void handlePlay() {
         if (data.starting) return;
         if (data.isDownloaded(audiusClient)) {
@@ -222,6 +258,9 @@ public class TrackRow extends JPanel {
         }
     }
 
+    /**
+     * Transitions to the GameScreen and starts the level.
+     */
     private void launchGame(Path audioPath, int stars) {
         if (audioPath == null) return;
         data.starting = true;

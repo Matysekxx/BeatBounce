@@ -19,20 +19,31 @@ import java.nio.file.Path;
  * A UI component representing a single song in the library.
  */
 public class LocalTrackRow extends JPanel {
-    private static final Logger LOG = LoggerFactory.getLogger(LocalTrackRow.class);
     /**
-     * The difficulty level of the song (1-5).
+     * Logger for this class.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(LocalTrackRow.class);
+
+    /**
+     * The difficulty level of the song (1-10 stars).
      */
     private final int stars;
+
     /**
      * The display name of the song file (without extension).
      */
     private final String fileName;
+
     /**
      * The best score achieved by the user on this song.
      */
     private final String bestScore;
+
+    /**
+     * Manager used for switching screens.
+     */
     private final ScreenManager screenManager;
+
     /**
      * Whether the mouse is currently hovering over this row.
      */

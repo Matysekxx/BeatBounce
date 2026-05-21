@@ -17,31 +17,134 @@ import java.util.Collections;
  * This includes countdowns, pause screens, game over screens, scores, and progress bars.
  */
 public class GameUIRenderer {
+    /**
+     * Background color for the pause screen.
+     */
     private static final Color PAUSE_BG = new Color(0, 0, 8, 170);
+
+    /**
+     * Accent line color for the pause screen.
+     */
     private static final Color PAUSE_LINE = new Color(0, 255, 220, 55);
+
+    /**
+     * Background color for the level finished screen.
+     */
     private static final Color FINISHED_BG = new Color(0, 0, 0, 160);
+
+    /**
+     * Yellow accent line color for the finished screen.
+     */
     private static final Color FINISHED_YELLOW_LINE = new Color(255, 215, 0);
+
+    /**
+     * Background color for the game over screen.
+     */
     private static final Color GAMEOVER_BG = new Color(0, 0, 0, 180);
+
+    /**
+     * Scanline color for the game over screen.
+     */
     private static final Color GAMEOVER_LINES = new Color(0, 0, 0, 20);
+
+    /**
+     * Primary red color for game over text.
+     */
     private static final Color GAMEOVER_RED = new Color(255, 40, 40);
+
+    /**
+     * Light red color for game over secondary text.
+     */
     private static final Color GAMEOVER_RED_LIGHT = new Color(255, 100, 100);
+
+    /**
+     * Cyan component for the glitch effect.
+     */
     private static final Color GLITCH_CYAN = new Color(0, 255, 220, 50);
+
+    /**
+     * Red component for the glitch effect.
+     */
     private static final Color GLITCH_RED = new Color(255, 0, 80, 40);
+
+    /**
+     * Color for score labels.
+     */
     private static final Color SCORE_LABEL_COLOR = new Color(180, 180, 180, 180);
+
+    /**
+     * Primary color for orbs.
+     */
     private static final Color ORBS_COLOR = new Color(255, 200, 0);
+
+    /**
+     * Color for total orb count text.
+     */
     private static final Color TOTAL_ORBS_COLOR = new Color(200, 200, 200);
+
+    /**
+     * Primary text color for scores.
+     */
     private static final Color SCORE_TEXT_COLOR = new Color(255, 255, 255, 160);
+
+    /**
+     * Text color for orb collection count.
+     */
     private static final Color ORBS_TEXT_COLOR = new Color(255, 200, 0, 200);
+
+    /**
+     * Background color for the song progress bar.
+     */
     private static final Color PROGRESS_BG = new Color(255, 255, 255, 22);
+
+    /**
+     * The game engine instance to pull data from.
+     */
     private final GameEngine gameEngine;
+
+    /**
+     * The audio clip to track song progress.
+     */
     private final Clip clip;
+
+    /**
+     * List of buttons currently active on the screen for interaction.
+     */
     private final java.util.List<SimulatedButton> activeButtons = new java.util.ArrayList<>();
+
+    /**
+     * Tracks the last known game state for animation triggers.
+     */
     private GameState lastState = GameState.COUNTDOWN;
+
+    /**
+     * Timer for screen entrance animations.
+     */
     private float screenAppearTimer = 0f;
+
+    /**
+     * Timer for the tutorial animation.
+     */
     private float tutorialTimer = 0f;
+
+    /**
+     * List of buttons rendered in the previous frame.
+     */
     private java.util.List<SimulatedButton> renderedButtons = Collections.emptyList();
+
+    /**
+     * Current vertical translation for animation.
+     */
     private int currentTranslateY = 0;
+
+    /**
+     * Current mouse X-coordinate in virtual space.
+     */
     private int mouseX = -1;
+
+    /**
+     * Current mouse Y-coordinate in virtual space.
+     */
     private int mouseY = -1;
 
     /**
@@ -55,11 +158,24 @@ public class GameUIRenderer {
         this.clip = clip;
     }
 
+    /**
+     * Updates the internal mouse position for button hover detection.
+     *
+     * @param mx mouse X
+     * @param my mouse Y
+     */
     public void setMousePosition(int mx, int my) {
         this.mouseX = mx;
         this.mouseY = my;
     }
 
+    /**
+     * Checks if a click occurred within any rendered button and returns its action.
+     *
+     * @param mx click X
+     * @param my click Y
+     * @return the {@link UIAction} to perform
+     */
     public UIAction handleClick(int mx, int my) {
         for (SimulatedButton btn : renderedButtons) {
             if (btn.contains(mx, my)) {
@@ -125,6 +241,9 @@ public class GameUIRenderer {
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
     }
 
+    /**
+     * Renders a mouse icon for the tutorial.
+     */
     private void drawMouseShape(Graphics2D g2d, int x, int y, Color color, boolean fullDetail) {
         final int mouseW = 50;
         final int mouseH = 70;
@@ -173,12 +292,18 @@ public class GameUIRenderer {
         RenderUtils.drawText(g2d, text, (width - fm.stringWidth(text)) / 2, (height + fm.getAscent()) / 2, RenderUtils.cyan);
     }
 
+    /**
+     * Helper to draw a glowing ring.
+     */
     private void drawRing(Graphics2D g2d, int cx, int cy, int r, Color color, int alpha, BasicStroke stroke) {
         g2d.setColor(RenderCache.customColorWithAlpha(color, alpha));
         g2d.setStroke(stroke);
         g2d.drawOval(cx - r, cy - r, r * 2, r * 2);
     }
 
+    /**
+     * Draws a "glass" styled card with a background and border.
+     */
     private void drawGlassCard(Graphics2D g2d, int width, int height, int cardW, int cardH, Color accentColor, float pulse) {
         final int cardX = (width - cardW) / 2;
         final int cardY = (height - cardH) / 2;
@@ -198,10 +323,16 @@ public class GameUIRenderer {
         g2d.drawRoundRect(cardX + 4, cardY + 4, cardW - 8, cardH - 8, 14, 14);
     }
 
+    /**
+     * Calculates a pulsation value.
+     */
     private float getPulse(double speed) {
         return (float) ((Math.sin(System.currentTimeMillis() / speed) + 1.0) / 2.0);
     }
 
+    /**
+     * Sets up the translation and renders the card for screens.
+     */
     private int setupScreenCard(Graphics2D g2d, int width, int height, int cardW, int cardH, Color accentColor, float pulse) {
         final float appearProgress = Math.min(1f, screenAppearTimer / 0.4f);
         final float easedAppear = 1f - (float) Math.pow(1f - appearProgress, 3);
@@ -214,6 +345,9 @@ public class GameUIRenderer {
         return cardY;
     }
 
+    /**
+     * Reverts translation after rendering screen card.
+     */
     private void teardownScreenCard(Graphics2D g2d) {
         final float appearProgress = Math.min(1f, screenAppearTimer / 0.4f);
         final float easedAppear = 1f - (float) Math.pow(1f - appearProgress, 3);
@@ -222,6 +356,9 @@ public class GameUIRenderer {
         this.currentTranslateY = 0;
     }
 
+    /**
+     * Draws a separator line inside a card.
+     */
     private void drawCardLine(Graphics2D g2d, int width, int cardW, int y, Color color, float pulse) {
         g2d.setColor(RenderCache.customColorWithAlpha(color, (int) (70 + 50 * pulse)));
         g2d.setStroke(RenderCache.STROKE_2);
@@ -229,6 +366,9 @@ public class GameUIRenderer {
         g2d.setStroke(RenderCache.STROKE_1);
     }
 
+    /**
+     * Helper to draw two buttons side-by-side at the bottom of an end screen.
+     */
     private void drawEndScreenButtons(Graphics2D g2d, int width, int y, String l1, UIAction a1, String l2, UIAction a2) {
         drawButton(g2d, l1, width / 2 - 230, y, 220, a1);
         drawButton(g2d, l2, width / 2 + 10, y, 220, a2);
@@ -332,6 +472,9 @@ public class GameUIRenderer {
         teardownScreenCard(g2d);
     }
 
+    /**
+     * Draws detailed score statistics at the end of a level.
+     */
     private void drawPostGameScore(Graphics2D g2d, int titleY, int width, Color accentColor) {
         final String label = "F I N A L   S C O R E";
         final String scoreText = String.format("%,d", gameEngine.getScore());
@@ -493,6 +636,9 @@ public class GameUIRenderer {
         g2d.drawString(sb.toString(), 10, barY - 7);
     }
 
+    /**
+     * Renders a simulated button region.
+     */
     private void drawButton(Graphics2D g2d, String label, int x, int y, int width, UIAction action) {
         final int btnHeight = 55;
         final int btnY = y - 40;
@@ -503,6 +649,13 @@ public class GameUIRenderer {
         activeButtons.add(absoluteRegion);
     }
 
+    /**
+     * Draws the revive selection screen overlay.
+     *
+     * @param g2d    the graphics context
+     * @param width  the width of the rendering area
+     * @param height the height of the rendering area
+     */
     public void drawReviveScreen(Graphics2D g2d, int width, int height) {
         final float pulse = getPulse(600.0);
 
@@ -563,6 +716,14 @@ public class GameUIRenderer {
         teardownScreenCard(g2d);
     }
 
+    /**
+     * Entry point for rendering the game UI based on current state.
+     *
+     * @param g2d    the graphics context
+     * @param width  rendering area width
+     * @param height rendering area height
+     * @param state  the current game state
+     */
     public void renderGameState(Graphics2D g2d, int width, int height, GameState state) {
         activeButtons.clear();
         switch (state) {

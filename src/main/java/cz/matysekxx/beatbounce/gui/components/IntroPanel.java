@@ -17,16 +17,54 @@ import java.awt.image.BufferedImage;
  * It manages its own animation thread.
  */
 public class IntroPanel extends JPanel implements Runnable {
+    /**
+     * Particle array for the ambient background animation.
+     */
     private final Particle[] particles;
+
+    /**
+     * The number of particles to update and render based on graphics settings.
+     */
     private int count;
+
+    /**
+     * Internal animation timer in seconds.
+     */
     private float time = 0;
+
+    /**
+     * Flag indicating if the animation thread is active.
+     */
     private boolean running = false;
+
+    /**
+     * The thread responsible for driving the animation and repaints.
+     */
     private Thread animatorThread;
 
+    /**
+     * Cached width of the panel.
+     */
     private int cachedW = -1;
+
+    /**
+     * Cached height of the panel.
+     */
     private int cachedH = -1;
+
+    /**
+     * Off-screen buffer for the static background elements.
+     */
     private BufferedImage staticBackgroundCache;
+
+    /**
+     * Width of the background cache.
+     */
     private int cachedBgW = -1;
+
+    /**
+     * Height of the background cache.
+     */
     private int cachedBgH = -1;
 
     /**
@@ -50,6 +88,9 @@ public class IntroPanel extends JPanel implements Runnable {
         });
     }
 
+    /**
+     * Updates the particle count based on the current graphics quality settings.
+     */
     private void updateParticleCount() {
         this.count = switch (Settings.graphicsQuality) {
             case "LOW" -> 0;
@@ -166,6 +207,9 @@ public class IntroPanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * Renders a vignette effect over the entire panel.
+     */
     private void drawVignette(Graphics2D g2d, int w, int h) {
         final float[] dist = {0.0f, 1.0f};
         final Color[] colors = {new Color(0, 0, 0, 0), new Color(0, 0, 0, 160)};
@@ -174,6 +218,9 @@ public class IntroPanel extends JPanel implements Runnable {
         g2d.fillRect(0, 0, w, h);
     }
 
+    /**
+     * Renders floating geometric shapes in the background.
+     */
     private void drawFloatingShapes(Graphics2D g2d, int w, int horizonY, float globalHue) {
         final int shapes = 6;
         for (int i = 0; i < shapes; i++) {
@@ -210,6 +257,9 @@ public class IntroPanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * Returns a predefined shape based on index.
+     */
     private Shape getShape(int index) {
         return switch (index % 3) {
             case 0 -> RenderCache.SHAPE_TRIANGLE;
@@ -218,6 +268,9 @@ public class IntroPanel extends JPanel implements Runnable {
         };
     }
 
+    /**
+     * Renders simulated audio frequency bars.
+     */
     private void drawAudioBars(Graphics2D g2d, int w, int horizonY, float globalHue) {
         final int barCount = 120;
         final float barWidth = (float) w / barCount;
@@ -245,6 +298,9 @@ public class IntroPanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * Calculates the animated height of an audio bar.
+     */
     private float getHeight(int i) {
         final float freq1 = (float) (Math.sin(time * 2 + i * 0.15) * 0.5 + 0.5);
         final float freq2 = (float) (Math.sin(time * 3.5 + i * 0.4) * 0.3 + 0.3);
@@ -255,6 +311,9 @@ public class IntroPanel extends JPanel implements Runnable {
         return (freq1 * 0.4f + freq2 * 0.3f + freq3 * 0.2f + freq4 * 0.1f) * 160 + globalBounce;
     }
 
+    /**
+     * Renders the animated main title.
+     */
     private void drawTitle(Graphics2D g2d, int w, int h, float globalHue) {
         final String text = "BEAT BOUNCE";
         g2d.setFont(RenderCache.MONO_ITALIC_BOLD_150);
@@ -282,6 +341,9 @@ public class IntroPanel extends JPanel implements Runnable {
     }
 
 
+    /**
+     * Renders the animated futuristic grid on the floor.
+     */
     private void drawIntroGrid(Graphics2D g2d, int w, int h, int horizonY, float globalHue) {
         final int vanishingPointX = w >> 1;
 

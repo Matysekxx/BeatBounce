@@ -13,15 +13,39 @@ import java.awt.event.MouseEvent;
  * It uses {@link RenderUtils} to initialize graphics and follows the game's aesthetic.
  */
 public class ScrollBarUI extends BasicScrollBarUI {
-
+    /**
+     * Width of the scroll bar thumb in pixels.
+     */
     private static final int THUMB_WIDTH = 4;
-    private static final int THUMB_ARC = 4;
-    private static final Color THUMB_COLOR = new Color(0, 255, 255, 180);
-    private static final Color THUMB_HOVER_COLOR = new Color(0, 255, 255, 255);
-    private static final Color TRACK_COLOR = new Color(0, 255, 255, 20);
 
+    /**
+     * Arc size for rounding the thumb corners.
+     */
+    private static final int THUMB_ARC = 4;
+
+    /**
+     * Base color for the scroll bar thumb.
+     */
+    private static final Color THUMB_COLOR = new Color(0, 255, 220, 180);
+
+    /**
+     * Color for the thumb when hovered.
+     */
+    private static final Color THUMB_HOVER_COLOR = new Color(0, 255, 220, 255);
+
+    /**
+     * Color for the scroll bar track.
+     */
+    private static final Color TRACK_COLOR = new Color(0, 255, 220, 20);
+
+    /**
+     * Whether the scroll bar is currently hovered.
+     */
     private boolean hovered = false;
 
+    /**
+     * Creates a zero-sized button to hide scroll bar arrows.
+     */
     private static JButton zeroButton() {
         final JButton b = new JButton();
         final Dimension zero = new Dimension(0, 0);

@@ -16,12 +16,29 @@ import java.util.concurrent.ConcurrentHashMap;
  * Handles caching, volume application, and playback.
  */
 public class AudioManager {
+    /**
+     * Logger for this class.
+     */
     private static final Logger LOG = LoggerFactory.getLogger(AudioManager.class);
 
+    /**
+     * Cache for decoded SFX data (PCM byte arrays).
+     */
     private static final Map<String, byte[]> sfxCache = new ConcurrentHashMap<>();
+
+    /**
+     * Cache for SFX audio formats.
+     */
     private static final Map<String, AudioFormat> formatCache = new ConcurrentHashMap<>();
 
+    /**
+     * The clip for background menu music.
+     */
     private static Clip menuMusicClip;
+
+    /**
+     * The path of the currently playing menu music.
+     */
     private static String currentMenuMusicPath;
 
     static {
@@ -103,6 +120,9 @@ public class AudioManager {
         }
     }
 
+    /**
+     * Internal helper to create a standardized AudioInputStream for a resource.
+     */
     private static AudioInputStream getAudioInputStream(String resourcePath) throws UnsupportedAudioFileException, IOException {
         final URL url = getResourceURL(resourcePath);
         assert url != null;
@@ -188,6 +208,9 @@ public class AudioManager {
         applyVolume(clip, Settings.sfxVolume);
     }
 
+    /**
+     * General helper to apply a volume level to a clip.
+     */
     private static void applyVolume(Clip clip, int volumeLevel) {
         if (clip == null) return;
         try {
@@ -202,6 +225,9 @@ public class AudioManager {
         }
     }
 
+    /**
+     * Returns the URL for a given resource path, handling both internal and external paths.
+     */
     private static URL getResourceURL(String path) {
         try {
             URL url = AudioManager.class.getResource(path);

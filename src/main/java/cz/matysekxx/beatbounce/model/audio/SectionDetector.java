@@ -14,8 +14,14 @@ import java.util.List;
  * heuristically based on energy level and position within the song.
  */
 public class SectionDetector {
-
+    /**
+     * Length of each analysis window in seconds.
+     */
     private static final double WINDOW_SECONDS = 4.0;
+
+    /**
+     * Exponential smoothing factor (0.0 to 1.0) for the energy curve.
+     */
     private static final double SMOOTHING = 0.3;
 
     /**
@@ -96,6 +102,9 @@ public class SectionDetector {
         return sections;
     }
 
+    /**
+     * Heuristically determines the section type for a specific window.
+     */
     private SectionType classify(double energy, double progress) {
         if (progress < 0.08) return SectionType.INTRO;
         if (progress > 0.90) return SectionType.OUTRO;

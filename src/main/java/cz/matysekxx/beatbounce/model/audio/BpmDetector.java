@@ -16,14 +16,24 @@ import java.util.List;
  * </ol>
  */
 public class BpmDetector {
-
+    /**
+     * Minimum possible BPM for estimation.
+     */
     private static final int MIN_BPM = 60;
+
+    /**
+     * Maximum possible BPM for estimation.
+     */
     private static final int MAX_BPM = 200;
+
     /**
      * Hop size in mono frames used for building the onset envelope.
      */
     private static final int HOP_FRAMES = 512;
 
+    /**
+     * The audio format used to interpret the sample array.
+     */
     private final AudioFormat format;
 
     /**
@@ -35,6 +45,9 @@ public class BpmDetector {
         this.format = format;
     }
 
+    /**
+     * Finds the lag that produces the highest autocorrelation within the specified range.
+     */
     private static int getBestLag(List<Double> envelope, int minLag, int maxLag) {
         final int n = envelope.size();
 

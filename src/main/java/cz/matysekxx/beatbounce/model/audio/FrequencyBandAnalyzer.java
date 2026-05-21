@@ -14,8 +14,19 @@ import java.util.Map;
  */
 public class FrequencyBandAnalyzer {
 
+    /**
+     * FFT implementation for frequency analysis.
+     */
     private final FFT fft;
+
+    /**
+     * Sample rate of the audio data.
+     */
     private final float sampleRate;
+
+    /**
+     * Number of samples per buffer for FFT analysis.
+     */
     private final int bufferSize;
 
     /**

@@ -21,7 +21,14 @@ import java.util.concurrent.CountDownLatch;
  * </ol>
  */
 public class AudioAnalyzer {
+    /**
+     * The raw audio data loaded into memory.
+     */
     private final AudioData audioData;
+
+    /**
+     * The speed multiplier applied during analysis.
+     */
     private final float speedMultiplier;
 
     /**

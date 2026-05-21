@@ -30,61 +30,186 @@ import java.util.concurrent.SubmissionPublisher;
  * </p>
  */
 public class AudioProcessor implements Flow.Publisher<BeatEvent>, Closeable {
+    /**
+     * Size of the processing buffer in samples.
+     */
     public static final int BUFFER_SIZE = 2048;
+
+    /**
+     * Overlap between consecutive buffers in samples.
+     */
     public static final int OVERLAP = 1024;
+
+    /**
+     * Threshold for detecting high-intensity sections.
+     */
     private static final double HIGH_INTENSITY_THRESHOLD = 0.10;
+
+    /**
+     * Threshold for detecting low-intensity sections.
+     */
     private static final double LOW_INTENSITY_THRESHOLD = 0.05;
+
+    /**
+     * Alpha factor for RMS smoothing.
+     */
     private static final double SMOOTHING_FACTOR = 0.93;
+
+    /**
+     * Minimum interval between accepted beats in seconds.
+     */
     private static final double MIN_BEAT_INTERVAL = 0.08;
+
+    /**
+     * Window for de-duplicating similar onsets.
+     */
     private static final double DEDUP_WINDOW = 0.025;
+
+    /**
+     * Maximum allowed gap between beats before a fallback beat is generated.
+     */
     private static final double MAX_GAP_SECONDS = 1.2;
+
+    /**
+     * Threshold below which audio is considered silent.
+     */
     private static final double SILENCE_THRESHOLD = 0.006;
+
+    /**
+     * Limit on consecutive generated fallback beats.
+     */
     private static final int MAX_CONSECUTIVE_FALLBACKS = 32;
+
+    /**
+     * Size of the rolling history used for BPM estimation.
+     */
     private static final int BPM_HISTORY_SIZE = 8;
+
     /**
      * Minimum mid-band energy to consider a chunk "tonal" for sustained-note tracking.
      */
     private static final double SUSTAINED_ENERGY_THRESHOLD = 0.0008;
+
     /**
      * Minimum consecutive tonal frames before emitting a SUSTAINED_NOTE event.
      */
     private static final int SUSTAINED_FRAME_MIN = 6;
+
     /**
      * Maximum consecutive tonal frames before forcing a note boundary.
      */
     private static final int SUSTAINED_FRAME_MAX = 40;
+
     /**
      * The internal publisher used to manage subscribers and submit events.
      * SubmissionPublisher is a standard implementation of Flow.Publisher that handles
      * buffering and asynchronous delivery.
      */
     private final SubmissionPublisher<BeatEvent> publisher = new SubmissionPublisher<>();
+
+    /**
+     * Detector for percussive onsets (kicks/snares).
+     */
     private final PercussionOnsetDetector percussionDetector;
+
+    /**
+     * Detector for complex onsets (melodic/tonal).
+     */
     private final ComplexOnsetDetector complexDetector;
+
+    /**
+     * Helper for frequency band analysis.
+     */
     private final FrequencyBandAnalyzer bandAnalyzer;
+
+    /**
+     * Tarsos-compatible audio format.
+     */
     private final TarsosDSPAudioFormat tarsosFormat;
+
+    /**
+     * Sample rate of the audio track.
+     */
     private final float sampleRate;
+
+    /**
+     * Number of audio channels.
+     */
     private final int channels;
 
+    /**
+     * Rolling history of beat timestamps.
+     */
     private final double[] beatHistory = new double[BPM_HISTORY_SIZE];
 
+    /**
+     * Current analysis time in seconds.
+     */
     private double currentTime = 0.0;
+
+    /**
+     * Smoothed RMS value for intensity detection.
+     */
     private double smoothedRms = 0.0;
+
+    /**
+     * Tracks if currently in a high-intensity state.
+     */
     private boolean inHighIntensity = false;
+
+    /**
+     * Tracks if currently in a low-intensity state.
+     */
     private boolean inLowIntensity = false;
+
+    /**
+     * Timestamp of the last accepted beat event.
+     */
     private double lastAcceptedBeatTime = -1.0;
+
+    /**
+     * Timestamp of the last raw onset detected.
+     */
     private double lastRawBeatTime = -1.0;
+
+    /**
+     * Counter for items in the beat history.
+     */
     private int beatHistoryCount = 0;
+
+    /**
+     * Predicted timestamp for the next fallback beat.
+     */
     private double nextFallbackBeatTime = MAX_GAP_SECONDS;
+
+    /**
+     * Current count of consecutive fallback beats.
+     */
     private int consecutiveFallbacks = 0;
+
+    /**
+     * The last calculated interval for fallbacks.
+     */
     private double lastFallbackInterval = 0.4;
+
+    /**
+     * Total number of frames processed so far.
+     */
     private long framesProcessed = 0;
 
     /**
      * Most recent band analysis; used by beat handlers to classify the event.
      */
     private volatile FrequencyBandAnalyzer.BandEnergies currentBandEnergies = null;
+
+    /**
+     * Count of consecutive tonal frames for sustained notes.
+     */
     private int sustainedFrameCount = 0;
+
+    /**
+     * Start time of the current sustained note candidate.
+     */
     private double sustainedStartTime = 0.0;
 
     /**
@@ -140,6 +265,9 @@ public class AudioProcessor implements Flow.Publisher<BeatEvent>, Closeable {
         currentTime = (double) framesProcessed / sampleRate;
     }
 
+    /**
+     * Callback for raw onset detections from TarsosDSP.
+     */
     private synchronized void handleRawBeat(double time, double salience, float speedMultiplier) {
         final double adjustedTime = time / speedMultiplier;
 
@@ -155,6 +283,9 @@ public class AudioProcessor implements Flow.Publisher<BeatEvent>, Closeable {
         acceptBeat(adjustedTime, salience);
     }
 
+    /**
+     * Submits a classified beat event and updates fallback timers.
+     */
     private void acceptBeat(double time, double salience) {
         publisher.submit(classifyBeat(time, salience));
         lastAcceptedBeatTime = time;
@@ -180,6 +311,9 @@ public class AudioProcessor implements Flow.Publisher<BeatEvent>, Closeable {
         return BeatEvent.ofClassified(time, type, salience, dominant.name());
     }
 
+    /**
+     * Analyzes mid-range energy to detect held notes for Long Tiles.
+     */
     private void trackSustainedNote(FrequencyBandAnalyzer.BandEnergies bands) {
         final double midEnergy = bands.get(FrequencyBandAnalyzer.FrequencyBand.MID);
         final double loMidEnergy = bands.get(FrequencyBandAnalyzer.FrequencyBand.LOW_MID);
@@ -195,6 +329,9 @@ public class AudioProcessor implements Flow.Publisher<BeatEvent>, Closeable {
         }
     }
 
+    /**
+     * Submits a SUSTAINED_NOTE event to the publisher.
+     */
     private void emitSustainedNote() {
         final double duration = currentTime - sustainedStartTime;
         if (duration > 0.1) {
@@ -203,11 +340,17 @@ public class AudioProcessor implements Flow.Publisher<BeatEvent>, Closeable {
         sustainedFrameCount = 0;
     }
 
+    /**
+     * Updates the BPM history with a new beat timestamp.
+     */
     private void recordBeatForBpm(double time) {
         beatHistory[beatHistoryCount % BPM_HISTORY_SIZE] = time;
         beatHistoryCount++;
     }
 
+    /**
+     * Estimates the average beat interval based on recent history.
+     */
     private double getEstimatedBeatInterval() {
         if (beatHistoryCount < 2) return 0.5;
         final int count = Math.min(beatHistoryCount, BPM_HISTORY_SIZE);
@@ -226,6 +369,9 @@ public class AudioProcessor implements Flow.Publisher<BeatEvent>, Closeable {
         return pairs == 0 ? 0.5 : sum / pairs;
     }
 
+    /**
+     * Checks if too much time has passed without a beat and generates a fallback.
+     */
     private synchronized void checkFallbackBeat(double rms) {
         if (nextFallbackBeatTime < 0 || currentTime < nextFallbackBeatTime) return;
         if (rms < SILENCE_THRESHOLD) {
@@ -245,6 +391,9 @@ public class AudioProcessor implements Flow.Publisher<BeatEvent>, Closeable {
         nextFallbackBeatTime = currentTime + interval;
     }
 
+    /**
+     * Monitors RMS levels to detect high/low intensity section shifts.
+     */
     private void checkIntensityChanges(double rms) {
         smoothedRms = smoothedRms * SMOOTHING_FACTOR + rms * (1.0 - SMOOTHING_FACTOR);
 
@@ -267,12 +416,18 @@ public class AudioProcessor implements Flow.Publisher<BeatEvent>, Closeable {
         }
     }
 
+    /**
+     * Converts a short array (16-bit PCM) to a float array (-1.0 to 1.0).
+     */
     private float[] convertToFloatBuffer(short[] chunk) {
         final float[] buf = new float[chunk.length];
         for (int i = 0; i < chunk.length; i++) buf[i] = chunk[i] / 32768f;
         return buf;
     }
 
+    /**
+     * Calculates the Root Mean Square (RMS) energy of a float buffer.
+     */
     private double calculateRMS(float[] buffer) {
         double sum = 0.0;
         for (float s : buffer) sum += s * s;

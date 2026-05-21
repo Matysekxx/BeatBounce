@@ -11,17 +11,64 @@ import java.awt.*;
  * The sphere can jump, fall, and has various visual properties like alpha, vibration, and stretch.
  */
 public class Sphere extends Entity {
+    /**
+     * Physical radius of the sphere in world units.
+     */
     private final int radius;
+
+    /**
+     * Current depth position.
+     */
     private double z;
+
+    /**
+     * The horizontal world coordinate the sphere is moving towards.
+     */
     private double targetX;
+
+    /**
+     * Exact current horizontal world coordinate.
+     */
     private double currentX;
+
+    /**
+     * Exact current vertical world coordinate.
+     */
     private double currentY;
+
+    /**
+     * World time when the current jump started.
+     */
     private double jumpStartTime;
+
+    /**
+     * Total expected duration of the current jump.
+     */
     private double jumpDuration;
+
+    /**
+     * The maximum height reached during the current jump.
+     */
     private double peakHeight;
+
+    /**
+     * Whether the sphere is currently in the air performing a jump.
+     */
     private boolean isJumping;
+
+    /**
+     * Whether the sphere has missed a tile and is falling into the void.
+     */
     private boolean isFalling = false;
+
+    /**
+     * Current transparency alpha level (0.0 to 1.0).
+     */
     private float alpha = 1.0f;
+
+    /**
+     * Current visual scale multiplier for animations.
+     */
     private float scaleMultiplier = 1.0f;
 
     /**
@@ -276,6 +323,14 @@ public class Sphere extends Entity {
         g2d.fillOval(screenX - scaledRadiusX, screenY - scaledRadiusY, scaledRadiusX * 2, scaledRadiusY * 2);
     }
 
+    /**
+     * Renders the drop shadow of the sphere on the ground plane.
+     *
+     * @param g2d        the graphics context
+     * @param cam        the camera used for projection
+     * @param windowData screen metadata
+     * @param vx         additional horizontal vibration offset
+     */
     public void drawShadow(Graphics2D g2d, Camera3D cam, WindowData windowData, double vx) {
         final double scale = cam.getScale(z);
         final double groundY = 150;

@@ -12,12 +12,39 @@ import java.awt.*;
  * It extends {@link AbstractTile} and implements movement logic based on an amplitude and speed.
  */
 public class MovingTile extends AbstractTile {
+    /**
+     * The starting horizontal position of the tile.
+     */
     private int startX;
+
+    /**
+     * The maximum horizontal displacement from the starting position.
+     */
     private int amplitude;
+
+    /**
+     * The frequency of oscillation (how fast it moves).
+     */
     private double speed;
+
+    /**
+     * Internal timer used for calculating the current oscillation phase.
+     */
     private double time;
+
+    /**
+     * Base hue offset for color variation.
+     */
     private float hueOffset;
+
+    /**
+     * The base color with an alpha transparency of 220.
+     */
     private Color baseColorAlpha220;
+
+    /**
+     * A lightened version of the color with alpha transparency of 220, used when activated.
+     */
     private Color lightenedColorAlpha220;
 
     /**

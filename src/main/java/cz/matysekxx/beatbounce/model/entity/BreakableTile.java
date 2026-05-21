@@ -32,6 +32,9 @@ public class BreakableTile extends AbstractTile {
      */
     private float breakProgress = 0.0f;
 
+    /**
+     * The dynamic color of the tile based on its Z position.
+     */
     private Color baseColor;
 
     /**
@@ -59,6 +62,9 @@ public class BreakableTile extends AbstractTile {
         calculateColors();
     }
 
+    /**
+     * Calculates the dynamic color of the tile based on its Z position for a visual gradient effect.
+     */
     private void calculateColors() {
         final float h = (float) ((z % 5000) / 5000.0);
         this.baseColor = Color.getHSBColor(h, 0.9f, 0.7f);

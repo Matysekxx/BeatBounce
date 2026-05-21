@@ -13,8 +13,19 @@ import java.awt.*;
  * Used for sustained rhythmic sections or to fill large gaps.
  */
 public class LongTile extends AbstractTile {
+    /**
+     * The primary base color of the tile.
+     */
     private final Color baseColor;
+
+    /**
+     * The base color with an alpha transparency of 220.
+     */
     private final Color baseColorAlpha220;
+
+    /**
+     * A lightened version of the base color used when the tile is activated.
+     */
     private final Color lightenedColor;
 
     @JsonCreator

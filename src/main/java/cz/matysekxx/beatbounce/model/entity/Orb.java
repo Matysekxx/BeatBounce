@@ -11,13 +11,44 @@ import java.awt.geom.Ellipse2D;
  * Orbs have a 3D position (x, y, z) and a radius.
  */
 public class Orb {
+    /**
+     * Horizontal world position.
+     */
     private final double x;
+
+    /**
+     * Vertical world position.
+     */
     private final double y;
+
+    /**
+     * Depth world position.
+     */
     private final double z;
+
+    /**
+     * Physical world radius of the orb.
+     */
     private final double radius;
+
+    /**
+     * Reusable ellipse for rendering the outer glow.
+     */
     private final Ellipse2D.Double glowEllipse;
+
+    /**
+     * Reusable ellipse for rendering the main body.
+     */
     private final Ellipse2D.Double mainEllipse;
+
+    /**
+     * Reusable ellipse for rendering the specular highlight.
+     */
     private final Ellipse2D.Double highlightEllipse;
+
+    /**
+     * Whether the orb has been picked up.
+     */
     private boolean collected;
 
     /**

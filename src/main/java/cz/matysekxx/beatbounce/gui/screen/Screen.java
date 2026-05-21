@@ -4,10 +4,14 @@ import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.util.ScreenUtil;
 import cz.matysekxx.beatbounce.util.UIScale;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.net.URL;
 
 /**
  * Abstract base class for all game screens.
@@ -30,6 +34,14 @@ public abstract class Screen extends JFrame {
             ScreenUtil.applyDefaultSize(this);
         }
         this.addWindowFocusListener(new FocusListener());
+
+        try {
+            final URL url = this.getClass().getResource("/icon.png");
+            if (url != null) {
+                final Image icon = ImageIO.read(url);
+                this.setIconImage(icon);
+            }
+        } catch (Exception _) {}
 
         this.addComponentListener(new ComponentAdapter() {
             @Override

@@ -8,13 +8,44 @@ import cz.matysekxx.beatbounce.model.game.collision.CollisionEngine;
 
 import javax.sound.sampled.Clip;
 
+/**
+ * Handles the logic for the {@link GameState#PLAYING} state.
+ * This is the primary gameplay handler, responsible for updating audio sync,
+ * tile animations, camera movement, and orchestrating collision checks.
+ */
 public class PlayingHandler implements GameStateHandler {
+    /**
+     * The game engine providing state data.
+     */
     private final GameEngine gameEngine;
+
+    /**
+     * The music clip currently playing.
+     */
     private final Clip clip;
+
+    /**
+     * The engine responsible for tile collision detection.
+     */
     private final CollisionEngine collisionEngine;
+
+    /**
+     * The manager for tile state updates.
+     */
     private final TileManager tileManager;
+
+    /**
+     * The engine responsible for orb collision detection.
+     */
     private final OrbCollisionEngine orbCollisionEngine;
 
+    /**
+     * Constructs a new PlayingHandler.
+     *
+     * @param gameEngine  the game engine
+     * @param clip        the audio clip
+     * @param tileManager the tile manager
+     */
     public PlayingHandler(GameEngine gameEngine, Clip clip, TileManager tileManager) {
         this.gameEngine = gameEngine;
         this.clip = clip;
@@ -23,6 +54,12 @@ public class PlayingHandler implements GameStateHandler {
         this.orbCollisionEngine = new OrbCollisionEngine(gameEngine);
     }
 
+    /**
+     * Updates all gameplay systems for the current frame.
+     *
+     * @param currentTime the current world time
+     * @param deltaTime   time since last frame in seconds
+     */
     @Override
     public void handle(double currentTime, double deltaTime) {
         AudioManager.applyMusicVolume(clip);
@@ -40,6 +77,9 @@ public class PlayingHandler implements GameStateHandler {
         gameEngine.getSphere().update(gameEngine.getSmoothedAudioTime(), deltaTime);
     }
 
+    /**
+     * Checks if the song has nearly finished and transitions to the end animation.
+     */
     private boolean checkLevelEnd() {
         if (clip.getMicrosecondPosition() >= clip.getMicrosecondLength() - 50000) {
             gameEngine.setGameState(GameState.LEVEL_END_ANIMATION);
@@ -49,6 +89,10 @@ public class PlayingHandler implements GameStateHandler {
         return false;
     }
 
+    /**
+     * Synchronizes the internal game timer with the raw audio clip position.
+     * Uses a smoothing algorithm to prevent jitter from fluctuating audio timestamps.
+     */
     private void updateAudioAndProgress(double deltaTime) {
         final double rawAudioTime = clip.getMicrosecondPosition() / 1_000_000.0;
 
@@ -64,7 +108,9 @@ public class PlayingHandler implements GameStateHandler {
         gameEngine.setGameZProgress(gameEngine.getSmoothedAudioTime() * gameEngine.getZUnitsPerSecond());
     }
 
-
+    /**
+     * Updates the camera and sphere positions based on world progress.
+     */
     private void updateCameraAndSphere() {
         gameEngine.getSphere().setZ(gameEngine.getGameZProgress());
         gameEngine.getCam().setZ(gameEngine.getGameZProgress() - 500);

@@ -3,13 +3,32 @@ package cz.matysekxx.beatbounce.model.game.state;
 import cz.matysekxx.beatbounce.model.audio.AudioManager;
 import cz.matysekxx.beatbounce.model.game.GameEngine;
 
+/**
+ * Handles the logic for the {@link GameState#COUNTDOWN} state.
+ * Decrements the countdown timer and transitions the game to the {@link GameState#PLAYING} state
+ * when the timer reaches zero, starting the music playback.
+ */
 public class CountdownHandler implements GameStateHandler {
+    /**
+     * The game engine providing state data.
+     */
     private final GameEngine gameEngine;
 
+    /**
+     * Constructs a new CountdownHandler.
+     *
+     * @param gameEngine the game engine
+     */
     public CountdownHandler(GameEngine gameEngine) {
         this.gameEngine = gameEngine;
     }
 
+    /**
+     * Updates the countdown timer and checks for state transition.
+     *
+     * @param currentTime the current world time (unused in this state)
+     * @param deltaTime   time since last frame in seconds
+     */
     @Override
     public void handle(double currentTime, double deltaTime) {
         gameEngine.setCountdownTime(gameEngine.getCountdownTime() - deltaTime);

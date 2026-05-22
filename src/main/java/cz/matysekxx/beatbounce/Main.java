@@ -28,7 +28,13 @@ public class Main {
         String os = System.getProperty("os.name").toLowerCase();
         final boolean isWindows = os.contains("win");
         final boolean isMac = os.contains("mac");
+        System.setProperty("sun.awt.noerasebackground", "true");
+        System.setProperty("sun.java2d.noerasebackground", "true");
+        System.setProperty("sun.java2d.erasedirtyregions", "false");
+        System.setProperty("sun.java2d.transaccel", "true");
+
         if (Settings.opengl) {
+
             if (isWindows) {
                 System.setProperty("sun.java2d.d3d", "true");
                 System.setProperty("sun.java2d.opengl", "false");
@@ -64,9 +70,11 @@ public class Main {
      */
     static void main() {
         setupHighDPI();
-        SwingConfiguration.setup();
         Settings.load();
+
         setupRenderingProperties();
+
+        SwingConfiguration.setup();
 
         SwingUtilities.invokeLater(Execute.getSingleton());
     }

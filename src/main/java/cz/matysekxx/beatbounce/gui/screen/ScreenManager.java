@@ -4,6 +4,7 @@ import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.util.Lazy;
 import cz.matysekxx.beatbounce.util.ScreenUtil;
 
+import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -81,9 +82,8 @@ public class ScreenManager {
     public <T extends Screen> void showScreen(Class<T> screenClass) {
         final Screen nextScreen = windows.get(screenClass).get();
         if (nextScreen != null) {
-            if (Settings.fullscreen) {
-                applyFullscreen(nextScreen);
-            }
+            nextScreen.revalidate();
+            nextScreen.repaint();
             nextScreen.setVisible(true);
             nextScreen.toFront();
 

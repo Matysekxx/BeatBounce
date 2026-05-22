@@ -174,8 +174,7 @@ public class IntroPanel extends JPanel implements Runnable {
         if (staticBackgroundCache == null || cachedBgW != w || cachedBgH != h) {
             cachedBgW = w;
             cachedBgH = h;
-            staticBackgroundCache = GraphicsEnvironment.getLocalGraphicsEnvironment()
-                    .getDefaultScreenDevice().getDefaultConfiguration()
+            staticBackgroundCache = g2d.getDeviceConfiguration()
                     .createCompatibleImage(w, h, Transparency.OPAQUE);
             final Graphics2D bgG2d = staticBackgroundCache.createGraphics();
             RenderUtils.initGraphics2D(bgG2d);

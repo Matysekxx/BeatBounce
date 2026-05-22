@@ -12,44 +12,48 @@ import java.awt.geom.Ellipse2D;
  */
 public class Orb {
     /**
+     * Shared colors for orb rendering.
+     */
+    private static final Color ORB_GLOW_START = new Color(255, 200, 0, 150);
+    private static final Color ORB_GLOW_END = new Color(255, 200, 0, 0);
+    private static final Color ORB_BODY = new Color(255, 255, 100);
+    /**
      * Horizontal world position.
      */
     private final double x;
-
     /**
      * Vertical world position.
      */
     private final double y;
-
     /**
      * Depth world position.
      */
     private final double z;
-
     /**
      * Physical world radius of the orb.
      */
     private final double radius;
-
     /**
      * Reusable ellipse for rendering the outer glow.
      */
     private final Ellipse2D.Double glowEllipse;
-
     /**
      * Reusable ellipse for rendering the main body.
      */
     private final Ellipse2D.Double mainEllipse;
-
     /**
      * Reusable ellipse for rendering the specular highlight.
      */
     private final Ellipse2D.Double highlightEllipse;
-
     /**
      * Whether the orb has been picked up.
      */
     private boolean collected;
+    /**
+     * Cached RadialGradientPaint.
+     */
+    private RadialGradientPaint cachedPaint;
+    private int lastPx, lastPy, lastGlowR;
 
     /**
      * Constructs a new {@code Orb} with specified coordinates and radius.
@@ -123,19 +127,6 @@ public class Orb {
     public void setCollected(boolean collected) {
         this.collected = collected;
     }
-
-    /**
-     * Shared colors for orb rendering.
-     */
-    private static final Color ORB_GLOW_START = new Color(255, 200, 0, 150);
-    private static final Color ORB_GLOW_END = new Color(255, 200, 0, 0);
-    private static final Color ORB_BODY = new Color(255, 255, 100);
-
-    /**
-     * Cached RadialGradientPaint.
-     */
-    private RadialGradientPaint cachedPaint;
-    private int lastPx, lastPy, lastGlowR;
 
     /**
      * Renders the orb in 3D space.

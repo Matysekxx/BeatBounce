@@ -16,7 +16,7 @@ public class CreditsScreen extends Screen {
     public CreditsScreen(ScreenManager screenManager) {
         super();
         this.setLayout(new BorderLayout());
-        
+
         creditsPanel = new CreditsPanel();
         creditsPanel.setLayout(new GridBagLayout());
         this.setContentPane(creditsPanel);

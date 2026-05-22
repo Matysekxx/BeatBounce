@@ -118,57 +118,14 @@ public class GameUIRenderer {
      * Pool of buttons to avoid recreation.
      */
     private final java.util.List<SimulatedButton> buttonPool = new java.util.ArrayList<>();
-
-    /**
-     * Current index in the button pool.
-     */
-    private int buttonPoolIndex = 0;
-
     /**
      * Reusable StringBuilder for time formatting.
      */
     private final StringBuilder timeStringBuilder = new StringBuilder(16);
-
     /**
      * Reusable RoundRectangle2D for rendering.
      */
     private final RoundRectangle2D.Float rectScratch = new RoundRectangle2D.Float();
-
-    /**
-     * Tracks the last known game state for animation triggers.
-     */
-    private GameState lastState = GameState.COUNTDOWN;
-
-    /**
-     * Timer for screen entrance animations.
-     */
-    private float screenAppearTimer = 0f;
-
-    /**
-     * Timer for the tutorial animation.
-     */
-    private float tutorialTimer = 0f;
-
-    /**
-     * List of buttons rendered in the previous frame.
-     */
-    private java.util.List<SimulatedButton> renderedButtons = Collections.emptyList();
-
-    /**
-     * Current vertical translation for animation.
-     */
-    private int currentTranslateY = 0;
-
-    /**
-     * Current mouse X-coordinate in virtual space.
-     */
-    private int mouseX = -1;
-
-    /**
-     * Current mouse Y-coordinate in virtual space.
-     */
-    private int mouseY = -1;
-
     /**
      * Reusable arrays for Gradient paints.
      */
@@ -176,7 +133,38 @@ public class GameUIRenderer {
     private final Color[] colors2 = new Color[2];
     private final float[] fractions3 = {0f, 0.5f, 1f};
     private final Color[] colors3 = new Color[3];
-
+    /**
+     * Current index in the button pool.
+     */
+    private int buttonPoolIndex = 0;
+    /**
+     * Tracks the last known game state for animation triggers.
+     */
+    private GameState lastState = GameState.COUNTDOWN;
+    /**
+     * Timer for screen entrance animations.
+     */
+    private float screenAppearTimer = 0f;
+    /**
+     * Timer for the tutorial animation.
+     */
+    private float tutorialTimer = 0f;
+    /**
+     * List of buttons rendered in the previous frame.
+     */
+    private java.util.List<SimulatedButton> renderedButtons = Collections.emptyList();
+    /**
+     * Current vertical translation for animation.
+     */
+    private int currentTranslateY = 0;
+    /**
+     * Current mouse X-coordinate in virtual space.
+     */
+    private int mouseX = -1;
+    /**
+     * Current mouse Y-coordinate in virtual space.
+     */
+    private int mouseY = -1;
     /**
      * Cached paints to avoid allocation.
      */

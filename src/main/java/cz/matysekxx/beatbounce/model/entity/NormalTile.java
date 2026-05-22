@@ -19,49 +19,41 @@ import java.util.List;
  */
 public class NormalTile extends AbstractTile {
     /**
+     * Scratch polygon for fake lanes.
+     */
+    private final Polygon fakeScratchPolygon = new Polygon(new int[4], new int[4], 4);
+    /**
      * Hue offset based on the tile's Z position.
      */
     private float hueOffset;
-
     /**
      * List of horizontal offsets for rendering non-collidable "fake" lanes.
      */
     private List<Integer> fakeLaneOffsets;
-
     /**
      * Base color for the tile.
      */
     private Color baseColor;
-
     /**
      * Base color with alpha 120.
      */
     private Color baseColorAlpha120;
-
     /**
      * Base color with alpha 180.
      */
     private Color baseColorAlpha180;
-
     /**
      * Base color with alpha 230.
      */
     private Color baseColorAlpha230;
-
     /**
      * Lightened color used when activated.
      */
     private Color lightenedColor;
-
     /**
      * Lightened color with alpha 230.
      */
     private Color lightenedColorAlpha230;
-
-    /**
-     * Scratch polygon for fake lanes.
-     */
-    private final Polygon fakeScratchPolygon = new Polygon(new int[4], new int[4], 4);
 
     /**
      * Default constructor for {@code NormalTile}.

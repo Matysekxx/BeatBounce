@@ -147,7 +147,7 @@ public class IntroPanel extends BasePanel implements Runnable {
 
         final int horizonY = (h >> 1) + UIScale.scale(100);
         final float globalHue = (time * 0.05f) % 1.0f;
-        
+
         drawAudioBars(g2d, w, horizonY, globalHue);
 
         if (Settings.particlesEnabled) {

@@ -33,6 +33,10 @@ public abstract class AbstractTile extends Entity {
      */
     protected static final double IMPACT_DURATION = 0.25;
     /**
+     * Scratch polygon for projection rendering.
+     */
+    protected final Polygon scratchPolygon = new Polygon(new int[4], new int[4], 4);
+    /**
      * The depth position of the tile in the 3D space.
      */
     protected double z;
@@ -52,11 +56,6 @@ public abstract class AbstractTile extends Entity {
      * The beat event associated with this tile.
      */
     private BeatEvent beatEvent;
-
-    /**
-     * Scratch polygon for projection rendering.
-     */
-    protected final Polygon scratchPolygon = new Polygon(new int[4], new int[4], 4);
 
     /**
      * Default constructor for {@code AbstractTile}.

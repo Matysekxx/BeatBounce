@@ -148,7 +148,7 @@ public class AudioManager {
     public static void playMenuMusic(String resourcePath) {
         if (menuMusicClip != null && menuMusicClip.isRunning() && resourcePath.equals(currentMenuMusicPath)) return;
         stopMenuMusic();
-        
+
         Thread.ofVirtual().start(() -> {
             try {
                 final Clip clip = AudioSystem.getClip();

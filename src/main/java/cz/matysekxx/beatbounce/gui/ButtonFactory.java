@@ -130,7 +130,7 @@ public class ButtonFactory {
         final Color grayFront = new Color(40, 40, 50);
         final Color grayTop = new Color(60, 60, 75);
         final Color grayGlow = new Color(100, 100, 120, 100);
-        
+
         final IsometricButton button = new IsometricButton(
                 "BACK", grayFront, grayTop, grayGlow, 4, 15, new Dimension(110, 40)
         );

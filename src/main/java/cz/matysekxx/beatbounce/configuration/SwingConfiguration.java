@@ -61,7 +61,7 @@ public class SwingConfiguration {
             UIManager.put("ProgressBar.background", Color.BLACK);
             UIManager.put("ScrollPane.background", Color.BLACK);
             UIManager.put("Viewport.background", Color.BLACK);
-            
+
             setupButtonProperties();
             setupTextFieldProperties();
             setupListProperties();

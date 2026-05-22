@@ -127,11 +127,6 @@ public class SongSelectionPanel extends BasePanel implements Runnable {
         loadTracks("allTime", null);
     }
 
-    @Override
-    protected void drawBackground(Graphics2D g2d, int w, int h) {
-        RenderUtils.drawMenuBackground(g2d, w, h);
-    }
-
     /**
      * Configures a custom JScrollPane with stylized scrollbars.
      *
@@ -161,6 +156,11 @@ public class SongSelectionPanel extends BasePanel implements Runnable {
         sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         return sp;
+    }
+
+    @Override
+    protected void drawBackground(Graphics2D g2d, int w, int h) {
+        RenderUtils.drawMenuBackground(g2d, w, h);
     }
 
     /**
@@ -395,4 +395,4 @@ public class SongSelectionPanel extends BasePanel implements Runnable {
             Time.delay(optimalTimeNanos, now);
         }
     }
-    }
+}

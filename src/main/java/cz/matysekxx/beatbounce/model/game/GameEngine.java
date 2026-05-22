@@ -324,7 +324,7 @@ public class GameEngine {
     /**
      * Updates the game world and logic for one frame.
      *
-     * @param deltaTime   time since last frame in seconds
+     * @param deltaTime time since last frame in seconds
      */
     public void update(double deltaTime) {
         syncAudioTime(deltaTime);

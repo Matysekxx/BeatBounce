@@ -151,7 +151,7 @@ public class SettingsPanel extends JPanel {
         contentColumn.add(Box.createRigidArea(new Dimension(0, UIScale.scale(30))));
 
         final JPanel audioGroup = createGroupPanel("AUDIO");
-        
+
         final JLabel soundLabel = new JLabel("Music Volume: " + Settings.soundVolume + "%");
         styleLabel(soundLabel);
         soundSlider = new CustomSlider(0, 100, Settings.soundVolume);
@@ -197,7 +197,7 @@ public class SettingsPanel extends JPanel {
             }));
         });
         cacheGroup.add(createPerfectlyCenteredComponent("Downloaded Tracks:", clearCacheBtn));
-        
+
         contentColumn.add(cacheGroup);
         contentColumn.add(Box.createRigidArea(new Dimension(0, UIScale.scale(30))));
 
@@ -205,7 +205,7 @@ public class SettingsPanel extends JPanel {
         gameplayGroup.add(createLeftAlignedComponent(particlesCheck = new CustomCheckBox("Enable Background Particles", Settings.particlesEnabled)));
         gameplayGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(10))));
         gameplayGroup.add(createLeftAlignedComponent(bloomCheck = new CustomCheckBox("Bloom Post-Processing", Settings.bloomEnabled)));
-        
+
         contentColumn.add(gameplayGroup);
 
         final JPanel wrapperPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
@@ -232,16 +232,9 @@ public class SettingsPanel extends JPanel {
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        
+
         add(scrollPane, BorderLayout.CENTER);
         add(createBottomPanel(), BorderLayout.SOUTH);
-    }
-
-    private void setFixedSize(JComponent comp, int width, int height) {
-        final Dimension dim = new Dimension(UIScale.scale(width), UIScale.scale(height));
-        comp.setMinimumSize(dim);
-        comp.setPreferredSize(dim);
-        comp.setMaximumSize(dim);
     }
 
     /**
@@ -260,6 +253,13 @@ public class SettingsPanel extends JPanel {
         pb.directory(jarFile.getParentFile());
         pb.start();
         System.exit(0);
+    }
+
+    private void setFixedSize(JComponent comp, int width, int height) {
+        final Dimension dim = new Dimension(UIScale.scale(width), UIScale.scale(height));
+        comp.setMinimumSize(dim);
+        comp.setPreferredSize(dim);
+        comp.setMaximumSize(dim);
     }
 
     /**
@@ -542,14 +542,14 @@ public class SettingsPanel extends JPanel {
         final JPanel p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
         p.setOpaque(false);
-        
+
         p.add(Box.createHorizontalGlue());
         p.add(l);
         p.add(Box.createRigidArea(new Dimension(UIScale.scale(20), 0)));
         p.add(comp);
         p.add(Box.createRigidArea(new Dimension(UIScale.scale(230), 0)));
         p.add(Box.createHorizontalGlue());
-        
+
         p.setAlignmentX(Component.LEFT_ALIGNMENT);
         return p;
     }

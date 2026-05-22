@@ -3,14 +3,10 @@ package cz.matysekxx.beatbounce.gui.screen;
 import cz.matysekxx.beatbounce.gui.ButtonFactory;
 import cz.matysekxx.beatbounce.gui.components.IntroPanel;
 import cz.matysekxx.beatbounce.model.audio.AudioManager;
-
 import cz.matysekxx.beatbounce.util.UIScale;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 import static cz.matysekxx.beatbounce.util.Time.sleep;
 

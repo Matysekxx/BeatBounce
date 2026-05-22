@@ -4,7 +4,6 @@ import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.util.Lazy;
 import cz.matysekxx.beatbounce.util.ScreenUtil;
 
-import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;

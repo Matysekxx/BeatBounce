@@ -78,42 +78,35 @@ public class GameWorldRenderer {
      * Scratch array for storing projected screen coordinates [x, y].
      */
     private final int[] projScratch = new int[2];
-
-    /**
-     * Off-screen buffer for the static background elements.
-     */
-    private BufferedImage bgCache;
-
-    /**
-     * Cached RadialGradientPaint for the planet glow.
-     */
-    private RadialGradientPaint cachedGlowPaint;
-
-    /**
-     * Cached RadialGradientPaint for the planet body.
-     */
-    private RadialGradientPaint cachedBodyPaint;
-
-    /**
-     * Last used glow radius for caching.
-     */
-    private int lastGlowR = -1;
-
-    /**
-     * Last used base color RGB for caching.
-     */
-    private int lastBaseColorRGB = -1;
-
-    /**
-     * Last used glow alpha for caching.
-     */
-    private int lastGlowAlpha = -1;
-
     /**
      * Reusable arrays for RadialGradientPaint.
      */
     private final float[] fractions = {0f, 1f};
     private final Color[] colors = new Color[2];
+    /**
+     * Off-screen buffer for the static background elements.
+     */
+    private BufferedImage bgCache;
+    /**
+     * Cached RadialGradientPaint for the planet glow.
+     */
+    private RadialGradientPaint cachedGlowPaint;
+    /**
+     * Cached RadialGradientPaint for the planet body.
+     */
+    private RadialGradientPaint cachedBodyPaint;
+    /**
+     * Last used glow radius for caching.
+     */
+    private int lastGlowR = -1;
+    /**
+     * Last used base color RGB for caching.
+     */
+    private int lastBaseColorRGB = -1;
+    /**
+     * Last used glow alpha for caching.
+     */
+    private int lastGlowAlpha = -1;
 
     /**
      * Constructs a new GameWorldRenderer.

@@ -1,8 +1,10 @@
 package cz.matysekxx.beatbounce.util;
 
 import org.junit.jupiter.api.Test;
+
 import java.awt.*;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class UIScaleTest {
 

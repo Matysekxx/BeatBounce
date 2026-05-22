@@ -3,10 +3,13 @@ package cz.matysekxx.beatbounce.gui.components;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 
+import cz.matysekxx.beatbounce.model.audio.AudioManager;
 import cz.matysekxx.beatbounce.util.UIScale;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * A custom UI component that allows selecting a value from a discrete set of steps.
@@ -38,10 +41,11 @@ public class StepSelector extends JComponent {
         setPreferredSize(new Dimension(w, h));
         setMaximumSize(new Dimension(w, h));
         setCursor(new Cursor(Cursor.HAND_CURSOR));
-        addMouseListener(new java.awt.event.MouseAdapter() {
+        addMouseListener(new MouseAdapter() {
             @Override
-            public void mousePressed(java.awt.event.MouseEvent e) {
-                int w = getWidth() / values.length;
+            public void mousePressed(MouseEvent e) {
+                AudioManager.playSFX("/click-sound.mp3");
+                final int w = getWidth() / values.length;
                 selectedIndex = e.getX() / w;
                 if (selectedIndex < 0) selectedIndex = 0;
                 if (selectedIndex >= values.length) selectedIndex = values.length - 1;

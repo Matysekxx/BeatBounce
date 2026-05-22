@@ -99,15 +99,34 @@ public class MovingTile extends AbstractTile {
      */
     public void update(double deltaTime) {
         this.time += deltaTime;
+        final int newX = (int) getXAt(this.time);
+        this.setLocation(newX, this.getY());
+    }
+
+    /**
+     * Calculates the horizontal position of the tile at a specific world time.
+     *
+     * @param timestamp the world time in seconds
+     * @return the horizontal world coordinate at that time
+     */
+    @Override
+    public double getXAt(double timestamp) {
         double phase = 0;
         if (amplitude > 0) {
             double ratio = startX / (double) amplitude;
             ratio = Math.clamp(ratio, -1.0, 1.0);
             phase = Math.asin(ratio);
         }
+        return Math.sin(timestamp * speed + phase) * amplitude;
+    }
 
-        final int newX = (int) (Math.sin(time * speed + phase) * amplitude);
-        this.setLocation(newX, this.getY());
+    /**
+     * Resets the tile's state, including the horizontal oscillation timer.
+     */
+    @Override
+    public void reset() {
+        super.reset();
+        this.time = 0;
     }
 
     /**

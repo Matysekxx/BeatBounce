@@ -210,6 +210,18 @@ public abstract class AbstractTile extends Entity {
     }
 
     /**
+     * Returns the horizontal position of the tile at a specific world time.
+     * For static tiles, this is simply the constant X-coordinate.
+     * Subclasses with dynamic movement (like {@link MovingTile}) should override this.
+     *
+     * @param timestamp the world time in seconds
+     * @return the horizontal world coordinate at that time
+     */
+    public double getXAt(double timestamp) {
+        return this.getX();
+    }
+
+    /**
      * Sets the location of the tile in the 2D world space.
      *
      * @param x the new horizontal position

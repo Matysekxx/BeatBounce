@@ -405,5 +405,14 @@ public class GamePanel extends JPanel implements Runnable {
         g.dispose();
         if (Settings.vsync) Toolkit.getDefaultToolkit().sync();
     }
+
+    /**
+     * Pauses the game if it is currently playing.
+     */
+    public void pause() {
+        if (gameEngine != null) {
+            gameEngine.pause();
+        }
+    }
 }
 

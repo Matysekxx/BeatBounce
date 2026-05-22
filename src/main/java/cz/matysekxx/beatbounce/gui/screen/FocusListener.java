@@ -1,6 +1,7 @@
 package cz.matysekxx.beatbounce.gui.screen;
 
 import cz.matysekxx.beatbounce.configuration.Settings;
+import cz.matysekxx.beatbounce.model.audio.AudioManager;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
@@ -19,7 +20,9 @@ public class FocusListener implements WindowFocusListener {
     public void windowGainedFocus(WindowEvent e) {
         if (Settings.muteOnFocusLoss) {
             Settings.isMuted = false;
+            AudioManager.updateMenuVolume();
         }
+        if (e.getWindow() instanceof Screen screen) screen.onFocusGained();
     }
 
     /**
@@ -31,6 +34,8 @@ public class FocusListener implements WindowFocusListener {
     public void windowLostFocus(WindowEvent e) {
         if (Settings.muteOnFocusLoss) {
             Settings.isMuted = true;
+            AudioManager.updateMenuVolume();
         }
+        if (e.getWindow() instanceof Screen screen) screen.onFocusLost();
     }
 }

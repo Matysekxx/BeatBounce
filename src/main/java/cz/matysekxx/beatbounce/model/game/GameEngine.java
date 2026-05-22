@@ -224,12 +224,22 @@ public class GameEngine {
      * Toggles between PLAYING and PAUSED states.
      */
     public void togglePause() {
+        switch (gameState) {
+            case PLAYING -> pause();
+            case PAUSED -> {
+                gameState = GameState.COUNTDOWN;
+                countdownTime = 3.99;
+            }
+        }
+    }
+
+    /**
+     * Transitions the game into the PAUSED state if it is currently PLAYING.
+     */
+    public void pause() {
         if (gameState == GameState.PLAYING) {
             gameState = GameState.PAUSED;
-            clip.stop();
-        } else if (gameState == GameState.PAUSED) {
-            gameState = GameState.COUNTDOWN;
-            countdownTime = 3.99;
+            if (clip != null && clip.isRunning()) clip.stop();
         }
     }
 

@@ -82,4 +82,16 @@ public abstract class Screen extends JFrame {
     public void stop() {
 
     }
+
+    /**
+     * Called when the window loses focus.
+     */
+    public void onFocusLost() {
+    }
+
+    /**
+     * Called when the window gains focus.
+     */
+    public void onFocusGained() {
+    }
 }

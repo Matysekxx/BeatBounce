@@ -97,6 +97,11 @@ public class Settings {
     public static boolean muteOnFocusLoss = false;
 
     /**
+     * Whether the game should be paused when the window loses focus.
+     */
+    public static boolean pauseOnFocusLoss = true;
+
+    /**
      * Whether the application audio is currently muted.
      */
     public static boolean isMuted = false;
@@ -130,6 +135,7 @@ public class Settings {
                 particlesEnabled = Boolean.parseBoolean(properties.getProperty("particlesEnabled", "true"));
                 bloomEnabled = Boolean.parseBoolean(properties.getProperty("bloomEnabled", "true"));
                 muteOnFocusLoss = Boolean.parseBoolean(properties.getProperty("muteOnFocusLoss", "false"));
+                pauseOnFocusLoss = Boolean.parseBoolean(properties.getProperty("pauseOnFocusLoss", "true"));
             } catch (Exception e) {
                 LOG.warn("Failed to load settings: {}", e.getMessage());
             }
@@ -156,6 +162,7 @@ public class Settings {
         properties.setProperty("particlesEnabled", String.valueOf(particlesEnabled));
         properties.setProperty("bloomEnabled", String.valueOf(bloomEnabled));
         properties.setProperty("muteOnFocusLoss", String.valueOf(muteOnFocusLoss));
+        properties.setProperty("pauseOnFocusLoss", String.valueOf(pauseOnFocusLoss));
 
         final Path path = FileSystem.getConfigFile();
 

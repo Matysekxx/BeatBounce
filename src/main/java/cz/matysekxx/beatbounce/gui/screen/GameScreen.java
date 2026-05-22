@@ -1,5 +1,6 @@
 package cz.matysekxx.beatbounce.gui.screen;
 
+import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.components.GamePanel;
 import cz.matysekxx.beatbounce.gui.components.LoadingPanel;
 import cz.matysekxx.beatbounce.model.audio.AudioData;
@@ -75,9 +76,7 @@ public class GameScreen extends Screen {
             return LevelGenerator.generateLevel(audioData, speedMultiplier, stars);
         }).thenAccept(level -> SwingUtilities.invokeLater(() -> {
             this.getContentPane().removeAll();
-            final Runnable onExit = () -> {
-                screenManager.showScreen(MainMenuScreen.class);
-            };
+            final Runnable onExit = () -> screenManager.showScreen(MainMenuScreen.class);
             gamePanel = new GamePanel(onExit);
             gamePanel.init(level);
             this.getContentPane().add(gamePanel, BorderLayout.CENTER);
@@ -88,9 +87,7 @@ public class GameScreen extends Screen {
             loadingPanel.stopAnimation();
         })).exceptionally(ex -> {
             ExceptionHandler.handle("Failed to load level", ex);
-            SwingUtilities.invokeLater(() -> {
-                loadingPanel.setText("Failed to load level!");
-            });
+            SwingUtilities.invokeLater(() -> loadingPanel.setText("Failed to load level!"));
             return null;
         });
     }
@@ -112,6 +109,16 @@ public class GameScreen extends Screen {
     public void stop() {
         if (gamePanel != null) {
             gamePanel.stopGame();
+        }
+    }
+
+    /**
+     * Pauses the game when the window loses focus if the setting is enabled.
+     */
+    @Override
+    public void onFocusLost() {
+        if (Settings.pauseOnFocusLoss && gamePanel != null) {
+            gamePanel.pause();
         }
     }
 }

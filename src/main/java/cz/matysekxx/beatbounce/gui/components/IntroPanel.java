@@ -10,6 +10,7 @@ import cz.matysekxx.beatbounce.util.UIScale;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 
 /**
@@ -282,7 +283,8 @@ public class IntroPanel extends BasePanel implements Runnable {
      */
     private void drawTitle(Graphics2D g2d, int w, int h, float globalHue) {
         final String text = "BEAT BOUNCE";
-        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_150));
+        final Font font = UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_150);
+        g2d.setFont(font);
 
         final FontMetrics fm = g2d.getFontMetrics();
         final int textWidth = fm.stringWidth(text);
@@ -297,12 +299,28 @@ public class IntroPanel extends BasePanel implements Runnable {
 
         final Color bloomColor = Color.getHSBColor(globalHue, 0.85f, 1.0f);
         final Color faceColor = Color.getHSBColor(globalHue, 0.25f, 1.0f);
-        RenderUtils.drawBloom(g2d, text, drawX, drawY, pulse, bloomColor);
 
-        g2d.setColor(RenderCache.blackWithAlpha(150));
+        final GlyphVector gv = font.createGlyphVector(g2d.getFontRenderContext(), text);
+        final Shape textShape = gv.getOutline(drawX, drawY);
+
+        if (Settings.bloomEnabled) {
+            g2d.setColor(RenderCache.customColorWithAlpha(bloomColor, (int) (80 * pulse)));
+            g2d.setStroke(new BasicStroke(UIScale.scale(10.0f)));
+            g2d.draw(textShape);
+
+            g2d.setColor(RenderCache.customColorWithAlpha(bloomColor, (int) (140 * pulse)));
+            g2d.setStroke(new BasicStroke(UIScale.scale(5.0f)));
+            g2d.draw(textShape);
+        }
+
+        g2d.setColor(bloomColor);
+        g2d.setStroke(new BasicStroke(UIScale.scale(2.0f)));
+        g2d.draw(textShape);
+
+        g2d.setColor(RenderCache.blackWithAlpha(180));
         g2d.drawString(text, drawX + UIScale.scale(3), drawY + UIScale.scale(3));
 
-        g2d.setColor(faceColor);
+        g2d.setColor(RenderCache.customColorWithAlpha(faceColor, 230));
         g2d.drawString(text, drawX, drawY);
     }
 

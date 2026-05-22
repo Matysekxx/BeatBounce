@@ -9,6 +9,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.HierarchyBoundsListener;
+import java.awt.event.HierarchyEvent;
 import java.net.URL;
 
 /**
@@ -50,6 +52,17 @@ public abstract class Screen extends JFrame {
 
             @Override
             public void componentMoved(ComponentEvent e) {
+                UIScale.update(getWidth(), getHeight());
+            }
+        });
+        this.addHierarchyBoundsListener(new HierarchyBoundsListener() {
+            @Override
+            public void ancestorMoved(HierarchyEvent e) {
+                UIScale.update(getWidth(), getHeight());
+            }
+
+            @Override
+            public void ancestorResized(HierarchyEvent e) {
                 UIScale.update(getWidth(), getHeight());
             }
         });

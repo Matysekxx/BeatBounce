@@ -5,7 +5,7 @@ import cz.matysekxx.beatbounce.api.AudiusClient;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.components.LibraryPanel;
-import cz.matysekxx.beatbounce.gui.components.MainMenuPanel;
+import cz.matysekxx.beatbounce.gui.components.MainPanel;
 import cz.matysekxx.beatbounce.gui.components.SettingsPanel;
 import cz.matysekxx.beatbounce.gui.components.SongSelectionPanel;
 import cz.matysekxx.beatbounce.model.audio.AudioManager;
@@ -25,7 +25,7 @@ public class MainMenuScreen extends Screen {
     /**
      * The background panel for the main menu.
      */
-    private final MainMenuPanel backgroundPanel;
+    private final MainPanel backgroundPanel;
 
     /**
      * Client for Audius API interactions.
@@ -91,7 +91,7 @@ public class MainMenuScreen extends Screen {
         this.screenManager = screenManager;
         this.setLayout(new BorderLayout());
 
-        backgroundPanel = new MainMenuPanel();
+        backgroundPanel = new MainPanel();
         backgroundPanel.setLayout(new BorderLayout());
         this.setContentPane(backgroundPanel);
 

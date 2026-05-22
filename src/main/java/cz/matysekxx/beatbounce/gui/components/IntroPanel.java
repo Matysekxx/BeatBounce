@@ -7,18 +7,16 @@ import cz.matysekxx.beatbounce.util.Time;
 
 import cz.matysekxx.beatbounce.util.UIScale;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
 
 /**
  * A panel used for the intro screen, featuring animated particles and a stylized background.
  * It manages its own animation thread.
  */
-public class IntroPanel extends JPanel implements Runnable {
+public class IntroPanel extends BasePanel implements Runnable {
     /**
      * Particle array for the ambient background animation.
      */
@@ -45,37 +43,10 @@ public class IntroPanel extends JPanel implements Runnable {
     private Thread animatorThread;
 
     /**
-     * Cached width of the panel.
-     */
-    private int cachedW = -1;
-
-    /**
-     * Cached height of the panel.
-     */
-    private int cachedH = -1;
-
-    /**
-     * Off-screen buffer for the static background elements.
-     */
-    private BufferedImage staticBackgroundCache;
-
-    /**
-     * Width of the background cache.
-     */
-    private int cachedBgW = -1;
-
-    /**
-     * Height of the background cache.
-     */
-    private int cachedBgH = -1;
-
-    /**
      * Constructs a new IntroPanel.
      */
     public IntroPanel() {
         super();
-        this.setDoubleBuffered(true);
-        this.setOpaque(true);
         particles = new Particle[30];
         for (int i = 0; i < particles.length; i++)
             particles[i] = new Particle(1920, 540);
@@ -84,9 +55,7 @@ public class IntroPanel extends JPanel implements Runnable {
         this.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                cachedW = e.getComponent().getWidth();
-                cachedH = e.getComponent().getHeight();
-                UIScale.update(cachedW, cachedH);
+                UIScale.update(e.getComponent().getWidth(), e.getComponent().getHeight());
             }
         });
     }
@@ -159,6 +128,13 @@ public class IntroPanel extends JPanel implements Runnable {
     }
 
     @Override
+    protected void drawBackground(Graphics2D g2d, int w, int h) {
+        final int horizonY = (h >> 1) + UIScale.scale(100);
+        RenderUtils.drawBackground(g2d, w, h);
+        RenderUtils.drawFloor(g2d, w, h, horizonY);
+    }
+
+    @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
@@ -170,21 +146,8 @@ public class IntroPanel extends JPanel implements Runnable {
         RenderUtils.initGraphics2D(g2d);
 
         final int horizonY = (h >> 1) + UIScale.scale(100);
-
-        if (staticBackgroundCache == null || cachedBgW != w || cachedBgH != h) {
-            cachedBgW = w;
-            cachedBgH = h;
-            staticBackgroundCache = g2d.getDeviceConfiguration()
-                    .createCompatibleImage(w, h, Transparency.OPAQUE);
-            final Graphics2D bgG2d = staticBackgroundCache.createGraphics();
-            RenderUtils.initGraphics2D(bgG2d);
-            RenderUtils.drawBackground(bgG2d, w, h);
-            RenderUtils.drawFloor(bgG2d, w, h, horizonY);
-            bgG2d.dispose();
-        }
-        g2d.drawImage(staticBackgroundCache, 0, 0, null);
-
         final float globalHue = (time * 0.05f) % 1.0f;
+        
         drawAudioBars(g2d, w, horizonY, globalHue);
 
         if (Settings.particlesEnabled) {

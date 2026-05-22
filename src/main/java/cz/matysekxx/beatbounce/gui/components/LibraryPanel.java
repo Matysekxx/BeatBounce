@@ -21,7 +21,7 @@ import java.nio.file.StandardCopyOption;
  * A panel that displays the user's local song library.
  * It allows users to view downloaded songs and add new local audio files.
  */
-public class LibraryPanel extends JPanel {
+public class LibraryPanel extends BasePanel {
     /**
      * Manager used to switch between different screens.
      */
@@ -37,6 +37,7 @@ public class LibraryPanel extends JPanel {
      * @param screenManager the screen manager used for navigation
      */
     public LibraryPanel(ScreenManager screenManager) {
+        super();
         this.screenManager = screenManager;
 
         setOpaque(false);
@@ -79,12 +80,8 @@ public class LibraryPanel extends JPanel {
     }
 
     @Override
-    protected void paintComponent(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g.create();
-        RenderUtils.initGraphics2D(g2);
-        RenderUtils.drawMenuBackground(g2, getWidth(), getHeight());
-        g2.dispose();
-        super.paintComponent(g);
+    protected void drawBackground(Graphics2D g2d, int w, int h) {
+        RenderUtils.drawMenuBackground(g2d, w, h);
     }
 
     /**

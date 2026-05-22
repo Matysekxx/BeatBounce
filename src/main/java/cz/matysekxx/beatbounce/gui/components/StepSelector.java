@@ -5,13 +5,14 @@ import cz.matysekxx.beatbounce.gui.RenderUtils;
 
 import cz.matysekxx.beatbounce.util.UIScale;
 
+import javax.swing.*;
 import java.awt.*;
 
 /**
  * A custom UI component that allows selecting a value from a discrete set of steps.
  * It is used for settings like Target FPS.
  */
-public class StepSelector extends javax.swing.JComponent {
+public class StepSelector extends JComponent {
     /**
      * The array of discrete integer values that can be selected.
      */
@@ -98,7 +99,7 @@ public class StepSelector extends javax.swing.JComponent {
                 g2.fillRoundRect(x - UIScale.scale(2), UIScale.scale(2), itemW + UIScale.scale(4), UIScale.scale(34), UIScale.scale(14), UIScale.scale(14));
             }
 
-            g2.setColor(i == selectedIndex ? Color.WHITE : Color.GRAY);
+            g2.setColor(i == selectedIndex ? Color.WHITE : new Color(255, 255, 255, 150));
             g2.setFont(i == selectedIndex ? UIScale.scaleFont(RenderCache.SANS_BOLD_16) : UIScale.scaleFont(RenderCache.SANS_PLAIN_16));
             String s = String.valueOf(values[i]);
             FontMetrics fm = g2.getFontMetrics();

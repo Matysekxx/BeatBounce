@@ -153,10 +153,12 @@ public class SettingsPanel extends JPanel {
         final JPanel audioGroup = createGroupPanel("AUDIO");
         
         final JLabel soundLabel = new JLabel("Music Volume: " + Settings.soundVolume + "%");
+        styleLabel(soundLabel);
         soundSlider = new CustomSlider(0, 100, Settings.soundVolume);
         soundSlider.addChangeListener(_ -> soundLabel.setText("Music Volume: " + soundSlider.getValue() + "%"));
 
         final JLabel menuLabel = new JLabel("Menu Music: " + Settings.menuVolume + "%");
+        styleLabel(menuLabel);
         menuSlider = new CustomSlider(0, 100, Settings.menuVolume);
         menuSlider.addChangeListener(_ -> {
             menuLabel.setText("Menu Music: " + menuSlider.getValue() + "%");
@@ -165,6 +167,7 @@ public class SettingsPanel extends JPanel {
         });
 
         final JLabel sfxLabel = new JLabel("SFX Volume: " + Settings.sfxVolume + "%");
+        styleLabel(sfxLabel);
         sfxSlider = new CustomSlider(0, 100, Settings.sfxVolume);
         sfxSlider.addChangeListener(_ -> sfxLabel.setText("SFX Volume: " + sfxSlider.getValue() + "%"));
 
@@ -487,7 +490,7 @@ public class SettingsPanel extends JPanel {
      */
     private void styleLabel(JLabel l) {
         l.setFont(UIScale.scaleFont(RenderCache.SANS_PLAIN_18));
-        l.setForeground(new Color(210, 210, 215));
+        l.setForeground(Color.WHITE);
         final Dimension labelDim = new Dimension(UIScale.scale(210), UIScale.scale(40));
         l.setPreferredSize(labelDim);
         l.setMinimumSize(labelDim);

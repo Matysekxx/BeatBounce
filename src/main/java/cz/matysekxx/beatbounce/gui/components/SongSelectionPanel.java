@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  * A panel that allows users to browse and select songs from the Audius API.
  * It includes search functionality and genre filters.
  */
-public class SongSelectionPanel extends JPanel implements Runnable {
+public class SongSelectionPanel extends BasePanel implements Runnable {
 
     /**
      * Client for interacting with the Audius API.
@@ -97,6 +97,7 @@ public class SongSelectionPanel extends JPanel implements Runnable {
      * @param screenManager the screen manager used for navigation
      */
     public SongSelectionPanel(AudiusClient audiusClient, ObjectMapper objectMapper, ScreenManager screenManager) {
+        super();
         this.audiusClient = audiusClient;
         this.objectMapper = objectMapper;
         this.screenManager = screenManager;
@@ -117,11 +118,18 @@ public class SongSelectionPanel extends JPanel implements Runnable {
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
+                cachedW = -1;
+                cachedH = -1;
                 songListPanel.revalidate();
             }
         });
 
         loadTracks("allTime", null);
+    }
+
+    @Override
+    protected void drawBackground(Graphics2D g2d, int w, int h) {
+        RenderUtils.drawMenuBackground(g2d, w, h);
     }
 
     /**
@@ -387,16 +395,4 @@ public class SongSelectionPanel extends JPanel implements Runnable {
             Time.delay(optimalTimeNanos, now);
         }
     }
-
-    /**
-     * Paints the background and border of the song selection panel with a gradient and rounded corners.
-     *
-     * @param g the Graphics object to protect
-     */
-    @Override
-    protected void paintComponent(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g.create();
-        RenderUtils.drawMenuBackground(g2, getWidth(), getHeight());
-        super.paintComponent(g);
     }
-}

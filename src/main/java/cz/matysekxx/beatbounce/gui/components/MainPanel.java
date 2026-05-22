@@ -4,15 +4,13 @@ import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.util.Time;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 
 /**
  * A panel used as the background for the main menu.
  * It handles background rendering and animations.
  */
-public class MainMenuPanel extends JPanel implements Runnable {
+public class MainPanel extends BasePanel implements Runnable {
     /**
      * Flag indicating if the animation loop is active.
      */
@@ -24,26 +22,10 @@ public class MainMenuPanel extends JPanel implements Runnable {
     private Thread animatorThread;
 
     /**
-     * Off-screen buffer for the static background elements.
-     */
-    private BufferedImage bgCache;
-
-    /**
-     * Cached width of the panel.
-     */
-    private int cachedW = -1;
-
-    /**
-     * Cached height of the panel.
-     */
-    private int cachedH = -1;
-
-    /**
      * Constructs a new MainMenuPanel.
      */
-    public MainMenuPanel() {
-        this.setDoubleBuffered(true);
-        this.setOpaque(true);
+    public MainPanel() {
+        super();
     }
 
     /**
@@ -86,26 +68,8 @@ public class MainMenuPanel extends JPanel implements Runnable {
         }
     }
 
-    /**
-     * Paints the background component, using a cache to improve performance.
-     *
-     * @param g the graphics context to paint on
-     */
     @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        final int w = getWidth();
-        final int h = getHeight();
-
-        if (bgCache == null || cachedW != w || cachedH != h) {
-            cachedW = w;
-            cachedH = h;
-            bgCache = new BufferedImage(Math.max(1, w), Math.max(1, h), BufferedImage.TYPE_INT_RGB);
-            final Graphics2D cg = bgCache.createGraphics();
-            RenderUtils.initGraphics2D(cg);
-            RenderUtils.drawBackground(cg, w, h);
-            cg.dispose();
-        }
-        g.drawImage(bgCache, 0, 0, null);
+    protected void drawBackground(Graphics2D g2d, int w, int h) {
+        RenderUtils.drawBackground(g2d, w, h);
     }
 }

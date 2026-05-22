@@ -250,8 +250,7 @@ public class GamePanel extends JPanel implements Runnable {
             animTime += dt;
 
             updateParticleCount();
-            final double currentTime = (clip != null && clip.isRunning()) ? clip.getMicrosecondPosition() / 1_000_000.0 : 0;
-            gameEngine.update(currentTime, dt);
+            gameEngine.update(dt);
             updateCursorVisibility();
             if (uiRenderer != null) uiRenderer.update(dt);
 

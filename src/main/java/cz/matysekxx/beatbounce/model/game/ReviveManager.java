@@ -58,6 +58,8 @@ public class ReviveManager {
             final long microPos = gameEngine.getClip().getMicrosecondPosition();
             gameEngine.getClip().setMicrosecondPosition(Math.max(0, microPos - 1_500_000));
             gameEngine.setSmoothedAudioTime(gameEngine.getClip().getMicrosecondPosition() / 1_000_000.0);
+            gameEngine.setLastClipMicroPos(gameEngine.getClip().getMicrosecondPosition());
+            gameEngine.setLastSyncNano(System.nanoTime());
             gameEngine.setGameZProgress(gameEngine.getSmoothedAudioTime() * gameEngine.getZUnitsPerSecond());
             return true;
         }

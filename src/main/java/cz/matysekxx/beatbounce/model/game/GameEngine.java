@@ -140,6 +140,16 @@ public class GameEngine {
     private double smoothedAudioTime = 0;
 
     /**
+     * The nanoTime value at the last audio sync point.
+     */
+    private long lastSyncNano = 0;
+
+    /**
+     * The clip microsecond position at the last audio sync point.
+     */
+    private long lastClipMicroPos = 0;
+
+    /**
      * Accumulator for score earned while rolling on a long tile.
      */
     private int longTileScoreAccum = 0;
@@ -278,22 +288,52 @@ public class GameEngine {
     }
 
     /**
-     * Updates the game world and logic for one frame.
+     * Synchronizes the internal game timer with the raw audio clip position.
+     * Uses a smoothing algorithm and nanoTime interpolation to prevent jitter.
      *
-     * @param currentTime current music time in seconds
-     * @param deltaTime   time since last frame in seconds
+     * @param deltaTime time since last frame in seconds
      */
-    public void update(double currentTime, double deltaTime) {
-        scorePopups.removeIf(ScorePopup::isFinished);
-        for (ScorePopup popup : scorePopups) {
-            popup.update(deltaTime);
+    private void syncAudioTime(double deltaTime) {
+        if (clip == null || !clip.isRunning()) return;
+
+        final long currentNano = System.nanoTime();
+        final long currentClipMicro = clip.getMicrosecondPosition();
+
+        if (currentClipMicro != lastClipMicroPos) {
+            lastClipMicroPos = currentClipMicro;
+            lastSyncNano = currentNano;
         }
 
+        final double rawPreciseTime = (lastClipMicroPos + (currentNano - lastSyncNano) / 1000.0) / 1_000_000.0;
+
+        if (smoothedAudioTime == 0 && rawPreciseTime > 0) {
+            smoothedAudioTime = rawPreciseTime;
+            return;
+        }
+
+        smoothedAudioTime += deltaTime;
+        final double diff = rawPreciseTime - smoothedAudioTime;
+        if (Math.abs(diff) > 0.1) {
+            smoothedAudioTime = rawPreciseTime;
+        } else {
+            smoothedAudioTime += diff * 0.1;
+        }
+    }
+
+    /**
+     * Updates the game world and logic for one frame.
+     *
+     * @param deltaTime   time since last frame in seconds
+     */
+    public void update(double deltaTime) {
+        syncAudioTime(deltaTime);
+        scorePopups.removeIf(ScorePopup::isFinished);
+        scorePopups.forEach(popup -> popup.update(deltaTime));
         switch (gameState) {
-            case FALLING -> fallingHandler.handle(currentTime, deltaTime);
-            case PLAYING -> playingHandler.handle(currentTime, deltaTime);
-            case COUNTDOWN -> countdownHandler.handle(currentTime, deltaTime);
-            case LEVEL_END_ANIMATION -> levelEndAnimationHandler.handle(currentTime, deltaTime);
+            case FALLING -> fallingHandler.handle(smoothedAudioTime, deltaTime);
+            case PLAYING -> playingHandler.handle(smoothedAudioTime, deltaTime);
+            case COUNTDOWN -> countdownHandler.handle(smoothedAudioTime, deltaTime);
+            case LEVEL_END_ANIMATION -> levelEndAnimationHandler.handle(smoothedAudioTime, deltaTime);
         }
     }
 
@@ -431,6 +471,34 @@ public class GameEngine {
      */
     public void setSmoothedAudioTime(double smoothedAudioTime) {
         this.smoothedAudioTime = smoothedAudioTime;
+    }
+
+    /**
+     * Returns the nanoTime value at the last audio sync point.
+     */
+    public long getLastSyncNano() {
+        return lastSyncNano;
+    }
+
+    /**
+     * Sets the nanoTime value at the last audio sync point.
+     */
+    public void setLastSyncNano(long lastSyncNano) {
+        this.lastSyncNano = lastSyncNano;
+    }
+
+    /**
+     * Returns the clip microsecond position at the last audio sync point.
+     */
+    public long getLastClipMicroPos() {
+        return lastClipMicroPos;
+    }
+
+    /**
+     * Sets the clip microsecond position at the last audio sync point.
+     */
+    public void setLastClipMicroPos(long lastClipMicroPos) {
+        this.lastClipMicroPos = lastClipMicroPos;
     }
 
     /**

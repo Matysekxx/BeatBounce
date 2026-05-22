@@ -68,13 +68,13 @@ public class PlayingHandler implements GameStateHandler {
             return;
         }
 
-        updateAudioAndProgress(deltaTime);
+        gameEngine.setGameZProgress(currentTime * gameEngine.getZUnitsPerSecond());
         tileManager.update(deltaTime);
         updateCameraAndSphere();
         collisionEngine.handleCollisions();
         orbCollisionEngine.checkOrbCollisions();
 
-        gameEngine.getSphere().update(gameEngine.getSmoothedAudioTime(), deltaTime);
+        gameEngine.getSphere().update(currentTime, deltaTime);
     }
 
     /**
@@ -87,25 +87,6 @@ public class PlayingHandler implements GameStateHandler {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Synchronizes the internal game timer with the raw audio clip position.
-     * Uses a smoothing algorithm to prevent jitter from fluctuating audio timestamps.
-     */
-    private void updateAudioAndProgress(double deltaTime) {
-        final double rawAudioTime = clip.getMicrosecondPosition() / 1_000_000.0;
-
-        if (gameEngine.getSmoothedAudioTime() == 0 && rawAudioTime > 0) {
-            gameEngine.setSmoothedAudioTime(rawAudioTime);
-        }
-
-        gameEngine.setSmoothedAudioTime(gameEngine.getSmoothedAudioTime() + deltaTime);
-        final double diff = rawAudioTime - gameEngine.getSmoothedAudioTime();
-
-        double adjustment = (Math.abs(diff) > 0.05) ? diff : diff * 0.1;
-        gameEngine.setSmoothedAudioTime(gameEngine.getSmoothedAudioTime() + adjustment);
-        gameEngine.setGameZProgress(gameEngine.getSmoothedAudioTime() * gameEngine.getZUnitsPerSecond());
     }
 
     /**

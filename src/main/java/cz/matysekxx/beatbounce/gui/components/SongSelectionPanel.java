@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.matysekxx.beatbounce.api.AudiusClient;
 import cz.matysekxx.beatbounce.configuration.Settings;
+import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
 import cz.matysekxx.beatbounce.util.ExceptionHandler;
@@ -233,7 +234,7 @@ public class SongSelectionPanel extends BasePanel implements Runnable {
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 RenderUtils.initGraphics2D(g2);
-                boolean active = activeGenre.equals(getText());
+                final boolean active = activeGenre.equals(getText());
                 if (active) {
                     g2.setColor(RenderUtils.cyan);
                     g2.fillRoundRect(0, 0, getWidth(), getHeight(), getHeight(), getHeight());
@@ -243,6 +244,7 @@ public class SongSelectionPanel extends BasePanel implements Runnable {
                     g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, getHeight(), getHeight());
                     g2.setColor(new Color(200, 200, 200, 150));
                 }
+                g2.setFont(RenderCache.SANS_PLAIN_20);
                 final FontMetrics fm = g2.getFontMetrics();
                 g2.drawString(getText(), (getWidth() - fm.stringWidth(getText())) / 2, getHeight() / 2 + UIScale.scale(5));
                 g2.dispose();

@@ -54,6 +54,19 @@ public class SwingConfiguration {
     public static void setup() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            UIManager.put("Panel.background", Color.BLACK);
+            UIManager.put("Label.background", Color.BLACK);
+            UIManager.put("Window.background", Color.BLACK);
+            UIManager.put("Frame.background", Color.BLACK);
+            UIManager.put("ProgressBar.background", Color.BLACK);
+            UIManager.put("ScrollPane.background", Color.BLACK);
+            UIManager.put("Viewport.background", Color.BLACK);
+            
+            setupButtonProperties();
+            setupTextFieldProperties();
+            setupListProperties();
+            setupComboBoxProperties();
+            setupFileChooserProperties();
         } catch (Exception _) {
         }
     }

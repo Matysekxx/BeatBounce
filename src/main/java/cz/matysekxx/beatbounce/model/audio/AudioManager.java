@@ -141,23 +141,27 @@ public class AudioManager {
     }
 
     /**
-     * Starts playing menu music if not already playing.
+     * Starts playing menu music if not already playing. Runs asynchronously to prevent UI blocking.
      *
      * @param resourcePath The path to the music resource.
      */
     public static void playMenuMusic(String resourcePath) {
         if (menuMusicClip != null && menuMusicClip.isRunning() && resourcePath.equals(currentMenuMusicPath)) return;
         stopMenuMusic();
-        try {
-            menuMusicClip = AudioSystem.getClip();
-            menuMusicClip.open(getAudioInputStream(resourcePath));
-            menuMusicClip.loop(Clip.LOOP_CONTINUOUSLY);
-            applyMenuVolume(menuMusicClip);
-            menuMusicClip.start();
-            currentMenuMusicPath = resourcePath;
-        } catch (Exception e) {
-            LOG.warn("Failed to play menu music {}: {}", resourcePath, e.getMessage());
-        }
+        
+        Thread.ofVirtual().start(() -> {
+            try {
+                final Clip clip = AudioSystem.getClip();
+                clip.open(getAudioInputStream(resourcePath));
+                clip.loop(Clip.LOOP_CONTINUOUSLY);
+                applyMenuVolume(clip);
+                clip.start();
+                menuMusicClip = clip;
+                currentMenuMusicPath = resourcePath;
+            } catch (Exception e) {
+                LOG.warn("Failed to play menu music {}: {}", resourcePath, e.getMessage());
+            }
+        });
     }
 
     /**

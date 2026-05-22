@@ -14,16 +14,6 @@ import java.awt.*;
 public class SwingConfiguration {
 
     /**
-     * Primary background color (Dark Slate) used for panels and main windows.
-     */
-    private static final Color mainBg = new Color(40, 44, 52);
-
-    /**
-     * Secondary background color (Deep Charcoal) used for input fields and lists.
-     */
-    private static final Color listBg = new Color(33, 37, 43);
-
-    /**
      * Primary text color (Light Grey) to ensure high readability on dark backgrounds.
      */
     private static final Color lightText = new Color(220, 220, 220);
@@ -54,19 +44,9 @@ public class SwingConfiguration {
     public static void setup() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            UIManager.put("Panel.background", Color.BLACK);
-            UIManager.put("Label.background", Color.BLACK);
-            UIManager.put("Window.background", Color.BLACK);
-            UIManager.put("Frame.background", Color.BLACK);
-            UIManager.put("ProgressBar.background", Color.BLACK);
-            UIManager.put("ScrollPane.background", Color.BLACK);
-            UIManager.put("Viewport.background", Color.BLACK);
 
             setupButtonProperties();
-            setupTextFieldProperties();
-            setupListProperties();
             setupComboBoxProperties();
-            setupFileChooserProperties();
         } catch (Exception _) {
         }
     }
@@ -75,27 +55,7 @@ public class SwingConfiguration {
      * Configures standard button colors.
      */
     private static void setupButtonProperties() {
-        UIManager.put("Button.background", buttonBg);
         UIManager.put("Button.foreground", Color.WHITE);
-    }
-
-    /**
-     * Configures text input fields, including caret visibility.
-     */
-    private static void setupTextFieldProperties() {
-        UIManager.put("TextField.background", listBg);
-        UIManager.put("TextField.foreground", lightText);
-        UIManager.put("TextField.caretForeground", lightText);
-    }
-
-    /**
-     * Configures JList appearance and selection highlight colors.
-     */
-    private static void setupListProperties() {
-        UIManager.put("List.background", listBg);
-        UIManager.put("List.foreground", lightText);
-        UIManager.put("List.selectionBackground", accentBlue);
-        UIManager.put("List.selectionForeground", Color.WHITE);
     }
 
     /**
@@ -106,30 +66,5 @@ public class SwingConfiguration {
         UIManager.put("ComboBox.foreground", lightText);
         UIManager.put("ComboBox.selectionBackground", accentBlue);
         UIManager.put("ComboBox.selectionForeground", Color.WHITE);
-    }
-
-    /**
-     * Configures the localized text and theme for {@link JFileChooser} dialogs.
-     * <p>
-     * This ensures that file dialogs remain consistent with the dark theme
-     * and provides explicit labels for navigation tooltips and buttons.
-     * </p>
-     */
-    private static void setupFileChooserProperties() {
-        UIManager.put("FileChooser.background", mainBg);
-        UIManager.put("FileChooser.foreground", lightText);
-        UIManager.put("FileChooser.listViewBackground", listBg);
-        UIManager.put("FileChooser.listViewForeground", lightText);
-        UIManager.put("FileChooser.openButtonText", "Open");
-        UIManager.put("FileChooser.saveButtonText", "Save");
-        UIManager.put("FileChooser.cancelButtonText", "Cancel");
-        UIManager.put("FileChooser.fileNameLabelText", "File Name:");
-        UIManager.put("FileChooser.filesOfTypeLabelText", "Files of Type:");
-        UIManager.put("FileChooser.lookInLabelText", "Look In:");
-        UIManager.put("FileChooser.upFolderToolTipText", "Up One Level");
-        UIManager.put("FileChooser.homeFolderToolTipText", "Home");
-        UIManager.put("FileChooser.newFolderToolTipText", "Create New Folder");
-        UIManager.put("FileChooser.listViewButtonToolTipText", "List View");
-        UIManager.put("FileChooser.detailsViewButtonToolTipText", "Details View");
     }
 }

@@ -313,10 +313,11 @@ public class GameEngine {
 
         smoothedAudioTime += deltaTime;
         final double diff = rawPreciseTime - smoothedAudioTime;
-        if (Math.abs(diff) > 0.1) {
+        if (Math.abs(diff) > 0.15) {
             smoothedAudioTime = rawPreciseTime;
         } else {
-            smoothedAudioTime += diff * 0.1;
+            final double lerpFactor = 1.0 - Math.exp(-20.0 * deltaTime);
+            smoothedAudioTime += diff * lerpFactor;
         }
     }
 

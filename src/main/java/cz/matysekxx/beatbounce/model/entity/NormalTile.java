@@ -59,6 +59,11 @@ public class NormalTile extends AbstractTile {
     private Color lightenedColorAlpha230;
 
     /**
+     * Scratch polygon for fake lanes.
+     */
+    private final Polygon fakeScratchPolygon = new Polygon(new int[4], new int[4], 4);
+
+    /**
      * Default constructor for {@code NormalTile}.
      */
     protected NormalTile() {
@@ -148,12 +153,8 @@ public class NormalTile extends AbstractTile {
             final int LANE_WIDTH = 120;
 
             for (int offset : fakeLaneOffsets) {
-                final Polygon fakePoly = new Polygon(
-                        createXPoints(cam, windowData.width(), scaleFront, scaleBack, this.getX() + (offset * LANE_WIDTH), 1.0),
-                        createYPoints(cam, scaleFront, scaleBack, windowData.height() / 3),
-                        4
-                );
-                drawFakePolygon(g2d, fakePoly);
+                setupPolygon(cam, windowData.width(), windowData.height() / 3, scaleFront, scaleBack, this.getX() + (offset * LANE_WIDTH), 1.0, fakeScratchPolygon);
+                drawFakePolygon(g2d, fakeScratchPolygon);
             }
         }
         super.render(g2d, cam, windowData);

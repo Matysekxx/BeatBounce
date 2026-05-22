@@ -3,6 +3,7 @@ package cz.matysekxx.beatbounce.gui.components;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 
+import javax.swing.*;
 import java.awt.*;
 
 /**
@@ -28,32 +29,32 @@ public class SimulatedButton {
     /**
      * The text label to display on the button.
      */
-    private final String label;
+    private String label;
 
     /**
      * The x-coordinate of the button's top-left corner.
      */
-    private final int x;
+    private int x;
 
     /**
      * The y-coordinate of the button's top-left corner.
      */
-    private final int y;
+    private int y;
 
     /**
      * The width of the button in pixels.
      */
-    private final int width;
+    private int width;
 
     /**
      * The height of the button in pixels.
      */
-    private final int height;
+    private int height;
 
     /**
      * The action to be triggered when this button is clicked.
      */
-    private final UIAction action;
+    private UIAction action;
 
     /**
      * Constructs a new SimulatedButton.
@@ -66,6 +67,20 @@ public class SimulatedButton {
      * @param action the action to perform when the button is clicked
      */
     public SimulatedButton(String label, int x, int y, int width, int height, UIAction action) {
+        setup(label, x, y, width, height, action);
+    }
+
+    /**
+     * Updates the button's properties.
+     *
+     * @param label  the text label
+     * @param x      the x-coordinate
+     * @param y      the y-coordinate
+     * @param width  the width
+     * @param height the height
+     * @param action the action
+     */
+    public void setup(String label, int x, int y, int width, int height, UIAction action) {
         this.label = label;
         this.x = x;
         this.y = y;

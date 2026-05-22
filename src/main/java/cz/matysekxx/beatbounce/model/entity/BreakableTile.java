@@ -122,23 +122,21 @@ public class BreakableTile extends AbstractTile {
 
         if (!Settings.graphicsQuality.equals("LOW")) {
             g2d.setStroke(RenderCache.STROKE_8);
-            g2d.setColor(new Color(255, 80, 0, (int) (50 * alpha)));
+            g2d.setColor(RenderCache.customColorWithAlpha(new Color(255, 80, 0), (int) (50 * alpha)));
             g2d.drawPolygon(polygon);
 
             if (Settings.graphicsQuality.equals("HIGH")) {
                 g2d.setStroke(RenderCache.STROKE_4);
-                g2d.setColor(new Color(255, 140, 0, (int) (100 * alpha)));
+                g2d.setColor(RenderCache.customColorWithAlpha(new Color(255, 140, 0), (int) (100 * alpha)));
                 g2d.drawPolygon(polygon);
             }
 
             g2d.setStroke(RenderCache.STROKE_2);
-            g2d.setColor(new Color(255, 200, 0, (int) (160 * alpha)));
+            g2d.setColor(RenderCache.customColorWithAlpha(new Color(255, 200, 0), (int) (160 * alpha)));
             g2d.drawPolygon(polygon);
         }
 
-        final Color fillColor = new Color(
-                baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), alphaInt);
-        g2d.setColor(fillColor);
+        g2d.setColor(RenderCache.customColorWithAlpha(baseColor, alphaInt));
         g2d.fillPolygon(polygon);
 
         if (broken && !Settings.graphicsQuality.equals("LOW")) {
@@ -146,7 +144,7 @@ public class BreakableTile extends AbstractTile {
         }
 
         g2d.setStroke(RenderCache.STROKE_1_5);
-        g2d.setColor(new Color(255, 255, 255, alphaInt));
+        g2d.setColor(RenderCache.whiteWithAlpha(alphaInt));
         g2d.drawPolygon(polygon);
         g2d.setStroke(RenderCache.STROKE_1);
     }
@@ -155,15 +153,24 @@ public class BreakableTile extends AbstractTile {
      * Draws stylised crack lines across the broken tile surface.
      */
     private void drawCracks(Graphics2D g2d, Polygon polygon, float alpha) {
-        final Rectangle b = polygon.getBounds();
-        final int cx = b.x + b.width / 2;
-        final int cy = b.y + b.height / 2;
+        int minX = polygon.xpoints[0], maxX = polygon.xpoints[0];
+        int minY = polygon.ypoints[0], maxY = polygon.ypoints[0];
+        for (int i = 1; i < 4; i++) {
+            minX = Math.min(minX, polygon.xpoints[i]);
+            maxX = Math.max(maxX, polygon.xpoints[i]);
+            minY = Math.min(minY, polygon.ypoints[i]);
+            maxY = Math.max(maxY, polygon.ypoints[i]);
+        }
+
+        final int cx = (minX + maxX) / 2;
+        final int cy = (minY + maxY) / 2;
+
         g2d.setStroke(RenderCache.STROKE_1);
-        g2d.setColor(new Color(255, 80, 0, (int) (200 * alpha)));
-        g2d.drawLine(cx, cy, b.x + b.width, b.y);
-        g2d.drawLine(cx, cy, b.x, b.y + b.height);
-        g2d.drawLine(cx, cy, b.x + b.width, b.y + b.height);
-        g2d.drawLine(cx, cy, b.x, b.y);
+        g2d.setColor(RenderCache.customColorWithAlpha(new Color(255, 80, 0), (int) (200 * alpha)));
+        g2d.drawLine(cx, cy, maxX, minY);
+        g2d.drawLine(cx, cy, minX, maxY);
+        g2d.drawLine(cx, cy, maxX, maxY);
+        g2d.drawLine(cx, cy, minX, minY);
     }
 
     @Override

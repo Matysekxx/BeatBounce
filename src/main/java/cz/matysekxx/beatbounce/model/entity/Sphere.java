@@ -1,6 +1,7 @@
 package cz.matysekxx.beatbounce.model.entity;
 
 import cz.matysekxx.beatbounce.gui.Camera3D;
+import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.WindowData;
 
 import java.awt.*;
@@ -319,7 +320,7 @@ public class Sphere extends Entity {
         final int a = (int) (255 * Math.clamp(alpha, 0, 1.0f));
         if (a <= 0 || scaledRadiusX <= 0 || scaledRadiusY <= 0) return;
 
-        g2d.setColor(new Color(255, 0, 255, a));
+        g2d.setColor(RenderCache.magentaWithAlpha(a));
         g2d.fillOval(screenX - scaledRadiusX, screenY - scaledRadiusY, scaledRadiusX * 2, scaledRadiusY * 2);
     }
 
@@ -341,7 +342,7 @@ public class Sphere extends Entity {
         final int shadowSizeX = (int) (radius * scale * (1.2 - heightFactor * 0.4));
         final int shadowSizeY = (int) (shadowSizeX * 0.4);
         if (shadowAlpha > 0 && shadowSizeX > 0 && shadowSizeY > 0) {
-            g2d.setColor(new Color(0, 0, 0, (int) (255 * shadowAlpha)));
+            g2d.setColor(RenderCache.blackWithAlpha((int) (255 * shadowAlpha)));
             g2d.fillOval(shadowScreenX - shadowSizeX, shadowScreenY - shadowSizeY / 2, shadowSizeX * 2, shadowSizeY);
         }
     }

@@ -85,6 +85,37 @@ public class GameWorldRenderer {
     private BufferedImage bgCache;
 
     /**
+     * Cached RadialGradientPaint for the planet glow.
+     */
+    private RadialGradientPaint cachedGlowPaint;
+
+    /**
+     * Cached RadialGradientPaint for the planet body.
+     */
+    private RadialGradientPaint cachedBodyPaint;
+
+    /**
+     * Last used glow radius for caching.
+     */
+    private int lastGlowR = -1;
+
+    /**
+     * Last used base color RGB for caching.
+     */
+    private int lastBaseColorRGB = -1;
+
+    /**
+     * Last used glow alpha for caching.
+     */
+    private int lastGlowAlpha = -1;
+
+    /**
+     * Reusable arrays for RadialGradientPaint.
+     */
+    private final float[] fractions = {0f, 1f};
+    private final Color[] colors = new Color[2];
+
+    /**
      * Constructs a new GameWorldRenderer.
      *
      * @param cam        the camera used for 3D projection
@@ -151,8 +182,15 @@ public class GameWorldRenderer {
         final Color baseColor = getCachedColor(globalHue);
         final Color secondaryColor = getCachedColor((globalHue + 0.3f) % 1.0f);
 
-        g2d.setPaint(new RadialGradientPaint(cx, cy, glowR, new float[]{0f, 1f},
-                new Color[]{RenderCache.customColorWithAlpha(baseColor, glowAlpha), TRANSPARENT}));
+        if (cachedGlowPaint == null || lastGlowR != glowR || lastBaseColorRGB != baseColor.getRGB() || lastGlowAlpha != glowAlpha) {
+            colors[0] = RenderCache.customColorWithAlpha(baseColor, glowAlpha);
+            colors[1] = TRANSPARENT;
+            cachedGlowPaint = new RadialGradientPaint(cx, cy, glowR, fractions, colors);
+            lastGlowR = glowR;
+            lastBaseColorRGB = baseColor.getRGB();
+            lastGlowAlpha = glowAlpha;
+        }
+        g2d.setPaint(cachedGlowPaint);
         g2d.fillOval(cx - glowR, cy - glowR, glowR * 2, glowR * 2);
 
         final int ry = cy + (int) (Math.sin(t * 0.4) * UIScale.scale(8));
@@ -160,8 +198,13 @@ public class GameWorldRenderer {
         drawRing(g2d, cx, ry, r * 1.8f, UIScale.scale(28), 0, RenderCache.customColorWithAlpha(secondaryColor, 60), RenderCache.STROKE_1);
         drawRing(g2d, cx, ry, r * 1.4f, UIScale.scale(18), 0, RenderCache.customColorWithAlpha(baseColor, 40), RenderCache.STROKE_1);
 
-        g2d.setPaint(new RadialGradientPaint(cx - r / 2.5f, cy - r / 2.5f, r * 1.5f,
-                new float[]{0f, 1f}, new Color[]{PLANET_BODY_LIGHT, PLANET_BODY_DARK}));
+        if (cachedBodyPaint == null) {
+            colors[0] = PLANET_BODY_LIGHT;
+            colors[1] = PLANET_BODY_DARK;
+            cachedBodyPaint = new RadialGradientPaint(cx - r / 2.5f, cy - r / 2.5f, r * 1.5f,
+                    fractions, colors);
+        }
+        g2d.setPaint(cachedBodyPaint);
         g2d.fillOval(cx - r, cy - r, r * 2, r * 2);
 
         if (!Settings.graphicsQuality.equals("LOW")) {

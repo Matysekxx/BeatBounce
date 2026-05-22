@@ -227,7 +227,12 @@ public final class RenderCache {
     /**
      * Cached black colors with pre-calculated alpha levels.
      */
-    private static final Color[] BLACK_ALPHA = new Color[256];
+    public static final Color[] BLACK_ALPHA = new Color[256];
+
+    /**
+     * A simple cache for custom colors with alpha.
+     */
+    private static final Color[] CUSTOM_COLOR_CACHE = new Color[1024];
 
     static {
         for (int i = 0; i < 256; i++) {
@@ -337,6 +342,15 @@ public final class RenderCache {
      * @return the color
      */
     public static Color customColorWithAlpha(Color color, int alpha) {
-        return new Color(color.getRed(), color.getGreen(), color.getBlue(), Math.clamp(alpha, 0, 255));
+        alpha = Math.clamp(alpha, 0, 255);
+        final int rgb = color.getRGB() & 0x00FFFFFF;
+        final int key = (rgb ^ (alpha << 16)) & 1023;
+        final Color cached = CUSTOM_COLOR_CACHE[key];
+        if (cached != null && cached.getRGB() == (rgb | (alpha << 24))) {
+            return cached;
+        }
+        final Color newColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
+        CUSTOM_COLOR_CACHE[key] = newColor;
+        return newColor;
     }
 }

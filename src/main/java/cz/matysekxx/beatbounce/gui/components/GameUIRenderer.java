@@ -115,6 +115,26 @@ public class GameUIRenderer {
     private final java.util.List<SimulatedButton> activeButtons = new java.util.ArrayList<>();
 
     /**
+     * Pool of buttons to avoid recreation.
+     */
+    private final java.util.List<SimulatedButton> buttonPool = new java.util.ArrayList<>();
+
+    /**
+     * Current index in the button pool.
+     */
+    private int buttonPoolIndex = 0;
+
+    /**
+     * Reusable StringBuilder for time formatting.
+     */
+    private final StringBuilder timeStringBuilder = new StringBuilder(16);
+
+    /**
+     * Reusable RoundRectangle2D for rendering.
+     */
+    private final RoundRectangle2D.Float rectScratch = new RoundRectangle2D.Float();
+
+    /**
      * Tracks the last known game state for animation triggers.
      */
     private GameState lastState = GameState.COUNTDOWN;
@@ -148,6 +168,21 @@ public class GameUIRenderer {
      * Current mouse Y-coordinate in virtual space.
      */
     private int mouseY = -1;
+
+    /**
+     * Reusable arrays for Gradient paints.
+     */
+    private final float[] fractions2 = {0f, 1f};
+    private final Color[] colors2 = new Color[2];
+    private final float[] fractions3 = {0f, 0.5f, 1f};
+    private final Color[] colors3 = new Color[3];
+
+    /**
+     * Cached paints to avoid allocation.
+     */
+    private RadialGradientPaint cachedHaloPaint;
+    private Color lastHaloColor;
+    private float lastHaloPulse = -1;
 
     /**
      * Constructs a new GameUIRenderer.
@@ -310,7 +345,9 @@ public class GameUIRenderer {
         final int cardX = (width - cardW) / 2;
         final int cardY = (height - cardH) / 2;
 
-        g2d.setPaint(new RadialGradientPaint(width / 2f, height / 2f, cardW * 0.7f, new float[]{0f, 1f}, new Color[]{RenderCache.customColorWithAlpha(accentColor, (int) (18 + 15 * pulse)), new Color(0, 0, 0, 0)}));
+        colors2[0] = RenderCache.customColorWithAlpha(accentColor, (int) (18 + 15 * pulse));
+        colors2[1] = RenderCache.BLACK_ALPHA[0];
+        g2d.setPaint(new RadialGradientPaint(width / 2f, height / 2f, cardW * 0.7f, fractions2, colors2));
         g2d.fillRoundRect(cardX - UIScale.scale(20), cardY - UIScale.scale(20), cardW + UIScale.scale(40), cardH + UIScale.scale(40), UIScale.scale(30), UIScale.scale(30));
 
         g2d.setColor(new Color(6, 0, 18, 230));
@@ -542,7 +579,15 @@ public class GameUIRenderer {
 
         final int haloR = (int) (UIScale.scale(70) + pulse * UIScale.scale(18));
         final int centerY = UIScale.scale(68);
-        g2d.setPaint(new RadialGradientPaint(width / 2f, centerY, haloR, new float[]{0f, 1f}, new Color[]{RenderCache.customColorWithAlpha(c, (int) (50 + 30 * pulse)), new Color(0, 0, 0, 0)}));
+
+        if (cachedHaloPaint == null || lastHaloColor != c || Math.abs(lastHaloPulse - pulse) > 0.05) {
+            colors2[0] = RenderCache.customColorWithAlpha(c, (int) (50 + 30 * pulse));
+            colors2[1] = RenderCache.BLACK_ALPHA[0];
+            cachedHaloPaint = new RadialGradientPaint(width / 2f, centerY, haloR, fractions2, colors2);
+            lastHaloColor = c;
+            lastHaloPulse = (float) pulse;
+        }
+        g2d.setPaint(cachedHaloPaint);
         g2d.fillOval(width / 2 - haloR, centerY - haloR, haloR * 2, haloR * 2);
 
         if (scorePopAlpha > 0) {
@@ -572,19 +617,19 @@ public class GameUIRenderer {
         final int boxX = UIScale.scale(20);
         final int boxY = UIScale.scale(20);
 
-        g2d.setPaint(new RadialGradientPaint(
-                boxX + boxW / 2f, boxY + boxH / 2f, boxW * 0.8f,
-                new float[]{0f, 1f},
-                new Color[]{RenderCache.customColorWithAlpha(ORBS_COLOR, 30), new Color(0, 0, 0, 0)}
-        ));
-        g2d.fill(new RoundRectangle2D.Float(boxX - UIScale.scale(10), boxY - UIScale.scale(10), boxW + UIScale.scale(20), boxH + UIScale.scale(20), UIScale.scale(20), UIScale.scale(20)));
+        colors2[0] = RenderCache.customColorWithAlpha(ORBS_COLOR, 30);
+        colors2[1] = RenderCache.BLACK_ALPHA[0];
+        g2d.setPaint(new RadialGradientPaint(boxX + boxW / 2f, boxY + boxH / 2f, boxW * 0.8f, fractions2, colors2));
+        rectScratch.setRoundRect(boxX - UIScale.scale(10), boxY - UIScale.scale(10), boxW + UIScale.scale(20), boxH + UIScale.scale(20), UIScale.scale(20), UIScale.scale(20));
+        g2d.fill(rectScratch);
 
         g2d.setColor(new Color(0, 0, 0, 150));
-        g2d.fill(new RoundRectangle2D.Float(boxX, boxY, boxW, boxH, UIScale.scale(15), UIScale.scale(15)));
+        rectScratch.setRoundRect(boxX, boxY, boxW, boxH, UIScale.scale(15), UIScale.scale(15));
+        g2d.fill(rectScratch);
 
         g2d.setColor(RenderCache.customColorWithAlpha(ORBS_COLOR, (int) (100 + 50 * pulse)));
         g2d.setStroke(RenderCache.STROKE_2);
-        g2d.draw(new RoundRectangle2D.Float(boxX, boxY, boxW, boxH, UIScale.scale(15), UIScale.scale(15)));
+        g2d.draw(rectScratch);
         g2d.setStroke(RenderCache.STROKE_1);
 
         g2d.setColor(ORBS_COLOR);
@@ -618,26 +663,31 @@ public class GameUIRenderer {
 
         final int fillW = (int) (width * progress);
         if (fillW > 3) {
-            g2d.setPaint(new LinearGradientPaint(0, barY, width, barY, new float[]{0f, 0.5f, 1f}, new Color[]{RenderUtils.cyan, RenderUtils.purple, RenderUtils.yellow}));
+            colors3[0] = RenderUtils.cyan;
+            colors3[1] = RenderUtils.purple;
+            colors3[2] = RenderUtils.yellow;
+            g2d.setPaint(new LinearGradientPaint(0, barY, width, barY, fractions3, colors3));
             g2d.fillRoundRect(0, barY, fillW, barH, UIScale.scale(3), UIScale.scale(3));
             if (fillW < width) {
-                g2d.setPaint(new RadialGradientPaint(fillW, barY + barH / 2f, UIScale.scale(14), new float[]{0f, 1f}, new Color[]{RenderCache.whiteWithAlpha(200), RenderCache.whiteWithAlpha(0)}));
+                colors2[0] = RenderCache.whiteWithAlpha(200);
+                colors2[1] = RenderCache.whiteWithAlpha(0);
+                g2d.setPaint(new RadialGradientPaint(fillW, barY + barH / 2f, UIScale.scale(14), fractions2, colors2));
                 g2d.fillOval(fillW - UIScale.scale(14), barY - UIScale.scale(9), UIScale.scale(28), UIScale.scale(33));
             }
         }
 
         g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_16));
         g2d.setColor(RenderCache.whiteWithAlpha(150));
-        final StringBuilder sb = new StringBuilder();
-        sb.append((int) current / 60).append(":");
+        timeStringBuilder.setLength(0);
+        timeStringBuilder.append((int) current / 60).append(":");
         int currentSec = (int) current % 60;
-        if (currentSec < 10) sb.append("0");
-        sb.append(currentSec).append("  /  ");
-        sb.append((int) total / 60).append(":");
+        if (currentSec < 10) timeStringBuilder.append("0");
+        timeStringBuilder.append(currentSec).append("  /  ");
+        timeStringBuilder.append((int) total / 60).append(":");
         int totalSec = (int) total % 60;
-        if (totalSec < 10) sb.append("0");
-        sb.append(totalSec);
-        g2d.drawString(sb.toString(), UIScale.scale(10), barY - UIScale.scale(7));
+        if (totalSec < 10) timeStringBuilder.append("0");
+        timeStringBuilder.append(totalSec);
+        g2d.drawString(timeStringBuilder.toString(), UIScale.scale(10), barY - UIScale.scale(7));
     }
 
     /**
@@ -646,11 +696,24 @@ public class GameUIRenderer {
     private void drawButton(Graphics2D g2d, String label, int x, int y, int width, UIAction action) {
         final int btnHeight = UIScale.scale(55);
         final int btnY = y - UIScale.scale(40);
-        SimulatedButton button = new SimulatedButton(label, x, btnY, width, btnHeight, action);
+        SimulatedButton button = getButtonFromPool(label, x, btnY, width, btnHeight, action);
         button.draw(g2d, mouseX, mouseY, currentTranslateY);
 
-        SimulatedButton absoluteRegion = new SimulatedButton(label, x, btnY + currentTranslateY, width, btnHeight, action);
+        SimulatedButton absoluteRegion = getButtonFromPool(label, x, btnY + currentTranslateY, width, btnHeight, action);
         activeButtons.add(absoluteRegion);
+    }
+
+    private SimulatedButton getButtonFromPool(String label, int x, int y, int width, int height, UIAction action) {
+        if (buttonPoolIndex < buttonPool.size()) {
+            SimulatedButton btn = buttonPool.get(buttonPoolIndex++);
+            btn.setup(label, x, y, width, height, action);
+            return btn;
+        } else {
+            SimulatedButton btn = new SimulatedButton(label, x, y, width, height, action);
+            buttonPool.add(btn);
+            buttonPoolIndex++;
+            return btn;
+        }
     }
 
     /**
@@ -730,6 +793,7 @@ public class GameUIRenderer {
      */
     public void renderGameState(Graphics2D g2d, int width, int height, GameState state) {
         activeButtons.clear();
+        buttonPoolIndex = 0;
         switch (state) {
             case PLAYING -> drawTutorial(g2d, width, height);
             case COUNTDOWN -> {
@@ -746,6 +810,6 @@ public class GameUIRenderer {
                 }
             }
         }
-        this.renderedButtons = new java.util.ArrayList<>(activeButtons);
+        this.renderedButtons = activeButtons;
     }
 }

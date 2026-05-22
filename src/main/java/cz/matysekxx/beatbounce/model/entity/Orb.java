@@ -125,6 +125,19 @@ public class Orb {
     }
 
     /**
+     * Shared colors for orb rendering.
+     */
+    private static final Color ORB_GLOW_START = new Color(255, 200, 0, 150);
+    private static final Color ORB_GLOW_END = new Color(255, 200, 0, 0);
+    private static final Color ORB_BODY = new Color(255, 255, 100);
+
+    /**
+     * Cached RadialGradientPaint.
+     */
+    private RadialGradientPaint cachedPaint;
+    private int lastPx, lastPy, lastGlowR;
+
+    /**
      * Renders the orb in 3D space.
      * Includes a pulsing glow effect if graphics quality is not set to LOW.
      *
@@ -149,16 +162,22 @@ public class Orb {
 
         if (!Settings.graphicsQuality.equals("LOW")) {
             final int glowR = (int) (pr * (1.5f + pulse * 0.5f));
-            g2d.setPaint(new RadialGradientPaint(
-                    px, py, glowR,
-                    new float[]{0f, 1f},
-                    new Color[]{new Color(255, 200, 0, 150), new Color(255, 200, 0, 0)}
-            ));
+            if (cachedPaint == null || lastPx != px || lastPy != py || lastGlowR != glowR) {
+                cachedPaint = new RadialGradientPaint(
+                        px, py, glowR,
+                        new float[]{0f, 1f},
+                        new Color[]{ORB_GLOW_START, ORB_GLOW_END}
+                );
+                lastPx = px;
+                lastPy = py;
+                lastGlowR = glowR;
+            }
+            g2d.setPaint(cachedPaint);
             glowEllipse.setFrame(px - glowR, py - glowR, glowR * 2, glowR * 2);
             g2d.fill(glowEllipse);
         }
 
-        g2d.setColor(new Color(255, 255, 100));
+        g2d.setColor(ORB_BODY);
         mainEllipse.setFrame(px - pr, py - pr, pr * 2, pr * 2);
         g2d.fill(mainEllipse);
 

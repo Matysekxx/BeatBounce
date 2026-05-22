@@ -54,6 +54,11 @@ public abstract class AbstractTile extends Entity {
     private BeatEvent beatEvent;
 
     /**
+     * Scratch polygon for projection rendering.
+     */
+    protected final Polygon scratchPolygon = new Polygon(new int[4], new int[4], 4);
+
+    /**
      * Default constructor for {@code AbstractTile}.
      * Initializes the entity with coordinates (0, 0) and a default Z-length of 50.0.
      */
@@ -120,24 +125,19 @@ public abstract class AbstractTile extends Entity {
 
         final double scaleFront = cam.getScale(this.getZ());
         final double scaleBack = cam.getScale(this.getZ() + getLengthInZ());
-        final Polygon polygon = new Polygon(
-                createXPoints(
-                        cam, windowData.width(), scaleFront, scaleBack, this.getX(), pulseScale),
-                createYPoints(
-                        cam, scaleFront, scaleBack, windowData.height() / 3),
-                4
-        );
+        setupPolygon(cam, windowData.width(), windowData.height() / 3, scaleFront, scaleBack, this.getX(), pulseScale, scratchPolygon);
+
         if (!Settings.graphicsQuality.equals("LOW")) {
             g2d.setStroke(RenderCache.STROKE_4);
-            g2d.setColor(new Color(255, 255, 255, isActivated ? 180 : 60));
-            g2d.drawPolygon(polygon);
+            g2d.setColor(RenderCache.whiteWithAlpha(isActivated ? 180 : 60));
+            g2d.drawPolygon(scratchPolygon);
         }
 
-        this.drawTile(g2d, polygon, scaleFront);
+        this.drawTile(g2d, scratchPolygon, scaleFront);
         if (impactTime > 0) {
             final double progress = impactTime / IMPACT_DURATION;
-            g2d.setColor(new Color(255, 255, 255, (int) (180 * progress)));
-            g2d.fillPolygon(polygon);
+            g2d.setColor(RenderCache.whiteWithAlpha((int) (180 * progress)));
+            g2d.fillPolygon(scratchPolygon);
         }
     }
 
@@ -151,35 +151,31 @@ public abstract class AbstractTile extends Entity {
     public abstract void drawTile(Graphics2D g2d, Polygon polygon, double scale);
 
     /**
-     * Calculates the Y-coordinates for the vertices of the tile's 3D projection.
-     *
-     * @param cam        the {@link Camera3D} used for scaling
-     * @param scaleFront the scale factor for the front edge of the tile
-     * @param scaleBack  the scale factor for the back edge of the tile
-     * @param horizonY   the vertical position of the horizon on the screen
-     * @return an array of Y-coordinates for the polygon vertices
+     * Sets up a polygon with projected coordinates.
      */
-    protected int[] createYPoints(Camera3D cam, double scaleFront, double scaleBack, int horizonY) {
-        double baseHeight = 150 - cam.getY();
-        final int screenYFront = (int) (horizonY + (baseHeight * scaleFront));
-        final int screenYBack = (int) (horizonY + (baseHeight * scaleBack));
-        return new int[]{
-                screenYFront, screenYFront, screenYBack, screenYBack
-        };
+    protected void setupPolygon(Camera3D cam, int width, int horizonY, double scaleFront, double scaleBack, int targetX, double pulseScale, Polygon poly) {
+        fillXPoints(cam, width, scaleFront, scaleBack, targetX, pulseScale, poly.xpoints);
+        fillYPoints(cam, scaleFront, scaleBack, horizonY, poly.ypoints);
+        poly.invalidate();
     }
 
     /**
-     * Calculates the X-coordinates for the vertices of the tile's 3D projection.
-     *
-     * @param cam        the {@link Camera3D} used for scaling
-     * @param width      the width of the rendering area
-     * @param scaleFront the scale factor for the front edge of the tile
-     * @param scaleBack  the scale factor for the back edge of the tile
-     * @param targetX    the horizontal position of the tile in the world
-     * @param pulseScale the current pulse scale multiplier
-     * @return an array of X-coordinates for the polygon vertices
+     * Fills the Y-coordinates for the vertices of the tile's 3D projection.
      */
-    protected int[] createXPoints(Camera3D cam, int width, double scaleFront, double scaleBack, int targetX, double pulseScale) {
+    protected void fillYPoints(Camera3D cam, double scaleFront, double scaleBack, int horizonY, int[] ypoints) {
+        double baseHeight = 150 - cam.getY();
+        final int screenYFront = (int) (horizonY + (baseHeight * scaleFront));
+        final int screenYBack = (int) (horizonY + (baseHeight * scaleBack));
+        ypoints[0] = screenYFront;
+        ypoints[1] = screenYFront;
+        ypoints[2] = screenYBack;
+        ypoints[3] = screenYBack;
+    }
+
+    /**
+     * Fills the X-coordinates for the vertices of the tile's 3D projection.
+     */
+    protected void fillXPoints(Camera3D cam, int width, double scaleFront, double scaleBack, int targetX, double pulseScale, int[] xpoints) {
         final double centerScreenFront = calculateCenterScreen(
                 targetX, cam.getX(), width, scaleFront);
         final double centerScreenBack = calculateCenterScreen(
@@ -188,12 +184,10 @@ public abstract class AbstractTile extends Entity {
         final double frontWidth = 100 * scaleFront * pulseScale;
         final double backWidth = 100 * scaleBack * pulseScale;
 
-        return new int[]{
-                (int) (centerScreenFront - frontWidth / 2),
-                (int) (centerScreenFront + frontWidth / 2),
-                (int) (centerScreenBack + backWidth / 2),
-                (int) (centerScreenBack - backWidth / 2)
-        };
+        xpoints[0] = (int) (centerScreenFront - frontWidth / 2);
+        xpoints[1] = (int) (centerScreenFront + frontWidth / 2);
+        xpoints[2] = (int) (centerScreenBack + backWidth / 2);
+        xpoints[3] = (int) (centerScreenBack - backWidth / 2);
     }
 
     /**

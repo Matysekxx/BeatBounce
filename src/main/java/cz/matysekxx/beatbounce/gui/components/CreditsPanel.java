@@ -56,6 +56,9 @@ public class CreditsPanel extends BasePanel implements Runnable {
         loadCredits();
     }
 
+    /**
+     * Updates the particle count based on the current graphics quality settings.
+     */
     private void updateParticleCount() {
         this.particleCount = switch (Settings.graphicsQuality) {
             case "LOW" -> 0;
@@ -64,6 +67,9 @@ public class CreditsPanel extends BasePanel implements Runnable {
         };
     }
 
+    /**
+     * Loads the credit entries from the JSON resource file.
+     */
     private void loadCredits() {
         try (InputStream is = getClass().getResourceAsStream("/credits.json")) {
             if (is != null) {
@@ -75,6 +81,9 @@ public class CreditsPanel extends BasePanel implements Runnable {
         }
     }
 
+    /**
+     * Starts the animation thread for the credits screen.
+     */
     public void startAnimation() {
         if (!running) {
             running = true;
@@ -84,6 +93,9 @@ public class CreditsPanel extends BasePanel implements Runnable {
         }
     }
 
+    /**
+     * Stops the animation thread for the credits screen.
+     */
     public void stopAnimation() {
         running = false;
         if (animatorThread != null) {
@@ -92,6 +104,9 @@ public class CreditsPanel extends BasePanel implements Runnable {
         }
     }
 
+    /**
+     * The main loop for the credits animation, handling updates and repaints.
+     */
     @Override
     public void run() {
         final long optimalTimeNanos = 1_000_000_000L / Settings.targetFps;
@@ -127,6 +142,9 @@ public class CreditsPanel extends BasePanel implements Runnable {
         }
     }
 
+    /**
+     * Paints the credit components and background effects.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -154,6 +172,14 @@ public class CreditsPanel extends BasePanel implements Runnable {
         g2d.dispose();
     }
 
+    /**
+     * Renders floating background shapes.
+     *
+     * @param g2d       graphics context
+     * @param w         panel width
+     * @param h         panel height
+     * @param globalHue global hue for color cycling
+     */
     private void drawFloatingShapes(Graphics2D g2d, int w, int h, float globalHue) {
         final int shapesPerSide = 12;
         for (int i = 0; i < shapesPerSide * 2; i++) {
@@ -194,6 +220,12 @@ public class CreditsPanel extends BasePanel implements Runnable {
         }
     }
 
+    /**
+     * Gets a shape based on the index.
+     *
+     * @param index the shape index
+     * @return the shape
+     */
     private Shape getShape(int index) {
         return switch (index % 4) {
             case 0 -> RenderCache.SHAPE_TRIANGLE;
@@ -204,6 +236,13 @@ public class CreditsPanel extends BasePanel implements Runnable {
         };
     }
 
+    /**
+     * Draws the credits text.
+     *
+     * @param g2d graphics context
+     * @param w   panel width
+     * @param h   panel height
+     */
     private void drawCredits(Graphics2D g2d, int w, int h) {
         float currentY = h - scrollY;
         float lineHeight = UIScale.scale(60);
@@ -234,6 +273,13 @@ public class CreditsPanel extends BasePanel implements Runnable {
         }
     }
 
+    /**
+     * Renders a vignette overlay.
+     *
+     * @param g2d graphics context
+     * @param w   panel width
+     * @param h   panel height
+     */
     private void drawVignette(Graphics2D g2d, int w, int h) {
         final float[] dist = {0.0f, 0.8f, 1.0f};
         final Color[] colors = {new Color(0, 0, 0, 0), new Color(0, 0, 0, 40), new Color(0, 0, 0, 220)};
@@ -246,11 +292,28 @@ public class CreditsPanel extends BasePanel implements Runnable {
     protected void drawBackground(Graphics2D g2d, int w, int h) {
     }
 
+    /**
+     * Represents a single entry in the credits list.
+     */
     public static class CreditEntry {
+        /**
+         * The credit text.
+         */
         public String text;
+        /**
+         * The hex color for the text.
+         */
         public String color;
+        /**
+         * Whether this entry is a title/header.
+         */
         public boolean isTitle;
 
+        /**
+         * Decodes the hex color string to an AWT Color object.
+         *
+         * @return the color object
+         */
         public Color getAwtColor() {
             if (color == null || color.isEmpty()) return Color.WHITE;
             try {

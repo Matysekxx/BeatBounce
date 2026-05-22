@@ -60,16 +60,24 @@ public class IntroScreen extends Screen {
             worker.execute();
         });
 
-        final JButton creditButton = ButtonFactory.createCreditButton(_ -> {
+        final JButton creditButton = ButtonFactory.createCreditButton(e -> {
             sleep(200);
-            Thread.ofVirtual().start(() -> {
-                try {
-                    if (Desktop.isDesktopSupported())
-                        Desktop.getDesktop().browse(new URI("https://github.com/Matysekxx/BeatBounce"));
-                } catch (IOException | URISyntaxException ex) {
-                    throw new RuntimeException("Cannot open browser", ex);
+            final JButton source = (JButton) e.getSource();
+            source.setEnabled(false);
+            final SwingWorker<Void, Void> worker = new SwingWorker<>() {
+                @Override
+                protected Void doInBackground() {
+                    screenManager.initScreen(CreditsScreen.class);
+                    return null;
                 }
-            });
+
+                @Override
+                protected void done() {
+                    screenManager.showScreen(CreditsScreen.class);
+                    source.setEnabled(true);
+                }
+            };
+            worker.execute();
         });
 
         final JButton exitButton = ButtonFactory.createExitButton(_ -> {

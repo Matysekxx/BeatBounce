@@ -38,8 +38,6 @@ public class ScoreManagerTest {
         ScoreManager.updateScore(songId, score);
         assertEquals(1500, ScoreManager.getBestScore(songId));
         assertTrue(Files.exists(testSavePath), "Save file should be created");
-
-        // Simulate reload by setting paths again
         ScoreManager.setStoragePaths(testSavePath, testCurrencyPath);
         assertEquals(1500, ScoreManager.getBestScore(songId), "Score should persist after reload");
     }

@@ -109,20 +109,13 @@ public class SettingsPanel extends JPanel {
         mainTitle.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_36));
         mainTitle.setForeground(RenderUtils.cyan);
         mainTitle.setHorizontalAlignment(SwingConstants.CENTER);
-        mainTitle.setBorder(BorderFactory.createEmptyBorder(UIScale.scale(10), 0, UIScale.scale(25), 0));
+        mainTitle.setBorder(BorderFactory.createEmptyBorder(UIScale.scale(20), 0, UIScale.scale(20), 0));
         add(mainTitle, BorderLayout.NORTH);
 
-        final JPanel mainContent = new JPanel(new GridBagLayout());
-        mainContent.setOpaque(false);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(0, UIScale.scale(25), 0, UIScale.scale(25));
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-
-        final JPanel leftColumn = new JPanel();
-        leftColumn.setLayout(new BoxLayout(leftColumn, BoxLayout.Y_AXIS));
-        leftColumn.setOpaque(false);
+        final JPanel contentColumn = new JPanel();
+        contentColumn.setLayout(new BoxLayout(contentColumn, BoxLayout.Y_AXIS));
+        contentColumn.setOpaque(false);
+        contentColumn.setBorder(BorderFactory.createEmptyBorder(0, UIScale.scale(20), UIScale.scale(20), UIScale.scale(20)));
 
         final JPanel displayGroup = createGroupPanel("DISPLAY & GRAPHICS");
 
@@ -132,60 +125,39 @@ public class SettingsPanel extends JPanel {
             monitorNames[i] = "Monitor " + (i + 1) + " (" + devices[i].getDisplayMode().getWidth() + "x" + devices[i].getDisplayMode().getHeight() + ")";
         }
         monitorCycle = new CycleButton(monitorNames, Math.min(Settings.monitorIndex, monitorNames.length - 1));
-        final Dimension cycleDim = new Dimension(UIScale.scale(260), UIScale.scale(42));
-        monitorCycle.setMinimumSize(cycleDim);
-        monitorCycle.setPreferredSize(cycleDim);
-        monitorCycle.setMaximumSize(cycleDim);
-
         qualityCycle = new CycleButton(new String[]{"LOW", "MEDIUM", "HIGH"}, getQualityIndex());
-        qualityCycle.setMinimumSize(cycleDim);
-        qualityCycle.setPreferredSize(cycleDim);
-        qualityCycle.setMaximumSize(cycleDim);
-
         fpsSelector = new StepSelector(new int[]{30, 60, 90, 120, 165, 240}, Settings.targetFps);
-        final Dimension fpsDim = new Dimension(UIScale.scale(320), UIScale.scale(48));
-        fpsSelector.setMinimumSize(fpsDim);
-        fpsSelector.setPreferredSize(fpsDim);
-        fpsSelector.setMaximumSize(fpsDim);
 
-        displayGroup.add(createLabeledComponent("Monitor:", monitorCycle));
-        displayGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(20))));
-        displayGroup.add(createLabeledComponent("Quality:", qualityCycle));
-        displayGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(20))));
-        displayGroup.add(createLabeledComponent("Target FPS:", fpsSelector));
-        displayGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(30))));
+        setFixedSize(monitorCycle, 320, 42);
+        setFixedSize(qualityCycle, 320, 42);
+        setFixedSize(fpsSelector, 320, 48);
 
-        displayGroup.add(fullscreenCheck = new CustomCheckBox("Fullscreen (Borderless)", Settings.fullscreen));
-        displayGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(12))));
-        displayGroup.add(openglCheck = new CustomCheckBox("OpenGL HW Acceleration", Settings.opengl));
-        displayGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(12))));
-        displayGroup.add(vsyncCheck = new CustomCheckBox("V-Sync (Triple Buffering)", Settings.vsync));
-        displayGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(12))));
-        displayGroup.add(showFpsCheck = new CustomCheckBox("Show FPS Counter", Settings.showFps));
+        displayGroup.add(createPerfectlyCenteredComponent("Monitor:", monitorCycle));
+        displayGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(15))));
+        displayGroup.add(createPerfectlyCenteredComponent("Quality:", qualityCycle));
+        displayGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(15))));
+        displayGroup.add(createPerfectlyCenteredComponent("FPS:", fpsSelector));
+        displayGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(25))));
 
-        leftColumn.add(displayGroup);
-        leftColumn.add(Box.createVerticalGlue());
+        displayGroup.add(createLeftAlignedComponent(fullscreenCheck = new CustomCheckBox("Fullscreen (Borderless)", Settings.fullscreen)));
+        displayGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(10))));
+        displayGroup.add(createLeftAlignedComponent(openglCheck = new CustomCheckBox("OpenGL HW Acceleration", Settings.opengl)));
+        displayGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(10))));
+        displayGroup.add(createLeftAlignedComponent(vsyncCheck = new CustomCheckBox("V-Sync (Triple Buffering)", Settings.vsync)));
+        displayGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(10))));
+        displayGroup.add(createLeftAlignedComponent(showFpsCheck = new CustomCheckBox("Show FPS Counter", Settings.showFps)));
 
-        final JPanel rightColumn = new JPanel();
-        rightColumn.setLayout(new BoxLayout(rightColumn, BoxLayout.Y_AXIS));
-        rightColumn.setOpaque(false);
+        contentColumn.add(displayGroup);
+        contentColumn.add(Box.createRigidArea(new Dimension(0, UIScale.scale(30))));
 
         final JPanel audioGroup = createGroupPanel("AUDIO");
+        
         final JLabel soundLabel = new JLabel("Music Volume: " + Settings.soundVolume + "%");
-        styleLabel(soundLabel);
         soundSlider = new CustomSlider(0, 100, Settings.soundVolume);
-        final Dimension sliderDim = new Dimension(UIScale.scale(280), UIScale.scale(48));
-        soundSlider.setMinimumSize(sliderDim);
-        soundSlider.setPreferredSize(sliderDim);
-        soundSlider.setMaximumSize(sliderDim);
         soundSlider.addChangeListener(_ -> soundLabel.setText("Music Volume: " + soundSlider.getValue() + "%"));
 
         final JLabel menuLabel = new JLabel("Menu Music: " + Settings.menuVolume + "%");
-        styleLabel(menuLabel);
         menuSlider = new CustomSlider(0, 100, Settings.menuVolume);
-        menuSlider.setMinimumSize(sliderDim);
-        menuSlider.setPreferredSize(sliderDim);
-        menuSlider.setMaximumSize(sliderDim);
         menuSlider.addChangeListener(_ -> {
             menuLabel.setText("Menu Music: " + menuSlider.getValue() + "%");
             Settings.menuVolume = menuSlider.getValue();
@@ -193,26 +165,27 @@ public class SettingsPanel extends JPanel {
         });
 
         final JLabel sfxLabel = new JLabel("SFX Volume: " + Settings.sfxVolume + "%");
-        styleLabel(sfxLabel);
         sfxSlider = new CustomSlider(0, 100, Settings.sfxVolume);
-        sfxSlider.setMinimumSize(sliderDim);
-        sfxSlider.setPreferredSize(sliderDim);
-        sfxSlider.setMaximumSize(sliderDim);
         sfxSlider.addChangeListener(_ -> sfxLabel.setText("SFX Volume: " + sfxSlider.getValue() + "%"));
 
-        audioGroup.add(createLabeledComponent(soundLabel, soundSlider));
-        audioGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(12))));
-        audioGroup.add(createLabeledComponent(menuLabel, menuSlider));
-        audioGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(12))));
-        audioGroup.add(createLabeledComponent(sfxLabel, sfxSlider));
-        audioGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(18))));
-        audioGroup.add(focusLossCheck = new CustomCheckBox("Mute on Focus Loss", Settings.muteOnFocusLoss));
+        setFixedSize(soundSlider, 300, 48);
+        setFixedSize(menuSlider, 300, 48);
+        setFixedSize(sfxSlider, 300, 48);
 
+        audioGroup.add(createPerfectlyCenteredComponent(soundLabel, soundSlider));
+        audioGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(10))));
+        audioGroup.add(createPerfectlyCenteredComponent(menuLabel, menuSlider));
+        audioGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(10))));
+        audioGroup.add(createPerfectlyCenteredComponent(sfxLabel, sfxSlider));
+        audioGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(20))));
+        audioGroup.add(createLeftAlignedComponent(focusLossCheck = new CustomCheckBox("Mute on Focus Loss", Settings.muteOnFocusLoss)));
+
+        contentColumn.add(audioGroup);
+        contentColumn.add(Box.createRigidArea(new Dimension(0, UIScale.scale(30))));
+
+        final JPanel cacheGroup = createGroupPanel("CACHE & DATA");
         final JButton clearCacheBtn = getStyledButton("CLEAR CACHE", new Color(180, 40, 40), Color.WHITE);
-        final Dimension btnDim = new Dimension(UIScale.scale(180), UIScale.scale(40));
-        clearCacheBtn.setMinimumSize(btnDim);
-        clearCacheBtn.setPreferredSize(btnDim);
-        clearCacheBtn.setMaximumSize(btnDim);
+        setFixedSize(clearCacheBtn, 180, 40);
         clearCacheBtn.addActionListener(_ -> {
             AudioManager.playSFX("/click-sound.mp3");
             FileSystem.clearCache().thenRun(() -> SwingUtilities.invokeLater(() -> {
@@ -220,28 +193,52 @@ public class SettingsPanel extends JPanel {
                 infoLabel.setForeground(RenderUtils.green);
             }));
         });
-        audioGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(15))));
-        audioGroup.add(createLabeledComponent("Downloaded Tracks:", clearCacheBtn));
+        cacheGroup.add(createPerfectlyCenteredComponent("Downloaded Tracks:", clearCacheBtn));
+        
+        contentColumn.add(cacheGroup);
+        contentColumn.add(Box.createRigidArea(new Dimension(0, UIScale.scale(30))));
 
-        final JPanel gameplayGroup = createGroupPanel("EFFECTS");
-        gameplayGroup.add(particlesCheck = new CustomCheckBox("Enable Background Particles", Settings.particlesEnabled));
-        gameplayGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(12))));
-        gameplayGroup.add(bloomCheck = new CustomCheckBox("Bloom Post-Processing", Settings.bloomEnabled));
+        final JPanel gameplayGroup = createGroupPanel("VISUAL EFFECTS");
+        gameplayGroup.add(createLeftAlignedComponent(particlesCheck = new CustomCheckBox("Enable Background Particles", Settings.particlesEnabled)));
+        gameplayGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(10))));
+        gameplayGroup.add(createLeftAlignedComponent(bloomCheck = new CustomCheckBox("Bloom Post-Processing", Settings.bloomEnabled)));
+        
+        contentColumn.add(gameplayGroup);
 
-        audioGroup.setAlignmentX(Component.LEFT_ALIGNMENT);
-        gameplayGroup.setAlignmentX(Component.LEFT_ALIGNMENT);
+        final JPanel wrapperPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        wrapperPanel.setOpaque(false);
+        wrapperPanel.add(contentColumn);
 
-        rightColumn.add(audioGroup);
-        rightColumn.add(Box.createRigidArea(new Dimension(0, UIScale.scale(30))));
-        rightColumn.add(gameplayGroup);
-        rightColumn.add(Box.createVerticalGlue());
+        final JScrollPane scrollPane = new JScrollPane(wrapperPanel);
+        final JScrollBar vsb = scrollPane.getVerticalScrollBar();
+        vsb.setUI(new ScrollBarUI());
+        vsb.setOpaque(false);
+        vsb.setBackground(new Color(0, 0, 0, 0));
+        vsb.setPreferredSize(new Dimension(UIScale.scale(16), 0));
+        vsb.setUnitIncrement(UIScale.scale(40));
+        vsb.setBlockIncrement(UIScale.scale(120));
 
-        gbc.gridx = 0;
-        mainContent.add(leftColumn, gbc);
-        gbc.gridx = 1;
-        mainContent.add(rightColumn, gbc);
-        add(mainContent, BorderLayout.CENTER);
+        final JScrollBar hsb = scrollPane.getHorizontalScrollBar();
+        hsb.setUI(new ScrollBarUI());
+        hsb.setOpaque(false);
+        hsb.setPreferredSize(new Dimension(0, 0));
+
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        scrollPane.getViewport().setBackground(new Color(0, 0, 0, 0));
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        
+        add(scrollPane, BorderLayout.CENTER);
         add(createBottomPanel(), BorderLayout.SOUTH);
+    }
+
+    private void setFixedSize(JComponent comp, int width, int height) {
+        final Dimension dim = new Dimension(UIScale.scale(width), UIScale.scale(height));
+        comp.setMinimumSize(dim);
+        comp.setPreferredSize(dim);
+        comp.setMaximumSize(dim);
     }
 
     /**
@@ -523,6 +520,45 @@ public class SettingsPanel extends JPanel {
         p.setMinimumSize(new Dimension(0, h));
         p.setPreferredSize(new Dimension(UIScale.scale(540), h));
         p.setMaximumSize(new Dimension(Short.MAX_VALUE, h));
+        return p;
+    }
+
+    /**
+     * Creates a horizontal panel to perfectly center the component by adding a balancing rigid area on the right.
+     */
+    private JPanel createPerfectlyCenteredComponent(String labelText, JComponent comp) {
+        final JLabel l = new JLabel(labelText);
+        styleLabel(l);
+        return createPerfectlyCenteredComponent(l, comp);
+    }
+
+    /**
+     * Creates a horizontal panel to perfectly center the component by adding a balancing rigid area on the right.
+     */
+    private JPanel createPerfectlyCenteredComponent(JLabel l, JComponent comp) {
+        final JPanel p = new JPanel();
+        p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+        p.setOpaque(false);
+        
+        p.add(Box.createHorizontalGlue());
+        p.add(l);
+        p.add(Box.createRigidArea(new Dimension(UIScale.scale(20), 0)));
+        p.add(comp);
+        p.add(Box.createRigidArea(new Dimension(UIScale.scale(230), 0)));
+        p.add(Box.createHorizontalGlue());
+        
+        p.setAlignmentX(Component.LEFT_ALIGNMENT);
+        return p;
+    }
+
+    /**
+     * Creates a horizontal panel to align a single component (like a checkbox) to the left.
+     */
+    private JPanel createLeftAlignedComponent(JComponent comp) {
+        final JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, UIScale.scale(30), 0));
+        p.setOpaque(false);
+        p.add(comp);
+        p.setAlignmentX(Component.LEFT_ALIGNMENT);
         return p;
     }
 

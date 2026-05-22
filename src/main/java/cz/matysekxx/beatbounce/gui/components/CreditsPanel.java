@@ -155,7 +155,7 @@ public class CreditsPanel extends BasePanel implements Runnable {
     }
 
     private void drawFloatingShapes(Graphics2D g2d, int w, int h, float globalHue) {
-        final int shapesPerSide = 8;
+        final int shapesPerSide = 12;
         for (int i = 0; i < shapesPerSide * 2; i++) {
             boolean isLeft = i < shapesPerSide;
             int sideIndex = i % shapesPerSide;
@@ -199,7 +199,8 @@ public class CreditsPanel extends BasePanel implements Runnable {
             case 0 -> RenderCache.SHAPE_TRIANGLE;
             case 1 -> RenderCache.SHAPE_DIAMOND;
             case 2 -> RenderCache.SHAPE_HEXAGON;
-            default -> new Rectangle.Float(-0.5f, -0.5f, 1f, 1f);
+            case 3 -> RenderCache.SHAPE_PENTAGON;
+            default -> RenderCache.SHAPE_SQUARE;
         };
     }
 

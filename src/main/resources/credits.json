@@ -1,0 +1,53 @@
+[
+  { "text": "BEAT BOUNCE", "color": "#00FFDC", "isTitle": true },
+  { "text": "A Music-Rhythm Arcade Experience", "color": "#FF007F", "isTitle": false },
+  { "text": "", "color": "", "isTitle": false },
+  { "text": "", "color": "", "isTitle": false },
+
+  { "text": "DEVELOPED BY", "color": "#FFD700", "isTitle": true },
+  { "text": "Matysekxx", "color": "#FFFFFF", "isTitle": false },
+  { "text": "github.com/Matysekxx", "color": "#00FFDC", "isTitle": false },
+  { "text": "", "color": "", "isTitle": false },
+
+  { "text": "GAME PRODUCTION", "color": "#FFD700", "isTitle": true },
+  { "text": "Project Director & Lead Designer", "color": "#AAAAAA", "isTitle": false },
+  { "text": "Matysekxx", "color": "#FFFFFF", "isTitle": false },
+  { "text": "", "color": "", "isTitle": false },
+
+  { "text": "ENGINE & CORE ARCHITECTURE", "color": "#FFD700", "isTitle": true },
+  { "text": "Lead Engine Developer", "color": "#AAAAAA", "isTitle": false },
+  { "text": "Matysekxx", "color": "#FFFFFF", "isTitle": false },
+  { "text": "Custom Java Swing Render Pipeline", "color": "#FFFFFF", "isTitle": false },
+  { "text": "", "color": "", "isTitle": false },
+
+  { "text": "AUDIO PROCESSING & BEAT TRACKING", "color": "#FFD700", "isTitle": true },
+  { "text": "TarsosDSP (Audio Analysis Framework)", "color": "#BD93F9", "isTitle": false },
+  { "text": "Java Sound API", "color": "#BD93F9", "isTitle": false },
+  { "text": "", "color": "", "isTitle": false },
+
+  { "text": "AUDIO CODECS", "color": "#FFD700", "isTitle": true },
+  { "text": "MP3SPI (MPEG Layer 3 Support)", "color": "#BD93F9", "isTitle": false },
+  { "text": "VorbisSPI (Ogg Vorbis Support)", "color": "#BD93F9", "isTitle": false },
+  { "text": "jFLAC (Free Lossless Audio Codec)", "color": "#BD93F9", "isTitle": false },
+  { "text": "", "color": "", "isTitle": false },
+
+  { "text": "FRAMEWORKS & LIBRARIES", "color": "#FFD700", "isTitle": true },
+  { "text": "Jackson Databind (JSON Parser)", "color": "#FFFFFF", "isTitle": false },
+  { "text": "SLF4J (Logging Facade & Simple Logger)", "color": "#FFFFFF", "isTitle": false },
+  { "text": "", "color": "", "isTitle": false },
+
+  { "text": "QUALITY ASSURANCE", "color": "#FFD700", "isTitle": true },
+  { "text": "JUnit 5 Jupiter", "color": "#FFFFFF", "isTitle": false },
+  { "text": "Mockito Core Framework", "color": "#FFFFFF", "isTitle": false },
+  { "text": "", "color": "", "isTitle": false },
+
+  { "text": "SPECIAL THANKS", "color": "#FFD700", "isTitle": true },
+  { "text": "To our families and friends for endless patience", "color": "#FFFFFF", "isTitle": false },
+  { "text": "To open-source developers worldwide", "color": "#FFFFFF", "isTitle": false },
+  { "text": "And to everyone who provided early gameplay feedback", "color": "#FFFFFF", "isTitle": false },
+  { "text": "", "color": "", "isTitle": false },
+  { "text": "", "color": "", "isTitle": false },
+
+  { "text": "THANK YOU FOR PLAYING!", "color": "#00FFDC", "isTitle": true },
+  { "text": "Your Rhythm, Your Beat, Your Journey.", "color": "#FF007F", "isTitle": false }
+]

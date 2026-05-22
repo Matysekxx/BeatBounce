@@ -7,6 +7,7 @@ import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
+import cz.matysekxx.beatbounce.model.audio.AudioManager;
 import cz.matysekxx.beatbounce.util.ExceptionHandler;
 import cz.matysekxx.beatbounce.util.Time;
 import cz.matysekxx.beatbounce.util.UIScale;
@@ -250,12 +251,13 @@ public class SongSelectionPanel extends BasePanel implements Runnable {
                 g2.dispose();
             }
         };
-        btn.setPreferredSize(new Dimension(UIScale.scale(90), UIScale.scale(28)));
+        btn.setPreferredSize(new Dimension(UIScale.scale(100), UIScale.scale(38)));
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btn.addActionListener(_ -> {
+            AudioManager.playSFX("/click-sound.mp3");
             activeGenre = name;
             final String time = name.equals("Trending") ? "month" : "allTime";
             String genre = (name.equals("All-Time") || name.equals("Trending")) ? null : name;

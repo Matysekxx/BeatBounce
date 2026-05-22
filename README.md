@@ -144,15 +144,6 @@ src
 
 ---
 
-## 🗺 Roadmap
-
-- [ ] **Multiplayer Mode**: Real-time 1v1 battles over LAN.
-- [ ] **Custom Level Editor**: Manual override for procedural generation.
-- [ ] **Advanced Shaders**: Integration of hardware-level post-processing effects.
-- [ ] **Mobile Port**: Transitioning core logic to LibGDX for cross-platform support.
-
----
-
 ## ⚙️ Installation & Running
 
 ### Prerequisites

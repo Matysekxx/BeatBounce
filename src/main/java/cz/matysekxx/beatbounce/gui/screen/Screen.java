@@ -47,6 +47,11 @@ public abstract class Screen extends JFrame {
             public void componentResized(ComponentEvent e) {
                 UIScale.update(getWidth(), getHeight());
             }
+
+            @Override
+            public void componentMoved(ComponentEvent e) {
+                UIScale.update(getWidth(), getHeight());
+            }
         });
         UIScale.update(getWidth(), getHeight());
     }

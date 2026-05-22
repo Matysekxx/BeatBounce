@@ -17,7 +17,6 @@ public class Main {
      */
     static void setupHighDPI() {
         System.setProperty("sun.java2d.dpiaware", "true");
-        System.setProperty("sun.java2d.uiScale.enabled", "false");
         System.setProperty("sun.java2d.uiScale", "1");
     }
 

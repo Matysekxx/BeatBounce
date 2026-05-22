@@ -29,11 +29,13 @@ public class GameEngineTest {
     private List<AbstractTile> tiles;
     private boolean clipStarted = false;
     private boolean clipStopped = false;
+    private boolean clipRunning = false;
 
     @BeforeEach
     void setUp() {
         clipStarted = false;
         clipStopped = false;
+        clipRunning = false;
         tiles = new ArrayList<>();
         tiles.add(new NormalTile(null, new Point(0, 150), 0));
         tiles.add(new NormalTile(null, new Point(0, 150), 500));
@@ -45,16 +47,26 @@ public class GameEngineTest {
                 Clip.class.getClassLoader(),
                 new Class[]{Clip.class},
                 (proxy, method, args) -> {
-                    if (method.getName().equals("getMicrosecondLength")) return 100_000_000L;
-                    if (method.getName().equals("getMicrosecondPosition")) return 0L;
-                    if (method.getName().equals("isRunning")) return false;
-                    if (method.getName().equals("start")) {
-                        clipStarted = true;
-                        return null;
-                    }
-                    if (method.getName().equals("stop")) {
-                        clipStopped = true;
-                        return null;
+                    switch (method.getName()) {
+                        case "getMicrosecondLength" -> {
+                            return 100_000_000L;
+                        }
+                        case "getMicrosecondPosition" -> {
+                            return 0L;
+                        }
+                        case "isRunning" -> {
+                            return clipRunning;
+                        }
+                        case "start" -> {
+                            clipStarted = true;
+                            clipRunning = true;
+                            return null;
+                        }
+                        case "stop" -> {
+                            clipStopped = true;
+                            clipRunning = false;
+                            return null;
+                        }
                     }
                     if (method.getReturnType().equals(void.class)) return null;
                     if (method.getReturnType().equals(boolean.class)) return false;
@@ -75,7 +87,7 @@ public class GameEngineTest {
 
     @Test
     void testCountdownToPlayingTransition() {
-        gameEngine.update(0, 4.0);
+        gameEngine.update(4.0);
 
         assertEquals(GameState.PLAYING, gameEngine.getGameState(), "Game should transition to PLAYING after countdown ends.");
         assertTrue(clipStarted, "Clip should be started when entering PLAYING state.");
@@ -83,7 +95,7 @@ public class GameEngineTest {
 
     @Test
     void testTogglePause() {
-        gameEngine.update(0, 4.0);
+        gameEngine.update(4.0);
         assertEquals(GameState.PLAYING, gameEngine.getGameState());
         gameEngine.togglePause();
         assertEquals(GameState.PAUSED, gameEngine.getGameState(), "GameState should be PAUSED after toggle.");
@@ -101,7 +113,7 @@ public class GameEngineTest {
 
     @Test
     void testInitResetsEverything() {
-        gameEngine.update(0, 4.0);
+        gameEngine.update(4.0);
         mockSphere.setZ(100);
 
         gameEngine.init();

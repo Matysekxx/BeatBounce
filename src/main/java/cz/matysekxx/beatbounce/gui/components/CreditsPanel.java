@@ -18,12 +18,39 @@ import java.util.List;
  * A panel that displays game credits with a scrolling animation and a rich animated background.
  */
 public class CreditsPanel extends BasePanel implements Runnable {
+    /**
+     * Current vertical scroll position of the credits list.
+     */
     private float scrollY = 0;
+
+    /**
+     * Flag indicating whether the animation loop is running.
+     */
     private boolean running = false;
+
+    /**
+     * Thread responsible for running the animation loop.
+     */
     private Thread animatorThread;
+
+    /**
+     * List of credit entries to be displayed.
+     */
     private List<CreditEntry> credits = new ArrayList<>();
+
+    /**
+     * Elapsed time for animation calculation.
+     */
     private float time = 0;
+
+    /**
+     * Array of background particles.
+     */
     private final Particle[] particles;
+
+    /**
+     * Number of particles currently active based on graphics settings.
+     */
     private int particleCount;
 
     public CreditsPanel() {

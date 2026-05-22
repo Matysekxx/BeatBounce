@@ -13,6 +13,15 @@ import javax.swing.*;
 public class Main {
 
     /**
+     * Flag indicating if the OS is Windows.
+     */
+    private static final boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+    /**
+     * Flag indicating if the OS is macOS.
+     */
+    private static final boolean isMac = System.getProperty("os.name").toLowerCase().contains("mac");
+
+    /**
      * Configures system properties for High DPI support on Windows and other platforms.
      */
     static void setupHighDPI() {
@@ -25,9 +34,6 @@ public class Main {
      * Enables hardware acceleration (OpenGL/Direct3D) and adjusts anti-aliasing.
      */
     static void setupRenderingProperties() {
-        String os = System.getProperty("os.name").toLowerCase();
-        final boolean isWindows = os.contains("win");
-        final boolean isMac = os.contains("mac");
         System.setProperty("sun.awt.noerasebackground", "true");
         System.setProperty("sun.java2d.noerasebackground", "true");
         System.setProperty("sun.java2d.erasedirtyregions", "false");

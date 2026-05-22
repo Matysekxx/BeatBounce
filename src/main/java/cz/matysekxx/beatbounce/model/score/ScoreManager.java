@@ -27,12 +27,12 @@ public class ScoreManager {
     /**
      * Path to the file where high scores are saved.
      */
-    private static final Path savePath;
+    private static Path savePath = FileSystem.getSaveDataFile();
 
     /**
      * Path to the file where total currency is saved.
      */
-    private static final Path currencyPath;
+    private static Path currencyPath = FileSystem.getCurrencyFile();
 
     /**
      * Mapping of song identifiers to the user's best achieved score.
@@ -45,8 +45,19 @@ public class ScoreManager {
     private static int totalCurrency = 0;
 
     static {
-        savePath = FileSystem.getSaveDataFile();
-        currencyPath = FileSystem.getCurrencyFile();
+        loadScores();
+        loadCurrency();
+    }
+
+    /**
+     * Overrides the storage paths for testing purposes.
+     *
+     * @param newSavePath     new path for save data
+     * @param newCurrencyPath new path for currency data
+     */
+    public static void setStoragePaths(Path newSavePath, Path newCurrencyPath) {
+        savePath = newSavePath;
+        currencyPath = newCurrencyPath;
         loadScores();
         loadCurrency();
     }

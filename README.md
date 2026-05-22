@@ -1,39 +1,49 @@
-# BeatBounce
 
-BeatBounce is a dynamic rhythm game developed in Java. It features procedural level generation based on audio analysis, allowing players to experience their favorite music in a unique, interactive way.
+<div align="center">
+  <img src="src/main/resources/icon.png" alt="BeatBounce Icon" width="128">
+  <h1>BeatBounce</h1>
+  <p>A dynamic, procedurally-generated rhythm game built in Java.</p>
+
+  [![Java Version](https://img.shields.io/badge/Java-25-orange.svg)](https://www.oracle.com/java/)
+  [![Maven Central](https://img.shields.io/badge/Maven-3.9+-blue.svg)](https://maven.apache.org/)
+  [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+  [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)](#)
+</div>
 
 ---
 
-## 🚀 Features
+BeatBounce is a high-performance rhythm game developed in Java. By combining real-time Digital Signal Processing (DSP) with procedural generation, it transforms any audio track into a unique interactive experience. Players navigate a sphere through a 3D-projected environment, timing their movements to the detected beats and frequency shifts of the music.
 
-- **Procedural Level Generation**: Levels are automatically created by analyzing audio tracks (BPM, onsets, frequency bands).
-- **Audius API Integration**: Search and stream/download music directly from the [Audius](https://audius.co/) platform.
-- **Advanced Audio Analysis**: Utilizes DSP (Digital Signal Processing) with TarsosDSP for accurate beat detection.
-- **High Performance Rendering**: Optimized Java Swing GUI with support for High DPI and hardware acceleration (OpenGL/Direct3D).
-- **Customizable Experience**: Various tile types (Normal, Moving, Breakable, Long), difficulty profiles, and visual settings.
-- **Achievement System**: Track your progress and unlock achievements as you play.
-- **Local Music Support**: Play your own MP3, OGG, or FLAC files.
+## 🚀 Key Features
+
+- **🎹 Intelligent Level Generation**: Automatically maps level geometry to BPM, spectral flux, and detected song sections (Intro, Chorus, etc.).
+- **🎵 Audius Integration**: Stream and analyze millions of tracks directly from the decentralized [Audius](https://audius.co/) network.
+- **⚡ High-Performance Rendering**: Custom-built Swing-based engine with hardware acceleration (OpenGL/Direct3D) and High DPI support.
+- **🏆 Progression & Achievements**: Dynamic scoring system with combo multipliers, global high scores, and unlockable achievements.
+- **🎧 Broad Format Support**: Native support for MP3, OGG, and FLAC via specialized SPI providers.
 
 ---
 
 ## 🛠 Tech Stack
 
-- **Language**: Java 25
-- **Build System**: Maven
-- **GUI Framework**: Java Swing (Custom components)
-- **Audio Processing**: TarsosDSP, MP3SPI, VorbisSPI, JFLAC
-- **JSON Processing**: Jackson Databind
-- **Testing**: JUnit 5, Mockito
+| Category | Technology |
+| :--- | :--- |
+| **Language** | Java 25 |
+| **Build Tool** | Maven 3.9+ |
+| **Audio Engine** | TarsosDSP, MP3SPI, VorbisSPI, JFLAC |
+| **Graphics** | Java Swing (Custom 2D-to-3D projection) |
+| **Data** | Jackson Databind (JSON) |
+| **Testing** | JUnit 5, Mockito |
 
 ---
 
 ## 🏗 Architecture & Data Flow
 
-BeatBounce relies on complex data pipelines to synchronize visual gameplay with audio processing.
+BeatBounce utilizes a modular architecture to decouple high-latency audio analysis from the low-latency game loop.
 
 ### 🎼 Audio Analysis Pipeline
 
-This sequence captures the multi-stage DSP pipeline used to transform raw PCM samples into a procedurally generated level.
+The analysis occurs in a separate thread pool to prevent UI blocking, using a multi-pass approach to identify musical structures.
 
 ```mermaid
 sequenceDiagram
@@ -73,9 +83,9 @@ sequenceDiagram
     deactivate GC
 ```
 
-### 🎮 Game Execution
+### 🎮 Game Execution (Activity Loop)
 
-The following diagram illustrates the high-precision update loop executed for every frame to maintain synchronization and handle physics.
+The game engine synchronizes visual updates with the audio timestamp using `System.nanoTime()` for micro-second precision.
 
 ```mermaid
 flowchart TD
@@ -115,38 +125,42 @@ flowchart TD
 
 ---
 
-## 📋 Prerequisites
+## 📂 Project Structure
 
-- **Java Development Kit (JDK) 25** or higher.
-- **Maven** for building the project.
+```text
+src
++---main
+|   +---java
+|   |   \---cz.matysekxx.beatbounce
+|   |       +---achievements  # Logic for unlockable milestones
+|   |       +---api           # Audius Discovery Provider integration
+|   |       +---configuration # App-wide settings and hardware tweaks
+|   |       +---controller    # Input handling (Keyboard/Mouse)
+|   |       +---gui           # Custom-rendered Swing screens and components
+|   |       +---model         # Domain logic: Audio DSP, Entities, Game Engine
+|   |       \---util          # Mathematical helpers and scaling utilities
+|   \---resources             # Static assets: MP3s, icons, level metadata
+\---test                      # Comprehensive unit tests (JUnit 5)
+```
+
+---
+
+## 🗺 Roadmap
+
+- [ ] **Multiplayer Mode**: Real-time 1v1 battles over LAN.
+- [ ] **Custom Level Editor**: Manual override for procedural generation.
+- [ ] **Advanced Shaders**: Integration of hardware-level post-processing effects.
+- [ ] **Mobile Port**: Transitioning core logic to LibGDX for cross-platform support.
 
 ---
 
 ## ⚙️ Installation & Running
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/your-username/BeatBounce.git
-   cd BeatBounce
-   ```
+### Prerequisites
+- **JDK 25+** (Required for the latest language features)
+- **Maven 3.9+**
 
-2. **Build the project:**
-   ```bash
-   mvn clean package
-   ```
-
-3. **Run the application:**
-   ```bash
-   java -jar target/cz.matysekxx.beatbounce-1.0-SNAPSHOT.jar
-   ```
-
----
-
-## 🎮 How to Play
-
-1. **Select a Song**: Choose a song from the Audius library or load a local file.
-2. **Analysis**: The game will analyze the song and generate a level.
-3. **Gameplay**: Control the sphere to bounce on tiles in sync with the beat. Use your mouse or keyboard (configurable) to navigate.
-4. **Collect Orbs**: Pick up orbs for extra points.
-
+### Steps
+1. **Build:** `mvn clean package`
+2. **Run:** `java -jar target/cz.matysekxx.beatbounce-1.0-SNAPSHOT.jar`
 ---

@@ -21,7 +21,7 @@ public class CreditsScreen extends Screen {
         creditsPanel.setLayout(new GridBagLayout());
         this.setContentPane(creditsPanel);
 
-        final JButton backButton = ButtonFactory.createSubduedBackButton(_ -> {
+        final JButton backButton = ButtonFactory.createBackButton(_ -> {
             screenManager.showScreen(IntroScreen.class);
         });
 

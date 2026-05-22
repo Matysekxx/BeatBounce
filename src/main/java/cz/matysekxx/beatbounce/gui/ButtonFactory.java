@@ -1,6 +1,7 @@
 package cz.matysekxx.beatbounce.gui;
 
 import cz.matysekxx.beatbounce.gui.components.IsometricButton;
+import cz.matysekxx.beatbounce.util.UIScale;
 
 import javax.swing.*;
 import java.awt.*;
@@ -115,6 +116,27 @@ public class ButtonFactory {
                 text, frontSide, topFill, topGlow, 10, 40, new Dimension(220, 80)
         );
         button.addActionListener(listener);
+        button.setOpaque(false);
+        return button;
+    }
+
+    /**
+     * Creates a subdued, less visible "BACK" button.
+     *
+     * @param actionListener the listener to be notified when the button is clicked
+     * @return a {@link JButton} configured with subdued styling
+     */
+    public static JButton createBackButton(ActionListener actionListener) {
+        final Color grayFront = new Color(40, 40, 50);
+        final Color grayTop = new Color(60, 60, 75);
+        final Color grayGlow = new Color(100, 100, 120, 100);
+        
+        final IsometricButton button = new IsometricButton(
+                "BACK", grayFront, grayTop, grayGlow, 4, 15, new Dimension(110, 40)
+        );
+        button.setFont(UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_24));
+        button.setForeground(new Color(180, 180, 190));
+        button.addActionListener(actionListener);
         button.setOpaque(false);
         return button;
     }

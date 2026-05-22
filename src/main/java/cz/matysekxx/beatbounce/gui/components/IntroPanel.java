@@ -156,7 +156,7 @@ public class IntroPanel extends BasePanel implements Runnable {
         }
 
         drawIntroGrid(g2d, w, h, horizonY, globalHue);
-        drawFloatingShapes(g2d, w, horizonY, globalHue);
+        drawShapes(g2d, w, horizonY, globalHue);
 
         final Color horizonColor = Color.getHSBColor(globalHue, 0.6f, 1.0f);
         g2d.setColor(RenderCache.customColorWithAlpha(horizonColor, 180));
@@ -188,11 +188,11 @@ public class IntroPanel extends BasePanel implements Runnable {
     /**
      * Renders floating geometric shapes in the background.
      */
-    private void drawFloatingShapes(Graphics2D g2d, int w, int horizonY, float globalHue) {
-        final int shapes = 6;
+    private void drawShapes(Graphics2D g2d, int w, int horizonY, float globalHue) {
+        final int shapes = 12;
         for (int i = 0; i < shapes; i++) {
             final float phase = time * 0.35f + i * 1.6f;
-            final float x = w * 0.15f + (w * 0.7f) * ((float) i / (shapes - 1));
+            final float x = w * 0.2f + (w * 0.7f) * ((float) i / (shapes - 1));
             final float y = horizonY - UIScale.scale(130) - (float) Math.sin(phase) * UIScale.scale(50) - i * UIScale.scale(12);
             final float size = UIScale.scale(24) + (float) Math.sin(phase * 0.7f) * UIScale.scale(8);
             final float rotation = time * 0.4f + i;
@@ -228,9 +228,11 @@ public class IntroPanel extends BasePanel implements Runnable {
      * Returns a predefined shape based on index.
      */
     private Shape getShape(int index) {
-        return switch (index % 3) {
+        return switch (index % 5) {
             case 0 -> RenderCache.SHAPE_TRIANGLE;
             case 1 -> RenderCache.SHAPE_DIAMOND;
+            case 3 -> RenderCache.SHAPE_PENTAGON;
+            case 4 -> RenderCache.SHAPE_SQUARE;
             default -> RenderCache.SHAPE_HEXAGON;
         };
     }

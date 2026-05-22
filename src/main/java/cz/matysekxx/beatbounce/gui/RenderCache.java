@@ -195,6 +195,14 @@ public final class RenderCache {
      */
     public static final Shape SHAPE_HEXAGON;
     /**
+     * A square shape.
+     */
+    public static final Shape SHAPE_SQUARE;
+    /**
+     * A pentagon shape.
+     */
+    public static final Shape SHAPE_PENTAGON;
+    /**
      * Monospaced Bold font, size 65.
      */
     public static final Font MONO_BOLD_65 = new Font("Monospaced", Font.BOLD, 65);
@@ -262,6 +270,25 @@ public final class RenderCache {
         }
         h.closePath();
         SHAPE_HEXAGON = h;
+
+        final GeneralPath s = new GeneralPath();
+        s.moveTo(-0.7f, -0.7f);
+        s.lineTo(0.7f, -0.7f);
+        s.lineTo(0.7f, 0.7f);
+        s.lineTo(-0.7f, 0.7f);
+        s.closePath();
+        SHAPE_SQUARE = s;
+
+        final GeneralPath p = new GeneralPath();
+        for (int j = 0; j < 5; j++) {
+            final float angle = (float) (Math.PI * 2 / 5) * j - (float) (Math.PI / 2);
+            final float px = (float) Math.cos(angle) * 0.8f;
+            final float py = (float) Math.sin(angle) * 0.8f;
+            if (j == 0) p.moveTo(px, py);
+            else p.lineTo(px, py);
+        }
+        p.closePath();
+        SHAPE_PENTAGON = p;
     }
 
     private RenderCache() {

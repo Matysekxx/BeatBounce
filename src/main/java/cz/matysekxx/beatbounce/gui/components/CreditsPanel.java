@@ -19,35 +19,29 @@ import java.util.List;
  */
 public class CreditsPanel extends BasePanel implements Runnable {
     /**
+     * Array of background particles.
+     */
+    private final Particle[] particles;
+    /**
      * Current vertical scroll position of the credits list.
      */
     private float scrollY = 0;
-
     /**
      * Flag indicating whether the animation loop is running.
      */
     private boolean running = false;
-
     /**
      * Thread responsible for running the animation loop.
      */
     private Thread animatorThread;
-
     /**
      * List of credit entries to be displayed.
      */
     private List<CreditEntry> credits = new ArrayList<>();
-
     /**
      * Elapsed time for animation calculation.
      */
     private float time = 0;
-
-    /**
-     * Array of background particles.
-     */
-    private final Particle[] particles;
-
     /**
      * Number of particles currently active based on graphics settings.
      */
@@ -77,7 +71,8 @@ public class CreditsPanel extends BasePanel implements Runnable {
                 credits = mapper.readValue(is, new TypeReference<>() {
                 });
             }
-        } catch (Exception _){}
+        } catch (Exception _) {
+        }
     }
 
     public void startAnimation() {
@@ -121,7 +116,7 @@ public class CreditsPanel extends BasePanel implements Runnable {
             if (Settings.particlesEnabled) Particle.updateAll(particles, particleCount, dt, w, h);
 
             scrollY += dt * UIScale.scale(50);
-            
+
             float totalHeight = credits.size() * UIScale.scale(60) + h;
             if (scrollY > totalHeight) {
                 scrollY = -UIScale.scale(200);
@@ -145,7 +140,7 @@ public class CreditsPanel extends BasePanel implements Runnable {
         final float globalHue = (time * 0.05f) % 1.0f;
 
         RenderUtils.drawBackground(g2d, w, h);
-        
+
         if (Settings.particlesEnabled) {
             Particle.drawAll(g2d, particles, particleCount);
         }
@@ -153,7 +148,7 @@ public class CreditsPanel extends BasePanel implements Runnable {
         drawFloatingShapes(g2d, w, h, globalHue);
 
         drawCredits(g2d, w, h);
-        
+
         drawVignette(g2d, w, h);
 
         g2d.dispose();
@@ -164,7 +159,7 @@ public class CreditsPanel extends BasePanel implements Runnable {
         for (int i = 0; i < shapesPerSide * 2; i++) {
             boolean isLeft = i < shapesPerSide;
             int sideIndex = i % shapesPerSide;
-            
+
             final float phase = time * 0.25f + i * 1.2f;
 
             float x;
@@ -173,7 +168,7 @@ public class CreditsPanel extends BasePanel implements Runnable {
             } else {
                 x = w * 0.75f + (w * 0.2f) * ((float) sideIndex / (shapesPerSide - 1));
             }
-            
+
             final float y = h * 0.1f + (h * 0.8f) * ((float) sideIndex / (shapesPerSide - 1)) + (float) Math.sin(phase) * UIScale.scale(50);
             final float size = UIScale.scale(35) + (float) Math.sin(phase * 0.8f) * UIScale.scale(15);
             final float rotation = time * 0.3f + i;
@@ -209,29 +204,28 @@ public class CreditsPanel extends BasePanel implements Runnable {
     }
 
     private void drawCredits(Graphics2D g2d, int w, int h) {
-        float startY = h - scrollY;
-        float currentY = startY;
+        float currentY = h - scrollY;
         float lineHeight = UIScale.scale(60);
 
         for (CreditEntry entry : credits) {
             if (currentY > -100 && currentY < h + 100) {
                 if (!entry.text.isEmpty()) {
-                    g2d.setFont(entry.isTitle ? 
-                        UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_48) : 
-                        UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_24));
-                    
+                    g2d.setFont(entry.isTitle ?
+                            UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_48) :
+                            UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_24));
+
                     FontMetrics fm = g2d.getFontMetrics();
                     int x = (w - fm.stringWidth(entry.text)) / 2;
-                    
+
                     Color textColor = entry.getAwtColor();
                     if (entry.isTitle) {
                         double pulse = (Math.sin(time * 3) + 1.0) / 2.0;
-                        RenderUtils.drawBloom(g2d, entry.text, x, (int)currentY, pulse, textColor);
+                        RenderUtils.drawBloom(g2d, entry.text, x, (int) currentY, pulse, textColor);
                         g2d.setColor(Color.WHITE);
                     } else {
                         g2d.setColor(textColor);
                     }
-                    
+
                     g2d.drawString(entry.text, x, currentY);
                 }
             }
@@ -247,18 +241,14 @@ public class CreditsPanel extends BasePanel implements Runnable {
         g2d.fillRect(0, 0, w, h);
     }
 
+    @Override
+    protected void drawBackground(Graphics2D g2d, int w, int h) {
+    }
+
     public static class CreditEntry {
         public String text;
         public String color;
         public boolean isTitle;
-
-        public CreditEntry() {}
-
-        public CreditEntry(String text, String color, boolean isTitle) {
-            this.text = text;
-            this.color = color;
-            this.isTitle = isTitle;
-        }
 
         public Color getAwtColor() {
             if (color == null || color.isEmpty()) return Color.WHITE;
@@ -268,9 +258,5 @@ public class CreditsPanel extends BasePanel implements Runnable {
                 return Color.WHITE;
             }
         }
-    }
-
-    @Override
-    protected void drawBackground(Graphics2D g2d, int w, int h) {
     }
 }

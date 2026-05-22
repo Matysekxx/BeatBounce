@@ -31,6 +31,7 @@ public class ScreenManager {
         registerScreen(IntroScreen.class, () -> new IntroScreen(this));
         registerScreen(MainMenuScreen.class, () -> new MainMenuScreen(this));
         registerScreen(GameScreen.class, () -> new GameScreen(this));
+        registerScreen(CreditsScreen.class, () -> new CreditsScreen(this));
     }
 
     /**

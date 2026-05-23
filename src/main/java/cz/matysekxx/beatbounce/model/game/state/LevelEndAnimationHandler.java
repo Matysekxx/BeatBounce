@@ -135,6 +135,5 @@ public class LevelEndAnimationHandler implements GameStateHandler {
         cam.setY(0);
         gameEngine.stopClip();
         ScoreManager.updateScore(LevelUtil.getCleanSongName(gameEngine.getLevel()), gameEngine.getScore());
-        ScoreManager.addCurrency(gameEngine.getCollectedOrbs());
     }
 }

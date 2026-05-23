@@ -55,6 +55,22 @@ public class PlayingHandler implements GameStateHandler {
     }
 
     /**
+     * Resets the collision detection interval.
+     */
+    public void resetCCD() {
+        collisionEngine.resetCCD();
+    }
+
+    /**
+     * Sets whether the player is currently on a long tile.
+     *
+     * @param onLongTile true if the player should be in the long-tile state
+     */
+    public void setOnLongTile(boolean onLongTile) {
+        collisionEngine.setOnLongTile(onLongTile);
+    }
+
+    /**
      * Updates all gameplay systems for the current frame.
      *
      * @param currentTime the current world time
@@ -62,6 +78,7 @@ public class PlayingHandler implements GameStateHandler {
      */
     @Override
     public void handle(double currentTime, double deltaTime) {
+        gameEngine.getSphere().update(currentTime, deltaTime);
         AudioManager.applyMusicVolume(clip);
 
         if (checkLevelEnd()) {
@@ -73,8 +90,6 @@ public class PlayingHandler implements GameStateHandler {
         updateCameraAndSphere();
         collisionEngine.handleCollisions();
         orbCollisionEngine.checkOrbCollisions();
-
-        gameEngine.getSphere().update(currentTime, deltaTime);
     }
 
     /**

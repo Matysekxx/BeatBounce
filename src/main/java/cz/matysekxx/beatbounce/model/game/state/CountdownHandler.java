@@ -31,6 +31,11 @@ public class CountdownHandler implements GameStateHandler {
      */
     @Override
     public void handle(double currentTime, double deltaTime) {
+        gameEngine.getSphere().update(currentTime, deltaTime);
+        gameEngine.getCam().setZ(gameEngine.getGameZProgress() - 500);
+        final double targetCamX = gameEngine.getSphere().getX() * 0.2;
+        gameEngine.getCam().setX(gameEngine.getCam().getX() + (targetCamX - gameEngine.getCam().getX()) * 0.05);
+
         gameEngine.setCountdownTime(gameEngine.getCountdownTime() - deltaTime);
         if (gameEngine.getCountdownTime() <= 0) {
             gameEngine.setGameState(GameState.PLAYING);

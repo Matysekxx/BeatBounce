@@ -199,7 +199,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.scorePopAlpha = 0f;
         this.uiRenderer = new GameUIRenderer(gameEngine, clip);
         this.worldRenderer = new GameWorldRenderer(cam, gameEngine, level, sphere);
-        this.addMouseMotionListener(new GameController(cam, sphere));
+        this.addMouseMotionListener(new GameController(cam, sphere, gameEngine));
         final MouseAdapter uiMouseAdapter = new MouseAdapter() {
             @Override
             public void mouseMoved(java.awt.event.MouseEvent e) {

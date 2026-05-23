@@ -2,6 +2,7 @@ package cz.matysekxx.beatbounce.model.entity;
 
 import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.gui.RenderCache;
+import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.WindowData;
 
 import java.awt.*;
@@ -61,6 +62,10 @@ public class Sphere extends Entity {
      * Whether the sphere has missed a tile and is falling into the void.
      */
     private boolean isFalling = false;
+
+    public boolean isFalling() {
+        return isFalling;
+    }
 
     /**
      * Current transparency alpha level (0.0 to 1.0).
@@ -164,6 +169,17 @@ public class Sphere extends Entity {
     }
 
     /**
+     * Sets the current horizontal position of the sphere.
+     *
+     * @param x the new X coordinate
+     */
+    public void setCurrentX(double x) {
+        this.currentX = x;
+        this.targetX = x;
+        this.x = (int) x;
+    }
+
+    /**
      * Returns the current vertical position.
      *
      * @return the {@code currentY} value
@@ -210,6 +226,9 @@ public class Sphere extends Entity {
      */
     public void revive() {
         this.isFalling = false;
+        this.isJumping = false;
+        this.currentX = 0;
+        this.targetX = 0;
         this.currentY = 150;
         this.y = 150;
         this.alpha = 1.0f;

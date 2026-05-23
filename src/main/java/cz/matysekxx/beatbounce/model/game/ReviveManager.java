@@ -1,5 +1,6 @@
 package cz.matysekxx.beatbounce.model.game;
 
+import cz.matysekxx.beatbounce.model.entity.LongTile;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.game.state.GameState;
 import cz.matysekxx.beatbounce.model.score.ScoreManager;
@@ -12,7 +13,7 @@ public class ReviveManager {
     /**
      * Maximum number of times a player can revive in a single run.
      */
-    public static final int MAX_REVIVES = 3;
+    public static final int MAX_REVIVES = 5;
 
     /**
      * The game engine providing state and clip data.
@@ -51,28 +52,72 @@ public class ReviveManager {
         if (ScoreManager.getCurrency() >= cost) {
             ScoreManager.addCurrency(-cost);
             revivesUsed++;
+
+            final var tiles = gameEngine.getLevel().tiles();
+            if (tiles.isEmpty()) return false;
+
+            int lastTileIdx = gameEngine.getCurrentTileIndex();
+            if (lastTileIdx < 0) lastTileIdx = 0;
+            if (lastTileIdx >= tiles.size()) lastTileIdx = tiles.size() - 1;
+            
+            final var lastTile = tiles.get(lastTileIdx);
+            double reviveZ = lastTile.getZ();
+
+            if (lastTile instanceof LongTile lt) {
+                double fallZ = gameEngine.getFallStartZ();
+                if (fallZ > lt.getZ()) {
+                    reviveZ = Math.clamp(fallZ - 150, lt.getZ(), lt.getZ() + lt.getLengthInZ() - 50);
+                }
+            }
+
             gameEngine.setGameState(GameState.COUNTDOWN);
-            gameEngine.setCountdownTime(2.99);
-            gameEngine.setFallStartZ(0);
-            this.sphere.revive();
-            final long microPos = gameEngine.getClip().getMicrosecondPosition();
-            gameEngine.getClip().setMicrosecondPosition(Math.max(0, microPos - 1_500_000));
-            gameEngine.setSmoothedAudioTime(gameEngine.getClip().getMicrosecondPosition() / 1_000_000.0);
-            gameEngine.setLastClipMicroPos(gameEngine.getClip().getMicrosecondPosition());
+            gameEngine.setCountdownTime(3.0);
+            gameEngine.setGameZProgress(reviveZ);
+
+            final double reviveTime = reviveZ / gameEngine.getZUnitsPerSecond();
+            final long microPos = (long) (reviveTime * 1_000_000);
+            if (gameEngine.getClip() != null) {
+                gameEngine.getClip().setMicrosecondPosition(microPos);
+            }
+            gameEngine.setSmoothedAudioTime(reviveTime);
+            gameEngine.setLastClipMicroPos(microPos);
             gameEngine.setLastSyncNano(System.nanoTime());
-            gameEngine.setGameZProgress(gameEngine.getSmoothedAudioTime() * gameEngine.getZUnitsPerSecond());
+            gameEngine.setFallStartZ(0);
+            gameEngine.resetCCD();
+
+            this.sphere.revive();
+            this.sphere.setZ(reviveZ);
+            lastTile.onLanding();
+            
+            final double tileX = lastTile.getXAt(reviveTime);
+            this.sphere.setCurrentX(tileX);
+            this.sphere.setCurrentY(150);
+            gameEngine.getCam().setZ(reviveZ - 500);
+            gameEngine.getCam().setX(tileX * 0.2);
+            gameEngine.getCam().setY(0);
+
+            gameEngine.setCurrentTileIndex(lastTileIdx);
+            
+            if (lastTile instanceof LongTile) {
+                gameEngine.setOnLongTile(true);
+                gameEngine.setLongTileScoreAccum(0);
+                this.sphere.update(gameEngine.getSmoothedAudioTime(), 0);
+            } else {
+                gameEngine.setOnLongTile(false);
+                gameEngine.startNextJump(gameEngine.getSmoothedAudioTime());
+            }
             return true;
         }
         return false;
     }
 
     /**
-     * Calculates the cost of the next revive. Cost doubles with each use.
+     * Calculates the cost of the next revive. Cost increases by 5 with each use.
      *
      * @return the cost in orbs
      */
     public int getReviveCost() {
-        return 10 * (int) Math.pow(2, revivesUsed);
+        return 5 + 5 * revivesUsed;
     }
 
     /**

@@ -33,6 +33,15 @@ public class LongCollisionHandler extends CollisionHandler {
     }
 
     /**
+     * Sets whether the player is currently on a long tile.
+     *
+     * @param onLongTile true if the player should be in the long-tile state
+     */
+    public void setOnLongTile(boolean onLongTile) {
+        this.onLongTile = onLongTile;
+    }
+
+    /**
      * Initiates the long-tile state when the player lands on its front edge.
      *
      * @param tile the long tile landed on

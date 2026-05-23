@@ -191,7 +191,7 @@ public class GameEngine {
      */
     public void init() {
         this.gameState = GameState.COUNTDOWN;
-        this.countdownTime = 2.99;
+        this.countdownTime = 3.0;
         this.currentTileIndex = -1;
         this.gameZProgress = 0;
         this.fallStartZ = 0;
@@ -318,6 +318,26 @@ public class GameEngine {
         } else {
             final double lerpFactor = 1.0 - Math.exp(-20.0 * deltaTime);
             smoothedAudioTime += diff * lerpFactor;
+        }
+    }
+
+    /**
+     * Sets whether the player is currently on a long tile.
+     *
+     * @param onLongTile true if the player should be in the long-tile state
+     */
+    public void setOnLongTile(boolean onLongTile) {
+        if (playingHandler instanceof PlayingHandler ph) {
+            ph.setOnLongTile(onLongTile);
+        }
+    }
+
+    /**
+     * Resets collision detection interval in the playing handler.
+     */
+    public void resetCCD() {
+        if (playingHandler instanceof PlayingHandler ph) {
+            ph.resetCCD();
         }
     }
 
@@ -556,6 +576,7 @@ public class GameEngine {
      */
     public void incrementCollectedOrbs() {
         this.collectedOrbs++;
+        ScoreManager.addCurrency(1);
     }
 
     /**

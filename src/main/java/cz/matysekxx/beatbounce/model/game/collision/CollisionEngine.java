@@ -78,6 +78,25 @@ public class CollisionEngine {
     }
 
     /**
+     * Resets the CCD state, ensuring the next collision check initializes its Z-interval.
+     */
+    public void resetCCD() {
+        this.lastZProgress = -1;
+    }
+
+    /**
+     * Sets whether the player is currently on a long tile.
+     *
+     * @param onLongTile true if the player should be in the long-tile state
+     */
+    public void setOnLongTile(boolean onLongTile) {
+        final LongCollisionHandler handler = (LongCollisionHandler) collisionHandlers.get(LongTile.class);
+        if (handler != null) {
+            handler.setOnLongTile(onLongTile);
+        }
+    }
+
+    /**
      * Performs collision checks for the current frame.
      * Uses the Z-interval since the last update to ensure no tiles are missed.
      */

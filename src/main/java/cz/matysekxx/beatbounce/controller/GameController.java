@@ -2,6 +2,8 @@ package cz.matysekxx.beatbounce.controller;
 
 import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
+import cz.matysekxx.beatbounce.model.game.GameEngine;
+import cz.matysekxx.beatbounce.model.game.state.GameState;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
@@ -36,14 +38,21 @@ public class GameController implements MouseMotionListener {
     private final Sphere sphere;
 
     /**
+     * The game engine providing state data.
+     */
+    private final GameEngine gameEngine;
+
+    /**
      * Initializes a new GameController with the specified camera and sphere.
      *
-     * @param cam    The {@link Camera3D} used for coordinate projections.
-     * @param sphere The {@link Sphere} representing the player.
+     * @param cam        The {@link Camera3D} used for coordinate projections.
+     * @param sphere     The {@link Sphere} representing the player.
+     * @param gameEngine The {@link GameEngine} for state checking.
      */
-    public GameController(Camera3D cam, Sphere sphere) {
+    public GameController(Camera3D cam, Sphere sphere, GameEngine gameEngine) {
         this.cam = cam;
         this.sphere = sphere;
+        this.gameEngine = gameEngine;
     }
 
     /**
@@ -69,6 +78,10 @@ public class GameController implements MouseMotionListener {
      */
     @Override
     public void mouseMoved(MouseEvent e) {
+        if (gameEngine == null) return;
+        final GameState state = gameEngine.getGameState();
+        if (state != GameState.PLAYING && state != GameState.COUNTDOWN) return;
+        
         final int mouseX = e.getX();
         final int width = e.getComponent().getWidth();
         final double scale = cam.getScale(sphere.getZ());

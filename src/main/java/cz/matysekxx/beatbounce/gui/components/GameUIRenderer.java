@@ -12,6 +12,7 @@ import cz.matysekxx.beatbounce.util.UIScale;
 import javax.sound.sampled.Clip;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
+import java.util.ArrayList;
 import java.util.Collections;
 
 /**
@@ -112,12 +113,12 @@ public class GameUIRenderer {
     /**
      * List of buttons currently active on the screen for interaction.
      */
-    private final java.util.List<SimulatedButton> activeButtons = new java.util.ArrayList<>();
+    private final ArrayList<SimulatedButton> activeButtons = new ArrayList<>();
 
     /**
      * Pool of buttons to avoid recreation.
      */
-    private final java.util.List<SimulatedButton> buttonPool = new java.util.ArrayList<>();
+    private final ArrayList<SimulatedButton> buttonPool = new ArrayList<>();
     /**
      * Reusable StringBuilder for time formatting.
      */
@@ -684,24 +685,24 @@ public class GameUIRenderer {
     private void drawButton(Graphics2D g2d, String label, int x, int y, int width, UIAction action) {
         final int btnHeight = UIScale.scale(55);
         final int btnY = y - UIScale.scale(40);
-        SimulatedButton button = getButtonFromPool(label, x, btnY, width, btnHeight, action);
+        final SimulatedButton button = getButtonFromPool(label, x, btnY, width, btnHeight, action);
         button.draw(g2d, mouseX, mouseY, currentTranslateY);
 
-        SimulatedButton absoluteRegion = getButtonFromPool(label, x, btnY + currentTranslateY, width, btnHeight, action);
+        SimulatedButton absoluteRegion = new SimulatedButton(label, x, btnY + currentTranslateY, width, btnHeight, action);
         activeButtons.add(absoluteRegion);
     }
 
     private SimulatedButton getButtonFromPool(String label, int x, int y, int width, int height, UIAction action) {
+        final SimulatedButton btn;
         if (buttonPoolIndex < buttonPool.size()) {
-            SimulatedButton btn = buttonPool.get(buttonPoolIndex++);
+            btn = buttonPool.get(buttonPoolIndex++);
             btn.setup(label, x, y, width, height, action);
-            return btn;
         } else {
-            SimulatedButton btn = new SimulatedButton(label, x, y, width, height, action);
+            btn = new SimulatedButton(label, x, y, width, height, action);
             buttonPool.add(btn);
             buttonPoolIndex++;
-            return btn;
         }
+        return btn;
     }
 
     /**
@@ -782,6 +783,7 @@ public class GameUIRenderer {
     public void renderGameState(Graphics2D g2d, int width, int height, GameState state) {
         activeButtons.clear();
         buttonPoolIndex = 0;
+        currentTranslateY = 0;
         switch (state) {
             case PLAYING -> drawTutorial(g2d, width, height);
             case COUNTDOWN -> {
@@ -798,6 +800,6 @@ public class GameUIRenderer {
                 }
             }
         }
-        this.renderedButtons = activeButtons;
+        this.renderedButtons = new ArrayList<>(activeButtons);
     }
 }

@@ -208,6 +208,12 @@ public class GamePanel extends JPanel implements Runnable {
             }
 
             @Override
+            public void mouseDragged(java.awt.event.MouseEvent e) {
+                if (uiRenderer == null) return;
+                uiRenderer.setMousePosition(e.getX(), e.getY());
+            }
+
+            @Override
             public void mousePressed(MouseEvent e) {
                 if (uiRenderer == null || gameEngine == null) return;
                 final UIAction action = uiRenderer.handleClick(e.getX(), e.getY());

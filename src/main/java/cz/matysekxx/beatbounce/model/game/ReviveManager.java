@@ -118,7 +118,7 @@ public class ReviveManager {
      * @return the cost in orbs
      */
     public int getReviveCost() {
-        return 0;
+        return 5 + (5 * revivesUsed);
     }
 
     /**

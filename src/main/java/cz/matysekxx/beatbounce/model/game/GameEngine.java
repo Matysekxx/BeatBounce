@@ -11,7 +11,9 @@ import cz.matysekxx.beatbounce.util.LevelUtil;
 
 import javax.sound.sampled.Clip;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -60,24 +62,9 @@ public class GameEngine {
     private final List<AbstractTile> updatableTiles;
 
     /**
-     * Handler for the initial countdown state.
+     * Map of game states to their respective handlers.
      */
-    private final GameStateHandler countdownHandler;
-
-    /**
-     * Handler for active gameplay.
-     */
-    private final GameStateHandler playingHandler;
-
-    /**
-     * Handler for the level completion animation.
-     */
-    private final GameStateHandler levelEndAnimationHandler;
-
-    /**
-     * Handler for the falling state after a miss.
-     */
-    private final GameStateHandler fallingHandler;
+    private final Map<GameState, GameStateHandler> stateHandlers = new EnumMap<>(GameState.class);
 
     /**
      * Manager for handling revives and currency.
@@ -180,10 +167,11 @@ public class GameEngine {
 
         this.reviveManager = new ReviveManager(this, sphere);
         this.orbSpawner = new OrbSpawner();
-        this.countdownHandler = new CountdownHandler(this);
-        this.playingHandler = new PlayingHandler(this, clip, new TileManager(this));
-        this.levelEndAnimationHandler = new LevelEndAnimationHandler(this, cam, sphere);
-        this.fallingHandler = new FallingHandler(this, sphere);
+        
+        stateHandlers.put(GameState.COUNTDOWN, new CountdownHandler(this));
+        stateHandlers.put(GameState.PLAYING, new PlayingHandler(this, clip, new TileManager(this)));
+        stateHandlers.put(GameState.LEVEL_END_ANIMATION, new LevelEndAnimationHandler(this, cam, sphere));
+        stateHandlers.put(GameState.FALLING, new FallingHandler(this, sphere));
     }
 
     /**
@@ -220,7 +208,7 @@ public class GameEngine {
      * Stops the music clip.
      */
     public void stopClip() {
-        if (clip.isRunning()) clip.stop();
+        if (clip != null && clip.isRunning()) clip.stop();
     }
 
     /**
@@ -327,7 +315,7 @@ public class GameEngine {
      * @param onLongTile true if the player should be in the long-tile state
      */
     public void setOnLongTile(boolean onLongTile) {
-        if (playingHandler instanceof PlayingHandler ph) {
+        if (stateHandlers.get(GameState.PLAYING) instanceof PlayingHandler ph) {
             ph.setOnLongTile(onLongTile);
         }
     }
@@ -336,7 +324,7 @@ public class GameEngine {
      * Resets collision detection interval in the playing handler.
      */
     public void resetCCD() {
-        if (playingHandler instanceof PlayingHandler ph) {
+        if (stateHandlers.get(GameState.PLAYING) instanceof PlayingHandler ph) {
             ph.resetCCD();
         }
     }
@@ -350,11 +338,10 @@ public class GameEngine {
         syncAudioTime(deltaTime);
         scorePopups.removeIf(ScorePopup::isFinished);
         scorePopups.forEach(popup -> popup.update(deltaTime));
-        switch (gameState) {
-            case FALLING -> fallingHandler.handle(smoothedAudioTime, deltaTime);
-            case PLAYING -> playingHandler.handle(smoothedAudioTime, deltaTime);
-            case COUNTDOWN -> countdownHandler.handle(smoothedAudioTime, deltaTime);
-            case LEVEL_END_ANIMATION -> levelEndAnimationHandler.handle(smoothedAudioTime, deltaTime);
+
+        final GameStateHandler handler = stateHandlers.get(gameState);
+        if (handler != null) {
+            handler.handle(smoothedAudioTime, deltaTime);
         }
     }
 

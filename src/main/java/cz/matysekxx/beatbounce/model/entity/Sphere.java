@@ -129,25 +129,26 @@ public class Sphere extends Entity {
         final double lerpFactor = 1.0 - Math.exp(-25 * deltaTime);
         currentX += (targetX - currentX) * lerpFactor;
         this.x = (int) currentX;
+        
         if (isFalling) {
             final double constantFallVelocity = 600.0;
             currentY += constantFallVelocity * deltaTime;
-            this.y = (int) currentY;
         } else if (isJumping) {
             final double elapsed = currentTime - jumpStartTime;
             final double progress = elapsed / jumpDuration;
             if (progress >= 1.0) {
                 isJumping = false;
                 currentY = 150;
-            } else {
+            } else if (progress > 0) {
                 final double jumpYOffset = 4 * peakHeight * progress * (1 - progress);
                 currentY = 150 - jumpYOffset;
+            } else {
+                currentY = 150;
             }
-            this.y = (int) currentY;
         } else {
             currentY = 150;
-            this.y = (int) currentY;
         }
+        this.y = (int) currentY;
     }
 
     /**
@@ -219,6 +220,7 @@ public class Sphere extends Entity {
         isFalling = false;
         alpha = 1.0f;
         scaleMultiplier = 1.0f;
+        jumpStartTime = 0;
     }
 
     /**
@@ -227,12 +229,13 @@ public class Sphere extends Entity {
     public void revive() {
         this.isFalling = false;
         this.isJumping = false;
-        this.currentX = 0;
-        this.targetX = 0;
         this.currentY = 150;
         this.y = 150;
         this.alpha = 1.0f;
         this.scaleMultiplier = 1.0f;
+        this.jumpStartTime = 0;
+        this.jumpDuration = 1.0;
+        this.peakHeight = 0;
     }
 
     /**

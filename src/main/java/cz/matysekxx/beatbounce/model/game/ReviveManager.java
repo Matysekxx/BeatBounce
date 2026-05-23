@@ -13,7 +13,7 @@ public class ReviveManager {
     /**
      * Maximum number of times a player can revive in a single run.
      */
-    public static final int MAX_REVIVES = 5;
+    public static final int MAX_REVIVES = 3;
 
     /**
      * The game engine providing state and clip data.
@@ -64,12 +64,13 @@ public class ReviveManager {
             double reviveZ = lastTile.getZ();
 
             if (lastTile instanceof LongTile lt) {
-                double fallZ = gameEngine.getFallStartZ();
+                final double fallZ = gameEngine.getFallStartZ();
                 if (fallZ > lt.getZ()) {
-                    reviveZ = Math.clamp(fallZ - 150, lt.getZ(), lt.getZ() + lt.getLengthInZ() - 50);
+                    reviveZ = Math.max(lt.getZ(), Math.min(fallZ - 150, lt.getZ() + lt.getLengthInZ() - 50));
                 }
             }
 
+            this.sphere.revive();
             gameEngine.setGameState(GameState.COUNTDOWN);
             gameEngine.setCountdownTime(3.0);
             gameEngine.setGameZProgress(reviveZ);
@@ -82,26 +83,26 @@ public class ReviveManager {
             gameEngine.setSmoothedAudioTime(reviveTime);
             gameEngine.setLastClipMicroPos(microPos);
             gameEngine.setLastSyncNano(System.nanoTime());
+
             gameEngine.setFallStartZ(0);
             gameEngine.resetCCD();
 
-            this.sphere.revive();
             this.sphere.setZ(reviveZ);
-            lastTile.onLanding();
-            
-            final double tileX = lastTile.getXAt(reviveTime);
+            double tileX = lastTile.getXAt(reviveTime);
             this.sphere.setCurrentX(tileX);
             this.sphere.setCurrentY(150);
+            
             gameEngine.getCam().setZ(reviveZ - 500);
             gameEngine.getCam().setX(tileX * 0.2);
             gameEngine.getCam().setY(0);
 
+            this.sphere.update(reviveTime, 0);
+            lastTile.onLanding();
             gameEngine.setCurrentTileIndex(lastTileIdx);
             
             if (lastTile instanceof LongTile) {
                 gameEngine.setOnLongTile(true);
                 gameEngine.setLongTileScoreAccum(0);
-                this.sphere.update(gameEngine.getSmoothedAudioTime(), 0);
             } else {
                 gameEngine.setOnLongTile(false);
                 gameEngine.startNextJump(gameEngine.getSmoothedAudioTime());
@@ -117,7 +118,7 @@ public class ReviveManager {
      * @return the cost in orbs
      */
     public int getReviveCost() {
-        return 5 + 5 * revivesUsed;
+        return 0;
     }
 
     /**

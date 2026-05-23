@@ -8,82 +8,102 @@ import cz.matysekxx.beatbounce.gui.WindowData;
 import java.awt.*;
 
 /**
- * The {@code Sphere} class represents the player character in the game.
- * It extends {@link Entity}.
- * The sphere can jump, fall, and has various visual properties like alpha, vibration, and stretch.
+ * The {@code Sphere} class represents the player character in the game world.
+ * It extends {@link Entity} and manages the player's physical state, 
+ * including movement, jumping, falling, and visual representation.
+ * <p>
+ * Key features:
+ * <ul>
+ *   <li><b>Horizontal Movement:</b> Uses exponential smoothing (LERP) for fluid transitions between lanes.</li>
+ *   <li><b>Jumping:</b> Implements a parabolic trajectory based on world time and beat duration.</li>
+ *   <li><b>Visuals:</b> Handles transparency (alpha), scaling, and dynamic shadow rendering.</li>
+ * </ul>
  */
 public class Sphere extends Entity {
     /**
      * Physical radius of the sphere in world units.
+     * Used for collision detection and base rendering size.
      */
     private final int radius;
 
     /**
-     * Current depth position.
+     * Current depth position along the Z-axis.
+     * This value increases as the player progresses through the level.
      */
     private double z;
 
     /**
-     * The horizontal world coordinate the sphere is moving towards.
+     * The horizontal world coordinate (X) that the sphere is currently moving towards.
+     * Target position is usually the center of a lane.
      */
     private double targetX;
 
     /**
-     * Exact current horizontal world coordinate.
+     * Exact current horizontal world coordinate (X).
+     * This value is interpolated towards {@code targetX} in the {@link #update(double, double)} method.
      */
     private double currentX;
 
     /**
-     * Exact current vertical world coordinate.
+     * Exact current vertical world coordinate (Y).
+     * Managed by jump or fall logic; ground level is typically at Y=150.
      */
     private double currentY;
 
     /**
-     * World time when the current jump started.
+     * World time (in seconds) when the current jump started.
+     * Used as a baseline for parabolic progress calculation.
      */
     private double jumpStartTime;
 
     /**
-     * Total expected duration of the current jump.
+     * Total expected duration of the current jump in seconds.
+     * Usually matches the time between two beats.
      */
     private double jumpDuration;
 
     /**
-     * The maximum height reached during the current jump.
+     * The maximum height (vertical offset) reached during the current jump.
      */
     private double peakHeight;
 
     /**
-     * Whether the sphere is currently in the air performing a jump.
+     * Flag indicating if the sphere is currently performing a jump animation.
      */
     private boolean isJumping;
 
     /**
-     * Whether the sphere has missed a tile and is falling into the void.
+     * Flag indicating if the sphere has missed a tile and is falling into the void.
      */
     private boolean isFalling = false;
 
+    /**
+     * Returns whether the sphere is currently falling.
+     *
+     * @return {@code true} if falling, {@code false} otherwise
+     */
     public boolean isFalling() {
         return isFalling;
     }
 
     /**
-     * Current transparency alpha level (0.0 to 1.0).
+     * Current transparency alpha level of the sphere (0.0 for fully transparent to 1.0 for fully opaque).
      */
     private float alpha = 1.0f;
 
     /**
      * Current visual scale multiplier for animations.
+     * Values > 1.0 make the sphere appear larger, < 1.0 smaller.
      */
     private float scaleMultiplier = 1.0f;
 
     /**
      * Constructs a new {@code Sphere} with specified coordinates and radius.
      *
-     * @param x      the horizontal position
-     * @param y      the vertical position
-     * @param z      the depth position
-     * @param radius the radius of the sphere
+     * @param x      the initial horizontal position
+     * @param y      the initial vertical position
+     * @param z      the initial depth position
+     * @param radius the base radius of the sphere
      */
     public Sphere(int x, int y, int z, int radius) {
         super(x, y);
@@ -96,11 +116,12 @@ public class Sphere extends Entity {
     }
 
     /**
-     * Starts a jump animation for the sphere.
+     * Initiates a jump animation.
+     * Calculates the trajectory based on a parabolic arc over the specified duration.
      *
-     * @param startTime the time when the jump starts
-     * @param duration  the duration of the jump
-     * @param height    the peak height of the jump
+     * @param startTime the game world time when the jump starts
+     * @param duration  the time it takes to complete the jump arc
+     * @param height    the maximum vertical displacement from the ground
      */
     public void startJump(double startTime, double duration, double height) {
         this.jumpStartTime = startTime;
@@ -111,7 +132,7 @@ public class Sphere extends Entity {
     }
 
     /**
-     * Cancels the current jump and snaps the sphere back to the ground.
+     * Immediately cancels the current jump and resets the sphere to ground level (Y=150).
      */
     public void cancelJump() {
         this.isJumping = false;
@@ -120,10 +141,16 @@ public class Sphere extends Entity {
     }
 
     /**
-     * Updates the sphere's position and state based on the current time and delta time.
+     * Updates the sphere's position and internal state.
+     * <p>
+     * Horizontal movement uses exponential decay for a smooth "organic" feel:
+     * {@code currentX += (targetX - currentX) * (1 - e^(-25 * deltaTime))}.
+     * <p>
+     * Vertical movement follows a parabolic arc if jumping:
+     * {@code y = 4 * peakHeight * progress * (1 - progress)}.
      *
      * @param currentTime the current game time in seconds
-     * @param deltaTime   the time elapsed since the last update in seconds
+     * @param deltaTime   the time elapsed since the last frame in seconds
      */
     public void update(double currentTime, double deltaTime) {
         final double lerpFactor = 1.0 - Math.exp(-25 * deltaTime);
@@ -152,7 +179,7 @@ public class Sphere extends Entity {
     }
 
     /**
-     * Returns the target horizontal position.
+     * Returns the target horizontal world coordinate.
      *
      * @return the {@code targetX} value
      */
@@ -161,18 +188,18 @@ public class Sphere extends Entity {
     }
 
     /**
-     * Sets the target horizontal position for the sphere to move towards.
+     * Sets a new target horizontal coordinate. The sphere will smoothly glide towards this value.
      *
-     * @param targetX the new target X coordinate
+     * @param targetX the new target X world coordinate
      */
     public void setTargetX(double targetX) {
         this.targetX = targetX;
     }
 
     /**
-     * Sets the current horizontal position of the sphere.
+     * Snaps the horizontal position to a specific value, bypassing interpolation.
      *
-     * @param x the new X coordinate
+     * @param x the new X world coordinate
      */
     public void setCurrentX(double x) {
         this.currentX = x;
@@ -181,7 +208,7 @@ public class Sphere extends Entity {
     }
 
     /**
-     * Returns the current vertical position.
+     * Returns the current exact vertical world coordinate.
      *
      * @return the {@code currentY} value
      */
@@ -190,9 +217,9 @@ public class Sphere extends Entity {
     }
 
     /**
-     * Sets the current vertical position of the sphere.
+     * Directly sets the current vertical position.
      *
-     * @param y the new Y coordinate
+     * @param y the new Y world coordinate
      */
     public void setCurrentY(double y) {
         this.currentY = y;
@@ -200,7 +227,7 @@ public class Sphere extends Entity {
     }
 
     /**
-     * Starts the falling state for the sphere.
+     * Triggers the falling state. The sphere will accelerate downwards indefinitely.
      */
     public void startFalling() {
         isFalling = true;
@@ -208,7 +235,7 @@ public class Sphere extends Entity {
     }
 
     /**
-     * Resets the sphere to its initial state.
+     * Resets the sphere to its default starting position and state.
      */
     public void reset() {
         currentX = 0;
@@ -224,7 +251,7 @@ public class Sphere extends Entity {
     }
 
     /**
-     * Prepares the sphere for continuation after a revive.
+     * Restores the sphere to a playable state after a revive event.
      */
     public void revive() {
         this.isFalling = false;
@@ -239,7 +266,7 @@ public class Sphere extends Entity {
     }
 
     /**
-     * Returns whether the sphere is currently jumping.
+     * Returns whether the sphere is currently in the air.
      *
      * @return {@code true} if jumping, {@code false} otherwise
      */
@@ -248,16 +275,16 @@ public class Sphere extends Entity {
     }
 
     /**
-     * Returns the time when the current jump is expected to end.
+     * Returns the world time when the current jump arc is scheduled to complete.
      *
-     * @return the jump end time
+     * @return the jump end time in seconds
      */
     public double getJumpEndTime() {
         return jumpStartTime + jumpDuration;
     }
 
     /**
-     * Returns the depth position of the sphere.
+     * Returns the current depth position.
      *
      * @return the {@code z} coordinate
      */
@@ -266,25 +293,25 @@ public class Sphere extends Entity {
     }
 
     /**
-     * Sets the depth position of the sphere.
+     * Updates the depth position.
      *
-     * @param z the new Z coordinate
+     * @param z the new Z world coordinate
      */
     public void setZ(double z) {
         this.z = z;
     }
 
     /**
-     * Returns the transparency alpha value of the sphere.
+     * Returns the current visual transparency.
      *
-     * @return the {@code alpha} value
+     * @return the {@code alpha} value (0.0 to 1.0)
      */
     public float getAlpha() {
         return alpha;
     }
 
     /**
-     * Sets the transparency alpha value of the sphere.
+     * Sets the visual transparency of the sphere.
      *
      * @param alpha the new alpha value (0.0 to 1.0)
      */
@@ -293,7 +320,7 @@ public class Sphere extends Entity {
     }
 
     /**
-     * Returns the scale multiplier of the sphere.
+     * Returns the current visual scale multiplier.
      *
      * @return the {@code scaleMultiplier} value
      */
@@ -302,7 +329,7 @@ public class Sphere extends Entity {
     }
 
     /**
-     * Sets the scale multiplier for rendering the sphere.
+     * Sets a scale multiplier for visual effects (e.g., squashing on landing).
      *
      * @param scaleMultiplier the new scale multiplier
      */
@@ -311,7 +338,7 @@ public class Sphere extends Entity {
     }
 
     /**
-     * Returns the base radius of the sphere.
+     * Returns the base physical radius of the sphere.
      *
      * @return the {@code radius} value
      */
@@ -320,11 +347,11 @@ public class Sphere extends Entity {
     }
 
     /**
-     * Renders the sphere and its shadow in 3D space.
+     * Renders the sphere and its drop shadow in 3D perspective.
      *
      * @param g2d        the graphics context to paint on
-     * @param cam        the {@link Camera3D} used for perspective calculations
-     * @param windowData the {@link WindowData} containing screen dimensions
+     * @param cam        the {@link Camera3D} used for perspective projection
+     * @param windowData metadata about the rendering window dimensions
      */
     public void render(Graphics2D g2d, Camera3D cam, WindowData windowData) {
         final double scale = cam.getScale(z);
@@ -347,7 +374,8 @@ public class Sphere extends Entity {
     }
 
     /**
-     * Renders the drop shadow of the sphere on the ground plane.
+     * Renders a drop shadow on the ground plane (Y=150).
+     * The shadow's size and transparency are dynamically calculated based on the sphere's current altitude.
      *
      * @param g2d        the graphics context
      * @param cam        the camera used for projection
@@ -359,10 +387,12 @@ public class Sphere extends Entity {
         final double groundY = 150;
         final int shadowScreenX = (int) (windowData.width() / 2. + (currentX + vx - cam.getX()) * scale);
         final int shadowScreenY = (int) (windowData.height() / 3. + (groundY - cam.getY()) * scale);
+
         final double heightFactor = Math.max(0, (groundY - currentY) / 300.0);
         final float shadowAlpha = (float) Math.max(0, 0.4 - heightFactor * 0.3);
         final int shadowSizeX = (int) (radius * scale * (1.2 - heightFactor * 0.4));
         final int shadowSizeY = (int) (shadowSizeX * 0.4);
+        
         if (shadowAlpha > 0 && shadowSizeX > 0 && shadowSizeY > 0) {
             g2d.setColor(RenderCache.blackWithAlpha((int) (255 * shadowAlpha)));
             g2d.fillOval(shadowScreenX - shadowSizeX, shadowScreenY - shadowSizeY / 2, shadowSizeX * 2, shadowSizeY);

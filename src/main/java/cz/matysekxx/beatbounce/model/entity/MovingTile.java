@@ -2,6 +2,7 @@ package cz.matysekxx.beatbounce.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.event.BeatEvent;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 
@@ -9,43 +10,25 @@ import java.awt.*;
 
 /**
  * The {@code MovingTile} class represents a tile that oscillates horizontally over time.
- * It extends {@link AbstractTile} and implements movement logic based on an amplitude and speed.
+ * It extends {@link AbstractTile}.
  */
 public class MovingTile extends AbstractTile {
     /**
-     * The starting horizontal position of the tile.
+     * The initial horizontal world coordinate.
      */
     private int startX;
-
     /**
-     * The maximum horizontal displacement from the starting position.
+     * The maximum horizontal displacement from the start position.
      */
     private int amplitude;
-
     /**
-     * The frequency of oscillation (how fast it moves).
+     * The speed of horizontal oscillation.
      */
     private double speed;
-
     /**
-     * Internal timer used for calculating the current oscillation phase.
+     * Internal accumulator for elapsed world time.
      */
     private double time;
-
-    /**
-     * Base hue offset for color variation.
-     */
-    private float hueOffset;
-
-    /**
-     * The base color with an alpha transparency of 220.
-     */
-    private Color baseColorAlpha220;
-
-    /**
-     * A lightened version of the color with alpha transparency of 220, used when activated.
-     */
-    private Color lightenedColorAlpha220;
 
     /**
      * Default constructor for {@code MovingTile}.
@@ -55,14 +38,14 @@ public class MovingTile extends AbstractTile {
     }
 
     /**
-     * Constructs a new {@code MovingTile} with specified parameters.
+     * Constructs a new {@code MovingTile} with specified oscillation parameters.
      *
      * @param beatEvent the {@link BeatEvent} associated with this tile
      * @param x         the initial horizontal position
      * @param y         the vertical position
      * @param z         the depth position
-     * @param amplitude the maximum horizontal displacement from the starting position
-     * @param speed     the frequency of oscillation
+     * @param amplitude the maximum horizontal displacement
+     * @param speed     the speed of oscillation
      */
     @JsonCreator
     public MovingTile(
@@ -77,23 +60,10 @@ public class MovingTile extends AbstractTile {
         this.amplitude = amplitude;
         this.speed = speed;
         this.time = 0;
-        this.hueOffset = (float) ((z % 5000) / 5000.0);
-        calculateColors();
     }
 
     /**
-     * Calculates the colors used for rendering based on the hue offset.
-     */
-    private void calculateColors() {
-        final float h = 0.1f + (hueOffset * 0.1f);
-        final Color baseColor = Color.getHSBColor(h, 1.0f, 1.0f);
-        this.baseColorAlpha220 = RenderCache.customColorWithAlpha(baseColor, 220);
-        final Color lightenedColor = Color.getHSBColor(h, 0.7f, 1.0f);
-        this.lightenedColorAlpha220 = RenderCache.customColorWithAlpha(lightenedColor, 220);
-    }
-
-    /**
-     * Updates the tile's position based on elapsed time.
+     * Updates the tile's horizontal position based on the elapsed time.
      *
      * @param deltaTime the time elapsed since the last update
      */
@@ -104,7 +74,8 @@ public class MovingTile extends AbstractTile {
     }
 
     /**
-     * Calculates the horizontal position of the tile at a specific world time.
+     * Calculates the horizontal world coordinate of the tile at a specific time.
+     * Uses a sine wave for smooth oscillation.
      *
      * @param timestamp the world time in seconds
      * @return the horizontal world coordinate at that time
@@ -121,7 +92,7 @@ public class MovingTile extends AbstractTile {
     }
 
     /**
-     * Resets the tile's state, including the horizontal oscillation timer.
+     * Resets the tile's internal state, including resetting the oscillation time.
      */
     @Override
     public void reset() {
@@ -130,42 +101,45 @@ public class MovingTile extends AbstractTile {
     }
 
     /**
-     * Returns the starting horizontal position of the tile.
+     * Returns the initial horizontal position.
      *
      * @return the {@code startX} value
      */
-    public int getStartX() {
-        return startX;
-    }
+    public int getStartX() { return startX; }
 
     /**
      * Returns the horizontal oscillation amplitude.
      *
      * @return the {@code amplitude} value
      */
-    public int getAmplitude() {
-        return amplitude;
-    }
+    public int getAmplitude() { return amplitude; }
 
     /**
-     * Returns the horizontal oscillation speed.
+     * Returns the oscillation speed.
      *
      * @return the {@code speed} value
      */
-    public double getSpeed() {
-        return speed;
-    }
+    public double getSpeed() { return speed; }
 
     /**
-     * Renders the 3D polygon of the tile onto the graphics context.
-     * Includes neon effects if graphics quality is not set to LOW.
+     * Renders the tile with dynamic colors.
      *
-     * @param g2d     the graphics context to paint on
-     * @param polygon the polygon representing the tile's shape on screen
+     * @param g2d     the graphics context
+     * @param polygon the projected 2D polygon of the tile's top face
+     * @param scale   the scale factor at the front of the tile
      */
     @Override
     public void drawTile(Graphics2D g2d, Polygon polygon, double scale) {
-        g2d.setColor(isActivated ? lightenedColorAlpha220 : baseColorAlpha220);
+        Color dynamicBase = getDynamicColor(1.0f, 1.0f, 0.5);
+        Color dynamicLight = getDynamicColor(0.6f, 1.0f, 0.5);
+        Color tileColor = isActivated ? dynamicLight : dynamicBase;
+        if (!Settings.graphicsQuality.equals("LOW")) {
+            g2d.setStroke(RenderCache.STROKE_8);
+            g2d.setColor(RenderCache.customColorWithAlpha(tileColor, 50));
+            g2d.drawPolygon(polygon);
+        }
+
+        g2d.setColor(RenderCache.customColorWithAlpha(tileColor, 220));
         g2d.fillPolygon(polygon);
 
         g2d.setStroke(RenderCache.STROKE_2);

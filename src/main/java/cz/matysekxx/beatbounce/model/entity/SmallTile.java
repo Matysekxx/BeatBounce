@@ -10,15 +10,24 @@ import cz.matysekxx.beatbounce.gui.RenderCache;
 import java.awt.*;
 
 /**
- * A smaller, thinner tile used to fill gaps in the level and provide visual guidance.
+ * The {@code SmallTile} class represents a narrower tile variant in the game.
+ * It requires more precise movement from the player to land on.
+ * It extends {@link AbstractTile}.
  */
 public class SmallTile extends AbstractTile {
-
     /**
-     * Scratch polygon for rendering thickness.
+     * Scratch polygon for rendering the thickness (3D effect) of the tile.
      */
     private final Polygon thicknessScratch = new Polygon(new int[4], new int[4], 4);
 
+    /**
+     * Constructs a new {@code SmallTile} with specified parameters.
+     *
+     * @param beatEvent the {@link BeatEvent} associated with this tile
+     * @param x         the horizontal position
+     * @param y         the vertical position
+     * @param z         the depth position
+     */
     @JsonCreator
     public SmallTile(
             @JsonProperty("beatEvent") BeatEvent beatEvent,
@@ -28,6 +37,17 @@ public class SmallTile extends AbstractTile {
         super(beatEvent, new Point(x, y), z, 50.0);
     }
 
+    /**
+     * Overrides the X-point calculation to make the tile narrower (50 world units instead of 100).
+     *
+     * @param cam        the camera used for projection
+     * @param width      screen width
+     * @param scaleFront scale at the front of the tile
+     * @param scaleBack  scale at the back of the tile
+     * @param targetX    world X coordinate
+     * @param pulseScale current animation pulse scale
+     * @param xpoints    array to fill with projected X coordinates
+     */
     @Override
     protected void fillXPoints(Camera3D cam, int width, double scaleFront, double scaleBack, int targetX, double pulseScale, int[] xpoints) {
         final double centerScreenFront = ((double) width / 2) + ((targetX - cam.getX()) * scaleFront);
@@ -42,6 +62,13 @@ public class SmallTile extends AbstractTile {
         xpoints[3] = (int) (centerScreenBack - backWidth / 2);
     }
 
+    /**
+     * Renders the tile with a thickness effect and dynamic colors.
+     *
+     * @param g2d     the graphics context
+     * @param polygon the projected 2D polygon of the tile's top face
+     * @param scale   the scale factor at the front of the tile
+     */
     @Override
     public void drawTile(Graphics2D g2d, Polygon polygon, double scale) {
         if (!Settings.graphicsQuality.equals("LOW")) {
@@ -57,7 +84,12 @@ public class SmallTile extends AbstractTile {
             }
         }
 
-        g2d.setColor(isActivated ? RenderCache.customColorWithAlpha(new Color(180, 255, 255), 230) : RenderCache.whiteWithAlpha(180));
+        if (isActivated) {
+            Color waveColor = getDynamicColor(0.6f, 1.0f, 0.0);
+            g2d.setColor(RenderCache.customColorWithAlpha(waveColor, 230));
+        } else {
+            g2d.setColor(RenderCache.whiteWithAlpha(140));
+        }
         g2d.fillPolygon(polygon);
 
         g2d.setStroke(RenderCache.STROKE_1);

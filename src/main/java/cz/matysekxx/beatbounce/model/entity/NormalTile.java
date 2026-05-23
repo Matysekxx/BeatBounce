@@ -144,36 +144,57 @@ public class NormalTile extends AbstractTile {
             final double scaleBack = cam.getScale(this.getZ() + getLengthInZ());
             final int LANE_WIDTH = 120;
 
+            Color dynamicFakeColor = RenderCache.customColorWithAlpha(getDynamicColor(0.8f, 0.4f, 0.0), 120);
+            Color dynamicFakeBorder = RenderCache.customColorWithAlpha(getDynamicColor(0.8f, 0.5f, 0.0), 180);
+
             for (int offset : fakeLaneOffsets) {
                 setupPolygon(cam, windowData.width(), windowData.height() / 3, scaleFront, scaleBack, this.getX() + (offset * LANE_WIDTH), 1.0, fakeScratchPolygon);
-                drawFakePolygon(g2d, fakeScratchPolygon);
+
+                drawPolygon(g2d, dynamicFakeColor, dynamicFakeBorder, fakeScratchPolygon);
             }
         }
         super.render(g2d, cam, windowData);
     }
 
     /**
-     * Draws a "fake lane" polygon with reduced opacity.
+     * Internal helper method to fill and draw a polygon with specified colors.
      *
-     * @param g2d     the graphics context to paint on
-     * @param polygon the polygon representing the fake lane
+     * @param g2d                the graphics context
+     * @param dynamicFakeColor   the fill color
+     * @param dynamicFakeBorder  the border color
+     * @param fakeScratchPolygon the polygon to draw
      */
-    private void drawFakePolygon(Graphics2D g2d, Polygon polygon) {
-        g2d.setColor(baseColorAlpha120);
-        g2d.fillPolygon(polygon);
+    private void drawPolygon(Graphics2D g2d, Color dynamicFakeColor, Color dynamicFakeBorder, Polygon fakeScratchPolygon) {
+        g2d.setColor(dynamicFakeColor);
+        g2d.fillPolygon(fakeScratchPolygon);
 
         if (!Settings.graphicsQuality.equals("LOW")) {
             g2d.setStroke(RenderCache.STROKE_1_5);
-            g2d.setColor(baseColorAlpha180);
-            g2d.drawPolygon(polygon);
+            g2d.setColor(dynamicFakeBorder);
+            g2d.drawPolygon(fakeScratchPolygon);
         }
-
         g2d.setStroke(RenderCache.STROKE_1);
     }
 
     @Override
     public void drawTile(Graphics2D g2d, Polygon polygon, double scale) {
-        g2d.setColor(isActivated ? lightenedColorAlpha230 : baseColorAlpha230);
+        Color dynamicBase = getDynamicColor(0.9f, 0.9f, 0.0);
+        Color dynamicLight = getDynamicColor(0.5f, 1.0f, 0.0);
+        Color tileColor = isActivated ? dynamicLight : dynamicBase;
+
+        if (!Settings.graphicsQuality.equals("LOW")) {
+            g2d.setStroke(RenderCache.STROKE_8);
+            g2d.setColor(RenderCache.customColorWithAlpha(tileColor, 40));
+            g2d.drawPolygon(polygon);
+
+            if (Settings.graphicsQuality.equals("HIGH")) {
+                g2d.setStroke(RenderCache.STROKE_4);
+                g2d.setColor(RenderCache.customColorWithAlpha(tileColor, 90));
+                g2d.drawPolygon(polygon);
+            }
+        }
+
+        g2d.setColor(RenderCache.customColorWithAlpha(tileColor, 220));
         g2d.fillPolygon(polygon);
 
         g2d.setStroke(RenderCache.STROKE_1_5);

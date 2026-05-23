@@ -9,30 +9,25 @@ import cz.matysekxx.beatbounce.gui.RenderCache;
 import java.awt.*;
 
 /**
- * A long tile that allows the player to roll over its surface.
- * Used for sustained rhythmic sections or to fill large gaps.
+ * The {@code LongTile} class represents a tile with extended length along the Z-axis.
+ * It is typically used for sustained notes in the game.
+ * It extends {@link AbstractTile}.
  */
 public class LongTile extends AbstractTile {
     /**
-     * The primary base color of the tile.
-     */
-    private final Color baseColor;
-
-    /**
-     * The base color with an alpha transparency of 220.
-     */
-    private final Color baseColorAlpha220;
-
-    /**
-     * A lightened version of the base color used when the tile is activated.
-     */
-    private final Color lightenedColor;
-
-    /**
-     * Scratch polygon for rendering thickness.
+     * Scratch polygon for rendering the thickness (3D effect) of the tile.
      */
     private final Polygon thicknessScratch = new Polygon(new int[4], new int[4], 4);
 
+    /**
+     * Constructs a new {@code LongTile} with specified parameters.
+     *
+     * @param beatEvent the {@link BeatEvent} associated with this tile
+     * @param x         the horizontal position
+     * @param y         the vertical position
+     * @param z         the depth position
+     * @param lengthInZ the length of the tile along the Z-axis
+     */
     @JsonCreator
     public LongTile(
             @JsonProperty("beatEvent") BeatEvent beatEvent,
@@ -41,18 +36,28 @@ public class LongTile extends AbstractTile {
             @JsonProperty("z") double z,
             @JsonProperty("lengthInZ") double lengthInZ) {
         super(beatEvent, new Point(x, y), z, lengthInZ);
-        float h = (float) ((z % 5000) / 5000.0);
-        this.baseColor = Color.getHSBColor(h, 0.8f, 0.9f);
-        this.baseColorAlpha220 = RenderCache.customColorWithAlpha(baseColor, 220);
-        this.lightenedColor = Color.getHSBColor(h, 0.5f, 1.0f);
     }
 
+    /**
+     * Renders the tile with a thickness effect and dynamic colors.
+     *
+     * @param g2d     the graphics context
+     * @param polygon the projected 2D polygon of the tile's top face
+     * @param scale   the scale factor at the front of the tile
+     */
     @Override
     public void drawTile(Graphics2D g2d, Polygon polygon, double scale) {
         final boolean isLow = Settings.graphicsQuality.equals("LOW");
-        final Color displayColor = isActivated ? lightenedColor : baseColor;
+
+        Color dynamicBase = getDynamicColor(0.8f, 0.9f, 0.7);
+        Color dynamicLight = getDynamicColor(0.5f, 1.0f, 0.7);
+        Color tileColor = isActivated ? dynamicLight : dynamicBase;
 
         if (!isLow) {
+            g2d.setStroke(RenderCache.STROKE_8);
+            g2d.setColor(RenderCache.customColorWithAlpha(tileColor, 35));
+            g2d.drawPolygon(polygon);
+
             final int thickness = (int) (10 * scale);
             if (thickness > 0) {
                 for (int i = 0; i < 4; i++) {
@@ -65,7 +70,7 @@ public class LongTile extends AbstractTile {
             }
         }
 
-        g2d.setColor(isActivated ? lightenedColor : baseColorAlpha220);
+        g2d.setColor(RenderCache.customColorWithAlpha(tileColor, 220));
         g2d.fillPolygon(polygon);
 
         g2d.setStroke(RenderCache.STROKE_2);

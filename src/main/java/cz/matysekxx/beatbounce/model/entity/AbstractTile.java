@@ -141,6 +141,21 @@ public abstract class AbstractTile extends Entity {
     }
 
     /**
+     * Calculates a dynamic color that smoothly changes over time and creates a wave effect along the Z-axis.
+     *
+     * @param saturation color saturation (0.0 - 1.0)
+     * @param brightness color brightness (0.0 - 1.0)
+     * @param phaseOffset phase shift, useful if different tile types should have a different base hue
+     * @return a dynamic {@link Color} object
+     */
+    protected Color getDynamicColor(float saturation, float brightness, double phaseOffset) {
+        final double timeFactor = (System.currentTimeMillis() % 25000) / 25000.0;
+        final double zFactor = (this.z % 4000) / 4000.0;
+        final float hue = (float) ((timeFactor + zFactor + phaseOffset) % 1.0);
+        return Color.getHSBColor(hue, saturation, brightness);
+    }
+
+    /**
      * Internal rendering method for subclasses to define their appearance.
      *
      * @param g2d     the graphics context
@@ -151,6 +166,15 @@ public abstract class AbstractTile extends Entity {
 
     /**
      * Sets up a polygon with projected coordinates.
+     *
+     * @param cam         the camera used for projection
+     * @param width       screen width
+     * @param horizonY     the vertical position of the horizon on screen
+     * @param scaleFront  scale at the front of the tile
+     * @param scaleBack   scale at the back of the tile
+     * @param targetX     world X coordinate
+     * @param pulseScale  current animation pulse scale
+     * @param poly        the polygon to populate
      */
     protected void setupPolygon(Camera3D cam, int width, int horizonY, double scaleFront, double scaleBack, int targetX, double pulseScale, Polygon poly) {
         fillXPoints(cam, width, scaleFront, scaleBack, targetX, pulseScale, poly.xpoints);
@@ -160,6 +184,12 @@ public abstract class AbstractTile extends Entity {
 
     /**
      * Fills the Y-coordinates for the vertices of the tile's 3D projection.
+     *
+     * @param cam        the camera used for projection
+     * @param scaleFront scale at the front of the tile
+     * @param scaleBack  scale at the back of the tile
+     * @param horizonY   the vertical position of the horizon on screen
+     * @param ypoints    array to fill with projected Y coordinates
      */
     protected void fillYPoints(Camera3D cam, double scaleFront, double scaleBack, int horizonY, int[] ypoints) {
         double baseHeight = 150 - cam.getY();
@@ -173,6 +203,14 @@ public abstract class AbstractTile extends Entity {
 
     /**
      * Fills the X-coordinates for the vertices of the tile's 3D projection.
+     *
+     * @param cam        the camera used for projection
+     * @param width      screen width
+     * @param scaleFront scale at the front of the tile
+     * @param scaleBack  scale at the back of the tile
+     * @param targetX    world X coordinate
+     * @param pulseScale current animation pulse scale
+     * @param xpoints    array to fill with projected X coordinates
      */
     protected void fillXPoints(Camera3D cam, int width, double scaleFront, double scaleBack, int targetX, double pulseScale, int[] xpoints) {
         final double centerScreenFront = calculateCenterScreen(

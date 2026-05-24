@@ -4,42 +4,50 @@ import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.model.achievement.Achievement;
 import cz.matysekxx.beatbounce.util.UIScale;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+
 public class AchievementClaimPanel extends JPanel {
     private final Achievement achievement;
+    private final Runnable onClaimRequested;
     private boolean buttonHovered = false;
 
-    public AchievementClaimPanel(Achievement achievement, Runnable onClaimRequest) {
+    public AchievementClaimPanel(Achievement achievement, Runnable onClaimRequested) {
         this.achievement = achievement;
-        setOpaque(false);
-        final int size = UIScale.scale(26);
-        setPreferredSize(new Dimension(size, size));
-        setMinimumSize(new Dimension(size, size));
-        setMaximumSize(new Dimension(size, size));
+        this.onClaimRequested = onClaimRequested;
 
-        addMouseListener(new MouseAdapter() {
+        this.setOpaque(false);
+        final int btnW = UIScale.scale(140);
+        final int btnH = UIScale.scale(50);
+        this.setPreferredSize(new Dimension(btnW, btnH));
+        this.setMinimumSize(new Dimension(btnW, btnH));
+        this.setMaximumSize(new Dimension(btnW, btnH));
+
+        this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
                 if (achievement.isCompleted() && !achievement.isRewarded()) {
                     buttonHovered = true;
-                    setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    setCursor(new Cursor(Cursor.HAND_CURSOR));
                     repaint();
                 }
             }
+
             @Override
             public void mouseExited(MouseEvent e) {
                 buttonHovered = false;
-                setCursor(Cursor.getDefaultCursor());
+                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                 repaint();
             }
+
             @Override
             public void mousePressed(MouseEvent e) {
-                if (achievement.isCompleted() && !achievement.isRewarded() && onClaimRequest != null) {
-                    onClaimRequest.run();
+                if (achievement.isCompleted() && !achievement.isRewarded() && onClaimRequested != null) {
+                    onClaimRequested.run();
                 }
             }
         });
@@ -47,56 +55,58 @@ public class AchievementClaimPanel extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g.create();
+        super.paintComponent(g);
+        final Graphics2D g2 = (Graphics2D) g.create();
         RenderUtils.initGraphics2D(g2);
-        final int size = getWidth();
-        final int cx = size / 2;
-        final int cy = size / 2;
+
+        final int w = getWidth();
+        final int h = getHeight();
 
         if (achievement.isCompleted()) {
             if (achievement.isRewarded()) {
-                drawCheckmark(g2, cx, cy);
+                g2.setColor(new Color(0, 220, 110, 30));
+                g2.fillRoundRect(0, 0, w, h, UIScale.scale(14), UIScale.scale(14));
+                g2.setColor(new Color(0, 220, 110, 140));
+                g2.setStroke(RenderCache.STROKE_1_5);
+                g2.drawRoundRect(0, 0, w - 1, h - 1, UIScale.scale(14), UIScale.scale(14));
+
+                g2.setColor(new Color(0, 220, 110));
+                g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_18));
+                final String claimedTxt = "CLAIMED";
+                final FontMetrics fmClaimed = g2.getFontMetrics();
+                g2.drawString(claimedTxt, (w - fmClaimed.stringWidth(claimedTxt)) / 2, UIScale.scale(32));
             } else {
-                drawClaimButton(g2, size, cx, cy);
+                g2.setPaint(new LinearGradientPaint(0, 0, 0, h,
+                        new float[]{0f, 1f},
+                        buttonHovered ? new Color[]{new Color(255, 235, 100), new Color(255, 180, 0)}
+                                : new Color[]{new Color(255, 215, 0), new Color(230, 150, 0)}));
+                g2.fillRoundRect(0, 0, w, h, UIScale.scale(14), UIScale.scale(14));
+                if (buttonHovered) {
+                    g2.setColor(new Color(255, 255, 255, 200));
+                    g2.setStroke(RenderCache.STROKE_2);
+                    g2.drawRoundRect(0, 0, w - 1, h - 1, UIScale.scale(14), UIScale.scale(14));
+                }
+
+                g2.setColor(Color.BLACK);
+                g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_20));
+                final String claimTxt = "CLAIM";
+                final FontMetrics fmClaim = g2.getFontMetrics();
+                g2.drawString(claimTxt, (w - fmClaim.stringWidth(claimTxt)) / 2, UIScale.scale(32));
             }
         } else {
-            drawLock(g2, cx, cy);
+            g2.setColor(new Color(255, 255, 255, 10));
+            g2.fillRoundRect(0, 0, w, h, UIScale.scale(14), UIScale.scale(14));
+            g2.setColor(new Color(255, 255, 255, 20));
+            g2.setStroke(RenderCache.STROKE_1);
+            g2.drawRoundRect(0, 0, w - 1, h - 1, UIScale.scale(14), UIScale.scale(14));
+
+            g2.setColor(new Color(255, 255, 255, 60));
+            g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_18));
+            final String lockedTxt = "LOCKED";
+            final FontMetrics fmLocked = g2.getFontMetrics();
+            g2.drawString(lockedTxt, (w - fmLocked.stringWidth(lockedTxt)) / 2, UIScale.scale(32));
         }
+
         g2.dispose();
-    }
-
-    private void drawCheckmark(Graphics2D g2, int cx, int cy) {
-        g2.setColor(new Color(0, 220, 110));
-        g2.setStroke(RenderCache.STROKE_2);
-        g2.drawLine(cx - UIScale.scale(4), cy + UIScale.scale(1), cx - UIScale.scale(1), cy + UIScale.scale(4));
-        g2.drawLine(cx - UIScale.scale(1), cy + UIScale.scale(4), cx + UIScale.scale(5), cy - UIScale.scale(3));
-    }
-
-    private void drawClaimButton(Graphics2D g2, int size, int cx, int cy) {
-        final int br = UIScale.scale(5);
-        final LinearGradientPaint btnGrad = new LinearGradientPaint(0, 0, size, size,
-                new float[]{0f, 1f},
-                buttonHovered ? new Color[]{new Color(255, 200, 0, 60), new Color(255, 160, 0, 40)}
-                        : new Color[]{new Color(255, 190, 0, 25), new Color(255, 140, 0, 15)});
-        g2.setPaint(btnGrad);
-        g2.fillRoundRect(0, 0, size, size, br, br);
-        g2.setColor(buttonHovered ? new Color(255, 200, 0, 180) : new Color(255, 190, 0, 110));
-        g2.setStroke(RenderCache.STROKE_1);
-        g2.drawRoundRect(0, 0, size - 1, size - 1, br, br);
-        final int len = UIScale.scale(4);
-        g2.setColor(new Color(255, 200, 0));
-        g2.setStroke(RenderCache.STROKE_2);
-        g2.drawLine(cx - len, cy, cx + len, cy);
-        g2.drawLine(cx, cy - len, cx, cy + len);
-    }
-
-    private void drawLock(Graphics2D g2, int cx, int cy) {
-        final int lw = UIScale.scale(10);
-        final int lh = UIScale.scale(8);
-        final int lockY = cy + UIScale.scale(1);
-        g2.setColor(new Color(255, 255, 255, 80));
-        g2.fillRoundRect(cx - lw / 2, lockY - lh / 2, lw, lh, UIScale.scale(1), UIScale.scale(1));
-        g2.setStroke(RenderCache.STROKE_1);
-        g2.drawArc(cx - lw / 2 + UIScale.scale(1), lockY - lh / 2 - UIScale.scale(4), lw - UIScale.scale(2), UIScale.scale(8), 0, 180);
     }
 }

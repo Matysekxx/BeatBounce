@@ -13,11 +13,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * The main Achievements screen panel.
- * It contains filter and sort options at the top and displays a scrollable
- * list of achievements matching the current criteria.
- */
+
 public class AchievementsPanel extends BasePanel {
 
     private final JPanel listPanel;
@@ -25,10 +21,7 @@ public class AchievementsPanel extends BasePanel {
     private CycleButton filterBtn;
     private CycleButton sortBtn;
 
-    /**
-     * Constructs a new AchievementsPanel.
-     *
-     */
+    
     public AchievementsPanel() {
         super();
         setOpaque(false);
@@ -44,9 +37,7 @@ public class AchievementsPanel extends BasePanel {
         loadAchievements();
     }
 
-    /**
-     * Reuses the beautiful scrollpane and scrollbar styling from SongSelection.
-     */
+    
     private static JScrollPane buildScrollPane(JPanel content) {
         return SongSelectionPanel.buildScrollPane(content);
     }
@@ -56,9 +47,7 @@ public class AchievementsPanel extends BasePanel {
         RenderUtils.drawMenuBackground(g2d, w, h);
     }
 
-    /**
-     * Creates the top navigation and configuration bar.
-     */
+    
     private JPanel createTopBar() {
         final JPanel topBar = new JPanel(new BorderLayout());
         topBar.setOpaque(false);
@@ -102,9 +91,7 @@ public class AchievementsPanel extends BasePanel {
         return topBar;
     }
 
-    /**
-     * Refreshes, filters, and sorts the achievements and renders them in the list.
-     */
+    
     public void loadAchievements() {
         if (listPanel == null) return;
         listPanel.removeAll();

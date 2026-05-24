@@ -4,64 +4,75 @@ import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.model.achievement.Achievement;
 import cz.matysekxx.beatbounce.util.UIScale;
+
 import javax.swing.*;
 import java.awt.*;
 
+
 public class AchievementProgressPanel extends JPanel {
+    private final Achievement achievement;
 
     public AchievementProgressPanel(Achievement achievement) {
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setOpaque(false);
-        setAlignmentX(Component.RIGHT_ALIGNMENT);
+        this.achievement = achievement;
+        this.setOpaque(false);
+        final int w = UIScale.scale(170);
+        final int h = UIScale.scale(38);
+        this.setPreferredSize(new Dimension(w, h));
+        this.setMinimumSize(new Dimension(w, h));
+        this.setMaximumSize(new Dimension(w, h));
+    }
 
-        final JLabel progressLabel = new JLabel();
-        progressLabel.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_11));
-        progressLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        final Graphics2D g2 = (Graphics2D) g.create();
+        RenderUtils.initGraphics2D(g2);
+
+        final int w = getWidth();
+
+        final int barH = UIScale.scale(8);
+        final int barX = 0;
+        final int barY = UIScale.scale(22);
+
+        g2.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_12));
+        String progressText;
         if (achievement.isCompleted()) {
-            progressLabel.setText("COMPLETED");
-            progressLabel.setForeground(RenderUtils.cyan);
+            progressText = "COMPLETED";
+            g2.setColor(achievement.isRewarded() ? new Color(0, 220, 110) : new Color(255, 215, 0));
         } else {
-            progressLabel.setText(achievement.getCurrentProgress() + " / " + achievement.getTarget());
-            progressLabel.setForeground(new Color(130, 130, 135));
+            progressText = achievement.getCurrentProgress() + " / " + achievement.getTarget();
+            g2.setColor(new Color(150, 150, 160));
+        }
+        final FontMetrics fmProgress = g2.getFontMetrics();
+        g2.drawString(progressText, w - fmProgress.stringWidth(progressText), UIScale.scale(14));
+
+        g2.setColor(new Color(10, 10, 20, 180));
+        g2.fillRoundRect(barX, barY, w, barH, UIScale.scale(8), UIScale.scale(8));
+        g2.setColor(new Color(255, 255, 255, 10));
+        g2.setStroke(RenderCache.STROKE_1);
+        g2.drawRoundRect(barX, barY, w - 1, barH - 1, UIScale.scale(8), UIScale.scale(8));
+
+        final double pct = (double) achievement.getProgressPercentage() / 100.0;
+        if (pct > 0) {
+            final int fillW = (int) (w * pct);
+            if (achievement.isCompleted()) {
+                if (achievement.isRewarded()) {
+                    g2.setPaint(new LinearGradientPaint(barX, barY, barX + fillW, barY,
+                            new float[]{0f, 1f},
+                            new Color[]{new Color(0, 180, 80), new Color(0, 255, 110)}));
+                } else {
+                    g2.setPaint(new LinearGradientPaint(barX, barY, barX + fillW, barY,
+                            new float[]{0f, 1f},
+                            new Color[]{new Color(220, 150, 0), new Color(255, 215, 0)}));
+                }
+            } else {
+                g2.setPaint(new LinearGradientPaint(barX, barY, barX + fillW, barY,
+                        new float[]{0f, 1f},
+                        new Color[]{new Color(0, 100, 255), new Color(0, 255, 220)}));
+            }
+            g2.fillRoundRect(barX, barY, fillW, barH, UIScale.scale(8), UIScale.scale(8));
         }
 
-        final JPanel customProgressBar = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2 = (Graphics2D) g.create();
-                RenderUtils.initGraphics2D(g2);
-
-                final int w = getWidth();
-                final int h = getHeight();
-                final int arc = UIScale.scale(6);
-                g2.setColor(new Color(10, 10, 20, 180));
-                g2.fillRoundRect(0, 0, w, h, arc, arc);
-                g2.setColor(new Color(255, 255, 255, 10));
-                g2.setStroke(RenderCache.STROKE_1);
-                g2.drawRoundRect(0, 0, w - 1, h - 1, arc, arc);
-
-                final double pct = (double) achievement.getProgressPercentage() / 100.0;
-                if (pct > 0) {
-                    final int fillW = (int) (w * pct);
-                    g2.setPaint(new LinearGradientPaint(0, 0, fillW, 0,
-                            new float[]{0f, 1f},
-                            new Color[]{new Color(0, 100, 255), new Color(0, 255, 220)}));
-                    g2.fillRoundRect(0, 0, fillW, h, arc, arc);
-                }
-                g2.dispose();
-            }
-        };
-        customProgressBar.setOpaque(false);
-        final int barW = UIScale.scale(170);
-        final int barH = UIScale.scale(6);
-        customProgressBar.setPreferredSize(new Dimension(barW, barH));
-        customProgressBar.setMinimumSize(new Dimension(barW, barH));
-        customProgressBar.setMaximumSize(new Dimension(barW, barH));
-        customProgressBar.setAlignmentX(Component.RIGHT_ALIGNMENT);
-
-        add(progressLabel);
-        add(Box.createRigidArea(new Dimension(0, UIScale.scale(5))));
-        add(customProgressBar);
+        g2.dispose();
     }
 }

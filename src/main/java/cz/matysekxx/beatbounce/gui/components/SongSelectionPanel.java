@@ -135,7 +135,7 @@ public class SongSelectionPanel extends BasePanel implements Runnable {
      * @param content The panel to be wrapped in the scroll pane.
      * @return The configured JScrollPane.
      */
-    private static JScrollPane buildScrollPane(JPanel content) {
+    public static JScrollPane buildScrollPane(JPanel content) {
         final JScrollPane sp = new JScrollPane(content);
 
         final JScrollBar vsb = sp.getVerticalScrollBar();

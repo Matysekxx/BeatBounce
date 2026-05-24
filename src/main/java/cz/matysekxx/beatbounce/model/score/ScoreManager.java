@@ -2,6 +2,7 @@ package cz.matysekxx.beatbounce.model.score;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.matysekxx.beatbounce.model.achievement.AchievementManager;
 import cz.matysekxx.beatbounce.system.FileSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,6 +114,7 @@ public class ScoreManager {
             scores.put(songId, score);
             saveScores();
         }
+        AchievementManager.onLevelEnded();
     }
 
     /**
@@ -187,6 +189,7 @@ public class ScoreManager {
     public static void addCurrency(int amount) {
         totalCurrency += amount;
         saveCurrency();
+        AchievementManager.checkAchievements();
     }
 
     /**

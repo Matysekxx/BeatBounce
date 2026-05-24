@@ -8,6 +8,7 @@ import cz.matysekxx.beatbounce.gui.components.LibraryPanel;
 import cz.matysekxx.beatbounce.gui.components.MainPanel;
 import cz.matysekxx.beatbounce.gui.components.SettingsPanel;
 import cz.matysekxx.beatbounce.gui.components.SongSelectionPanel;
+import cz.matysekxx.beatbounce.gui.components.AchievementsPanel;
 import cz.matysekxx.beatbounce.model.audio.AudioManager;
 
 import cz.matysekxx.beatbounce.util.UIScale;
@@ -58,6 +59,11 @@ public class MainMenuScreen extends Screen {
     private final LibraryPanel libraryPanel;
 
     /**
+     * Sub-panel for showing achievements.
+     */
+    private final AchievementsPanel achievementsPanel;
+
+    /**
      * Manager for handling screen transitions.
      */
     private final ScreenManager screenManager;
@@ -66,7 +72,7 @@ public class MainMenuScreen extends Screen {
      * Titles for the primary sidebar navigation buttons.
      */
     private final String[] buttonsTitles = {
-            "SONGS", "LIBRARY", "SETTINGS"
+            "SONGS", "LIBRARY", "ACHIEVEMENTS", "SETTINGS"
     };
 
     /**
@@ -106,10 +112,12 @@ public class MainMenuScreen extends Screen {
 
         songSelectionPanel = new SongSelectionPanel(audiusClient, objectMapper, screenManager);
         libraryPanel = new LibraryPanel(screenManager);
+        achievementsPanel = new AchievementsPanel();
         final SettingsPanel settingsPanel = new SettingsPanel(screenManager);
 
         cardPanel.add(songSelectionPanel, "SONGS");
         cardPanel.add(libraryPanel, "LIBRARY");
+        cardPanel.add(achievementsPanel, "ACHIEVEMENTS");
         cardPanel.add(settingsPanel, "SETTINGS");
     }
 
@@ -229,8 +237,9 @@ public class MainMenuScreen extends Screen {
      * @param name the name of the panel to show
      */
     private void showPanel(String name) {
-        if (name.equals("LIBRARY")) {
-            libraryPanel.loadLibrary();
+        switch (name) {
+            case "LIBRARY" -> libraryPanel.loadLibrary();
+            case "ACHIEVEMENTS" -> achievementsPanel.loadAchievements();
         }
         cardLayout.show(cardPanel, name);
     }

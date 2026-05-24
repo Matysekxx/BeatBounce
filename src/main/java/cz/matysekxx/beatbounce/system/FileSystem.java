@@ -130,6 +130,13 @@ public class FileSystem {
     }
 
     /**
+     * @return The path to the achievements save file.
+     */
+    public static Path getAchievementsSaveFile() {
+        return APP_ROOT.resolve("achievements_save.json");
+    }
+
+    /**
      * Lists all music files in the music directory, sorted by last modified time.
      * Supported formats: .mp3, .wav, .ogg, .flac.
      *

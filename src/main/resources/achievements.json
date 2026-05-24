@@ -1,0 +1,82 @@
+[
+  {
+    "id": "first_bounce",
+    "title": "First Bounce",
+    "description": "Complete your first level play.",
+    "type": "TOTAL_PLAYS",
+    "target": 1,
+    "reward": 10
+  },
+  {
+    "id": "rising_star",
+    "title": "Rising Star",
+    "description": "Play 5 games in total.",
+    "type": "TOTAL_PLAYS",
+    "target": 5,
+    "reward": 25
+  },
+  {
+    "id": "rhythm_addict",
+    "title": "Rhythm Addict",
+    "description": "Play 20 games in total.",
+    "type": "TOTAL_PLAYS",
+    "target": 20,
+    "reward": 100
+  },
+  {
+    "id": "explorer",
+    "title": "Explorer",
+    "description": "Play at least 3 unique songs.",
+    "type": "UNIQUE_SONGS",
+    "target": 3,
+    "reward": 30
+  },
+  {
+    "id": "music_guru",
+    "title": "Music Guru",
+    "description": "Play at least 8 unique songs.",
+    "type": "UNIQUE_SONGS",
+    "target": 8,
+    "reward": 100
+  },
+  {
+    "id": "bronze_collector",
+    "title": "Bronze Collector",
+    "description": "Hold at least 50 orbs at once.",
+    "type": "ORBS_HELD",
+    "target": 50,
+    "reward": 15
+  },
+  {
+    "id": "wealthy",
+    "title": "Wealthy",
+    "description": "Hold at least 250 orbs at once.",
+    "type": "ORBS_HELD",
+    "target": 250,
+    "reward": 75
+  },
+  {
+    "id": "first_success",
+    "title": "First Success",
+    "description": "Achieve a high score of 5,000 points in any song.",
+    "type": "HIGH_SCORE",
+    "target": 5000,
+    "reward": 20
+  },
+  {
+    "id": "super_score",
+    "title": "Super Score",
+    "description": "Achieve a high score of 15,000 points in any song.",
+    "type": "HIGH_SCORE",
+    "target": 15000,
+    "reward": 50
+  },
+  {
+    "id": "unstoppable",
+    "title": "Unstoppable",
+    "description": "Achieve a high score of 30,000 points in any song.",
+    "type": "HIGH_SCORE",
+    "target": 30000,
+    "reward": 150
+  }
+]

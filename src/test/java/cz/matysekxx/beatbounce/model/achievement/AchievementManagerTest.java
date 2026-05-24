@@ -102,6 +102,69 @@ public class AchievementManagerTest {
         assertTrue(bronzeColl.isCompleted());
     }
 
+    @Test
+    void testFilteringAchievements() {
+        List<Achievement> list = AchievementManager.getAchievements();
+        List<Achievement> readyToClaim = AchievementManager.filterAchievements(list, "READY TO CLAIM");
+        assertTrue(readyToClaim.isEmpty());
+
+        AchievementManager.onLevelEnded();
+        list = AchievementManager.getAchievements();
+
+        readyToClaim = AchievementManager.filterAchievements(list, "READY TO CLAIM");
+        assertEquals(1, readyToClaim.size());
+        assertEquals("first_bounce", readyToClaim.getFirst().getId());
+
+        Achievement firstBounce = readyToClaim.getFirst();
+        assertTrue(AchievementManager.claimReward(firstBounce));
+
+        list = AchievementManager.getAchievements();
+        readyToClaim = AchievementManager.filterAchievements(list, "READY TO CLAIM");
+        assertTrue(readyToClaim.isEmpty());
+
+        List<Achievement> claimed = AchievementManager.filterAchievements(list, "CLAIMED");
+        assertEquals(1, claimed.size());
+        assertEquals("first_bounce", claimed.getFirst().getId());
+
+        List<Achievement> inProgress = AchievementManager.filterAchievements(list, "IN PROGRESS");
+        assertEquals(9, inProgress.size());
+
+        List<Achievement> all = AchievementManager.filterAchievements(list, "ALL");
+        assertEquals(10, all.size());
+    }
+
+    @Test
+    void testSortingAchievements() {
+        AchievementManager.onLevelEnded();
+        ScoreManager.updateScore("s1", 10);
+        ScoreManager.updateScore("s2", 10);
+        ScoreManager.updateScore("s3", 10);
+        List<Achievement> list = AchievementManager.getAchievements();
+        Achievement explorer = findAchievement(list, "explorer");
+        Achievement firstBounce = findAchievement(list, "first_bounce");
+        assertTrue(explorer.isCompleted() && !explorer.isRewarded());
+        assertTrue(firstBounce.isCompleted() && !firstBounce.isRewarded());
+
+        ScoreManager.addCurrency(45);
+        list = AchievementManager.getAchievements();
+
+        List<Achievement> defaultSorted = AchievementManager.sortAchievements(list, "DEFAULT");
+        assertEquals("first_bounce", defaultSorted.get(0).getId());
+        assertEquals("explorer", defaultSorted.get(1).getId());
+
+        List<Achievement> progressSorted = AchievementManager.sortAchievements(list, "PROGRESS");
+        assertTrue(progressSorted.get(0).isCompleted());
+        assertTrue(progressSorted.get(1).isCompleted());
+        assertEquals("bronze_collector", progressSorted.get(2).getId());
+        assertEquals("rising_star", progressSorted.get(3).getId());
+
+        List<Achievement> rewardSorted = AchievementManager.sortAchievements(list, "REWARD");
+        assertEquals("unstoppable", rewardSorted.get(0).getId());
+        assertTrue(rewardSorted.get(1).getId().equals("music_guru") || rewardSorted.get(1).getId().equals("rhythm_addict"));
+        assertTrue(rewardSorted.get(2).getId().equals("music_guru") || rewardSorted.get(2).getId().equals("rhythm_addict"));
+        assertEquals("wealthy", rewardSorted.get(3).getId());
+    }
+
     private Achievement findAchievement(List<Achievement> list, String id) {
         return list.stream()
                 .filter(a -> a.getId().equals(id))

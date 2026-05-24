@@ -156,7 +156,7 @@ public class LibraryPanel extends BasePanel {
         listPanel.setBorder(new EmptyBorder(UIScale.scale(10), UIScale.scale(40), UIScale.scale(20), UIScale.scale(40)));
 
         FileSystem.listMusicFiles().forEach(p -> {
-            listPanel.add(new LocalTrackRow(p, screenManager));
+            listPanel.add(new TrackRow(p, screenManager));
             listPanel.add(Box.createRigidArea(new Dimension(0, UIScale.scale(15))));
         });
 

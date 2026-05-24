@@ -17,221 +17,204 @@ import java.nio.file.Path;
 import java.util.function.Consumer;
 
 /**
- * A UI component representing a single track in the song selection list.
- * It handles rendering track info, selection expansion, and initiating downloads/play.
+ * A unified, highly-polished premium UI component representing a single track (local or online).
+ * It features a beautiful, non-expanding round glass card design.
  */
 public class TrackRow extends JPanel {
-
-    /**
-     * Data model for this track row.
-     */
     private final TrackData data;
-
-    /**
-     * Client for handling track downloads.
-     */
+    private final Path localPath;
     private final AudiusClient audiusClient;
-
-    /**
-     * Manager for screen navigation.
-     */
     private final ScreenManager screenManager;
 
-    /**
-     * Whether the mouse is currently hovering over this row.
-     */
+    private final String title;
+    private final String artist;
+    private final int stars;
+    private final String bestScore;
+
     private boolean hovered = false;
 
     /**
-     * Constructs a new TrackRow.
-     *
-     * @param data          the track data to display
-     * @param audiusClient  the Audius client for downloads
-     * @param screenManager the screen manager for navigation
-     * @param onSelect      a callback for when the track is selected
+     * Constructor for online tracks (Audius API).
      */
     public TrackRow(TrackData data, AudiusClient audiusClient, ScreenManager screenManager, Consumer<TrackData> onSelect) {
         this.data = data;
+        this.localPath = null;
         this.audiusClient = audiusClient;
         this.screenManager = screenManager;
 
-        setOpaque(false);
-        addMouseListener(new MouseAdapter() {
+        this.title = data.title;
+        this.artist = data.artist;
+        this.stars = data.stars;
+
+        final String sanitized = data.title.replaceAll("[\\\\/:*?\"<>|]", "_");
+        this.bestScore = String.valueOf(ScoreManager.getBestScore(sanitized));
+
+        setupUI(onSelect);
+    }
+
+    /**
+     * Constructor for local tracks (Library).
+     */
+    public TrackRow(Path path, ScreenManager screenManager) {
+        this.data = null;
+        this.localPath = path;
+        this.audiusClient = null;
+        this.screenManager = screenManager;
+
+        final String rawName = path.getFileName().toString();
+        int dot = rawName.lastIndexOf('.');
+        this.title = (dot > 0) ? rawName.substring(0, dot) : rawName;
+        this.artist = "Local Song";
+        this.stars = 1 + (Math.abs(title.hashCode()) % 10);
+        this.bestScore = String.valueOf(ScoreManager.getBestScore(title));
+
+        setupUI(null);
+    }
+
+    private void setupUI(Consumer<TrackData> onSelect) {
+        this.setOpaque(false);
+        this.setPreferredSize(new Dimension(0, UIScale.scale(90)));
+        this.setMaximumSize(new Dimension(Integer.MAX_VALUE, UIScale.scale(90)));
+        this.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
                 hovered = true;
+                repaint();
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 hovered = false;
-            }
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (onSelect != null) {
-                    onSelect.accept(data);
-                }
+                repaint();
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
-                if (data.expansion > 0.8f) {
-                    final int btnW = UIScale.scale(110), btnH = UIScale.scale(32);
-                    final int bx = getWidth() - UIScale.scale(20) - btnW;
-                    final int by = UIScale.scale(60);
+                if (localPath != null) {
+                    launchGame(localPath, stars);
+                } else if (data != null) {
+                    if (onSelect != null) {
+                        onSelect.accept(data);
+                    }
+                    
+                    final int btnW = UIScale.scale(140), btnH = UIScale.scale(50);
+                    final int bx = getWidth() - UIScale.scale(155);
+                    final int by = (getHeight() - btnH) / 2;
                     final Rectangle playRect = new Rectangle(bx, by, btnW, btnH);
-                    if (playRect.contains(e.getPoint()) && !data.downloading) {
+
+                    if (playRect.contains(e.getPoint()) || !data.isDownloaded(audiusClient)) {
                         handlePlay();
+                    } else {
+                        launchGame(data.findDownloadedPath(audiusClient), stars);
                     }
                 }
             }
         });
     }
 
-    /**
-     * Returns the preferred size of the component, which varies based on expansion state.
-     *
-     * @return the preferred {@link Dimension}
-     */
-    @Override
-    public Dimension getPreferredSize() {
-        return new Dimension(getWidth(), UIScale.scale(64) + (int) (data.expansion * UIScale.scale(44)));
-    }
-
-    /**
-     * Returns the maximum size of the component.
-     *
-     * @return the maximum {@link Dimension}
-     */
-    @Override
-    public Dimension getMaximumSize() {
-        return new Dimension(Integer.MAX_VALUE, getPreferredSize().height);
-    }
-
-    /**
-     * Paints the track row, including title, artist, duration, stars, and the play button if expanded.
-     *
-     * @param g the graphics context
-     */
     @Override
     protected void paintComponent(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g.create();
+        final Graphics2D g2 = (Graphics2D) g.create();
         RenderUtils.initGraphics2D(g2);
-        final int w = getWidth(), h = getHeight();
+        final int w = getWidth();
+        final int h = getHeight();
 
-        drawBackground(g2, w, h);
-        drawTrackDetails(g2, w, h);
-        drawStats(g2, w, h);
-        drawActionButton(g2, w, h);
+        if (hovered) {
+            g2.setPaint(new LinearGradientPaint(0, 0, w, 0,
+                    new float[]{0f, 1f},
+                    new Color[]{new Color(0, 255, 255, 45), new Color(0, 255, 255, 5)}));
+        } else {
+            g2.setColor(new Color(255, 255, 255, 12));
+        }
+        g2.fillRoundRect(0, 0, w, h, UIScale.scale(18), UIScale.scale(18));
+
+        g2.setColor(hovered ? new Color(0, 255, 255, 120) : new Color(255, 255, 255, 25));
+        g2.drawRoundRect(0, 0, w - 1, h - 1, UIScale.scale(18), UIScale.scale(18));
+
+        g2.setColor(new Color(255, 255, 255, 25));
+        g2.fillRoundRect(UIScale.scale(18), UIScale.scale(15), UIScale.scale(60), UIScale.scale(60), UIScale.scale(12), UIScale.scale(12));
+        g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_26));
+        g2.setColor(hovered ? RenderUtils.cyan : Color.WHITE);
+        
+        String icon = "🎵";
+        if (localPath == null && data != null) {
+            if (data.isDownloaded(audiusClient)) {
+                icon = "✓";
+                g2.setColor(RenderUtils.cyan);
+            } else {
+                icon = "☁";
+                g2.setColor(Color.GRAY);
+            }
+        }
+        
+        final FontMetrics fmIcon = g2.getFontMetrics();
+        g2.drawString(icon, UIScale.scale(18) + (UIScale.scale(60) - fmIcon.stringWidth(icon)) / 2, UIScale.scale(15) + UIScale.scale(42));
+
+        g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_22));
+        g2.setColor(Color.WHITE);
+        g2.drawString(title, UIScale.scale(100), UIScale.scale(42));
+
+        g2.setFont(UIScale.scaleFont(RenderCache.SANS_PLAIN_20));
+        g2.setColor(new Color(180, 180, 200));
+        final String subText = artist + "  •  Difficulty: " + "★".repeat(stars) + "☆".repeat(10 - stars);
+        g2.drawString(subText, UIScale.scale(100), UIScale.scale(68));
+
+        final String scoreText = "BEST: " + bestScore;
+        g2.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_17));
+        final FontMetrics fmScore = g2.getFontMetrics();
+        final int scoreW = fmScore.stringWidth(scoreText) + UIScale.scale(24);
+        final int scoreX = w - UIScale.scale(170) - scoreW;
+
+        g2.setColor(new Color(255, 255, 255, 20));
+        final int scoreH = UIScale.scale(34);
+        g2.fillRoundRect(scoreX, (h - scoreH) / 2, scoreW, scoreH, UIScale.scale(10), UIScale.scale(10));
+        g2.setColor(RenderUtils.cyan);
+        g2.drawString(scoreText, scoreX + UIScale.scale(12), (h - scoreH) / 2 + UIScale.scale(24));
+
+        final int btnW = UIScale.scale(140), btnH = UIScale.scale(50);
+        final int bx = w - UIScale.scale(155);
+        final int by = (h - btnH) / 2;
+
+        if (localPath != null || (data != null && !data.downloading && !data.starting)) {
+            g2.setColor(hovered ? RenderUtils.cyan : new Color(0, 200, 255));
+            g2.fillRoundRect(bx, by, btnW, btnH, UIScale.scale(14), UIScale.scale(14));
+
+            g2.setColor(Color.BLACK);
+            g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_20));
+            final String playTxt = (localPath != null || data.isDownloaded(audiusClient)) ? "PLAY" : "GET";
+            final FontMetrics fmPlay = g2.getFontMetrics();
+            g2.drawString(playTxt, bx + (btnW - fmPlay.stringWidth(playTxt)) / 2, by + UIScale.scale(32));
+        } else if (data != null && data.downloading) {
+            g2.setColor(new Color(255, 255, 255, 20));
+            g2.fillRoundRect(bx, by, btnW, btnH, UIScale.scale(14), UIScale.scale(14));
+
+            g2.setPaint(new GradientPaint(bx, by, RenderUtils.purple, bx + btnW, by, RenderUtils.cyan));
+            g2.fillRoundRect(bx, by, (int) (btnW * data.downloadProgress), btnH, UIScale.scale(14), UIScale.scale(14));
+
+            g2.setColor(Color.WHITE);
+            g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_18));
+            final String pctTxt = (int) (data.downloadProgress * 100) + "%";
+            final FontMetrics fmPct = g2.getFontMetrics();
+            g2.drawString(pctTxt, bx + (btnW - fmPct.stringWidth(pctTxt)) / 2, by + UIScale.scale(32));
+        } else if (data != null) {
+            g2.setColor(Color.WHITE);
+            g2.fillRoundRect(bx, by, btnW, btnH, UIScale.scale(14), UIScale.scale(14));
+
+            g2.setColor(new Color(10, 10, 26));
+            g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_18));
+            final String readyTxt = "READY!";
+            final FontMetrics fmReady = g2.getFontMetrics();
+            g2.drawString(readyTxt, bx + (btnW - fmReady.stringWidth(readyTxt)) / 2, by + UIScale.scale(32));
+
+            final float alpha = Math.max(0f, 1.0f - data.startingProgress);
+            g2.setColor(new Color(255, 255, 255, (int) (alpha * 120)));
+            g2.fillRoundRect(0, 0, w, h, UIScale.scale(18), UIScale.scale(18));
+        }
 
         g2.dispose();
     }
 
-    /**
-     * Renders the background highlight based on hover and expansion state.
-     */
-    private void drawBackground(Graphics2D g2, int w, int h) {
-        if (data.expanded) {
-            Color acc = data.getAccent();
-            g2.setColor(new Color(acc.getRed(), acc.getGreen(), acc.getBlue(), 38));
-            g2.fillRect(0, 0, w, h);
-            g2.setColor(acc);
-            g2.fillRect(0, 0, UIScale.scale(3), h);
-        } else if (hovered) {
-            g2.setColor(new Color(255, 255, 255, 10));
-            g2.fillRect(0, 0, w, h);
-        }
-        g2.setColor(new Color(255, 255, 255, 15));
-        g2.drawLine(0, h - 1, w, h - 1);
-    }
-
-    /**
-     * Renders title, artist and download status icon.
-     */
-    private void drawTrackDetails(Graphics2D g2, int w, int h) {
-        final boolean downloaded = data.isDownloaded(audiusClient);
-        g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_16));
-        g2.setColor(downloaded ? RenderUtils.cyan : Color.GRAY);
-        g2.drawString(downloaded ? "✓" : "☁", UIScale.scale(20), UIScale.scale(38));
-
-        g2.setColor(Color.WHITE);
-        g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_20));
-        g2.drawString(data.title, UIScale.scale(50), UIScale.scale(28));
-        g2.setColor(Color.GRAY);
-        g2.setFont(UIScale.scaleFont(RenderCache.SANS_PLAIN_15));
-        g2.drawString(data.artist, UIScale.scale(50), UIScale.scale(48));
-    }
-
-    /**
-     * Renders track duration, stars and best score.
-     */
-    private void drawStats(Graphics2D g2, int w, int h) {
-        final int rightX = w - UIScale.scale(20);
-        g2.setFont(UIScale.scaleFont(RenderCache.SANS_PLAIN_20));
-        final String sanitizedTitle = data.title.replaceAll("[\\\\/:*?\"<>|]", "_");
-        final String info = String.format("%s  •  Best: %d", data.duration, ScoreManager.getBestScore(sanitizedTitle));
-        final FontMetrics fm = g2.getFontMetrics();
-        g2.setColor(new Color(200, 200, 200));
-        g2.drawString(info, rightX - fm.stringWidth(info), UIScale.scale(38));
-
-        final String stars = "★".repeat(data.stars) + "☆".repeat(10 - data.stars);
-        g2.setColor(RenderUtils.cyan);
-        g2.drawString(stars, rightX - fm.stringWidth(info) - g2.getFontMetrics().stringWidth(stars) - UIScale.scale(15), UIScale.scale(38));
-    }
-
-    /**
-     * Renders the PLAY / DOWNLOADING / READY button.
-     */
-    private void drawActionButton(Graphics2D g2, int w, int h) {
-        if (data.expansion <= 0.5f) return;
-        final int btnW = UIScale.scale(110), btnH = UIScale.scale(32), bx = w - UIScale.scale(20) - btnW, by = UIScale.scale(60);
-
-        if (data.starting) {
-            g2.setColor(Color.WHITE);
-            g2.fillRoundRect(bx, by, btnW, btnH, UIScale.scale(8), UIScale.scale(8));
-            g2.setColor(new Color(10, 10, 26));
-            g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_13));
-            drawCenteredString(g2, "READY!", bx, by, btnW, btnH);
-            final float alpha = Math.max(0, 1.0f - data.startingProgress);
-            g2.setColor(new Color(255, 255, 255, (int) (alpha * 120)));
-            g2.fillRect(0, 0, w, h);
-
-        } else if (data.downloading) {
-            g2.setColor(new Color(255, 255, 255, 20));
-            g2.fillRoundRect(bx, by, btnW, btnH, UIScale.scale(8), UIScale.scale(8));
-            g2.setPaint(new GradientPaint(bx, by, RenderUtils.purple, bx + btnW, by, RenderUtils.cyan));
-            g2.fillRoundRect(bx, by, (int) (btnW * data.downloadProgress), btnH, UIScale.scale(8), UIScale.scale(8));
-            g2.setColor(Color.WHITE);
-            g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_11));
-            drawCenteredString(g2, (int) (data.downloadProgress * 100) + "%", bx, by, btnW, btnH);
-
-        } else {
-            g2.setColor(data.getAccent());
-            g2.fillRoundRect(bx, by, btnW, btnH, UIScale.scale(8), UIScale.scale(8));
-            g2.setColor(new Color(10, 10, 26));
-            g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_13));
-            drawCenteredString(g2, "PLAY", bx, by, btnW, btnH);
-        }
-
-        final Rectangle playRect = new Rectangle(bx, by, btnW, btnH);
-        final Point mouse = getMousePosition();
-        if (mouse != null && playRect.contains(mouse) && !data.downloading && !data.starting) {
-            setCursor(new Cursor(Cursor.HAND_CURSOR));
-        }
-    }
-
-    /**
-     * Helper method to draw a centered string within a box.
-     */
-    private void drawCenteredString(Graphics2D g2, String text, int x, int y, int w, int h) {
-        final FontMetrics fm = g2.getFontMetrics();
-        g2.drawString(text, x + (w - fm.stringWidth(text)) / 2, y + (h + fm.getAscent()) / 2 - 2);
-    }
-
-    /**
-     * Logic for clicking the action button. Triggers download or launches the level.
-     */
     private void handlePlay() {
         if (data.starting) return;
         if (data.isDownloaded(audiusClient)) {
@@ -239,6 +222,7 @@ public class TrackRow extends JPanel {
         } else {
             data.downloading = true;
             data.downloadProgress = 0.15f;
+            repaint();
             audiusClient.downloadMusic(data.id, data.title).thenAccept(downloadedPath -> {
                 data.downloadProgress = 1f;
                 SwingUtilities.invokeLater(() -> {
@@ -247,36 +231,45 @@ public class TrackRow extends JPanel {
                 });
             }).exceptionally(ex -> {
                 data.downloading = false;
+                repaint();
                 ExceptionHandler.handle("Download failed for " + data.title, ex);
                 return null;
             });
         }
     }
 
-    /**
-     * Transitions to the GameScreen and starts the level.
-     */
     private void launchGame(Path audioPath, int stars) {
         if (audioPath == null) return;
-        data.starting = true;
-        data.startingProgress = 0f;
+        if (data != null) {
+            data.starting = true;
+            data.startingProgress = 0f;
 
-        new Thread(() -> {
+            new Thread(() -> {
+                try {
+                    Thread.sleep(600);
+                    SwingUtilities.invokeLater(() -> {
+                        try {
+                            screenManager.initScreen(GameScreen.class);
+                            final GameScreen gs = screenManager.getScreen(GameScreen.class);
+                            screenManager.showScreen(GameScreen.class);
+                            gs.setupGamePanel(audioPath, stars);
+                            data.starting = false;
+                        } catch (Exception ex) {
+                            ExceptionHandler.handle("Failed to launch game", ex);
+                        }
+                    });
+                } catch (InterruptedException ignored) {
+                }
+            }).start();
+        } else {
             try {
-                Thread.sleep(600);
-                SwingUtilities.invokeLater(() -> {
-                    try {
-                        screenManager.initScreen(GameScreen.class);
-                        final GameScreen gs = screenManager.getScreen(GameScreen.class);
-                        screenManager.showScreen(GameScreen.class);
-                        gs.setupGamePanel(audioPath, stars);
-                        data.starting = false;
-                    } catch (Exception ex) {
-                        ExceptionHandler.handle("Failed to launch game", ex);
-                    }
-                });
-            } catch (InterruptedException ignored) {
+                screenManager.initScreen(GameScreen.class);
+                final GameScreen gs = screenManager.getScreen(GameScreen.class);
+                screenManager.showScreen(GameScreen.class);
+                gs.setupGamePanel(audioPath, stars);
+            } catch (Exception ex) {
+                ExceptionHandler.handle("Failed to launch game", ex);
             }
-        }).start();
+        }
     }
 }

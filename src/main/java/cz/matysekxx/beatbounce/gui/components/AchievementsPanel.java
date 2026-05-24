@@ -68,7 +68,7 @@ public class AchievementsPanel extends BasePanel {
         filterLabel.setForeground(new Color(200, 200, 220));
         controls.add(filterLabel);
 
-        filterBtn = new CycleButton(new String[]{"ALL", "READY TO CLAIM", "CLAIMED", "IN PROGRESS"}, 0);
+        filterBtn = new CycleButton(new String[]{"ALL", "READY TO CLAIM", "IN PROGRESS"}, 0);
         filterBtn.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_14));
         filterBtn.setPreferredSize(new Dimension(UIScale.scale(170), UIScale.scale(36)));
         filterBtn.addActionListener(_ -> loadAchievements());
@@ -98,22 +98,12 @@ public class AchievementsPanel extends BasePanel {
         final List<Achievement> list = AchievementManager.getAchievements();
 
         final String filter = filterBtn != null ? filterBtn.getSelectedOption() : "ALL";
-        final List<Achievement> filtered = list.stream()
-                .filter(ach -> switch (filter) {
-                    case "READY TO CLAIM" -> ach.isCompleted() && !ach.isRewarded();
-                    case "CLAIMED" -> ach.isCompleted() && ach.isRewarded();
-                    case "IN PROGRESS" -> !ach.isCompleted();
-                    default -> true;
-                })
-                .collect(Collectors.toList());
-
         final String sort = sortBtn != null ? sortBtn.getSelectedOption() : "DEFAULT";
-        switch (sort) {
-            case "PROGRESS" -> filtered.sort(Comparator.comparingInt(Achievement::getProgressPercentage).reversed());
-            case "REWARD" -> filtered.sort(Comparator.comparingInt(Achievement::getReward).reversed());
-        }
 
-        if (filtered.isEmpty()) {
+        final List<Achievement> filtered = AchievementManager.filterAchievements(list, filter);
+        final List<Achievement> sorted = AchievementManager.sortAchievements(filtered, sort);
+
+        if (sorted.isEmpty()) {
             final JLabel emptyLabel = new JLabel("No achievements found matching criteria.");
             emptyLabel.setFont(UIScale.scaleFont(RenderCache.SANS_ITALIC_22));
             emptyLabel.setForeground(new Color(150, 150, 180));
@@ -123,7 +113,9 @@ public class AchievementsPanel extends BasePanel {
             listPanel.add(emptyLabel);
         } else {
             listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
-            filtered.stream().map(ach -> new AchievementRowPanel(ach, this::loadAchievements)).forEach(row -> {
+            sorted.stream()
+                    .map(ach -> new AchievementRowPanel(ach, this::loadAchievements))
+                    .forEach(row -> {
                 listPanel.add(row);
                 listPanel.add(Box.createRigidArea(new Dimension(0, UIScale.scale(10))));
             });

@@ -3,15 +3,17 @@ package cz.matysekxx.beatbounce.gui.components;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.model.audio.AudioManager;
-
 import cz.matysekxx.beatbounce.util.UIScale;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 
 /**
  * A custom {@link JButton} that cycles through a list of options when clicked.
  * Each click advances to the next option in the array.
+ * It overrides fireActionPerformed to guarantee that the index is incremented
+ * before any registered ActionListeners are fired (solving Swing's LIFO listener order bug).
  */
 public class CycleButton extends JButton {
 
@@ -42,11 +44,17 @@ public class CycleButton extends JButton {
         setContentAreaFilled(false);
         setBorderPainted(false);
         setCursor(new Cursor(Cursor.HAND_CURSOR));
-        addActionListener(_ -> {
-            AudioManager.playSFX("/click-sound.mp3");
-            currentIndex = (currentIndex + 1) % options.length;
-            setText(this.options[currentIndex]);
-        });
+    }
+
+    /**
+     * Guarantees that internal state is updated *before* any action listeners are notified.
+     */
+    @Override
+    protected void fireActionPerformed(ActionEvent event) {
+        AudioManager.playSFX("/click-sound.mp3");
+        currentIndex = (currentIndex + 1) % options.length;
+        setText(this.options[currentIndex]);
+        super.fireActionPerformed(event);
     }
 
     /**

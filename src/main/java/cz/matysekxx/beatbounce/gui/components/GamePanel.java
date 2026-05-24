@@ -202,13 +202,13 @@ public class GamePanel extends JPanel implements Runnable {
         this.addMouseMotionListener(new GameController(cam, sphere, gameEngine));
         final MouseAdapter uiMouseAdapter = new MouseAdapter() {
             @Override
-            public void mouseMoved(java.awt.event.MouseEvent e) {
+            public void mouseMoved(MouseEvent e) {
                 if (uiRenderer == null) return;
                 uiRenderer.setMousePosition(e.getX(), e.getY());
             }
 
             @Override
-            public void mouseDragged(java.awt.event.MouseEvent e) {
+            public void mouseDragged(MouseEvent e) {
                 if (uiRenderer == null) return;
                 uiRenderer.setMousePosition(e.getX(), e.getY());
             }
@@ -229,8 +229,6 @@ public class GamePanel extends JPanel implements Runnable {
                             }
                             case REVIVE -> gameEngine.revive();
                             case DECLINE_REVIVE -> gameEngine.declineRevive();
-                            default -> {
-                            }
                         }
                     });
                 }

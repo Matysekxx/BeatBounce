@@ -1,6 +1,8 @@
 package cz.matysekxx.beatbounce.model.game;
 
+import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.LongTile;
+import cz.matysekxx.beatbounce.model.entity.MovingTile;
 import cz.matysekxx.beatbounce.model.entity.Sphere;
 import cz.matysekxx.beatbounce.model.game.state.GameState;
 import cz.matysekxx.beatbounce.model.score.ScoreManager;
@@ -66,7 +68,7 @@ public class ReviveManager {
             if (lastTile instanceof LongTile lt) {
                 final double fallZ = gameEngine.getFallStartZ();
                 if (fallZ > lt.getZ()) {
-                    reviveZ = Math.max(lt.getZ(), Math.min(fallZ - 150, lt.getZ() + lt.getLengthInZ() - 50));
+                    reviveZ = Math.clamp(fallZ - 150, lt.getZ(), lt.getZ() + lt.getLengthInZ() - 50);
                 }
             }
 
@@ -86,6 +88,13 @@ public class ReviveManager {
 
             gameEngine.setFallStartZ(0);
             gameEngine.resetCCD();
+
+            tiles.forEach(tile -> {
+                tile.reset();
+                if (tile instanceof MovingTile mt) {
+                    mt.setTime(reviveTime);
+                }
+            });
 
             this.sphere.setZ(reviveZ);
             double tileX = lastTile.getXAt(reviveTime);

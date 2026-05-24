@@ -70,8 +70,11 @@ public class LongCollisionHandler extends CollisionHandler {
             return false;
         }
 
-        final double timeToNextTile = (nextTile.getZ() - gameEngine.getGameZProgress()) / gameEngine.getzUnitsPerSecond();
-        final boolean shouldJumpEarly = timeToNextTile <= 0.25;
+        boolean shouldJumpEarly = false;
+        if (nextTile != null) {
+            final double timeToNextTile = (nextTile.getZ() - gameEngine.getGameZProgress()) / gameEngine.getzUnitsPerSecond();
+            shouldJumpEarly = timeToNextTile <= 0.25;
+        }
 
         final double sphereX = gameEngine.getSphere().getX();
         final double tileX = lt.getX();
@@ -90,7 +93,9 @@ public class LongCollisionHandler extends CollisionHandler {
             return true;
         } else {
             this.onLongTile = false;
-            gameEngine.startNextJump(gameEngine.getSmoothedAudioTime());
+            if (nextTile != null) {
+                gameEngine.startNextJump(gameEngine.getSmoothedAudioTime());
+            }
             return false;
         }
     }

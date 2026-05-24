@@ -101,10 +101,6 @@ public class CollisionEngine {
      * Uses the Z-interval since the last update to ensure no tiles are missed.
      */
     public void handleCollisions() {
-        if (isLastTile()) return;
-        final AbstractTile nextTile = getNextTile();
-        if (nextTile == null) return;
-
         final double currentZ = gameEngine.getGameZProgress();
         if (lastZProgress < 0) {
             lastZProgress = currentZ;
@@ -114,16 +110,26 @@ public class CollisionEngine {
         final LongCollisionHandler longCollisionHandler = (LongCollisionHandler) collisionHandlers.get(LongTile.class);
         if (longCollisionHandler.isOnLongTile()) {
             final AbstractTile currentTile = getCurrentTile();
-            if (currentTile == null) {
-                longCollisionHandler.onLongTile = false;
-                lastZProgress = currentZ;
-                return;
-            }
-            if (longCollisionHandler.processContinuous(currentTile, nextTile)) {
-                lastZProgress = currentZ;
-                return;
+            if (currentTile != null) {
+                final AbstractTile nextTile = isLastTile() ? null : getNextTile();
+                if (longCollisionHandler.processContinuous(currentTile, nextTile)) {
+                    lastZProgress = currentZ;
+                    return;
+                }
             }
         }
+
+        if (isLastTile()) {
+            lastZProgress = currentZ;
+            return;
+        }
+
+        final AbstractTile nextTile = getNextTile();
+        if (nextTile == null) {
+            lastZProgress = currentZ;
+            return;
+        }
+
         if (nextTile.getZ() >= lastZProgress && nextTile.getZ() <= currentZ) {
             if (isPlayerFalling(nextTile)) gameEngine.startFalling();
             else processTileCollision(nextTile);

@@ -87,6 +87,7 @@ public class BreakableTile extends AbstractTile {
      */
     @Override
     public void reset() {
+        super.reset();
         this.broken = false;
         this.breakProgress = 0.0f;
     }

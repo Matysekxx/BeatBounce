@@ -74,6 +74,17 @@ public class MovingTile extends AbstractTile {
     }
 
     /**
+     * Sets the internal accumulator time and immediately updates the horizontal position.
+     *
+     * @param time the new time in seconds
+     */
+    public void setTime(double time) {
+        this.time = time;
+        final int newX = (int) getXAt(this.time);
+        this.setLocation(newX, this.getY());
+    }
+
+    /**
      * Calculates the horizontal world coordinate of the tile at a specific time.
      * Uses a sine wave for smooth oscillation.
      *

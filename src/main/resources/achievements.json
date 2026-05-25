@@ -24,6 +24,22 @@
     "reward": 100
   },
   {
+    "id": "dedicated_player",
+    "title": "Dedicated Player",
+    "description": "Play 50 games in total.",
+    "type": "TOTAL_PLAYS",
+    "target": 50,
+    "reward": 250
+  },
+  {
+    "id": "legendary_bouncer",
+    "title": "Legendary Bouncer",
+    "description": "Play 100 games in total.",
+    "type": "TOTAL_PLAYS",
+    "target": 100,
+    "reward": 500
+  },
+  {
     "id": "explorer",
     "title": "Explorer",
     "description": "Play at least 3 unique songs.",
@@ -40,6 +56,14 @@
     "reward": 100
   },
   {
+    "id": "music_connoisseur",
+    "title": "Music Connoisseur",
+    "description": "Play at least 15 unique songs.",
+    "type": "UNIQUE_SONGS",
+    "target": 15,
+    "reward": 250
+  },
+  {
     "id": "bronze_collector",
     "title": "Bronze Collector",
     "description": "Hold at least 50 orbs at once.",
@@ -54,6 +78,14 @@
     "type": "ORBS_HELD",
     "target": 250,
     "reward": 75
+  },
+  {
+    "id": "collector_master",
+    "title": "Collector Master",
+    "description": "Hold at least 500 orbs at once.",
+    "type": "ORBS_HELD",
+    "target": 500,
+    "reward": 200
   },
   {
     "id": "first_success",
@@ -78,5 +110,45 @@
     "type": "HIGH_SCORE",
     "target": 30000,
     "reward": 150
+  },
+  {
+    "id": "high_flyer",
+    "title": "High Flyer",
+    "description": "Achieve a high score of 50,000 points in any song.",
+    "type": "HIGH_SCORE",
+    "target": 50000,
+    "reward": 300
+  },
+  {
+    "id": "the_goat",
+    "title": "The G.O.A.T",
+    "description": "Achieve a high score of 100,000 points in any song.",
+    "type": "HIGH_SCORE",
+    "target": 100000,
+    "reward": 1000
+  },
+  {
+    "id": "beat_bounce_master",
+    "title": "Beat Bounce Master",
+    "description": "Play 250 games in total.",
+    "type": "TOTAL_PLAYS",
+    "target": 250,
+    "reward": 1500
+  },
+  {
+    "id": "score_millionaire",
+    "title": "Score Millionaire",
+    "description": "Achieve a total cumulative score of 100,000.",
+    "type": "TOTAL_SCORE",
+    "target": 100000,
+    "reward": 500
+  },
+  {
+    "id": "score_billionaire",
+    "title": "Score Billionaire",
+    "description": "Achieve a total cumulative score of 500,000.",
+    "type": "TOTAL_SCORE",
+    "target": 500000,
+    "reward": 2000
   }
 ]

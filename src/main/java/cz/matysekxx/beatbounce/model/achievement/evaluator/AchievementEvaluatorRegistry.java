@@ -13,6 +13,7 @@ public class AchievementEvaluatorRegistry {
         evaluators.put(AchievementType.UNIQUE_SONGS, new UniqueSongsEvaluator());
         evaluators.put(AchievementType.ORBS_HELD, new OrbsHeldEvaluator());
         evaluators.put(AchievementType.HIGH_SCORE, new HighScoreEvaluator());
+        evaluators.put(AchievementType.TOTAL_SCORE, new TotalScoreEvaluator());
     }
 
     public static AchievementEvaluator getEvaluator(AchievementType type) {

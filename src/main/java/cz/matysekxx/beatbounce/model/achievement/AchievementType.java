@@ -4,5 +4,6 @@ public enum AchievementType {
     TOTAL_PLAYS,
     UNIQUE_SONGS,
     ORBS_HELD,
-    HIGH_SCORE
+    HIGH_SCORE,
+    TOTAL_SCORE
 }

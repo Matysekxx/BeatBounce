@@ -32,7 +32,23 @@ public class AchievementManagerTest {
         List<Achievement> list = AchievementManager.getAchievements();
         assertNotNull(list);
         assertFalse(list.isEmpty());
-        assertEquals(10, list.size());
+        assertEquals(19, list.size());
+    }
+
+    @Test
+    void testTotalScoreAchievement() {
+        List<Achievement> list = AchievementManager.getAchievements();
+        Achievement millionaire = findAchievement(list, "score_millionaire");
+        assertNotNull(millionaire);
+        assertFalse(millionaire.isCompleted());
+
+        ScoreManager.updateScore("song1", 60000);
+        ScoreManager.updateScore("song2", 50000);
+
+        list = AchievementManager.getAchievements();
+        millionaire = findAchievement(list, "score_millionaire");
+        assertTrue(millionaire.isCompleted());
+        assertEquals(110000, millionaire.getCurrentProgress());
     }
 
     @Test
@@ -127,10 +143,10 @@ public class AchievementManagerTest {
         assertEquals("first_bounce", claimed.getFirst().getId());
 
         List<Achievement> inProgress = AchievementManager.filterAchievements(list, "IN PROGRESS");
-        assertEquals(9, inProgress.size());
+        assertEquals(18, inProgress.size());
 
         List<Achievement> all = AchievementManager.filterAchievements(list, "ALL");
-        assertEquals(10, all.size());
+        assertEquals(19, all.size());
     }
 
     @Test
@@ -159,10 +175,9 @@ public class AchievementManagerTest {
         assertEquals("rising_star", progressSorted.get(3).getId());
 
         List<Achievement> rewardSorted = AchievementManager.sortAchievements(list, "REWARD");
-        assertEquals("unstoppable", rewardSorted.get(0).getId());
-        assertTrue(rewardSorted.get(1).getId().equals("music_guru") || rewardSorted.get(1).getId().equals("rhythm_addict"));
-        assertTrue(rewardSorted.get(2).getId().equals("music_guru") || rewardSorted.get(2).getId().equals("rhythm_addict"));
-        assertEquals("wealthy", rewardSorted.get(3).getId());
+        assertEquals("score_billionaire", rewardSorted.get(0).getId());
+        assertEquals("beat_bounce_master", rewardSorted.get(1).getId());
+        assertEquals("the_goat", rewardSorted.get(2).getId());
     }
 
     private Achievement findAchievement(List<Achievement> list, String id) {

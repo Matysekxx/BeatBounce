@@ -142,6 +142,17 @@ public class ScoreManager {
     }
 
     /**
+     * Calculates the total cumulative score across all songs.
+     *
+     * @return the total cumulative score
+     */
+    public static int getTotalScore() {
+        return scores.values().stream()
+                .mapToInt(Integer::intValue)
+                .sum();
+    }
+
+    /**
      * Returns the total number of unique songs that have been played.
      *
      * @return the count of played songs

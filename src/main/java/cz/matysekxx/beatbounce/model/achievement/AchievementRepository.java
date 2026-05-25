@@ -9,9 +9,11 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import cz.matysekxx.beatbounce.util.SecurityUtils;
 
 public class AchievementRepository {
     private static final Logger LOG = LoggerFactory.getLogger(AchievementRepository.class);
@@ -21,8 +23,7 @@ public class AchievementRepository {
     public List<Achievement> loadDefinitions() {
         try (InputStream is = AchievementRepository.class.getResourceAsStream("/achievements.json")) {
             if (is != null) {
-                return mapper.readValue(is, new TypeReference<>() {
-                });
+                return mapper.readValue(is, new TypeReference<>() {});
             } else {
                 LOG.warn("achievements.json not found in resources. Initializing fallback list.");
                 return initFallbacks();
@@ -52,13 +53,21 @@ public class AchievementRepository {
         final File file = savePath.toFile();
         if (file.exists()) {
             try {
-                return mapper.readValue(file, AchievementSaveData.class);
+                final String encryptedContent = Files.readString(savePath);
+                final String decrypted = SecurityUtils.decrypt(encryptedContent);
+                if (decrypted == null) {
+                    LOG.warn("Security Warning: Achievements save file tampered or corrupted! Resetting progress.");
+                    final AchievementSaveData empty = new AchievementSaveData();
+                    saveSaveData(empty);
+                    return empty;
+                }
+                return mapper.readValue(decrypted, AchievementSaveData.class);
             } catch (IOException e) {
                 LOG.warn("Failed to load achievements save data: {}", e.getMessage());
                 return new AchievementSaveData();
             }
         } else {
-            AchievementSaveData data = new AchievementSaveData();
+            final AchievementSaveData data = new AchievementSaveData();
             saveSaveData(data);
             return data;
         }
@@ -66,7 +75,9 @@ public class AchievementRepository {
 
     public void saveSaveData(AchievementSaveData saveData) {
         try {
-            mapper.writeValue(savePath.toFile(), saveData);
+            final String json = mapper.writeValueAsString(saveData);
+            final String encrypted = SecurityUtils.encrypt(json);
+            Files.writeString(savePath, encrypted);
         } catch (IOException e) {
             LOG.error("Failed to save achievements progress: {}", e.getMessage());
         }

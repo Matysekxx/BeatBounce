@@ -30,7 +30,7 @@ public class ScoreManagerTest {
     }
 
     @Test
-    void testScorePersistence() throws IOException {
+    void testScorePersistence() {
         String songId = "test_song";
         int score = 1500;
 
@@ -66,5 +66,17 @@ public class ScoreManagerTest {
         ScoreManager.updateScore("song1", 1000);
         assertTrue(ScoreManager.isHighScore("song1", 1100));
         assertFalse(ScoreManager.isHighScore("song1", 900));
+    }
+
+    @Test
+    void testTamperingRejection() throws IOException {
+        ScoreManager.addCurrency(50);
+        assertEquals(50, ScoreManager.getCurrency());
+        assertTrue(Files.exists(testCurrencyPath), "Currency file should be created");
+
+        Files.writeString(testCurrencyPath, "{\"currency\": 999999}");
+
+        ScoreManager.setStoragePaths(testSavePath, testCurrencyPath);
+        assertEquals(0, ScoreManager.getCurrency(), "Hacked currency should be rejected and reset to 0");
     }
 }

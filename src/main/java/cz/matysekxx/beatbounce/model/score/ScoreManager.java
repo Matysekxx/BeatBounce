@@ -9,9 +9,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import cz.matysekxx.beatbounce.util.SecurityUtils;
 
 /**
  * Manages game scores, currency, and persistence.
@@ -70,8 +72,16 @@ public class ScoreManager {
         final File file = savePath.toFile();
         if (file.exists()) {
             try {
-                scores = mapper.readValue(file, new TypeReference<HashMap<String, Integer>>() {
-                });
+                final String encrypted = Files.readString(savePath);
+                final String decrypted = SecurityUtils.decrypt(encrypted);
+                if (decrypted == null) {
+                    LOG.warn("Security Warning: Scores save file tampered or corrupted! Resetting high scores.");
+                    scores = new HashMap<>();
+                    saveScores();
+                } else {
+                    scores = mapper.readValue(decrypted, new TypeReference<HashMap<String, Integer>>() {
+                    });
+                }
             } catch (IOException e) {
                 LOG.warn("Failed to load scores: {}", e.getMessage());
                 scores = new HashMap<>();
@@ -87,7 +97,9 @@ public class ScoreManager {
      */
     public static void saveScores() {
         try {
-            mapper.writeValue(savePath.toFile(), scores);
+            final String json = mapper.writeValueAsString(scores);
+            final String encrypted = SecurityUtils.encrypt(json);
+            Files.writeString(savePath, encrypted);
         } catch (IOException e) {
             LOG.warn("Failed to save scores: {}", e.getMessage());
         }
@@ -145,9 +157,17 @@ public class ScoreManager {
         final File file = currencyPath.toFile();
         if (file.exists()) {
             try {
-                final var data = mapper.readValue(file, new TypeReference<HashMap<String, Integer>>() {
-                });
-                totalCurrency = data.getOrDefault("currency", 0);
+                final String encrypted = Files.readString(currencyPath);
+                final String decrypted = SecurityUtils.decrypt(encrypted);
+                if (decrypted == null) {
+                    LOG.warn("Security Warning: Currency save file tampered or corrupted! Resetting orbs.");
+                    totalCurrency = 0;
+                    saveCurrency();
+                } else {
+                    final Map<String, Integer> data = mapper.readValue(decrypted, new TypeReference<HashMap<String, Integer>>() {
+                    });
+                    totalCurrency = data.getOrDefault("currency", 0);
+                }
             } catch (IOException e) {
                 LOG.warn("Failed to load currency: {}", e.getMessage());
                 totalCurrency = 0;
@@ -165,7 +185,9 @@ public class ScoreManager {
         try {
             final Map<String, Integer> data = new HashMap<>();
             data.put("currency", totalCurrency);
-            mapper.writeValue(currencyPath.toFile(), data);
+            final String json = mapper.writeValueAsString(data);
+            final String encrypted = SecurityUtils.encrypt(json);
+            Files.writeString(currencyPath, encrypted);
         } catch (IOException e) {
             LOG.warn("Failed to save currency: {}", e.getMessage());
         }

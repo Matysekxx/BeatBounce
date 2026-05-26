@@ -12,6 +12,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,7 +30,13 @@ class ReviveManagerTest {
     private Camera3D cam;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
+        Path tempSave = Files.createTempFile("beatbounce_save", ".dat");
+        Path tempCurrency = Files.createTempFile("beatbounce_currency", ".dat");
+        tempSave.toFile().deleteOnExit();
+        tempCurrency.toFile().deleteOnExit();
+        ScoreManager.setStoragePaths(tempSave, tempCurrency);
+
         sphere = new Sphere(0, 150, 0, 25);
         cam = new Camera3D(0, 0, -500, 500);
 
@@ -38,14 +47,7 @@ class ReviveManagerTest {
         gameEngine = new GameEngine(level, sphere, cam, null);
         reviveManager = new ReviveManager(gameEngine, sphere);
 
-        try {
-            java.lang.reflect.Field field = ScoreManager.class.getDeclaredField("totalCurrency");
-            field.setAccessible(true);
-            field.set(null, 100);
-        } catch (Exception e) {
-            ScoreManager.addCurrency(-ScoreManager.getCurrency());
-            ScoreManager.addCurrency(100);
-        }
+        ScoreManager.addCurrency(100);
     }
 
     @Test

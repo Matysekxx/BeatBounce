@@ -81,7 +81,8 @@ class ReviveManagerTest {
     @Test
     void testReviveCostDeduction() {
         int initialCurrency = ScoreManager.getCurrency();
+        int expectedCost = reviveManager.getReviveCost();
         reviveManager.revive();
-        assertEquals(initialCurrency - reviveManager.getReviveCost(), ScoreManager.getCurrency());
+        assertEquals(initialCurrency - expectedCost, ScoreManager.getCurrency());
     }
 }

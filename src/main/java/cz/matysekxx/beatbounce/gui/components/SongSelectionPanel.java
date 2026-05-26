@@ -245,9 +245,9 @@ public class SongSelectionPanel extends BasePanel implements Runnable {
                     g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, getHeight(), getHeight());
                     g2.setColor(new Color(200, 200, 200, 150));
                 }
-                g2.setFont(RenderCache.SANS_PLAIN_20);
+                g2.setFont(UIScale.scaleFont(RenderCache.SANS_PLAIN_20));
                 final FontMetrics fm = g2.getFontMetrics();
-                g2.drawString(getText(), (getWidth() - fm.stringWidth(getText())) / 2, getHeight() / 2 + UIScale.scale(5));
+                g2.drawString(getText(), (getWidth() - fm.stringWidth(getText())) / 2, getHeight() / 2 + UIScale.scale(6));
                 g2.dispose();
             }
         };

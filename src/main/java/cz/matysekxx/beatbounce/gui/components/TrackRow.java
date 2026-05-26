@@ -97,13 +97,7 @@ public class TrackRow extends JPanel {
                     if (onSelect != null) {
                         onSelect.accept(data);
                     }
-                    
-                    final int btnW = UIScale.scale(140), btnH = UIScale.scale(50);
-                    final int bx = getWidth() - UIScale.scale(155);
-                    final int by = (getHeight() - btnH) / 2;
-                    final Rectangle playRect = new Rectangle(bx, by, btnW, btnH);
-
-                    if (playRect.contains(e.getPoint()) || !data.isDownloaded(audiusClient)) {
+                    if (!data.isDownloaded(audiusClient)) {
                         handlePlay();
                     } else {
                         launchGame(data.findDownloadedPath(audiusClient), stars);
@@ -151,15 +145,6 @@ public class TrackRow extends JPanel {
         final FontMetrics fmIcon = g2.getFontMetrics();
         g2.drawString(icon, UIScale.scale(18) + (UIScale.scale(60) - fmIcon.stringWidth(icon)) / 2, UIScale.scale(15) + UIScale.scale(42));
 
-        g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_22));
-        g2.setColor(Color.WHITE);
-        g2.drawString(title, UIScale.scale(100), UIScale.scale(42));
-
-        g2.setFont(UIScale.scaleFont(RenderCache.SANS_PLAIN_20));
-        g2.setColor(new Color(180, 180, 200));
-        final String subText = artist + "  •  Difficulty: " + "★".repeat(stars) + "☆".repeat(10 - stars);
-        g2.drawString(subText, UIScale.scale(100), UIScale.scale(68));
-
         final String scoreText = "BEST: " + bestScore;
         g2.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_17));
         final FontMetrics fmScore = g2.getFontMetrics();
@@ -171,6 +156,18 @@ public class TrackRow extends JPanel {
         g2.fillRoundRect(scoreX, (h - scoreH) / 2, scoreW, scoreH, UIScale.scale(10), UIScale.scale(10));
         g2.setColor(RenderUtils.cyan);
         g2.drawString(scoreText, scoreX + UIScale.scale(12), (h - scoreH) / 2 + UIScale.scale(24));
+
+        g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_22));
+        g2.setColor(Color.WHITE);
+        
+        final int textStartX = UIScale.scale(100);
+        String displayTitle = getString(scoreX, textStartX, g2);
+        g2.drawString(displayTitle, textStartX, UIScale.scale(42));
+
+        g2.setFont(UIScale.scaleFont(RenderCache.SANS_PLAIN_20));
+        g2.setColor(new Color(180, 180, 200));
+        final String subText = artist + "  •  Difficulty: " + "★".repeat(stars) + "☆".repeat(10 - stars);
+        g2.drawString(subText, textStartX, UIScale.scale(68));
 
         final int btnW = UIScale.scale(140), btnH = UIScale.scale(50);
         final int bx = w - UIScale.scale(155);
@@ -197,22 +194,27 @@ public class TrackRow extends JPanel {
             final String pctTxt = (int) (data.downloadProgress * 100) + "%";
             final FontMetrics fmPct = g2.getFontMetrics();
             g2.drawString(pctTxt, bx + (btnW - fmPct.stringWidth(pctTxt)) / 2, by + UIScale.scale(32));
-        } else if (data != null) {
-            g2.setColor(Color.WHITE);
-            g2.fillRoundRect(bx, by, btnW, btnH, UIScale.scale(14), UIScale.scale(14));
-
-            g2.setColor(new Color(10, 10, 26));
-            g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_18));
-            final String readyTxt = "READY!";
-            final FontMetrics fmReady = g2.getFontMetrics();
-            g2.drawString(readyTxt, bx + (btnW - fmReady.stringWidth(readyTxt)) / 2, by + UIScale.scale(32));
-
+        } else if (data != null && data.startingProgress > 0f) {
             final float alpha = Math.max(0f, 1.0f - data.startingProgress);
             g2.setColor(new Color(255, 255, 255, (int) (alpha * 120)));
             g2.fillRoundRect(0, 0, w, h, UIScale.scale(18), UIScale.scale(18));
         }
 
         g2.dispose();
+    }
+
+    private String getString(int scoreX, int textStartX, Graphics2D g2) {
+        final int maxTitleWidth = scoreX - textStartX - UIScale.scale(20);
+        final FontMetrics fmTitle = g2.getFontMetrics();
+
+        String displayTitle = title;
+        if (fmTitle.stringWidth(displayTitle) > maxTitleWidth && maxTitleWidth > 0) {
+            while (!displayTitle.isEmpty() && fmTitle.stringWidth(displayTitle + "...") > maxTitleWidth)
+                displayTitle = displayTitle.substring(0, displayTitle.length() - 1);
+
+            displayTitle += "...";
+        }
+        return displayTitle;
     }
 
     private void handlePlay() {

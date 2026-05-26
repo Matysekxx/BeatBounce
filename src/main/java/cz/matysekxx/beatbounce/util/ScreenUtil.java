@@ -26,7 +26,6 @@ public class ScreenUtil {
         final Rectangle bounds = device.getDefaultConfiguration().getBounds();
         screen.setExtendedState(JFrame.NORMAL);
         screen.setBounds(bounds);
-        screen.setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
     /**

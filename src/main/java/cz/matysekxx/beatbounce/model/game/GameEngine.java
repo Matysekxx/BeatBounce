@@ -52,9 +52,9 @@ public class GameEngine {
     private final List<Orb> orbs = new ArrayList<>();
 
     /**
-     * Thread-safe list of active score popups to be rendered.
+     * List of active score popups to be rendered.
      */
-    private final List<ScorePopup> scorePopups = new CopyOnWriteArrayList<>();
+    private final List<ScorePopup> scorePopups = new ArrayList<>();
 
     /**
      * List of tiles that require periodic updates (e.g., moving or breaking tiles).
@@ -336,8 +336,15 @@ public class GameEngine {
      */
     public void update(double deltaTime) {
         syncAudioTime(deltaTime);
-        scorePopups.removeIf(ScorePopup::isFinished);
-        scorePopups.forEach(popup -> popup.update(deltaTime));
+        
+        for (int i = scorePopups.size() - 1; i >= 0; i--) {
+            ScorePopup popup = scorePopups.get(i);
+            popup.update(deltaTime);
+            if (popup.isFinished()) {
+                popup.returnToPool();
+                scorePopups.remove(i);
+            }
+        }
 
         final GameStateHandler handler = stateHandlers.get(gameState);
         if (handler != null) {

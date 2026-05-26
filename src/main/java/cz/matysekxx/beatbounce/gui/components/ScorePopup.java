@@ -1,7 +1,6 @@
 package cz.matysekxx.beatbounce.gui.components;
 
 import cz.matysekxx.beatbounce.gui.RenderCache;
-
 import cz.matysekxx.beatbounce.util.UIScale;
 
 import java.awt.*;
@@ -10,16 +9,11 @@ import java.util.Random;
 /**
  * A visual popup that shows score increases (e.g., "+10").
  * It floats upwards and fades out over time with cyberpunk neon colors.
+ * Uses Object Pooling to prevent GC stuttering.
  */
 public class ScorePopup {
-    /**
-     * Random generator for offset and color selection.
-     */
     private static final Random RANDOM = new Random();
 
-    /**
-     * Set of cyberpunk neon colors for the popups.
-     */
     private static final Color[] NEON_COLORS = {
             new Color(0, 255, 255),
             new Color(255, 0, 255),
@@ -29,106 +23,77 @@ public class ScorePopup {
             new Color(255, 0, 100)
     };
 
-    /**
-     * The text to display (e.g., "+100").
-     */
-    private final String text;
+    private static final int POOL_SIZE = 100;
+    private static final ScorePopup[] pool = new ScorePopup[POOL_SIZE];
+    private static int poolCount = 0;
 
-    /**
-     * The color of the popup's glow.
-     */
-    private final Color color;
+    static {
+        for (int i = 0; i < POOL_SIZE; i++) {
+            pool[i] = new ScorePopup();
+        }
+        poolCount = POOL_SIZE;
+    }
 
-    /**
-     * Total lifetime of the popup in seconds.
-     */
+    private String text;
+    private Color color;
     private final double duration = 0.8;
-
-    /**
-     * Speed at which the popup floats upwards (pixels per second).
-     */
-    private final double speed;
-
-    /**
-     * Random horizontal jitter applied to the popup.
-     */
-    private final double xOffset;
-
-    /**
-     * Initial world-space horizontal coordinate.
-     */
-    private final double x;
-
-    /**
-     * Current vertical coordinate.
-     */
+    private double speed;
+    private double xOffset;
+    private double x;
     private double y;
-
-    /**
-     * Current alpha level (0.0 to 1.0).
-     */
     private double alpha = 1.0;
-
-    /**
-     * Elapsed time since creation in seconds.
-     */
     private double elapsed = 0;
 
+    private ScorePopup() {
+    }
+
     /**
-     * Constructs a new ScorePopup.
-     *
-     * @param amount the score value to display
-     * @param startX the starting X-coordinate
-     * @param startY the starting Y-coordinate
-     * @param color  the glow color
+     * Initializes the popup with new parameters.
      */
-    public ScorePopup(int amount, double startX, double startY, Color color) {
+    public void init(int amount, double startX, double startY, Color color) {
         this.text = "+" + amount;
         this.x = startX;
         this.y = startY;
         this.color = color;
         this.speed = UIScale.scale(50.0f);
         this.xOffset = (RANDOM.nextDouble() - 0.5) * UIScale.scale(60);
+        this.alpha = 1.0;
+        this.elapsed = 0;
     }
 
     /**
-     * Creates a ScorePopup with a random cyberpunk neon color.
-     *
-     * @param amount the score value to display
-     * @param startX the starting X-coordinate
-     * @param startY the starting Y-coordinate
-     * @return a new ScorePopup instance
+     * Retrieves a ScorePopup from the pool or creates a new one if empty.
      */
     public static ScorePopup createRandom(int amount, double startX, double startY) {
-        return new ScorePopup(amount, startX, startY, NEON_COLORS[RANDOM.nextInt(NEON_COLORS.length)]);
+        final ScorePopup popup;
+        if (poolCount > 0) {
+            popup = pool[--poolCount];
+        } else {
+            popup = new ScorePopup();
+        }
+        popup.init(amount, startX, startY, NEON_COLORS[RANDOM.nextInt(NEON_COLORS.length)]);
+        return popup;
     }
 
     /**
-     * Updates the popup's position and alpha based on delta time.
-     *
-     * @param deltaTime time since last frame in seconds
+     * Returns this popup back to the pool.
      */
+    public void returnToPool() {
+        if (poolCount < POOL_SIZE) {
+            pool[poolCount++] = this;
+        }
+    }
+
     public void update(double deltaTime) {
         elapsed += deltaTime;
         y -= speed * deltaTime;
         alpha = Math.max(0, 1.0 - (elapsed / duration));
     }
 
-    /**
-     * Returns whether the popup has completed its lifetime and should be removed.
-     *
-     * @return true if finished, false otherwise
-     */
     public boolean isFinished() {
         return elapsed >= duration;
     }
 
-    /**
-     * Renders the score popup to the screen.
-     *
-     * @param g2d         the graphics context
-     * @param screenWidth the width of the screen for centering
-     */
     public void paint(Graphics2D g2d, int screenWidth) {
         if (alpha <= 0) return;
 
@@ -146,7 +111,6 @@ public class ScorePopup {
         g2d.drawString(text, (int) drawX + UIScale.scale(2), (int) y);
         g2d.drawString(text, (int) drawX, (int) y - UIScale.scale(2));
         g2d.drawString(text, (int) drawX, (int) y + UIScale.scale(2));
-
 
         g2d.setColor(new Color(0, 0, 0, (int) (alpha * 150)));
         g2d.drawString(text, (int) drawX + UIScale.scale(2), (int) y + UIScale.scale(2));

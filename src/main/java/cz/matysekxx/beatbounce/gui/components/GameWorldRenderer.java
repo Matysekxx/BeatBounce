@@ -283,16 +283,23 @@ public class GameWorldRenderer {
                 final AbstractTile tile = tiles.get(i);
                 final double distance = cam.getDistanceTo(tile.getZ());
                 final double tileDepth = distance + tile.getLengthInZ();
-                if (tileDepth <= 0 || distance > 3000) continue;
+                
+                if (distance > 3000) continue;
+                if (tileDepth <= 0) break;
+                
                 tile.render(g2d, cam, windowData);
             }
 
             if (gameEngine != null) {
-                for (Orb orb : gameEngine.getOrbs()) {
+                final List<Orb> orbs = gameEngine.getOrbs();
+                for (int i = orbs.size() - 1; i >= 0; i--) {
+                    final Orb orb = orbs.get(i);
                     final double distance = cam.getDistanceTo(orb.getZ());
-                    if (distance > 0 && distance < 3000) {
-                        orb.render(g2d, cam, windowData);
-                    }
+                    
+                    if (distance > 3000) continue;
+                    if (distance <= 0) break;
+                    
+                    orb.render(g2d, cam, windowData);
                 }
             }
         }

@@ -172,6 +172,9 @@ public class GameUIRenderer {
     private RadialGradientPaint cachedHaloPaint;
     private Color lastHaloColor;
     private float lastHaloPulse = -1;
+    private LinearGradientPaint cachedProgressGradient;
+    private int cachedProgressWidth = -1;
+    private RadialGradientPaint cachedProgressGlow;
 
     /**
      * Constructs a new GameUIRenderer.
@@ -652,16 +655,26 @@ public class GameUIRenderer {
 
         final int fillW = (int) (width * progress);
         if (fillW > 3) {
-            colors3[0] = RenderUtils.cyan;
-            colors3[1] = RenderUtils.purple;
-            colors3[2] = RenderUtils.yellow;
-            g2d.setPaint(new LinearGradientPaint(0, barY, width, barY, fractions3, colors3));
+            if (cachedProgressGradient == null || cachedProgressWidth != width) {
+                colors3[0] = RenderUtils.cyan;
+                colors3[1] = RenderUtils.purple;
+                colors3[2] = RenderUtils.yellow;
+                cachedProgressGradient = new LinearGradientPaint(0, barY, width, barY, fractions3, colors3);
+                cachedProgressWidth = width;
+            }
+            g2d.setPaint(cachedProgressGradient);
             g2d.fillRoundRect(0, barY, fillW, barH, UIScale.scale(3), UIScale.scale(3));
+            
             if (fillW < width) {
-                colors2[0] = RenderCache.whiteWithAlpha(200);
-                colors2[1] = RenderCache.whiteWithAlpha(0);
-                g2d.setPaint(new RadialGradientPaint(fillW, barY + barH / 2f, UIScale.scale(14), fractions2, colors2));
-                g2d.fillOval(fillW - UIScale.scale(14), barY - UIScale.scale(9), UIScale.scale(28), UIScale.scale(33));
+                if (cachedProgressGlow == null) {
+                    colors2[0] = RenderCache.whiteWithAlpha(200);
+                    colors2[1] = RenderCache.whiteWithAlpha(0);
+                    cachedProgressGlow = new RadialGradientPaint(0, 0, UIScale.scale(14), fractions2, colors2);
+                }
+                g2d.translate(fillW, barY + barH / 2f);
+                g2d.setPaint(cachedProgressGlow);
+                g2d.fillOval(-UIScale.scale(14), -UIScale.scale(16), UIScale.scale(28), UIScale.scale(33));
+                g2d.translate(-fillW, -(barY + barH / 2f));
             }
         }
 

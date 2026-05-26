@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class AchievementManager {
     private static final Logger LOG = LoggerFactory.getLogger(AchievementManager.class);
@@ -14,12 +15,25 @@ public class AchievementManager {
     private static final AchievementRepository repository = new AchievementRepository();
     private static List<Achievement> achievements = new ArrayList<>();
     private static AchievementSaveData saveData = new AchievementSaveData();
+    private static final List<AchievementListener> listeners = new CopyOnWriteArrayList<>();
 
     private static boolean checking = false;
 
     static {
         loadData();
         checkAchievements();
+    }
+
+    public interface AchievementListener {
+        void onAchievementUnlocked(Achievement achievement);
+    }
+
+    public static void addListener(AchievementListener listener) {
+        listeners.add(listener);
+    }
+
+    public static void removeListener(AchievementListener listener) {
+        listeners.remove(listener);
     }
 
     public static void loadData() {
@@ -63,6 +77,9 @@ public class AchievementManager {
                     stateChanged = true;
                     LOG.info("Unlocked achievement: {} - {}", ach.getId(), ach.getTitle());
                     ach.setCompleted(true);
+                    listeners.forEach(
+                            listener -> listener.onAchievementUnlocked(ach)
+                    );
                 }
             }
             if (stateChanged) saveData();

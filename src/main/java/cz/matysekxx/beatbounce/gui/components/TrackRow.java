@@ -130,7 +130,7 @@ public class TrackRow extends JPanel {
         g2.fillRoundRect(UIScale.scale(18), UIScale.scale(15), UIScale.scale(60), UIScale.scale(60), UIScale.scale(12), UIScale.scale(12));
         g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_26));
         g2.setColor(hovered ? RenderUtils.cyan : Color.WHITE);
-        
+
         String icon = "🎵";
         if (localPath == null && data != null) {
             if (data.isDownloaded(audiusClient)) {
@@ -141,7 +141,7 @@ public class TrackRow extends JPanel {
                 g2.setColor(Color.GRAY);
             }
         }
-        
+
         final FontMetrics fmIcon = g2.getFontMetrics();
         g2.drawString(icon, UIScale.scale(18) + (UIScale.scale(60) - fmIcon.stringWidth(icon)) / 2, UIScale.scale(15) + UIScale.scale(42));
 
@@ -159,7 +159,7 @@ public class TrackRow extends JPanel {
 
         g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_22));
         g2.setColor(Color.WHITE);
-        
+
         final int textStartX = UIScale.scale(100);
         String displayTitle = getString(scoreX, textStartX, g2);
         g2.drawString(displayTitle, textStartX, UIScale.scale(42));

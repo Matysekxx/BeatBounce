@@ -9,19 +9,17 @@ import cz.matysekxx.beatbounce.util.UIScale;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class AchievementsPanel extends BasePanel {
 
     private final JPanel listPanel;
-    
+
     private CycleButton filterBtn;
     private CycleButton sortBtn;
 
-    
+
     public AchievementsPanel() {
         super();
         setOpaque(false);
@@ -37,7 +35,7 @@ public class AchievementsPanel extends BasePanel {
         loadAchievements();
     }
 
-    
+
     private static JScrollPane buildScrollPane(JPanel content) {
         return SongSelectionPanel.buildScrollPane(content);
     }
@@ -47,7 +45,7 @@ public class AchievementsPanel extends BasePanel {
         RenderUtils.drawMenuBackground(g2d, w, h);
     }
 
-    
+
     private JPanel createTopBar() {
         final JPanel topBar = new JPanel(new BorderLayout());
         topBar.setOpaque(false);
@@ -91,7 +89,7 @@ public class AchievementsPanel extends BasePanel {
         return topBar;
     }
 
-    
+
     public void loadAchievements() {
         if (listPanel == null) return;
         listPanel.removeAll();
@@ -108,7 +106,7 @@ public class AchievementsPanel extends BasePanel {
             emptyLabel.setFont(UIScale.scaleFont(RenderCache.SANS_ITALIC_22));
             emptyLabel.setForeground(new Color(150, 150, 180));
             emptyLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            
+
             listPanel.setLayout(new GridBagLayout());
             listPanel.add(emptyLabel);
         } else {
@@ -116,9 +114,9 @@ public class AchievementsPanel extends BasePanel {
             sorted.stream()
                     .map(ach -> new AchievementRowPanel(ach, this::loadAchievements))
                     .forEach(row -> {
-                listPanel.add(row);
-                listPanel.add(Box.createRigidArea(new Dimension(0, UIScale.scale(10))));
-            });
+                        listPanel.add(row);
+                        listPanel.add(Box.createRigidArea(new Dimension(0, UIScale.scale(10))));
+                    });
         }
 
         listPanel.revalidate();

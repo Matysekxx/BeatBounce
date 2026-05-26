@@ -81,7 +81,7 @@ public class GameController implements MouseMotionListener {
         if (gameEngine == null) return;
         final GameState state = gameEngine.getGameState();
         if (state != GameState.PLAYING && state != GameState.COUNTDOWN) return;
-        
+
         final int mouseX = e.getX();
         final int width = e.getComponent().getWidth();
         final double scale = cam.getScale(sphere.getZ());

@@ -116,21 +116,27 @@ public class MovingTile extends AbstractTile {
      *
      * @return the {@code startX} value
      */
-    public int getStartX() { return startX; }
+    public int getStartX() {
+        return startX;
+    }
 
     /**
      * Returns the horizontal oscillation amplitude.
      *
      * @return the {@code amplitude} value
      */
-    public int getAmplitude() { return amplitude; }
+    public int getAmplitude() {
+        return amplitude;
+    }
 
     /**
      * Returns the oscillation speed.
      *
      * @return the {@code speed} value
      */
-    public double getSpeed() { return speed; }
+    public double getSpeed() {
+        return speed;
+    }
 
     /**
      * Renders the tile with dynamic colors.

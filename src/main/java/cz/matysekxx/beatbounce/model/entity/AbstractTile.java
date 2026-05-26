@@ -143,8 +143,8 @@ public abstract class AbstractTile extends Entity {
     /**
      * Calculates a dynamic color that smoothly changes over time and creates a wave effect along the Z-axis.
      *
-     * @param saturation color saturation (0.0 - 1.0)
-     * @param brightness color brightness (0.0 - 1.0)
+     * @param saturation  color saturation (0.0 - 1.0)
+     * @param brightness  color brightness (0.0 - 1.0)
      * @param phaseOffset phase shift, useful if different tile types should have a different base hue
      * @return a dynamic {@link Color} object
      */
@@ -167,14 +167,14 @@ public abstract class AbstractTile extends Entity {
     /**
      * Sets up a polygon with projected coordinates.
      *
-     * @param cam         the camera used for projection
-     * @param width       screen width
-     * @param horizonY     the vertical position of the horizon on screen
-     * @param scaleFront  scale at the front of the tile
-     * @param scaleBack   scale at the back of the tile
-     * @param targetX     world X coordinate
-     * @param pulseScale  current animation pulse scale
-     * @param poly        the polygon to populate
+     * @param cam        the camera used for projection
+     * @param width      screen width
+     * @param horizonY   the vertical position of the horizon on screen
+     * @param scaleFront scale at the front of the tile
+     * @param scaleBack  scale at the back of the tile
+     * @param targetX    world X coordinate
+     * @param pulseScale current animation pulse scale
+     * @param poly       the polygon to populate
      */
     protected void setupPolygon(Camera3D cam, int width, int horizonY, double scaleFront, double scaleBack, int targetX, double pulseScale, Polygon poly) {
         fillXPoints(cam, width, scaleFront, scaleBack, targetX, pulseScale, poly.xpoints);

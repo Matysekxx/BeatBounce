@@ -271,8 +271,8 @@ public class GamePanel extends JPanel implements Runnable {
             gameEngine.update(dt);
             updateCursorVisibility();
             if (uiRenderer != null) uiRenderer.update(dt);
-            
-            synchronized(activeToasts) {
+
+            synchronized (activeToasts) {
                 final Iterator<ToastNotification> it = activeToasts.iterator();
                 while (it.hasNext()) {
                     final ToastNotification toast = it.next();
@@ -423,7 +423,7 @@ public class GamePanel extends JPanel implements Runnable {
         assert gameEngine != null;
         uiRenderer.renderGameState(g2d, w, h, gameEngine.getGameState());
 
-        synchronized(activeToasts) {
+        synchronized (activeToasts) {
             int index = 0;
             for (ToastNotification toast : activeToasts) toast.draw(g2d, w, index++);
         }

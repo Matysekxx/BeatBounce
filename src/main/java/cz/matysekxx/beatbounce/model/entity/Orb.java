@@ -55,7 +55,7 @@ public class Orb {
     private boolean collected;
 
     /**
-     * Cached gradient paint for the glow effect. 
+     * Cached gradient paint for the glow effect.
      * Recalculated only when the orb's screen position or pulse size changes.
      */
     private RadialGradientPaint cachedPaint;
@@ -97,42 +97,54 @@ public class Orb {
      *
      * @return the {@code x} coordinate
      */
-    public double getX() { return x; }
+    public double getX() {
+        return x;
+    }
 
     /**
      * Returns the base vertical world position.
      *
      * @return the {@code y} coordinate
      */
-    public double getY() { return y; }
+    public double getY() {
+        return y;
+    }
 
     /**
      * Returns the depth world position.
      *
      * @return the {@code z} coordinate
      */
-    public double getZ() { return z; }
+    public double getZ() {
+        return z;
+    }
 
     /**
      * Returns the physical world radius.
      *
      * @return the {@code radius} value
      */
-    public double getRadius() { return radius; }
+    public double getRadius() {
+        return radius;
+    }
 
     /**
      * Returns whether the orb has been collected.
      *
      * @return {@code true} if collected, {@code false} otherwise
      */
-    public boolean isCollected() { return collected; }
+    public boolean isCollected() {
+        return collected;
+    }
 
     /**
      * Sets the collection status of the orb.
      *
      * @param collected the new collection status
      */
-    public void setCollected(boolean collected) { this.collected = collected; }
+    public void setCollected(boolean collected) {
+        this.collected = collected;
+    }
 
     /**
      * Renders the orb in 3D perspective with levitation and pulsing effects.
@@ -144,9 +156,9 @@ public class Orb {
      *   <li><b>Highlight Layer:</b> A small offset shine to give a sense of volume.</li>
      * </ol>
      *
-     * @param g2d  the graphics context to paint on
-     * @param cam  the {@link Camera3D} used for projection
-     * @param win  the window metadata for screen dimension access
+     * @param g2d the graphics context to paint on
+     * @param cam the {@link Camera3D} used for projection
+     * @param win the window metadata for screen dimension access
      */
     public void render(Graphics2D g2d, Camera3D cam, cz.matysekxx.beatbounce.gui.WindowData win) {
         if (collected) return;

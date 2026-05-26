@@ -5,14 +5,8 @@ import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.model.achievement.Achievement;
 import cz.matysekxx.beatbounce.util.UIScale;
 
-import javax.swing.JPanel;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.LinearGradientPaint;
-import java.awt.RadialGradientPaint;
-import java.awt.GradientPaint;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.geom.Path2D;
 
 public class AchievementIconPanel extends JPanel {

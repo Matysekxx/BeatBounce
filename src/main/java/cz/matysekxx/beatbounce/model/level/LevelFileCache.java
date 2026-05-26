@@ -164,7 +164,8 @@ public class LevelFileCache {
                         dos.writeInt(mt.getAmplitude());
                         dos.writeDouble(mt.getSpeed());
                     }
-                    default -> {}
+                    default -> {
+                    }
                 }
             }
             LOG.info("Level binary cache saved: {}", cacheFile.getAbsolutePath());

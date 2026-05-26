@@ -34,9 +34,9 @@ public class ScorePopup {
         poolCount = POOL_SIZE;
     }
 
+    private final double duration = 0.8;
     private String text;
     private Color color;
-    private final double duration = 0.8;
     private double speed;
     private double xOffset;
     private double x;
@@ -45,20 +45,6 @@ public class ScorePopup {
     private double elapsed = 0;
 
     private ScorePopup() {
-    }
-
-    /**
-     * Initializes the popup with new parameters.
-     */
-    public void init(int amount, double startX, double startY, Color color) {
-        this.text = "+" + amount;
-        this.x = startX;
-        this.y = startY;
-        this.color = color;
-        this.speed = UIScale.scale(50.0f);
-        this.xOffset = (RANDOM.nextDouble() - 0.5) * UIScale.scale(60);
-        this.alpha = 1.0;
-        this.elapsed = 0;
     }
 
     /**
@@ -73,6 +59,20 @@ public class ScorePopup {
         }
         popup.init(amount, startX, startY, NEON_COLORS[RANDOM.nextInt(NEON_COLORS.length)]);
         return popup;
+    }
+
+    /**
+     * Initializes the popup with new parameters.
+     */
+    public void init(int amount, double startX, double startY, Color color) {
+        this.text = "+" + amount;
+        this.x = startX;
+        this.y = startY;
+        this.color = color;
+        this.speed = UIScale.scale(50.0f);
+        this.xOffset = (RANDOM.nextDouble() - 0.5) * UIScale.scale(60);
+        this.alpha = 1.0;
+        this.elapsed = 0;
     }
 
     /**

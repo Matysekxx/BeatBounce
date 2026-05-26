@@ -54,7 +54,9 @@ public class BreakableTile extends AbstractTile {
      *
      * @return {@code true} if broken, {@code false} otherwise
      */
-    public boolean isBroken() { return broken; }
+    public boolean isBroken() {
+        return broken;
+    }
 
     /**
      * Marks the tile as broken and starts the shattering animation.
@@ -80,7 +82,9 @@ public class BreakableTile extends AbstractTile {
      *
      * @return the {@code breakProgress} value
      */
-    public float getBreakProgress() { return breakProgress; }
+    public float getBreakProgress() {
+        return breakProgress;
+    }
 
     /**
      * Resets the tile's internal state, including breaking status.

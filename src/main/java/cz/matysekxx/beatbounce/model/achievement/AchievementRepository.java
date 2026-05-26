@@ -3,6 +3,7 @@ package cz.matysekxx.beatbounce.model.achievement;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.matysekxx.beatbounce.system.FileSystem;
+import cz.matysekxx.beatbounce.util.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import cz.matysekxx.beatbounce.util.SecurityUtils;
 
 public class AchievementRepository {
     private static final Logger LOG = LoggerFactory.getLogger(AchievementRepository.class);
@@ -23,7 +23,8 @@ public class AchievementRepository {
     public List<Achievement> loadDefinitions() {
         try (InputStream is = AchievementRepository.class.getResourceAsStream("/achievements.json")) {
             if (is != null) {
-                return mapper.readValue(is, new TypeReference<>() {});
+                return mapper.readValue(is, new TypeReference<>() {
+                });
             } else {
                 LOG.warn("achievements.json not found in resources. Initializing fallback list.");
                 return initFallbacks();

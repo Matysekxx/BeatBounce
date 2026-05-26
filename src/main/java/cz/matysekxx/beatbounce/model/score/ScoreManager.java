@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.matysekxx.beatbounce.model.achievement.AchievementManager;
 import cz.matysekxx.beatbounce.system.FileSystem;
+import cz.matysekxx.beatbounce.util.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-import cz.matysekxx.beatbounce.util.SecurityUtils;
 
 /**
  * Manages game scores, currency, and persistence.

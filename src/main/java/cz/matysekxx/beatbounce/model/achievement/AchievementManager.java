@@ -13,19 +13,14 @@ public class AchievementManager {
     private static final Logger LOG = LoggerFactory.getLogger(AchievementManager.class);
 
     private static final AchievementRepository repository = new AchievementRepository();
+    private static final List<AchievementListener> listeners = new CopyOnWriteArrayList<>();
     private static List<Achievement> achievements = new ArrayList<>();
     private static AchievementSaveData saveData = new AchievementSaveData();
-    private static final List<AchievementListener> listeners = new CopyOnWriteArrayList<>();
-
     private static boolean checking = false;
 
     static {
         loadData();
         checkAchievements();
-    }
-
-    public interface AchievementListener {
-        void onAchievementUnlocked(Achievement achievement);
     }
 
     public static void addListener(AchievementListener listener) {
@@ -132,14 +127,14 @@ public class AchievementManager {
     /**
      * Sorts a list of achievements based on the specified sort option.
      * Supported options: "DEFAULT", "PROGRESS", "REWARD".
-     *
+     * <p>
      * To make the sorting extremely natural and user-friendly:
      * - We will sort primarily such that "READY TO CLAIM" achievements (which require action)
-     *   are placed at the very top.
+     * are placed at the very top.
      * - "IN PROGRESS" achievements are next.
      * - Already "CLAIMED" achievements are placed at the bottom since they are done.
      * - Secondary sorting will apply the requested sorting type ("PROGRESS" percentage descending,
-     *   "REWARD" value descending, or "DEFAULT" repository order).
+     * "REWARD" value descending, or "DEFAULT" repository order).
      */
     public static List<Achievement> sortAchievements(List<Achievement> list, String sortOption) {
         final List<Achievement> sorted = new ArrayList<>(list);
@@ -186,5 +181,9 @@ public class AchievementManager {
             return 2;
         }
         return 3;
+    }
+
+    public interface AchievementListener {
+        void onAchievementUnlocked(Achievement achievement);
     }
 }

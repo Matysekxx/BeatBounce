@@ -2,14 +2,13 @@ package cz.matysekxx.beatbounce.model.entity;
 
 import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.gui.RenderCache;
-import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.WindowData;
 
 import java.awt.*;
 
 /**
  * The {@code Sphere} class represents the player character in the game world.
- * It extends {@link Entity} and manages the player's physical state, 
+ * It extends {@link Entity} and manages the player's physical state,
  * including movement, jumping, falling, and visual representation.
  * <p>
  * Key features:
@@ -76,21 +75,10 @@ public class Sphere extends Entity {
      * Flag indicating if the sphere has missed a tile and is falling into the void.
      */
     private boolean isFalling = false;
-
-    /**
-     * Returns whether the sphere is currently falling.
-     *
-     * @return {@code true} if falling, {@code false} otherwise
-     */
-    public boolean isFalling() {
-        return isFalling;
-    }
-
     /**
      * Current transparency alpha level of the sphere (0.0 for fully transparent to 1.0 for fully opaque).
      */
     private float alpha = 1.0f;
-
     /**
      * Current visual scale multiplier for animations.
      * Values > 1.0 make the sphere appear larger, < 1.0 smaller.
@@ -113,6 +101,15 @@ public class Sphere extends Entity {
         this.currentX = x;
         this.currentY = y;
         this.isJumping = false;
+    }
+
+    /**
+     * Returns whether the sphere is currently falling.
+     *
+     * @return {@code true} if falling, {@code false} otherwise
+     */
+    public boolean isFalling() {
+        return isFalling;
     }
 
     /**
@@ -156,7 +153,7 @@ public class Sphere extends Entity {
         final double lerpFactor = 1.0 - Math.exp(-25 * deltaTime);
         currentX += (targetX - currentX) * lerpFactor;
         this.x = (int) currentX;
-        
+
         if (isFalling) {
             final double constantFallVelocity = 600.0;
             currentY += constantFallVelocity * deltaTime;
@@ -392,7 +389,7 @@ public class Sphere extends Entity {
         final float shadowAlpha = (float) Math.max(0, 0.4 - heightFactor * 0.3);
         final int shadowSizeX = (int) (radius * scale * (1.2 - heightFactor * 0.4));
         final int shadowSizeY = (int) (shadowSizeX * 0.4);
-        
+
         if (shadowAlpha > 0 && shadowSizeX > 0 && shadowSizeY > 0) {
             g2d.setColor(RenderCache.blackWithAlpha((int) (255 * shadowAlpha)));
             g2d.fillOval(shadowScreenX - shadowSizeX, shadowScreenY - shadowSizeY / 2, shadowSizeX * 2, shadowSizeY);

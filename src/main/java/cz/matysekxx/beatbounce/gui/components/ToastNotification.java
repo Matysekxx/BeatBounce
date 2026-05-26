@@ -38,7 +38,7 @@ public class ToastNotification {
         final int toastW = UIScale.scale(320);
         final int toastH = UIScale.scale(80);
         final int spacing = UIScale.scale(10);
-        
+
         final int toastX = calculateX(width, toastW, alpha);
         final int toastY = UIScale.scale(20) + (index * (toastH + spacing));
 
@@ -46,11 +46,11 @@ public class ToastNotification {
         g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
 
         drawBackground(g2d, toastX, toastY, toastW, toastH);
-        
+
         final int iconSize = UIScale.scale(40);
         final int iconX = toastX + UIScale.scale(20);
         final int iconY = toastY + (toastH - iconSize) / 2;
-        
+
         drawIcon(g2d, iconX, iconY, iconSize);
         drawText(g2d, toastY, toastW, iconX, iconSize);
 
@@ -97,18 +97,18 @@ public class ToastNotification {
     private void drawText(Graphics2D g2d, int toastY, int toastW, int iconX, int iconSize) {
         final int textX = iconX + iconSize + UIScale.scale(15);
         final int textY = toastY + UIScale.scale(30);
-        
+
         g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_16));
         g2d.setColor(TITLE_COLOR);
         g2d.drawString("Achievement Unlocked!", textX, textY);
-        
+
         g2d.setFont(UIScale.scaleFont(RenderCache.SANS_PLAIN_16));
         g2d.setColor(TEXT_COLOR);
-        
+
         String title = achievement.getTitle();
         final FontMetrics fm = g2d.getFontMetrics();
         final int maxWidth = toastW - iconSize - UIScale.scale(60);
-        
+
         if (fm.stringWidth(title) > maxWidth) {
             while (!title.isEmpty() && fm.stringWidth(title + "...") > maxWidth) {
                 title = title.substring(0, title.length() - 1);

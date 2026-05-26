@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * A panel that allows users to browse and select songs from the Audius API.
  * It includes search functionality and genre filters.
  */
-public class SongSelectionPanel extends BasePanel implements Runnable {
+public class SongSelectionPanel extends BasePanel implements Runnable { //TODO: opravit velikosti komponentu kdyz se zmeni velikost okna
 
     /**
      * Client for interacting with the Audius API.

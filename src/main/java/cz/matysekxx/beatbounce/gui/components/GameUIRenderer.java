@@ -664,7 +664,7 @@ public class GameUIRenderer {
             }
             g2d.setPaint(cachedProgressGradient);
             g2d.fillRoundRect(0, barY, fillW, barH, UIScale.scale(3), UIScale.scale(3));
-            
+
             if (fillW < width) {
                 if (cachedProgressGlow == null) {
                     colors2[0] = RenderCache.whiteWithAlpha(200);

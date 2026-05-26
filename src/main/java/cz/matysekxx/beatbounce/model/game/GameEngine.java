@@ -166,7 +166,7 @@ public class GameEngine {
 
         this.reviveManager = new ReviveManager(this, sphere);
         this.orbSpawner = new OrbSpawner();
-        
+
         stateHandlers.put(GameState.COUNTDOWN, new CountdownHandler(this));
         stateHandlers.put(GameState.PLAYING, new PlayingHandler(this, clip, new TileManager(this)));
         stateHandlers.put(GameState.LEVEL_END_ANIMATION, new LevelEndAnimationHandler(this, cam, sphere));
@@ -335,7 +335,7 @@ public class GameEngine {
      */
     public void update(double deltaTime) {
         syncAudioTime(deltaTime);
-        
+
         for (int i = scorePopups.size() - 1; i >= 0; i--) {
             ScorePopup popup = scorePopups.get(i);
             popup.update(deltaTime);

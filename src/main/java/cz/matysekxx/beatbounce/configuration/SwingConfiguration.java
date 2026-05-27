@@ -1,5 +1,7 @@
 package cz.matysekxx.beatbounce.configuration;
 
+import com.formdev.flatlaf.FlatDarkLaf;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -31,7 +33,7 @@ public class SwingConfiguration {
     /**
      * Initializes the application's look and feel and applies theme overrides.
      * <p>
-     * This method sets the Cross-Platform Look and Feel (Metal) as a base
+     * This method sets FlatLaf Dark as a base
      * and then applies custom color properties to the {@link UIManager} for:
      * </p>
      * <ul>
@@ -43,7 +45,15 @@ public class SwingConfiguration {
      */
     public static void setup() {
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            JFrame.setDefaultLookAndFeelDecorated(true);
+            JDialog.setDefaultLookAndFeelDecorated(true);
+
+            UIManager.put("TitlePane.background", Color.BLACK);
+            UIManager.put("TitlePane.foreground", Color.WHITE);
+            UIManager.put("TitlePane.buttonHoverBackground", new Color(40, 40, 40));
+            UIManager.put("TitlePane.buttonPressedBackground", new Color(60, 60, 60));
+
+            FlatDarkLaf.setup();
 
             setupButtonProperties();
             setupComboBoxProperties();

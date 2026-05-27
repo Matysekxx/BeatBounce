@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import cz.matysekxx.beatbounce.api.AudiusClient;
 import cz.matysekxx.beatbounce.model.score.ScoreManager;
 
-import java.awt.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -16,55 +15,67 @@ public class TrackData {
     /**
      * Unique identifier for the track from the Audius API.
      */
-    String id;
+    public String id;
+
     /**
      * The title of the music track.
      */
-    String title;
+    public String title;
+
     /**
      * The name of the artist who created the track.
      */
-    String artist;
+    public String artist;
+
     /**
-     * The difficulty rating or "stars" assigned to the track.
+     * The difficulty rating or "stars" assigned to the track (1-10).
      */
-    int stars;
+    public int stars;
+
     /**
      * The player's best score on this track.
      */
-    int best;
+    public int best;
+
     /**
      * A hash of the track ID used for visual accents and randomization.
      */
-    int hash;
+    public int hash;
+
     /**
      * A formatted string representation of the track duration (e.g., "3:45").
      */
-    String duration;
+    public String duration;
+
     /**
      * Whether the track row is currently expanded in the UI.
      */
-    boolean expanded = false;
+    public boolean expanded = false;
+
     /**
-     * The current expansion progress (0.0 to 1.0) for animation.
+     * The current expansion progress (0.0 to 1.0) for animation interpolation.
      */
-    float expansion = 0f;
+    public float expansion = 0f;
+
     /**
      * Whether the track is currently being downloaded.
      */
-    boolean downloading = false;
+    public boolean downloading = false;
+
     /**
      * The current download progress (0.0 to 1.0).
      */
-    float downloadProgress = 0f;
+    public float downloadProgress = 0f;
+
     /**
-     * Whether the level generation / start process has begun.
+     * Whether the level generation or game start process has begun.
      */
-    boolean starting = false;
+    public boolean starting = false;
+
     /**
-     * The progress of the level starting animation or preparation.
+     * The progress of the level starting animation (0.0 to 1.0).
      */
-    float startingProgress = 0f;
+    public float startingProgress = 0f;
 
     /**
      * Constructs a new TrackData object from a JSON node.
@@ -81,20 +92,6 @@ public class TrackData {
 
         int durationSeconds = node.path("duration").asInt(222);
         this.duration = String.format("%d:%02d", durationSeconds / 60, durationSeconds % 60);
-    }
-
-    /**
-     * Returns a color accent based on the track's ID hash.
-     *
-     * @return a {@link Color} used for UI elements related to this track
-     */
-    public Color getAccent() {
-        return switch (Integer.valueOf((Math.abs(id.hashCode()) % 80))) {
-            case Integer i when i >= 60 -> new Color(255, 0, 255);
-            case Integer i when i >= 40 -> new Color(0, 255, 255);
-            case Integer i when i >= 20 -> new Color(155, 48, 255);
-            default -> new Color(30, 213, 95);
-        };
     }
 
     /**

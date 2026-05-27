@@ -96,22 +96,7 @@ public class AchievementsPanel extends BasePanel {
         titleLabel.setVerticalAlignment(SwingConstants.CENTER);
         topBar.add(titleLabel, BorderLayout.WEST);
 
-        final JPanel controls = new JPanel(new FlowLayout(FlowLayout.RIGHT, UIScale.scale(15), UIScale.scale(12))) {
-            @Override
-            public void doLayout() {
-                setFlowLayoutGap(this);
-                super.doLayout();
-            }
-
-            private void setFlowLayoutGap(JPanel p) {
-                LayoutManager lm = p.getLayout();
-                if (lm instanceof FlowLayout fl) {
-                    fl.setHgap(UIScale.scale(15));
-                    fl.setVgap(UIScale.scale(12));
-                }
-            }
-        };
-        controls.setOpaque(false);
+        final JPanel controls = getJPanel();
 
         final JLabel filterLabel = new JLabel("FILTER:");
         filterLabel.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_13));
@@ -147,6 +132,26 @@ public class AchievementsPanel extends BasePanel {
 
         topBar.add(controls, BorderLayout.EAST);
         return topBar;
+    }
+
+    private JPanel getJPanel() {
+        final JPanel controls = new JPanel(new FlowLayout(FlowLayout.RIGHT, UIScale.scale(15), UIScale.scale(12))) {
+            @Override
+            public void doLayout() {
+                setFlowLayoutGap(this);
+                super.doLayout();
+            }
+
+            private void setFlowLayoutGap(JPanel p) {
+                LayoutManager lm = p.getLayout();
+                if (lm instanceof FlowLayout fl) {
+                    fl.setHgap(UIScale.scale(15));
+                    fl.setVgap(UIScale.scale(12));
+                }
+            }
+        };
+        controls.setOpaque(false);
+        return controls;
     }
 
 
@@ -193,5 +198,4 @@ public class AchievementsPanel extends BasePanel {
         listPanel.revalidate();
         listPanel.repaint();
     }
-}
 }

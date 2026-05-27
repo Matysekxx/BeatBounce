@@ -145,7 +145,7 @@ public class AudioManager {
      *
      * @param resourcePath The path to the music resource.
      */
-    public static void playMenuMusic(String resourcePath) {
+    public static synchronized void playMenuMusic(String resourcePath) {
         if (menuMusicClip != null && menuMusicClip.isRunning() && resourcePath.equals(currentMenuMusicPath)) return;
         stopMenuMusic();
 
@@ -156,8 +156,10 @@ public class AudioManager {
                 clip.loop(Clip.LOOP_CONTINUOUSLY);
                 applyMenuVolume(clip);
                 clip.start();
-                menuMusicClip = clip;
-                currentMenuMusicPath = resourcePath;
+                synchronized (AudioManager.class) {
+                    menuMusicClip = clip;
+                    currentMenuMusicPath = resourcePath;
+                }
             } catch (Exception e) {
                 LOG.warn("Failed to play menu music {}: {}", resourcePath, e.getMessage());
             }
@@ -167,7 +169,7 @@ public class AudioManager {
     /**
      * Stops the menu music.
      */
-    public static void stopMenuMusic() {
+    public static synchronized void stopMenuMusic() {
         if (menuMusicClip != null) {
             if (menuMusicClip.isRunning()) menuMusicClip.stop();
             menuMusicClip.close();
@@ -179,7 +181,7 @@ public class AudioManager {
     /**
      * Updates the volume of the currently playing menu music clip based on settings.
      */
-    public static void updateMenuVolume() {
+    public static synchronized void updateMenuVolume() {
         if (menuMusicClip != null && menuMusicClip.isOpen()) {
             applyMenuVolume(menuMusicClip);
         }

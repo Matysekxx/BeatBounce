@@ -41,7 +41,7 @@ public class AchievementManager {
         repository.saveSaveData(saveData);
     }
 
-    public static void onLevelEnded() {
+    public static synchronized void onLevelEnded() {
         saveData.setTotalPlays(saveData.getTotalPlays() + 1);
         saveData();
         checkAchievements();
@@ -83,13 +83,13 @@ public class AchievementManager {
         }
     }
 
-    public static void reset() {
+    public static synchronized void reset() {
         saveData = new AchievementSaveData();
         saveData();
         checkAchievements();
     }
 
-    public static boolean claimReward(Achievement ach) {
+    public static synchronized boolean claimReward(Achievement ach) {
         if (ach.isCompleted() && !saveData.getRewardedIds().contains(ach.getId())) {
             ach.setRewarded(true);
             saveData.getRewardedIds().add(ach.getId());

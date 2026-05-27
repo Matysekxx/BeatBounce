@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Manages game scores, currency, and persistence.
@@ -40,7 +41,7 @@ public class ScoreManager {
     /**
      * Mapping of song identifiers to the user's best achieved score.
      */
-    private static Map<String, Integer> scores = new HashMap<>();
+    private static Map<String, Integer> scores = new ConcurrentHashMap<>();
 
     /**
      * The total count of orbs (currency) collected by the user.
@@ -58,7 +59,7 @@ public class ScoreManager {
      * @param newSavePath     new path for save data
      * @param newCurrencyPath new path for currency data
      */
-    public static void setStoragePaths(Path newSavePath, Path newCurrencyPath) {
+    public static synchronized void setStoragePaths(Path newSavePath, Path newCurrencyPath) {
         savePath = newSavePath;
         currencyPath = newCurrencyPath;
         loadScores();
@@ -68,7 +69,7 @@ public class ScoreManager {
     /**
      * Loads high scores from the local storage file.
      */
-    public static void loadScores() {
+    public static synchronized void loadScores() {
         final File file = savePath.toFile();
         if (file.exists()) {
             try {
@@ -76,18 +77,19 @@ public class ScoreManager {
                 final String decrypted = SecurityUtils.decrypt(encrypted);
                 if (decrypted == null) {
                     LOG.warn("Security Warning: Scores save file tampered or corrupted! Resetting high scores.");
-                    scores = new HashMap<>();
+                    scores = new ConcurrentHashMap<>();
                     saveScores();
                 } else {
-                    scores = mapper.readValue(decrypted, new TypeReference<HashMap<String, Integer>>() {
+                    final Map<String, Integer> loadedScores = mapper.readValue(decrypted, new TypeReference<HashMap<String, Integer>>() {
                     });
+                    scores = new ConcurrentHashMap<>(loadedScores);
                 }
             } catch (IOException e) {
                 LOG.warn("Failed to load scores: {}", e.getMessage());
-                scores = new HashMap<>();
+                scores = new ConcurrentHashMap<>();
             }
         } else {
-            scores = new HashMap<>();
+            scores = new ConcurrentHashMap<>();
             saveScores();
         }
     }
@@ -95,9 +97,9 @@ public class ScoreManager {
     /**
      * Saves current high scores to the local storage file.
      */
-    public static void saveScores() {
+    public static synchronized void saveScores() {
         try {
-            final String json = mapper.writeValueAsString(scores);
+            final String json = mapper.writeValueAsString(new HashMap<>(scores));
             final String encrypted = SecurityUtils.encrypt(json);
             Files.writeString(savePath, encrypted);
         } catch (IOException e) {
@@ -121,7 +123,7 @@ public class ScoreManager {
      * @param songId the identifier of the song
      * @param score  the new score to record
      */
-    public static void updateScore(String songId, int score) {
+    public static synchronized void updateScore(String songId, int score) {
         if (score > getBestScore(songId)) {
             scores.put(songId, score);
             saveScores();
@@ -164,7 +166,7 @@ public class ScoreManager {
     /**
      * Loads the total currency from the local storage file.
      */
-    public static void loadCurrency() {
+    public static synchronized void loadCurrency() {
         final File file = currencyPath.toFile();
         if (file.exists()) {
             try {
@@ -192,7 +194,7 @@ public class ScoreManager {
     /**
      * Saves the total currency to the local storage file.
      */
-    public static void saveCurrency() {
+    public static synchronized void saveCurrency() {
         try {
             final Map<String, Integer> data = new HashMap<>();
             data.put("currency", totalCurrency);
@@ -209,7 +211,7 @@ public class ScoreManager {
      *
      * @return the total currency
      */
-    public static int getCurrency() {
+    public static synchronized int getCurrency() {
         return totalCurrency;
     }
 
@@ -219,7 +221,7 @@ public class ScoreManager {
      *
      * @param amount the amount of currency to add
      */
-    public static void addCurrency(int amount) {
+    public static synchronized void addCurrency(int amount) {
         totalCurrency += amount;
         saveCurrency();
         AchievementManager.checkAchievements();

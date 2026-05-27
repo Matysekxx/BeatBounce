@@ -84,16 +84,32 @@ public class ScorePopup {
         }
     }
 
+    /**
+     * Updates the popup's state, moving it upwards and calculating alpha.
+     *
+     * @param deltaTime elapsed time since last frame in seconds
+     */
     public void update(double deltaTime) {
         elapsed += deltaTime;
         y -= speed * deltaTime;
         alpha = Math.max(0, 1.0 - (elapsed / duration));
     }
 
+    /**
+     * Checks if the popup animation has finished.
+     *
+     * @return true if it should be returned to pool
+     */
     public boolean isFinished() {
         return elapsed >= duration;
     }
 
+    /**
+     * Renders the score popup with glow and shadow effects.
+     *
+     * @param g2d         the graphics context
+     * @param screenWidth the width of the screen (for centering if x is 0)
+     */
     public void paint(Graphics2D g2d, int screenWidth) {
         if (alpha <= 0) return;
 

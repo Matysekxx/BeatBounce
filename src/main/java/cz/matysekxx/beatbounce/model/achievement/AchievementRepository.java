@@ -15,11 +15,21 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Repository class for loading and saving achievement-related data.
+ * It manages both the static definitions from resources and the player's persistent progress on disk.
+ */
 public class AchievementRepository {
     private static final Logger LOG = LoggerFactory.getLogger(AchievementRepository.class);
     private static final ObjectMapper mapper = new ObjectMapper();
     private static final Path savePath = FileSystem.getAppRoot().resolve("achievements_save.json");
 
+    /**
+     * Loads achievement definitions from the classpath resource 'achievements.json'.
+     * If the resource is not found, it initializes a hardcoded fallback list.
+     *
+     * @return a list of all defined {@link Achievement}s
+     */
     public List<Achievement> loadDefinitions() {
         try (InputStream is = AchievementRepository.class.getResourceAsStream("/achievements.json")) {
             if (is != null) {
@@ -35,6 +45,9 @@ public class AchievementRepository {
         }
     }
 
+    /**
+     * Provides a set of default achievement definitions if the external JSON is missing.
+     */
     private List<Achievement> initFallbacks() {
         final List<Achievement> achievements = new ArrayList<>();
         achievements.add(new Achievement("first_bounce", "First Bounce", "Complete your first level play.", AchievementType.TOTAL_PLAYS, 1, 10));
@@ -50,6 +63,12 @@ public class AchievementRepository {
         return achievements;
     }
 
+    /**
+     * Loads the player's persistent achievement progress from the local file system.
+     * Decrypts the content using {@link SecurityUtils} and validates integrity.
+     *
+     * @return the loaded progress data, or a fresh object if file is missing/corrupted
+     */
     public AchievementSaveData loadSaveData() {
         final File file = savePath.toFile();
         if (file.exists()) {
@@ -74,6 +93,12 @@ public class AchievementRepository {
         }
     }
 
+    /**
+     * Persists the player's achievement progress to disk.
+     * Encrypts the JSON representation before writing to ensure security.
+     *
+     * @param saveData the progress data to save
+     */
     public void saveSaveData(AchievementSaveData saveData) {
         try {
             final String json = mapper.writeValueAsString(saveData);

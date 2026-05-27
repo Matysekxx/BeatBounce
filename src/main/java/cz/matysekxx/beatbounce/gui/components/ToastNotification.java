@@ -8,29 +8,70 @@ import cz.matysekxx.beatbounce.util.UIScale;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 
+/**
+ * A notification popup that appears when an achievement is unlocked.
+ * It animates onto the screen from the right, stays for a duration, and then fades out.
+ */
 public class ToastNotification {
+    /**
+     * Total time the notification stays fully visible.
+     */
     private static final float DURATION = 3.5f;
+
+    /**
+     * Time taken for fade-in and fade-out animations.
+     */
     private static final float FADE_TIME = 0.5f;
+
     private static final Color BG_COLOR = new Color(15, 15, 25, 230);
     private static final Color BORDER_COLOR = new Color(255, 200, 0, 180);
     private static final Color TEXT_COLOR = new Color(255, 255, 255);
     private static final Color TITLE_COLOR = new Color(255, 215, 0);
 
+    /**
+     * The achievement associated with this notification.
+     */
     private final Achievement achievement;
+
+    /**
+     * Internal timer to track animation progress.
+     */
     private float timer = 0f;
 
+    /**
+     * Constructs a new ToastNotification for the given achievement.
+     *
+     * @param achievement the unlocked achievement to display
+     */
     public ToastNotification(Achievement achievement) {
         this.achievement = achievement;
     }
 
+    /**
+     * Updates the animation timer.
+     *
+     * @param dt elapsed time since last frame in seconds
+     */
     public void update(float dt) {
         timer += dt;
     }
 
+    /**
+     * Checks if the notification animation has completed.
+     *
+     * @return true if the notification should be removed
+     */
     public boolean isFinished() {
         return timer > (DURATION + FADE_TIME * 2);
     }
 
+    /**
+     * Renders the notification on the graphics context.
+     *
+     * @param g2d    the graphics context
+     * @param width  the width of the screen/panel
+     * @param index  the vertical index (for stacking multiple notifications)
+     */
     public void draw(Graphics2D g2d, int width, int index) {
         final float alpha = calculateAlpha();
         if (alpha <= 0) return;
@@ -57,6 +98,9 @@ public class ToastNotification {
         g2d.setComposite(oldComp);
     }
 
+    /**
+     * Calculates the current alpha transparency based on the timer.
+     */
     private float calculateAlpha() {
         float alpha = 1f;
         if (timer < FADE_TIME) {
@@ -67,6 +111,9 @@ public class ToastNotification {
         return Math.clamp(alpha, 0f, 1f);
     }
 
+    /**
+     * Calculates the horizontal position for the sliding animation.
+     */
     private int calculateX(int width, int toastW, float alpha) {
         int x = width - toastW - UIScale.scale(20);
         if (timer < FADE_TIME) {
@@ -75,6 +122,9 @@ public class ToastNotification {
         return x;
     }
 
+    /**
+     * Draws the rounded background and border.
+     */
     private void drawBackground(Graphics2D g2d, int x, int y, int w, int h) {
         final RoundRectangle2D.Float rect = new RoundRectangle2D.Float(x, y, w, h, UIScale.scale(15), UIScale.scale(15));
         g2d.setColor(BG_COLOR);
@@ -84,6 +134,9 @@ public class ToastNotification {
         g2d.draw(rect);
     }
 
+    /**
+     * Draws the decorative icon.
+     */
     private void drawIcon(Graphics2D g2d, int x, int y, int size) {
         g2d.setColor(new Color(255, 215, 0, 50));
         g2d.fillOval(x, y, size, size);
@@ -94,6 +147,9 @@ public class ToastNotification {
         RenderUtils.drawText(g2d, "★", x + UIScale.scale(11), y + UIScale.scale(28), TITLE_COLOR);
     }
 
+    /**
+     * Draws the text content with ellipsis if necessary.
+     */
     private void drawText(Graphics2D g2d, int toastY, int toastW, int iconX, int iconSize) {
         final int textX = iconX + iconSize + UIScale.scale(15);
         final int textY = toastY + UIScale.scale(30);

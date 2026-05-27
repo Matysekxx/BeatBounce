@@ -227,14 +227,12 @@ public class SongSelectionPanel extends BasePanel implements Runnable {
             }
         });
         searchContainer.add(searchField);
-        topBar.add(searchContainer, BorderLayout.CENTER);
+        topBar.add(searchContainer, BorderLayout.WEST);
 
         final JPanel genrePanel = getJPanel();
         final String[] genres = {"All-Time", "Trending", "Electronic", "Hip-Hop", "Pop", "World"};
-        for (String g : genres) {
-            genrePanel.add(createGenreChip(g));
-        }
-        topBar.add(genrePanel, BorderLayout.EAST);
+        for (String g : genres) genrePanel.add(createGenreChip(g));
+        topBar.add(genrePanel, BorderLayout.CENTER);
 
         return topBar;
     }
@@ -429,9 +427,7 @@ public class SongSelectionPanel extends BasePanel implements Runnable {
                 }
             }
 
-            if (needsRevalidate) {
-                SwingUtilities.invokeLater(songListPanel::revalidate);
-            }
+            if (needsRevalidate) SwingUtilities.invokeLater(songListPanel::revalidate);
 
             repaint();
             if (Settings.vsync) Toolkit.getDefaultToolkit().sync();

@@ -21,11 +21,6 @@ public class AchievementClaimPanel extends JPanel {
         this.onClaimRequested = onClaimRequested;
 
         this.setOpaque(false);
-        final int btnW = UIScale.scale(140);
-        final int btnH = UIScale.scale(50);
-        this.setPreferredSize(new Dimension(btnW, btnH));
-        this.setMinimumSize(new Dimension(btnW, btnH));
-        this.setMaximumSize(new Dimension(btnW, btnH));
 
         this.addMouseListener(new MouseAdapter() {
             @Override
@@ -51,6 +46,21 @@ public class AchievementClaimPanel extends JPanel {
                 }
             }
         });
+    }
+
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(UIScale.scale(140), UIScale.scale(50));
+    }
+
+    @Override
+    public Dimension getMinimumSize() {
+        return getPreferredSize();
+    }
+
+    @Override
+    public Dimension getMaximumSize() {
+        return getPreferredSize();
     }
 
     @Override

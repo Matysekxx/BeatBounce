@@ -73,8 +73,6 @@ public class TrackRow extends JPanel {
 
     private void setupUI(Consumer<TrackData> onSelect) {
         this.setOpaque(false);
-        this.setPreferredSize(new Dimension(0, UIScale.scale(90)));
-        this.setMaximumSize(new Dimension(Integer.MAX_VALUE, UIScale.scale(90)));
         this.setCursor(new Cursor(Cursor.HAND_CURSOR));
         this.addMouseListener(new MouseAdapter() {
             @Override
@@ -105,6 +103,16 @@ public class TrackRow extends JPanel {
                 }
             }
         });
+    }
+
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(super.getPreferredSize().width, UIScale.scale(90));
+    }
+
+    @Override
+    public Dimension getMaximumSize() {
+        return new Dimension(Integer.MAX_VALUE, UIScale.scale(90));
     }
 
     @Override

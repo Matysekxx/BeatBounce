@@ -28,8 +28,6 @@ public class AchievementRowPanel extends JPanel {
 
         this.setOpaque(false);
         this.setLayout(null);
-        this.setPreferredSize(new Dimension(0, UIScale.scale(90)));
-        this.setMaximumSize(new Dimension(Integer.MAX_VALUE, UIScale.scale(90)));
 
         this.iconPanel = new AchievementIconPanel(achievement);
         this.progressPanel = new AchievementProgressPanel(achievement);
@@ -52,6 +50,16 @@ public class AchievementRowPanel extends JPanel {
                 repaint();
             }
         });
+    }
+
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(super.getPreferredSize().width, UIScale.scale(90));
+    }
+
+    @Override
+    public Dimension getMaximumSize() {
+        return new Dimension(Integer.MAX_VALUE, UIScale.scale(90));
     }
 
 

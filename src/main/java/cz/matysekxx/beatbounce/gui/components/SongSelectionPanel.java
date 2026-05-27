@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * A panel that allows users to browse and select songs from the Audius API.
  * It includes search functionality and genre filters.
  */
-public class SongSelectionPanel extends BasePanel implements Runnable { //TODO: opravit velikosti komponentu kdyz se zmeni velikost okna
+public class SongSelectionPanel extends BasePanel implements Runnable {
 
     /**
      * Client for interacting with the Audius API.
@@ -122,6 +122,7 @@ public class SongSelectionPanel extends BasePanel implements Runnable { //TODO: 
             public void componentResized(ComponentEvent e) {
                 cachedW = -1;
                 cachedH = -1;
+                revalidate();
                 songListPanel.revalidate();
             }
         });
@@ -142,7 +143,6 @@ public class SongSelectionPanel extends BasePanel implements Runnable { //TODO: 
         vsb.setUI(new ScrollBarUI());
         vsb.setOpaque(false);
         vsb.setBackground(new Color(0, 0, 0, 0));
-        vsb.setPreferredSize(new Dimension(UIScale.scale(16), 0));
         vsb.setUnitIncrement(UIScale.scale(40));
         vsb.setBlockIncrement(UIScale.scale(120));
 
@@ -171,10 +171,18 @@ public class SongSelectionPanel extends BasePanel implements Runnable { //TODO: 
      * @return The top bar JPanel.
      */
     private JPanel createTopBar() {
-        final JPanel topBar = new JPanel(new BorderLayout());
+        final JPanel topBar = new JPanel(new BorderLayout()) {
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(super.getPreferredSize().width, UIScale.scale(56));
+            }
+
+            @Override
+            public Insets getInsets() {
+                return new Insets(0, UIScale.scale(20), 0, UIScale.scale(20));
+            }
+        };
         topBar.setOpaque(false);
-        topBar.setPreferredSize(new Dimension(0, UIScale.scale(56)));
-        topBar.setBorder(new EmptyBorder(0, UIScale.scale(20), 0, UIScale.scale(20)));
 
         final JPanel searchContainer = new JPanel(new GridBagLayout());
         searchContainer.setOpaque(false);
@@ -192,12 +200,21 @@ public class SongSelectionPanel extends BasePanel implements Runnable { //TODO: 
                 g2.dispose();
                 super.paintComponent(g);
             }
+
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(UIScale.scale(500), UIScale.scale(32));
+            }
+
+            @Override
+            public Insets getInsets() {
+                return new Insets(0, UIScale.scale(15), 0, UIScale.scale(15));
+            }
         };
         searchField.setOpaque(false);
-        searchField.setBorder(new EmptyBorder(0, UIScale.scale(15), 0, UIScale.scale(15)));
+        searchField.setBorder(null);
         searchField.setForeground(Color.WHITE);
         searchField.setCaretColor(Color.WHITE);
-        searchField.setPreferredSize(new Dimension(UIScale.scale(500), UIScale.scale(32)));
         searchField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -212,8 +229,7 @@ public class SongSelectionPanel extends BasePanel implements Runnable { //TODO: 
         searchContainer.add(searchField);
         topBar.add(searchContainer, BorderLayout.CENTER);
 
-        final JPanel genrePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, UIScale.scale(8), UIScale.scale(12)));
-        genrePanel.setOpaque(false);
+        final JPanel genrePanel = getJPanel();
         final String[] genres = {"All-Time", "Trending", "Electronic", "Hip-Hop", "Pop", "World"};
         for (String g : genres) {
             genrePanel.add(createGenreChip(g));
@@ -221,6 +237,26 @@ public class SongSelectionPanel extends BasePanel implements Runnable { //TODO: 
         topBar.add(genrePanel, BorderLayout.EAST);
 
         return topBar;
+    }
+
+    private JPanel getJPanel() {
+        final JPanel genrePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, UIScale.scale(8), UIScale.scale(12))) {
+            @Override
+            public void doLayout() {
+                setFlowLayoutGap(this);
+                super.doLayout();
+            }
+
+            private void setFlowLayoutGap(JPanel p) {
+                final LayoutManager lm = p.getLayout();
+                if (lm instanceof FlowLayout fl) {
+                    fl.setHgap(UIScale.scale(8));
+                    fl.setVgap(UIScale.scale(12));
+                }
+            }
+        };
+        genrePanel.setOpaque(false);
+        return genrePanel;
     }
 
     /**
@@ -250,8 +286,12 @@ public class SongSelectionPanel extends BasePanel implements Runnable { //TODO: 
                 g2.drawString(getText(), (getWidth() - fm.stringWidth(getText())) / 2, getHeight() / 2 + UIScale.scale(6));
                 g2.dispose();
             }
+
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(UIScale.scale(100), UIScale.scale(38));
+            }
         };
-        btn.setPreferredSize(new Dimension(UIScale.scale(100), UIScale.scale(38)));
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);

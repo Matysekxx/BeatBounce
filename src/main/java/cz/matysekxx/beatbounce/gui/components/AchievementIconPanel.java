@@ -15,10 +15,22 @@ public class AchievementIconPanel extends JPanel {
     public AchievementIconPanel(Achievement achievement) {
         this.achievement = achievement;
         this.setOpaque(false);
+    }
+
+    @Override
+    public Dimension getPreferredSize() {
         final int boxSize = UIScale.scale(60);
-        this.setPreferredSize(new Dimension(boxSize, boxSize));
-        this.setMinimumSize(new Dimension(boxSize, boxSize));
-        this.setMaximumSize(new Dimension(boxSize, boxSize));
+        return new Dimension(boxSize, boxSize);
+    }
+
+    @Override
+    public Dimension getMinimumSize() {
+        return getPreferredSize();
+    }
+
+    @Override
+    public Dimension getMaximumSize() {
+        return getPreferredSize();
     }
 
     @Override

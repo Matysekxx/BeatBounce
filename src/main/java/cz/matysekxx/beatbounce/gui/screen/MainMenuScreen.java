@@ -133,8 +133,12 @@ public class MainMenuScreen extends Screen {
                 g2.drawLine(getWidth() - 1, 0, getWidth() - 1, getHeight());
                 g2.dispose();
             }
+
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(UIScale.scale(280), super.getPreferredSize().height);
+            }
         };
-        p.setPreferredSize(new Dimension(UIScale.scale(280), 0));
         p.setLayout(new GridBagLayout());
         p.setOpaque(false);
         return p;
@@ -203,9 +207,13 @@ public class MainMenuScreen extends Screen {
 
                 g2.dispose();
             }
+
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(UIScale.scale(260), UIScale.scale(55));
+            }
         };
         btn.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_18));
-        btn.setPreferredSize(new Dimension(UIScale.scale(260), UIScale.scale(55)));
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);

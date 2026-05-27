@@ -15,11 +15,21 @@ public class AchievementProgressPanel extends JPanel {
     public AchievementProgressPanel(Achievement achievement) {
         this.achievement = achievement;
         this.setOpaque(false);
-        final int w = UIScale.scale(170);
-        final int h = UIScale.scale(38);
-        this.setPreferredSize(new Dimension(w, h));
-        this.setMinimumSize(new Dimension(w, h));
-        this.setMaximumSize(new Dimension(w, h));
+    }
+
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(UIScale.scale(170), UIScale.scale(38));
+    }
+
+    @Override
+    public Dimension getMinimumSize() {
+        return getPreferredSize();
+    }
+
+    @Override
+    public Dimension getMaximumSize() {
+        return getPreferredSize();
     }
 
     @Override

@@ -29,9 +29,16 @@ public class AchievementsPanel extends BasePanel {
         listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
         listPanel.setOpaque(false);
-        listPanel.setBorder(new EmptyBorder(UIScale.scale(10), UIScale.scale(20), UIScale.scale(20), UIScale.scale(20)));
         final JScrollPane scrollPane = buildScrollPane(listPanel);
         add(scrollPane, BorderLayout.CENTER);
+
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
+            public void componentResized(java.awt.event.ComponentEvent e) {
+                revalidate();
+            }
+        });
+
         loadAchievements();
     }
 
@@ -47,10 +54,18 @@ public class AchievementsPanel extends BasePanel {
 
 
     private JPanel createTopBar() {
-        final JPanel topBar = new JPanel(new BorderLayout());
+        final JPanel topBar = new JPanel(new BorderLayout()) {
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(super.getPreferredSize().width, UIScale.scale(70));
+            }
+
+            @Override
+            public Insets getInsets() {
+                return new Insets(0, UIScale.scale(30), 0, UIScale.scale(30));
+            }
+        };
         topBar.setOpaque(false);
-        topBar.setPreferredSize(new Dimension(0, UIScale.scale(70)));
-        topBar.setBorder(new EmptyBorder(0, UIScale.scale(30), 0, UIScale.scale(30)));
 
         final JLabel titleLabel = new JLabel("ACHIEVEMENTS");
         titleLabel.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_28));
@@ -58,7 +73,21 @@ public class AchievementsPanel extends BasePanel {
         titleLabel.setVerticalAlignment(SwingConstants.CENTER);
         topBar.add(titleLabel, BorderLayout.WEST);
 
-        final JPanel controls = new JPanel(new FlowLayout(FlowLayout.RIGHT, UIScale.scale(15), UIScale.scale(12)));
+        final JPanel controls = new JPanel(new FlowLayout(FlowLayout.RIGHT, UIScale.scale(15), UIScale.scale(12))) {
+            @Override
+            public void doLayout() {
+                setFlowLayoutGap(this);
+                super.doLayout();
+            }
+
+            private void setFlowLayoutGap(JPanel p) {
+                LayoutManager lm = p.getLayout();
+                if (lm instanceof FlowLayout fl) {
+                    fl.setHgap(UIScale.scale(15));
+                    fl.setVgap(UIScale.scale(12));
+                }
+            }
+        };
         controls.setOpaque(false);
 
         final JLabel filterLabel = new JLabel("FILTER:");
@@ -66,9 +95,13 @@ public class AchievementsPanel extends BasePanel {
         filterLabel.setForeground(new Color(200, 200, 220));
         controls.add(filterLabel);
 
-        filterBtn = new CycleButton(new String[]{"ALL", "READY TO CLAIM", "IN PROGRESS"}, 0);
+        filterBtn = new CycleButton(new String[]{"ALL", "READY TO CLAIM", "IN PROGRESS"}, 0) {
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(UIScale.scale(170), UIScale.scale(36));
+            }
+        };
         filterBtn.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_14));
-        filterBtn.setPreferredSize(new Dimension(UIScale.scale(170), UIScale.scale(36)));
         filterBtn.addActionListener(_ -> loadAchievements());
         controls.add(filterBtn);
 
@@ -79,9 +112,13 @@ public class AchievementsPanel extends BasePanel {
         sortLabel.setForeground(new Color(200, 200, 220));
         controls.add(sortLabel);
 
-        sortBtn = new CycleButton(new String[]{"DEFAULT", "PROGRESS", "REWARD"}, 0);
+        sortBtn = new CycleButton(new String[]{"DEFAULT", "PROGRESS", "REWARD"}, 0) {
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(UIScale.scale(150), UIScale.scale(36));
+            }
+        };
         sortBtn.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_14));
-        sortBtn.setPreferredSize(new Dimension(UIScale.scale(150), UIScale.scale(36)));
         sortBtn.addActionListener(_ -> loadAchievements());
         controls.add(sortBtn);
 
@@ -93,6 +130,13 @@ public class AchievementsPanel extends BasePanel {
     public void loadAchievements() {
         if (listPanel == null) return;
         listPanel.removeAll();
+        listPanel.setBorder(new EmptyBorder(UIScale.scale(10), UIScale.scale(20), UIScale.scale(20), UIScale.scale(20)) {
+            @Override
+            public Insets getBorderInsets(Component c) {
+                return new Insets(UIScale.scale(10), UIScale.scale(20), UIScale.scale(20), UIScale.scale(20));
+            }
+        });
+
         final List<Achievement> list = AchievementManager.getAchievements();
 
         final String filter = filterBtn != null ? filterBtn.getSelectedOption() : "ALL";

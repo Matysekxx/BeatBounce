@@ -43,9 +43,13 @@ public class LibraryPanel extends BasePanel {
         setOpaque(false);
         setLayout(new BorderLayout());
 
-        final JPanel topBar = new JPanel(new BorderLayout());
+        final JPanel topBar = new JPanel(new BorderLayout()) {
+            @Override
+            public Insets getInsets() {
+                return new Insets(UIScale.scale(25), UIScale.scale(40), UIScale.scale(15), UIScale.scale(40));
+            }
+        };
         topBar.setOpaque(false);
-        topBar.setBorder(new EmptyBorder(UIScale.scale(25), UIScale.scale(40), UIScale.scale(15), UIScale.scale(40)));
 
         final JLabel title = new JLabel("YOUR LIBRARY");
         title.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_36));
@@ -61,22 +65,14 @@ public class LibraryPanel extends BasePanel {
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
         listPanel.setOpaque(false);
 
-        final JScrollPane scrollPane = new JScrollPane(listPanel);
-        scrollPane.setOpaque(false);
-        scrollPane.getViewport().setOpaque(false);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-
-        final JScrollBar vsb = scrollPane.getVerticalScrollBar();
-        vsb.setUI(new ScrollBarUI());
-        vsb.setOpaque(false);
-        vsb.setBackground(new Color(0, 0, 0, 0));
-        vsb.setPreferredSize(new Dimension(UIScale.scale(16), 0));
-        vsb.setUnitIncrement(UIScale.scale(40));
-        vsb.setBlockIncrement(UIScale.scale(120));
-
+        final JScrollPane scrollPane = buildScrollPane(listPanel);
         add(scrollPane, BorderLayout.CENTER);
 
         loadLibrary();
+    }
+
+    private JScrollPane buildScrollPane(JPanel content) {
+        return SongSelectionPanel.buildScrollPane(content);
     }
 
     @Override
@@ -110,8 +106,12 @@ public class LibraryPanel extends BasePanel {
                 g2.drawString(getText(), (getWidth() - fm.stringWidth(getText())) / 2, (getHeight() + fm.getAscent() - fm.getDescent()) / 2);
                 g2.dispose();
             }
+
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(UIScale.scale(200), UIScale.scale(45));
+            }
         };
-        btn.setPreferredSize(new Dimension(UIScale.scale(200), UIScale.scale(45)));
         btn.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_15));
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
@@ -153,7 +153,12 @@ public class LibraryPanel extends BasePanel {
      */
     public void loadLibrary() {
         listPanel.removeAll();
-        listPanel.setBorder(new EmptyBorder(UIScale.scale(10), UIScale.scale(40), UIScale.scale(20), UIScale.scale(40)));
+        listPanel.setBorder(new EmptyBorder(UIScale.scale(10), UIScale.scale(40), UIScale.scale(20), UIScale.scale(40)) {
+            @Override
+            public Insets getBorderInsets(Component c) {
+                return new Insets(UIScale.scale(10), UIScale.scale(40), UIScale.scale(20), UIScale.scale(40));
+            }
+        });
 
         FileSystem.listMusicFiles().forEach(p -> {
             listPanel.add(new TrackRow(p, screenManager));

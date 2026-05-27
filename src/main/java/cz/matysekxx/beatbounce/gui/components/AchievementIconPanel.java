@@ -9,9 +9,22 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Path2D;
 
+/**
+ * Renders a decorative icon for an achievement based on its type.
+ * Each type (High Score, Unique Songs, etc.) has its own vector-like procedural drawing.
+ * Icons are desaturated for incomplete achievements.
+ */
 public class AchievementIconPanel extends JPanel {
+    /**
+     * The achievement whose type determines the icon.
+     */
     private final Achievement achievement;
 
+    /**
+     * Constructs an icon panel.
+     *
+     * @param achievement the achievement to represent
+     */
     public AchievementIconPanel(Achievement achievement) {
         this.achievement = achievement;
         this.setOpaque(false);
@@ -33,6 +46,9 @@ public class AchievementIconPanel extends JPanel {
         return getPreferredSize();
     }
 
+    /**
+     * Dispatches the painting to a specific drawing method based on achievement type.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

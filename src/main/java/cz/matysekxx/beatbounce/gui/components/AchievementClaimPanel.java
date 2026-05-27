@@ -11,11 +11,37 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 
+/**
+ * A specialized UI component for claiming achievement rewards.
+ * It displays different states based on the achievement status:
+ * <ul>
+ *     <li><b>Locked:</b> Achievement requirements not yet met.</li>
+ *     <li><b>Claim:</b> Ready to be collected (interactive).</li>
+ *     <li><b>Claimed:</b> Reward already collected (disabled).</li>
+ * </ul>
+ */
 public class AchievementClaimPanel extends JPanel {
+    /**
+     * The achievement being tracked.
+     */
     private final Achievement achievement;
+
+    /**
+     * Action to perform when the claim button is clicked.
+     */
     private final Runnable onClaimRequested;
+
+    /**
+     * Whether the mouse is currently over the claim button.
+     */
     private boolean buttonHovered = false;
 
+    /**
+     * Constructs a new claim panel.
+     *
+     * @param achievement      the achievement to manage
+     * @param onClaimRequested callback for when the user clicks 'Claim'
+     */
     public AchievementClaimPanel(Achievement achievement, Runnable onClaimRequested) {
         this.achievement = achievement;
         this.onClaimRequested = onClaimRequested;
@@ -63,6 +89,10 @@ public class AchievementClaimPanel extends JPanel {
         return getPreferredSize();
     }
 
+    /**
+     * Custom painting for the button state.
+     * Uses gradients for active buttons and muted colors for locked/claimed states.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

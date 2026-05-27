@@ -12,16 +12,47 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 
+/**
+ * A composite panel representing a single row in the achievements list.
+ * It coordinates several sub-panels:
+ * <ul>
+ *     <li>{@link AchievementIconPanel} for the visual icon.</li>
+ *     <li>{@link AchievementProgressPanel} for the numerical/bar progress.</li>
+ *     <li>{@link AchievementClaimPanel} for the reward collection button.</li>
+ * </ul>
+ * It also handles the 'claimed' flash animation.
+ */
 public class AchievementRowPanel extends JPanel {
+    /**
+     * The achievement data for this row.
+     */
     private final Achievement achievement;
+
+    /**
+     * Callback for when an achievement is claimed, used to refresh the UI.
+     */
     private final Runnable claimCallback;
+
     private final AchievementIconPanel iconPanel;
     private final AchievementProgressPanel progressPanel;
     private final AchievementClaimPanel claimPanel;
 
+    /**
+     * Tracks hover state for background highlighting.
+     */
     private boolean hovered = false;
+
+    /**
+     * Progress of the flash animation when reward is claimed (1.0 -> 0.0).
+     */
     private float claimAnimationProgress = 0f;
 
+    /**
+     * Constructs a row panel.
+     *
+     * @param achievement   the achievement to display
+     * @param claimCallback runnable to execute after successful claim
+     */
     public AchievementRowPanel(Achievement achievement, Runnable claimCallback) {
         this.achievement = achievement;
         this.claimCallback = claimCallback;
@@ -63,6 +94,9 @@ public class AchievementRowPanel extends JPanel {
     }
 
 
+    /**
+     * Manual layout of sub-components for precise positioning within the row.
+     */
     @Override
     public void doLayout() {
         final int w = getWidth();
@@ -80,6 +114,9 @@ public class AchievementRowPanel extends JPanel {
         claimPanel.setBounds(w - UIScale.scale(155), (h - btnH) / 2, btnW, btnH);
     }
 
+    /**
+     * Initiates the claim logic and starts the visual flash animation.
+     */
     private void triggerClaimAnimation() {
         claimAnimationProgress = 1.0f;
         if (AchievementManager.claimReward(achievement)) {
@@ -96,6 +133,9 @@ public class AchievementRowPanel extends JPanel {
         }
     }
 
+    /**
+     * Renders the row background with hover highlights and text info.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         final Graphics2D g2 = (Graphics2D) g.create();

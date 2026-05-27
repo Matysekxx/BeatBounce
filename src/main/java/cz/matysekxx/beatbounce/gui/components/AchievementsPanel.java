@@ -12,14 +12,31 @@ import java.awt.*;
 import java.util.List;
 
 
+/**
+ * The main container for the achievements dashboard.
+ * Features a filterable and sortable list of all game achievements.
+ * Includes a top navigation bar with {@link CycleButton}s for UI control.
+ */
 public class AchievementsPanel extends BasePanel {
 
+    /**
+     * The internal container holding the achievement rows.
+     */
     private final JPanel listPanel;
 
+    /**
+     * Button to filter by status (All, Claimable, In Progress).
+     */
     private CycleButton filterBtn;
+
+    /**
+     * Button to sort by different criteria.
+     */
     private CycleButton sortBtn;
 
-
+    /**
+     * Constructs a new AchievementsPanel and initializes its layout.
+     */
     public AchievementsPanel() {
         super();
         setOpaque(false);
@@ -43,6 +60,9 @@ public class AchievementsPanel extends BasePanel {
     }
 
 
+    /**
+     * Configures a standard scroll pane for achievement rows.
+     */
     private static JScrollPane buildScrollPane(JPanel content) {
         return SongSelectionPanel.buildScrollPane(content);
     }
@@ -53,6 +73,9 @@ public class AchievementsPanel extends BasePanel {
     }
 
 
+    /**
+     * Creates the top bar with title and control buttons.
+     */
     private JPanel createTopBar() {
         final JPanel topBar = new JPanel(new BorderLayout()) {
             @Override
@@ -127,6 +150,10 @@ public class AchievementsPanel extends BasePanel {
     }
 
 
+    /**
+     * Fetches achievements from the manager, applies current filters and sorting,
+     * and repopulates the list panel.
+     */
     public void loadAchievements() {
         if (listPanel == null) return;
         listPanel.removeAll();
@@ -166,4 +193,5 @@ public class AchievementsPanel extends BasePanel {
         listPanel.revalidate();
         listPanel.repaint();
     }
+}
 }

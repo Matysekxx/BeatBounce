@@ -9,9 +9,22 @@ import javax.swing.*;
 import java.awt.*;
 
 
+/**
+ * A horizontal progress bar component that visualizes completion status of an achievement.
+ * Displays current progress text (e.g., "1 / 5") and a filled bar with dynamic colors
+ * depending on whether the achievement is completed or rewarded.
+ */
 public class AchievementProgressPanel extends JPanel {
+    /**
+     * The achievement being tracked.
+     */
     private final Achievement achievement;
 
+    /**
+     * Constructs a progress panel.
+     *
+     * @param achievement the achievement to track
+     */
     public AchievementProgressPanel(Achievement achievement) {
         this.achievement = achievement;
         this.setOpaque(false);
@@ -32,6 +45,9 @@ public class AchievementProgressPanel extends JPanel {
         return getPreferredSize();
     }
 
+    /**
+     * Paints the progress bar and status text.
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

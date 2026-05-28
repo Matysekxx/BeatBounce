@@ -79,9 +79,12 @@ public class GameWorldRenderer {
      */
     private final int[] projScratch = new int[2];
     /**
-     * Reusable arrays for RadialGradientPaint.
+     * Reusable fractions array for RadialGradientPaint.
      */
     private final float[] fractions = {0f, 1f};
+    /**
+     * Reusable colors array for RadialGradientPaint.
+     */
     private final Color[] colors = new Color[2];
     /**
      * Off-screen buffer for the static background elements.

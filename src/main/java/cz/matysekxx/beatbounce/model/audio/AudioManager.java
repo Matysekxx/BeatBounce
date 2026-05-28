@@ -122,6 +122,11 @@ public class AudioManager {
 
     /**
      * Internal helper to create a standardized AudioInputStream for a resource.
+     *
+     * @param resourcePath the path to the resource
+     * @return a standardized AudioInputStream
+     * @throws UnsupportedAudioFileException if the audio file format is not supported
+     * @throws IOException                   if an I/O error occurs
      */
     private static AudioInputStream getAudioInputStream(String resourcePath) throws UnsupportedAudioFileException, IOException {
         final URL url = getResourceURL(resourcePath);
@@ -216,6 +221,9 @@ public class AudioManager {
 
     /**
      * General helper to apply a volume level to a clip.
+     *
+     * @param clip        the audio clip
+     * @param volumeLevel the volume level to apply (0-100)
      */
     private static void applyVolume(Clip clip, int volumeLevel) {
         if (clip == null) return;
@@ -233,6 +241,9 @@ public class AudioManager {
 
     /**
      * Returns the URL for a given resource path, handling both internal and external paths.
+     *
+     * @param path the path to the resource
+     * @return the URL of the resource, or null if not found
      */
     private static URL getResourceURL(String path) {
         try {

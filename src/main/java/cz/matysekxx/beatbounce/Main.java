@@ -13,16 +13,19 @@ import javax.swing.*;
 public class Main {
 
     /**
-     * Flag indicating if the OS is Windows.
+     * Flag indicating if the current operating system is Windows.
+     * Used for choosing appropriate rendering pipelines (Direct3D vs OpenGL).
      */
     private static final boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
     /**
-     * Flag indicating if the OS is macOS.
+     * Flag indicating if the current operating system is macOS.
+     * Used for enabling platform-specific UI features like the screen menu bar.
      */
     private static final boolean isMac = System.getProperty("os.name").toLowerCase().contains("mac");
 
     /**
      * Configures system properties for High DPI support on Windows and other platforms.
+     * Ensures that the UI scales correctly on high-resolution displays.
      */
     static void setupHighDPI() {
         System.setProperty("sun.java2d.dpiaware", "true");
@@ -72,7 +75,8 @@ public class Main {
     }
 
     /**
-     * Main method that initializes settings, rendering, and starts the Swing event loop.
+     * The primary entry point for the JVM.
+     * Initializes the environment, loads settings, and starts the application orchestrator.
      */
     static void main() {
         setupHighDPI();

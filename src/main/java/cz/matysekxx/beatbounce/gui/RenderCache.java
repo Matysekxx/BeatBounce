@@ -291,6 +291,9 @@ public final class RenderCache {
         SHAPE_PENTAGON = p;
     }
 
+    /**
+     * Private constructor to prevent instantiation of this utility class.
+     */
     private RenderCache() {
     }
 

@@ -14,6 +14,7 @@ import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * A renderer class responsible for drawing the game's user interface elements.
@@ -128,11 +129,20 @@ public class GameUIRenderer {
      */
     private final RoundRectangle2D.Float rectScratch = new RoundRectangle2D.Float();
     /**
-     * Reusable arrays for Gradient paints.
+     * Reusable array for gradient fractions (2 stops).
      */
     private final float[] fractions2 = {0f, 1f};
+    /**
+     * Reusable array for gradient colors (2 stops).
+     */
     private final Color[] colors2 = new Color[2];
+    /**
+     * Reusable array for gradient fractions (3 stops).
+     */
     private final float[] fractions3 = {0f, 0.5f, 1f};
+    /**
+     * Reusable array for gradient colors (3 stops).
+     */
     private final Color[] colors3 = new Color[3];
     /**
      * Current index in the button pool.
@@ -153,7 +163,7 @@ public class GameUIRenderer {
     /**
      * List of buttons rendered in the previous frame.
      */
-    private java.util.List<SimulatedButton> renderedButtons = Collections.emptyList();
+    private List<SimulatedButton> renderedButtons = Collections.emptyList();
     /**
      * Current vertical translation for animation.
      */
@@ -167,13 +177,28 @@ public class GameUIRenderer {
      */
     private int mouseY = -1;
     /**
-     * Cached paints to avoid allocation.
+     * Cached RadialGradientPaint for the score halo effect.
      */
     private RadialGradientPaint cachedHaloPaint;
+    /**
+     * The last color used for the cached halo paint.
+     */
     private Color lastHaloColor;
+    /**
+     * The last pulse value used for the cached halo paint.
+     */
     private float lastHaloPulse = -1;
+    /**
+     * Cached LinearGradientPaint for the progress bar.
+     */
     private LinearGradientPaint cachedProgressGradient;
+    /**
+     * The width of the progress bar when the gradient was cached.
+     */
     private int cachedProgressWidth = -1;
+    /**
+     * Cached RadialGradientPaint for the progress bar glow.
+     */
     private RadialGradientPaint cachedProgressGlow;
 
     /**
@@ -705,6 +730,17 @@ public class GameUIRenderer {
         activeButtons.add(absoluteRegion);
     }
 
+    /**
+     * Retrieves a button from the pool or creates a new one if the pool is exhausted.
+     *
+     * @param label  the button label
+     * @param x      the x-coordinate
+     * @param y      the y-coordinate
+     * @param width  the button width
+     * @param height the button height
+     * @param action the action associated with the button
+     * @return a configured {@link SimulatedButton}
+     */
     private SimulatedButton getButtonFromPool(String label, int x, int y, int width, int height, UIAction action) {
         final SimulatedButton btn;
         if (buttonPoolIndex < buttonPool.size()) {

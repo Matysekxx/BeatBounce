@@ -143,6 +143,11 @@ public class IsometricButton extends JButton {
         glowTimer.start();
     }
 
+    /**
+     * Paints the isometric button with its 3D depth, glow, and text.
+     *
+     * @param g the graphics context
+     */
     @Override
     protected void paintComponent(Graphics g) {
         final Graphics2D g2 = (Graphics2D) g.create();

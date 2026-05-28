@@ -71,10 +71,23 @@ public class LibraryPanel extends BasePanel {
         loadLibrary();
     }
 
+    /**
+     * Builds a stylized scroll pane for the library content.
+     *
+     * @param content the panel to be scrolled
+     * @return a configured JScrollPane
+     */
     private JScrollPane buildScrollPane(JPanel content) {
         return SongSelectionPanel.buildScrollPane(content);
     }
 
+    /**
+     * Draws the background of the panel using a stylized menu background.
+     *
+     * @param g2d the graphics context
+     * @param w   the width of the panel
+     * @param h   the height of the panel
+     */
     @Override
     protected void drawBackground(Graphics2D g2d, int w, int h) {
         RenderUtils.drawMenuBackground(g2d, w, h);

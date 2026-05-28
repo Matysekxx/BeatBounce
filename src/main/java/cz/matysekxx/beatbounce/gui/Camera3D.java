@@ -6,9 +6,24 @@ import cz.matysekxx.beatbounce.util.UIScale;
  * Represents a 3D camera in the game world, used for projecting 3D coordinates to 2D screen space.
  */
 public class Camera3D {
+    /**
+     * The field of view of the camera, affecting the perspective projection scale.
+     */
     private final double fieldOfView;
+
+    /**
+     * The x-coordinate of the camera in the game world.
+     */
     private double x;
+
+    /**
+     * The y-coordinate of the camera in the game world.
+     */
     private double y;
+
+    /**
+     * The z-coordinate (depth) of the camera in the game world.
+     */
     private double z;
 
     /**
@@ -30,6 +45,8 @@ public class Camera3D {
     }
 
     /**
+     * Returns the x-coordinate of the camera.
+     *
      * @return the x-coordinate of the camera
      */
     public double getX() {
@@ -46,6 +63,8 @@ public class Camera3D {
     }
 
     /**
+     * Returns the y-coordinate of the camera.
+     *
      * @return the y-coordinate of the camera
      */
     public double getY() {
@@ -62,6 +81,8 @@ public class Camera3D {
     }
 
     /**
+     * Returns the z-coordinate (depth) of the camera.
+     *
      * @return the z-coordinate (depth) of the camera
      */
     public double getZ() {
@@ -78,6 +99,8 @@ public class Camera3D {
     }
 
     /**
+     * Returns the field of view of the camera.
+     *
      * @return the field of view of the camera
      */
     public double getFieldOfView() {

@@ -126,6 +126,11 @@ class GenerationContext {
     private boolean isHighIntensity = false;
 
     /**
+     * State management for multi-segment row sequences (corridors).
+     */
+    private final RowSequenceState rowState = new RowSequenceState();
+
+    /**
      * The Z-coordinate up to which tile placement should be skipped (used after long tiles).
      */
     private double skipUntilZ = 0.0;
@@ -134,6 +139,21 @@ class GenerationContext {
      * The timestamp of the last processed beat.
      */
     private double lastBeatTimestamp = -1.0;
+
+    /**
+     * Internal state for tracking active row sequences.
+     */
+    private static class RowSequenceState {
+        int beatsLeft = 0;
+
+        void reset() {
+            beatsLeft = 0;
+        }
+
+        boolean isActive() {
+            return beatsLeft > 0;
+        }
+    }
 
     /**
      * Constructs a new GenerationContext.
@@ -196,6 +216,7 @@ class GenerationContext {
     public Level generate() {
         final List<PlacedBeat> rawBeats = collectBeats();
         final List<PlacedBeat> filledBeats = fillGaps(rawBeats);
+        rowState.reset();
         filledBeats.forEach(this::processBeat);
         tiles.removeIf(t -> t.getZ() >= maxZ);
         return new Level(tiles, audioData, songName, profile.stars());
@@ -288,6 +309,46 @@ class GenerationContext {
     }
 
     /**
+     * Creates a row tile with segments (real/fake) based on difficulty and road width.
+     * strictly limited to 1 or 2 real segments as requested.
+     */
+    private AbstractTile createRowTile(PlacedBeat beat, double tileZ) {
+        final BeatEvent event = BeatEvent.of(beat.timestamp(), beat.salience());
+
+        if (rowState.isActive()) {
+            rowState.beatsLeft--;
+        } else {
+            rowState.beatsLeft = 4 + rng.nextInt(8);
+        }
+
+        final int max = maxLane();
+        final List<Integer> laneOffsets = new ArrayList<>();
+        for (int i = -max; i <= max; i++) {
+            laneOffsets.add(i * LANE_WIDTH);
+        }
+
+        final List<Integer> mutableOffsets = new ArrayList<>(laneOffsets);
+        Collections.shuffle(mutableOffsets, rng);
+
+        final int totalSegments = laneOffsets.size();
+        int realCount;
+        if (profile.stars() <= 3) {
+            realCount = 2;
+        } else if (profile.stars() <= 6) {
+            realCount = rng.nextDouble() < 0.6 ? 2 : 1;
+        } else {
+            realCount = 1;
+        }
+
+        realCount = Math.min(realCount, totalSegments);
+
+        final List<Integer> real = new ArrayList<>(mutableOffsets.subList(0, realCount));
+        final List<Integer> fakes = new ArrayList<>(mutableOffsets.subList(realCount, totalSegments));
+
+        return TileFactory.createNormalTile(event, 0, 150, tileZ, real, fakes);
+    }
+
+    /**
      * Adds a tile to the list and tracks its type for variety control.
      */
     private void addTile(AbstractTile tile) {
@@ -318,9 +379,15 @@ class GenerationContext {
     private AbstractTile decideTile(PlacedBeat beat, double tileZ) {
         final BeatEvent e = BeatEvent.of(beat.timestamp(), beat.salience());
         final int laneX = currentLane * LANE_WIDTH;
+
         if (tilesGenerated <= 5) {
             return TileFactory.createNormalTile(e, laneX, 0, tileZ);
         }
+
+        if (rowState.isActive() || (profile.rowChance() > 0 && rng.nextDouble() < profile.rowChance())) {
+            return createRowTile(beat, tileZ);
+        }
+
         if (beat.eventType() == EventType.SUSTAINED_NOTE
                 && profile.allows(TileType.LONG)
                 && consecutiveSame < 3

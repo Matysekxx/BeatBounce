@@ -88,6 +88,11 @@ public class Achievement {
         return id;
     }
 
+    /**
+     * Sets the unique identifier for the achievement.
+     *
+     * @param id the new unique identifier
+     */
     public void setId(String id) {
         this.id = id;
     }
@@ -99,6 +104,11 @@ public class Achievement {
         return title;
     }
 
+    /**
+     * Sets the display title of the achievement.
+     *
+     * @param title the new display title
+     */
     public void setTitle(String title) {
         this.title = title;
     }
@@ -110,6 +120,11 @@ public class Achievement {
         return description;
     }
 
+    /**
+     * Sets the description of how to earn the achievement.
+     *
+     * @param description the new description
+     */
     public void setDescription(String description) {
         this.description = description;
     }
@@ -121,6 +136,11 @@ public class Achievement {
         return type;
     }
 
+    /**
+     * Sets the category or type of progress this achievement tracks.
+     *
+     * @param type the new achievement type
+     */
     public void setType(AchievementType type) {
         this.type = type;
     }
@@ -132,6 +152,11 @@ public class Achievement {
         return target;
     }
 
+    /**
+     * Sets the numerical value required to complete the achievement.
+     *
+     * @param target the new target value
+     */
     public void setTarget(int target) {
         this.target = target;
     }
@@ -143,6 +168,11 @@ public class Achievement {
         return reward;
     }
 
+    /**
+     * Sets the reward in orbs given upon completion and claiming.
+     *
+     * @param reward the new reward amount
+     */
     public void setReward(int reward) {
         this.reward = reward;
     }
@@ -154,6 +184,11 @@ public class Achievement {
         return completed;
     }
 
+    /**
+     * Sets the completion status of the achievement.
+     *
+     * @param completed true if requirements are met, false otherwise
+     */
     public void setCompleted(boolean completed) {
         this.completed = completed;
     }
@@ -165,6 +200,11 @@ public class Achievement {
         return rewarded;
     }
 
+    /**
+     * Sets the reward claim status of the achievement.
+     *
+     * @param rewarded true if the reward has been claimed, false otherwise
+     */
     public void setRewarded(boolean rewarded) {
         this.rewarded = rewarded;
     }
@@ -176,6 +216,11 @@ public class Achievement {
         return currentProgress;
     }
 
+    /**
+     * Sets the current numerical progress toward the target.
+     *
+     * @param currentProgress the new current progress value
+     */
     public void setCurrentProgress(int currentProgress) {
         this.currentProgress = currentProgress;
     }

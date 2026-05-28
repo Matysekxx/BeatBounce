@@ -172,6 +172,10 @@ public class GamePanel extends JPanel implements Runnable {
         updateParticleCount();
 
         this.addComponentListener(new ComponentAdapter() {
+            /**
+             * Handles the component resized event to update scaling and buffers.
+             * @param e the component event
+             */
             @Override
             public void componentResized(ComponentEvent e) {
                 final int w = e.getComponent().getWidth();
@@ -215,18 +219,30 @@ public class GamePanel extends JPanel implements Runnable {
         this.worldRenderer = new GameWorldRenderer(cam, gameEngine, level, sphere);
         this.addMouseMotionListener(new GameController(cam, sphere, gameEngine));
         final MouseAdapter uiMouseAdapter = new MouseAdapter() {
+            /**
+             * Handles the mouse moved event to update UI mouse position.
+             * @param e the mouse event
+             */
             @Override
             public void mouseMoved(MouseEvent e) {
                 if (uiRenderer == null) return;
                 uiRenderer.setMousePosition(e.getX(), e.getY());
             }
 
+            /**
+             * Handles the mouse dragged event to update UI mouse position.
+             * @param e the mouse event
+             */
             @Override
             public void mouseDragged(MouseEvent e) {
                 if (uiRenderer == null) return;
                 uiRenderer.setMousePosition(e.getX(), e.getY());
             }
 
+            /**
+             * Handles the mouse pressed event to process UI button clicks.
+             * @param e the mouse event
+             */
             @Override
             public void mousePressed(MouseEvent e) {
                 if (uiRenderer == null || gameEngine == null) return;
@@ -257,6 +273,10 @@ public class GamePanel extends JPanel implements Runnable {
         this.addKeyListener(new GameKeyController(gameEngine, actionQueue, quitAction));
     }
 
+    /**
+     * The main entry point for the game loop thread.
+     * Processes input, updates game state, and triggers rendering.
+     */
     @Override
     public void run() {
         final long optimalTimeNanos = 1_000_000_000L / Settings.targetFps;

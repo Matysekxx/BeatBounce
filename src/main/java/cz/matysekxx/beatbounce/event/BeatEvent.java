@@ -28,7 +28,7 @@ public record BeatEvent(
 ) {
 
     /**
-     * Canonical constructor for intensity-based events.
+     * Convenience constructor for intensity-based events.
      *
      * @param timestamp      The time of the intensity shift.
      * @param eventType      The specific type of intensity event.

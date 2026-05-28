@@ -94,6 +94,8 @@ public class PlayingHandler implements GameStateHandler {
 
     /**
      * Checks if the song has nearly finished and transitions to the end animation.
+     *
+     * @return true if the level has ended and state transition occurred, false otherwise
      */
     private boolean checkLevelEnd() {
         if (clip.getMicrosecondPosition() >= clip.getMicrosecondLength() - 50000) {

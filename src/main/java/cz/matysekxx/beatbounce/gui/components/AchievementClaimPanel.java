@@ -49,6 +49,11 @@ public class AchievementClaimPanel extends JPanel {
         this.setOpaque(false);
 
         this.addMouseListener(new MouseAdapter() {
+            /**
+             * Updates the button hover state and cursor when the mouse enters the panel.
+             *
+             * @param e the mouse event details
+             */
             @Override
             public void mouseEntered(MouseEvent e) {
                 if (achievement.isCompleted() && !achievement.isRewarded()) {
@@ -58,6 +63,11 @@ public class AchievementClaimPanel extends JPanel {
                 }
             }
 
+            /**
+             * Resets the button hover state and cursor when the mouse leaves the panel.
+             *
+             * @param e the mouse event details
+             */
             @Override
             public void mouseExited(MouseEvent e) {
                 buttonHovered = false;
@@ -65,6 +75,11 @@ public class AchievementClaimPanel extends JPanel {
                 repaint();
             }
 
+            /**
+             * Triggers the claim action if the achievement is completed and not yet rewarded.
+             *
+             * @param e the mouse event details
+             */
             @Override
             public void mousePressed(MouseEvent e) {
                 if (achievement.isCompleted() && !achievement.isRewarded() && onClaimRequested != null) {
@@ -74,16 +89,31 @@ public class AchievementClaimPanel extends JPanel {
         });
     }
 
+    /**
+     * Returns the preferred size of this panel, accounting for UI scaling.
+     *
+     * @return the preferred dimension
+     */
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(UIScale.scale(140), UIScale.scale(50));
     }
 
+    /**
+     * Returns the minimum size of this panel, which is same as the preferred size.
+     *
+     * @return the minimum dimension
+     */
     @Override
     public Dimension getMinimumSize() {
         return getPreferredSize();
     }
 
+    /**
+     * Returns the maximum size of this panel, which is same as the preferred size.
+     *
+     * @return the maximum dimension
+     */
     @Override
     public Dimension getMaximumSize() {
         return getPreferredSize();
@@ -92,6 +122,8 @@ public class AchievementClaimPanel extends JPanel {
     /**
      * Custom painting for the button state.
      * Uses gradients for active buttons and muted colors for locked/claimed states.
+     *
+     * @param g the Graphics context
      */
     @Override
     protected void paintComponent(Graphics g) {

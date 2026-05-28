@@ -19,6 +19,9 @@ import java.util.Properties;
  * </p>
  */
 public class Settings {
+    /**
+     * Logger for the Settings class.
+     */
     private static final Logger LOG = LoggerFactory.getLogger(Settings.class);
 
     /**

@@ -160,6 +160,13 @@ public class SongSelectionPanel extends BasePanel implements Runnable {
         return sp;
     }
 
+    /**
+     * Draws the background of the panel using a stylized menu background.
+     *
+     * @param g2d the graphics context
+     * @param w   the width of the panel
+     * @param h   the height of the panel
+     */
     @Override
     protected void drawBackground(Graphics2D g2d, int w, int h) {
         RenderUtils.drawMenuBackground(g2d, w, h);
@@ -237,6 +244,11 @@ public class SongSelectionPanel extends BasePanel implements Runnable {
         return topBar;
     }
 
+    /**
+     * Creates and configures the genre selection panel with a right-aligned flow layout.
+     *
+     * @return the configured JPanel for genres
+     */
     private JPanel getJPanel() {
         final JPanel genrePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, UIScale.scale(8), UIScale.scale(12))) {
             @Override

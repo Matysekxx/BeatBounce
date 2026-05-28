@@ -12,8 +12,14 @@ import java.util.Base64;
  * automatically resetting or rejecting modified/corrupted files.
  */
 public class SecurityUtils {
+    /**
+     * The fixed 16-character key used for AES-128 encryption.
+     */
     private static final String SECRET_KEY = "A1b2x3d8E5f6g7h8";
 
+    /**
+     * The key specification object for the AES algorithm.
+     */
     private static final SecretKeySpec keySpec = new SecretKeySpec(SECRET_KEY.getBytes(StandardCharsets.UTF_8), "AES");
 
     /**

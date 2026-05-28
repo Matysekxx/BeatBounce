@@ -13,7 +13,6 @@ import cz.matysekxx.beatbounce.util.Time;
 import cz.matysekxx.beatbounce.util.UIScale;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;

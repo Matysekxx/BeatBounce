@@ -2,8 +2,10 @@ package cz.matysekxx.beatbounce.gui.screen;
 
 import cz.matysekxx.beatbounce.gui.components.CreditsPanel;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-import java.awt.Color;
+
+import java.awt.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CreditsPanelTest {
 
@@ -16,7 +18,7 @@ public class CreditsPanelTest {
 
         entry.color = "invalid";
         assertEquals(Color.WHITE, entry.getAwtColor());
-        
+
         entry.color = null;
         assertEquals(Color.WHITE, entry.getAwtColor());
     }

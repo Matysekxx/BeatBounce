@@ -287,9 +287,9 @@ public class TrackRow extends JPanel {
     /**
      * Truncates the title string if it's too long to fit in the available space.
      *
-     * @param scoreX      the x-coordinate of the score display
-     * @param textStartX  the x-coordinate where text starts
-     * @param g2          the graphics context
+     * @param scoreX     the x-coordinate of the score display
+     * @param textStartX the x-coordinate where text starts
+     * @param g2         the graphics context
      * @return the truncated string with ellipsis
      */
     private String getString(int scoreX, int textStartX, Graphics2D g2) {

@@ -32,6 +32,14 @@ public class DifficultyProfileTest {
     }
 
     @Test
+    void testLaneCountScaling() {
+        assertEquals(1, DifficultyProfile.forStars(1).maxLanes(), "Star 1 should have 3 lanes (maxLanes=1)");
+        assertEquals(1, DifficultyProfile.forStars(4).maxLanes(), "Star 4 should have 3 lanes (maxLanes=1)");
+        assertEquals(2, DifficultyProfile.forStars(5).maxLanes(), "Star 5 should have 5 lanes (maxLanes=2)");
+        assertEquals(2, DifficultyProfile.forStars(10).maxLanes(), "Star 10 should have 5 lanes (maxLanes=2)");
+    }
+
+    @Test
     void testProgressiveFeatureUnlock() {
         DifficultyProfile star1 = DifficultyProfile.forStars(1);
         DifficultyProfile star10 = DifficultyProfile.forStars(10);

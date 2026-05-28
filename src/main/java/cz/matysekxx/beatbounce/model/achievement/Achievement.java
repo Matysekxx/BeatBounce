@@ -1,7 +1,5 @@
 package cz.matysekxx.beatbounce.model.achievement;
 
-import cz.matysekxx.beatbounce.util.UIScale;
-
 /**
  * Represents a single achievement in the game.
  * It contains metadata like title, description, and requirements,

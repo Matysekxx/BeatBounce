@@ -37,8 +37,8 @@ public class GameEngineTest {
         clipStopped = false;
         clipRunning = false;
         tiles = new ArrayList<>();
-        tiles.add(new NormalTile(null, new Point(0, 150), 0));
-        tiles.add(new NormalTile(null, new Point(0, 150), 500));
+        tiles.add(new NormalTile(null, 0, 150, 0, List.of(0), List.of()));
+        tiles.add(new NormalTile(null, 0, 150, 500, List.of(0), List.of()));
 
         mockLevel = new Level(tiles, null, "test.mp3", 3);
         mockSphere = new Sphere(0, 150, 0, 25);

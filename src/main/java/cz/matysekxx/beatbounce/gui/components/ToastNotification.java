@@ -83,9 +83,9 @@ public class ToastNotification {
     /**
      * Renders the notification on the graphics context.
      *
-     * @param g2d    the graphics context
-     * @param width  the width of the screen/panel
-     * @param index  the vertical index (for stacking multiple notifications)
+     * @param g2d   the graphics context
+     * @param width the width of the screen/panel
+     * @param index the vertical index (for stacking multiple notifications)
      */
     public void draw(Graphics2D g2d, int width, int index) {
         final float alpha = calculateAlpha();

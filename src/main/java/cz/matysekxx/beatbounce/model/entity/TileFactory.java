@@ -2,7 +2,6 @@ package cz.matysekxx.beatbounce.model.entity;
 
 import cz.matysekxx.beatbounce.event.BeatEvent;
 
-import java.awt.*;
 import java.util.Collections;
 import java.util.List;
 

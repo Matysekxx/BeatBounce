@@ -94,42 +94,34 @@ class GenerationContext {
      * Detected musical sections of the song.
      */
     private final List<SectionDetector.SongSection> sections;
-
-    /**
-     * The current lane index (-2 to 2).
-     */
-    private int currentLane = 0;
-
-    /**
-     * Number of consecutive tiles placed in the same lane.
-     */
-    private int consecutiveInLane = 0;
-
-    /**
-     * Total number of tiles generated so far.
-     */
-    private int tilesGenerated = 0;
-
-    /**
-     * The type of the last tile generated.
-     */
-    private TileType lastTileType = TileType.NORMAL;
-
-    /**
-     * Number of consecutive tiles of the same type.
-     */
-    private int consecutiveSame = 0;
-
-    /**
-     * Whether currently in a high-intensity audio section.
-     */
-    private boolean isHighIntensity = false;
-
     /**
      * State management for multi-segment row sequences (corridors).
      */
     private final RowSequenceState rowState = new RowSequenceState();
-
+    /**
+     * The current lane index (-2 to 2).
+     */
+    private int currentLane = 0;
+    /**
+     * Number of consecutive tiles placed in the same lane.
+     */
+    private int consecutiveInLane = 0;
+    /**
+     * Total number of tiles generated so far.
+     */
+    private int tilesGenerated = 0;
+    /**
+     * The type of the last tile generated.
+     */
+    private TileType lastTileType = TileType.NORMAL;
+    /**
+     * Number of consecutive tiles of the same type.
+     */
+    private int consecutiveSame = 0;
+    /**
+     * Whether currently in a high-intensity audio section.
+     */
+    private boolean isHighIntensity = false;
     /**
      * The Z-coordinate up to which tile placement should be skipped (used after long tiles).
      */
@@ -139,21 +131,6 @@ class GenerationContext {
      * The timestamp of the last processed beat.
      */
     private double lastBeatTimestamp = -1.0;
-
-    /**
-     * Internal state for tracking active row sequences.
-     */
-    private static class RowSequenceState {
-        int beatsLeft = 0;
-
-        void reset() {
-            beatsLeft = 0;
-        }
-
-        boolean isActive() {
-            return beatsLeft > 0;
-        }
-    }
 
     /**
      * Constructs a new GenerationContext.
@@ -392,10 +369,9 @@ class GenerationContext {
                 && profile.allows(TileType.LONG)
                 && consecutiveSame < 3
                 && rng.nextDouble() < profile.longTileChance()) {
-            final double zSpeed = zUnitsPerSecond;
-            final double currentLen = Math.min(beat.duration() * zSpeed, zSpeed * 2.0);
+            final double currentLen = Math.min(beat.duration() * zUnitsPerSecond, zUnitsPerSecond * 2.0);
             final double minLen = Math.max(100, currentLen);
-            final double maxLen = Math.max(minLen + 100, zSpeed * 3.0);
+            final double maxLen = Math.max(minLen + 100, zUnitsPerSecond * 3.0);
             double len = minLen + rng.nextDouble() * (maxLen - minLen);
             if (tileZ + len > maxZ) {
                 len = maxZ - tileZ;
@@ -551,5 +527,20 @@ class GenerationContext {
 
         consecutiveInLane = (newLane == lane) ? consecutiveInLane + 1 : 1;
         return newLane;
+    }
+
+    /**
+     * Internal state for tracking active row sequences.
+     */
+    private static class RowSequenceState {
+        int beatsLeft = 0;
+
+        void reset() {
+            beatsLeft = 0;
+        }
+
+        boolean isActive() {
+            return beatsLeft > 0;
+        }
     }
 }

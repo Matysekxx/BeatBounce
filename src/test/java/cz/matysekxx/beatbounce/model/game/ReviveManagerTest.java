@@ -40,10 +40,10 @@ class ReviveManagerTest {
         sphere = new Sphere(0, 150, 0, 25);
         cam = new Camera3D(0, 0, -500, 500);
 
-        AbstractTile tile0 = new NormalTile(null, new Point(0, 150), 0);
+        AbstractTile tile0 = new NormalTile(null, 0, 150, 0, List.of(0), List.of());
         AbstractTile tile1 = new LongTile(null, 0, 150, 1000, 500);
         level = new Level(List.of(tile0, tile1), null, "testSong", 3);
-        
+
         gameEngine = new GameEngine(level, sphere, cam, null);
         reviveManager = new ReviveManager(gameEngine, sphere);
 
@@ -53,11 +53,11 @@ class ReviveManagerTest {
     @Test
     void testReviveResetsSphereState() {
         sphere.startFalling();
-        sphere.setCurrentY(600); 
-        
+        sphere.setCurrentY(600);
+
         gameEngine.setCurrentTileIndex(0);
         reviveManager.revive();
-        
+
         assertEquals(GameState.COUNTDOWN, gameEngine.getGameState());
         assertEquals(150, sphere.getCurrentY(), 0.01);
         assertFalse(sphere.isFalling());
@@ -71,8 +71,8 @@ class ReviveManagerTest {
     @Test
     void testLongTileLocalizedRevive() {
         gameEngine.setCurrentTileIndex(1);
-        gameEngine.setFallStartZ(1300); 
-        
+        gameEngine.setFallStartZ(1300);
+
         reviveManager.revive();
 
         assertEquals(1150, gameEngine.getGameZProgress(), 0.01);

@@ -4,7 +4,6 @@ import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.model.entity.AbstractTile;
 import cz.matysekxx.beatbounce.model.entity.BreakableTile;
 import cz.matysekxx.beatbounce.model.entity.MovingTile;
-import cz.matysekxx.beatbounce.model.entity.NormalTile;
 
 /**
  * Manages the state updates for all tiles in the level.

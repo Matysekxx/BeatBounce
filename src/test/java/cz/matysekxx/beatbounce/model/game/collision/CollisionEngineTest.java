@@ -39,7 +39,7 @@ public class CollisionEngineTest {
 
     @Test
     void testSuccessfulCollision() {
-        final NormalTile nextTile = new NormalTile(null, new Point(0, 150), 500);
+        final NormalTile nextTile = new NormalTile(null, 0, 150, 500, List.of(0), List.of());
         when(mockEngine.getCurrentTileIndex()).thenReturn(0);
         when(mockLevel.tiles()).thenReturn(List.of(mock(AbstractTile.class), nextTile));
 
@@ -56,7 +56,7 @@ public class CollisionEngineTest {
 
     @Test
     void testMissedCollisionDetection() {
-        NormalTile nextTile = new NormalTile(null, new Point(0, 150), 500);
+        NormalTile nextTile = new NormalTile(null, 0, 150, 500, List.of(0), List.of());
         when(mockEngine.getCurrentTileIndex()).thenReturn(0);
         when(mockLevel.tiles()).thenReturn(List.of(mock(AbstractTile.class), nextTile));
 
@@ -73,7 +73,7 @@ public class CollisionEngineTest {
 
     @Test
     void testCCDPreventsSkipping() {
-        NormalTile tileAt500 = new NormalTile(null, new Point(0, 150), 500);
+        NormalTile tileAt500 = new NormalTile(null, 0, 150, 500, List.of(0), List.of());
         when(mockEngine.getCurrentTileIndex()).thenReturn(0);
         when(mockLevel.tiles()).thenReturn(List.of(mock(AbstractTile.class), tileAt500));
 

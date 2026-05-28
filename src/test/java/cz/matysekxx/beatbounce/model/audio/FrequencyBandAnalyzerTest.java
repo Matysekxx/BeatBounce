@@ -5,13 +5,14 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FrequencyBandAnalyzerTest {
 
-    private FrequencyBandAnalyzer analyzer;
     private final float sampleRate = 44100f;
     private final int bufferSize = 1024;
+    private FrequencyBandAnalyzer analyzer;
 
     @BeforeEach
     void setUp() {
@@ -43,18 +44,19 @@ class FrequencyBandAnalyzerTest {
         FrequencyBandAnalyzer.FrequencyBand dominantBand = analyzer.getDominantBand(energies);
 
         assertTrue(energies.totalEnergy() > 0, "Total energy should be greater than 0 for a sine wave");
-        assertEquals(FrequencyBandAnalyzer.FrequencyBand.MID, dominantBand, 
+        assertEquals(FrequencyBandAnalyzer.FrequencyBand.MID, dominantBand,
                 "Dominant band should be MID for a 1200 Hz sine wave");
     }
+
     @Test
     void testComputeSpectralFluxWithPositiveIncrease() {
         FrequencyBandAnalyzer.BandEnergies prev = new FrequencyBandAnalyzer.BandEnergies(
-                Map.of(FrequencyBandAnalyzer.FrequencyBand.BASS, 1.0, 
-                       FrequencyBandAnalyzer.FrequencyBand.MID, 2.0), 3.0);
-                       
+                Map.of(FrequencyBandAnalyzer.FrequencyBand.BASS, 1.0,
+                        FrequencyBandAnalyzer.FrequencyBand.MID, 2.0), 3.0);
+
         FrequencyBandAnalyzer.BandEnergies curr = new FrequencyBandAnalyzer.BandEnergies(
                 Map.of(FrequencyBandAnalyzer.FrequencyBand.BASS, 1.5,
-                       FrequencyBandAnalyzer.FrequencyBand.MID, 1.0), 2.5);
+                        FrequencyBandAnalyzer.FrequencyBand.MID, 1.0), 2.5);
 
         double flux = analyzer.computeSpectralFlux(curr, prev);
 
@@ -82,7 +84,7 @@ class FrequencyBandAnalyzerTest {
 
         FrequencyBandAnalyzer.FrequencyBand dominantBand = analyzer.getDominantBand(energies);
 
-        assertEquals(FrequencyBandAnalyzer.FrequencyBand.HIGH, dominantBand, 
+        assertEquals(FrequencyBandAnalyzer.FrequencyBand.HIGH, dominantBand,
                 "HIGH band should be dominant due to the heavy weighting factor");
     }
 }

@@ -109,6 +109,19 @@ public abstract class AbstractTile extends Entity {
     }
 
     /**
+     * Determines if the player's horizontal position is within the bounds of this tile.
+     *
+     * @param playerX      the player's horizontal position
+     * @param playerRadius the player's collision radius
+     * @return true if the player is on the tile
+     */
+    public boolean isHit(double playerX, double playerRadius) {
+        final double halfWidth = (this instanceof SmallTile ? 25.0 : 60.0) + playerRadius;
+        final double tx = getX();
+        return playerX >= tx - halfWidth && playerX <= tx + halfWidth;
+    }
+
+    /**
      * Renders the tile in a 3D perspective onto the 2D graphics context.
      *
      * @param g2d        the graphics context to paint on

@@ -353,6 +353,8 @@ public class GameEngine {
 
     /**
      * Returns the index of the last successfully landed tile.
+     *
+     * @return the current tile index
      */
     public int getCurrentTileIndex() {
         return currentTileIndex;
@@ -360,6 +362,8 @@ public class GameEngine {
 
     /**
      * Sets the index of the currently active tile.
+     *
+     * @param currentTileIndex the tile index to set
      */
     public void setCurrentTileIndex(int currentTileIndex) {
         this.currentTileIndex = currentTileIndex;
@@ -367,6 +371,8 @@ public class GameEngine {
 
     /**
      * Returns the speed of the game progress.
+     *
+     * @return the Z units per second
      */
     public double getzUnitsPerSecond() {
         return zUnitsPerSecond;
@@ -374,6 +380,8 @@ public class GameEngine {
 
     /**
      * Returns the accumulated score from long-tile rolling.
+     *
+     * @return the accumulated long tile score
      */
     public int getLongTileScoreAccum() {
         return longTileScoreAccum;
@@ -381,6 +389,8 @@ public class GameEngine {
 
     /**
      * Sets the accumulated score from long-tile rolling.
+     *
+     * @param longTileScoreAccum the score to set
      */
     public void setLongTileScoreAccum(int longTileScoreAccum) {
         this.longTileScoreAccum = longTileScoreAccum;
@@ -419,6 +429,8 @@ public class GameEngine {
 
     /**
      * Returns the music clip.
+     *
+     * @return the audio clip
      */
     public Clip getClip() {
         return clip;
@@ -433,6 +445,8 @@ public class GameEngine {
 
     /**
      * Returns the remaining countdown time.
+     *
+     * @return the countdown time in seconds
      */
     public double getCountdownTime() {
         return countdownTime;
@@ -440,6 +454,8 @@ public class GameEngine {
 
     /**
      * Sets the remaining countdown time.
+     *
+     * @param countdownTime the time to set
      */
     public void setCountdownTime(double countdownTime) {
         this.countdownTime = countdownTime;
@@ -447,6 +463,8 @@ public class GameEngine {
 
     /**
      * Returns the current game state.
+     *
+     * @return the current game state
      */
     public GameState getGameState() {
         return gameState;
@@ -454,6 +472,8 @@ public class GameEngine {
 
     /**
      * Sets the current game state.
+     *
+     * @param gameState the state to set
      */
     public void setGameState(GameState gameState) {
         this.gameState = gameState;
@@ -461,6 +481,8 @@ public class GameEngine {
 
     /**
      * Returns the end animation timer value.
+     *
+     * @return the end animation timer in seconds
      */
     public double getEndAnimationTimer() {
         return endAnimationTimer;
@@ -468,6 +490,8 @@ public class GameEngine {
 
     /**
      * Sets the end animation timer value.
+     *
+     * @param endAnimationTimer the time to set
      */
     public void setEndAnimationTimer(double endAnimationTimer) {
         this.endAnimationTimer = endAnimationTimer;
@@ -475,6 +499,8 @@ public class GameEngine {
 
     /**
      * Returns the smoothed audio time.
+     *
+     * @return the smoothed audio time in seconds
      */
     public double getSmoothedAudioTime() {
         return smoothedAudioTime;
@@ -482,6 +508,8 @@ public class GameEngine {
 
     /**
      * Sets the smoothed audio time.
+     *
+     * @param smoothedAudioTime the time to set
      */
     public void setSmoothedAudioTime(double smoothedAudioTime) {
         this.smoothedAudioTime = smoothedAudioTime;
@@ -489,6 +517,8 @@ public class GameEngine {
 
     /**
      * Returns the nanoTime value at the last audio sync point.
+     *
+     * @return the last sync nano time
      */
     public long getLastSyncNano() {
         return lastSyncNano;
@@ -496,6 +526,8 @@ public class GameEngine {
 
     /**
      * Sets the nanoTime value at the last audio sync point.
+     *
+     * @param lastSyncNano the nano time to set
      */
     public void setLastSyncNano(long lastSyncNano) {
         this.lastSyncNano = lastSyncNano;
@@ -503,6 +535,8 @@ public class GameEngine {
 
     /**
      * Returns the clip microsecond position at the last audio sync point.
+     *
+     * @return the last clip microsecond position
      */
     public long getLastClipMicroPos() {
         return lastClipMicroPos;
@@ -510,6 +544,8 @@ public class GameEngine {
 
     /**
      * Sets the clip microsecond position at the last audio sync point.
+     *
+     * @param lastClipMicroPos the position to set
      */
     public void setLastClipMicroPos(long lastClipMicroPos) {
         this.lastClipMicroPos = lastClipMicroPos;
@@ -517,6 +553,8 @@ public class GameEngine {
 
     /**
      * Returns the total Z-axis progress.
+     *
+     * @return the total Z progress
      */
     public double getGameZProgress() {
         return gameZProgress;
@@ -524,6 +562,8 @@ public class GameEngine {
 
     /**
      * Sets the total Z-axis progress.
+     *
+     * @param gameZProgress the progress to set
      */
     public void setGameZProgress(double gameZProgress) {
         this.gameZProgress = gameZProgress;
@@ -531,6 +571,8 @@ public class GameEngine {
 
     /**
      * Returns the progress speed multiplier.
+     *
+     * @return the Z units per second
      */
     public double getZUnitsPerSecond() {
         return zUnitsPerSecond;
@@ -538,6 +580,8 @@ public class GameEngine {
 
     /**
      * Returns the list of tiles that need dynamic updates.
+     *
+     * @return the list of updatable tiles
      */
     public List<AbstractTile> getUpdatableTiles() {
         return updatableTiles;
@@ -545,6 +589,8 @@ public class GameEngine {
 
     /**
      * Returns the 3D camera.
+     *
+     * @return the camera
      */
     public Camera3D getCam() {
         return cam;
@@ -552,6 +598,8 @@ public class GameEngine {
 
     /**
      * Returns the player character.
+     *
+     * @return the player sphere
      */
     public Sphere getSphere() {
         return sphere;
@@ -559,6 +607,8 @@ public class GameEngine {
 
     /**
      * Returns the list of active orbs.
+     *
+     * @return the list of orbs
      */
     public List<Orb> getOrbs() {
         return orbs;
@@ -574,6 +624,8 @@ public class GameEngine {
 
     /**
      * Returns the Z-position where falling started.
+     *
+     * @return the Z position where falling started
      */
     public double getFallStartZ() {
         return fallStartZ;
@@ -581,6 +633,8 @@ public class GameEngine {
 
     /**
      * Sets the Z-position where falling started.
+     *
+     * @param fallStartZ the position to set
      */
     public void setFallStartZ(double fallStartZ) {
         this.fallStartZ = fallStartZ;
@@ -588,6 +642,8 @@ public class GameEngine {
 
     /**
      * Returns the current score.
+     *
+     * @return the current score
      */
     public Integer getScore() {
         return score;
@@ -595,6 +651,8 @@ public class GameEngine {
 
     /**
      * Sets the current score.
+     *
+     * @param score the score to set
      */
     public void setScore(int score) {
         this.score = score;
@@ -602,6 +660,8 @@ public class GameEngine {
 
     /**
      * Returns the total number of collected orbs.
+     *
+     * @return the count of collected orbs
      */
     public int getCollectedOrbs() {
         return collectedOrbs;
@@ -609,6 +669,8 @@ public class GameEngine {
 
     /**
      * Returns the current level.
+     *
+     * @return the level
      */
     public Level getLevel() {
         return level;
@@ -616,6 +678,8 @@ public class GameEngine {
 
     /**
      * Returns the alpha transparency of the neon flash effect.
+     *
+     * @return the neon flash alpha
      */
     public float getNeonFlashAlpha() {
         return neonFlashAlpha;
@@ -623,6 +687,8 @@ public class GameEngine {
 
     /**
      * Sets the alpha transparency of the neon flash effect.
+     *
+     * @param neonFlashAlpha the alpha to set
      */
     public void setNeonFlashAlpha(float neonFlashAlpha) {
         this.neonFlashAlpha = neonFlashAlpha;
@@ -630,6 +696,8 @@ public class GameEngine {
 
     /**
      * Returns the total number of revives used in the current run.
+     *
+     * @return the count of revives used
      */
     public int getRevivesUsed() {
         return reviveManager.getRevivesUsed();
@@ -637,6 +705,8 @@ public class GameEngine {
 
     /**
      * Checks if the user declined a revive.
+     *
+     * @return true if revive was declined
      */
     public boolean isReviveDeclined() {
         return reviveDeclined;
@@ -644,6 +714,8 @@ public class GameEngine {
 
     /**
      * Returns the list of active score popups.
+     *
+     * @return the list of score popups
      */
     public List<ScorePopup> getScorePopups() {
         return scorePopups;
@@ -660,6 +732,8 @@ public class GameEngine {
 
     /**
      * Returns the cost in orbs to revive the player.
+     *
+     * @return the revive cost in orbs
      */
     public int getReviveCost() {
         return reviveManager.getReviveCost();

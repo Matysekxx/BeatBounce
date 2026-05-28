@@ -41,6 +41,14 @@ public class CustomCheckBox extends JCheckBox {
      * A custom icon implementation that renders a toggle switch.
      */
     private class CheckBoxIcon implements Icon {
+        /**
+         * Paints the custom toggle switch icon.
+         *
+         * @param c the component to paint on
+         * @param g the graphics context
+         * @param x the x-coordinate
+         * @param y the y-coordinate
+         */
         @Override
         public void paintIcon(Component c, Graphics g, int x, int y) {
             Graphics2D g2 = (Graphics2D) g.create();
@@ -53,11 +61,21 @@ public class CustomCheckBox extends JCheckBox {
             g2.dispose();
         }
 
+        /**
+         * Returns the width of the custom toggle switch icon.
+         *
+         * @return the icon width in scaled pixels
+         */
         @Override
         public int getIconWidth() {
             return UIScale.scale(55);
         }
 
+        /**
+         * Returns the height of the custom toggle switch icon.
+         *
+         * @return the icon height in scaled pixels
+         */
         @Override
         public int getIconHeight() {
             return UIScale.scale(26);

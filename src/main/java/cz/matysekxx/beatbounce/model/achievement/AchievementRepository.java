@@ -20,8 +20,19 @@ import java.util.List;
  * It manages both the static definitions from resources and the player's persistent progress on disk.
  */
 public class AchievementRepository {
+    /**
+     * Logger for the AchievementRepository class.
+     */
     private static final Logger LOG = LoggerFactory.getLogger(AchievementRepository.class);
+
+    /**
+     * Jackson ObjectMapper for JSON processing.
+     */
     private static final ObjectMapper mapper = new ObjectMapper();
+
+    /**
+     * Path to the file where achievement progress is saved.
+     */
     private static final Path savePath = FileSystem.getAppRoot().resolve("achievements_save.json");
 
     /**

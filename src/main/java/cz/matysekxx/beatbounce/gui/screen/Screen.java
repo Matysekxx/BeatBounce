@@ -23,7 +23,7 @@ public abstract class Screen extends JFrame {
      * Constructs a new {@code Screen} and configures its properties such as title,
      * background color, and bounds based on fullscreen settings and monitor index.
      */
-    public Screen() {
+    public Screen() { //TODO: pridat custom header
         this.setUndecorated(Settings.fullscreen);
         this.setTitle("BeatBounce");
         this.setBackground(Color.BLACK);

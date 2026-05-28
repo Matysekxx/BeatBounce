@@ -1,7 +1,5 @@
 package cz.matysekxx.beatbounce.configuration;
 
-import com.formdev.flatlaf.FlatDarkLaf;
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -45,15 +43,11 @@ public class SwingConfiguration {
      */
     public static void setup() {
         try {
-            JFrame.setDefaultLookAndFeelDecorated(true);
-            JDialog.setDefaultLookAndFeelDecorated(true);
 
             UIManager.put("TitlePane.background", Color.BLACK);
             UIManager.put("TitlePane.foreground", Color.WHITE);
             UIManager.put("TitlePane.buttonHoverBackground", new Color(40, 40, 40));
             UIManager.put("TitlePane.buttonPressedBackground", new Color(60, 60, 60));
-
-            FlatDarkLaf.setup();
 
             setupButtonProperties();
             setupComboBoxProperties();

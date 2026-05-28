@@ -36,7 +36,6 @@ public class GenerationContextTest {
 
     @Test
     void testGenerateRowTiles() {
-        // High intensity events to trigger row generation
         List<BeatEvent> events = Arrays.asList(
                 BeatEvent.of(0.5, EventType.INTENSITY_HIGH_START, 1.0),
                 BeatEvent.of(1.0, EventType.BEAT, 1.0),
@@ -44,7 +43,6 @@ public class GenerationContextTest {
                 BeatEvent.of(2.0, EventType.BEAT, 1.0)
         );
 
-        // Star 6 should allow rows
         GenerationContext context = new GenerationContext(events, "RowSong", null, 6);
         Level level = context.generate();
 
@@ -53,15 +51,11 @@ public class GenerationContextTest {
             if (tile instanceof NormalTile nt) {
                 if (nt.getRealLaneOffsets().size() + nt.getFakeLaneOffsets().size() > 1) {
                     hasMultiSegmentTile = true;
-                    // Verify strict limit of max 2 real segments
                     assertTrue(nt.getRealLaneOffsets().size() <= 2, "Real segments should be at most 2.");
-                    // Verify total segments is 5 (for star 6)
                     assertEquals(5, nt.getRealLaneOffsets().size() + nt.getFakeLaneOffsets().size());
                 }
             }
         }
-        // Note: row generation is probabilistic, but with these events it's very likely.
-        // If it fails due to RNG, we might need a fixed seed or more events.
     }
 
     @Test

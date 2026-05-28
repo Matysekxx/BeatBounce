@@ -13,9 +13,19 @@ import java.awt.*;
  * Features a rounded track and a custom thumb with glow effects.
  */
 public class CustomSlider extends JSlider {
+    /**
+     * The scaled width of the slider.
+     */
     private final int w;
+
+    /**
+     * The scaled height of the slider.
+     */
     private final int h;
 
+    /**
+     * The scaled size of the slider thumb.
+     */
     private final int thumbSize;
 
 
@@ -39,6 +49,9 @@ public class CustomSlider extends JSlider {
         setUI(new CustomSliderUI(this));
     }
 
+    /**
+     * A custom UI for the slider that provides stylized track and thumb rendering.
+     */
     private class CustomSliderUI extends BasicSliderUI {
         /**
          * Constructs a {@code BasicSliderUI}.
@@ -49,11 +62,22 @@ public class CustomSlider extends JSlider {
             super(b);
         }
 
+        /**
+         * Returns the preferred size of the slider component.
+         *
+         * @param c the component whose preferred size is being queried
+         * @return the preferred size
+         */
         @Override
         public Dimension getPreferredSize(JComponent c) {
             return new Dimension(w, h);
         }
 
+        /**
+         * Paints the slider track with a custom rounded design and progress fill.
+         *
+         * @param g the graphics context
+         */
         @Override
         public void paintTrack(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
@@ -72,6 +96,11 @@ public class CustomSlider extends JSlider {
             g2.dispose();
         }
 
+        /**
+         * Paints the slider thumb with a custom circular design and glow.
+         *
+         * @param g the graphics context
+         */
         @Override
         public void paintThumb(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
@@ -85,6 +114,11 @@ public class CustomSlider extends JSlider {
             g2.dispose();
         }
 
+        /**
+         * Returns the size of the slider thumb.
+         *
+         * @return the thumb size
+         */
         @Override
         protected Dimension getThumbSize() {
             return new Dimension(thumbSize, thumbSize);

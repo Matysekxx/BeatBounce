@@ -9,6 +9,8 @@ import cz.matysekxx.beatbounce.util.UIScale;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.List;
 
 
@@ -49,9 +51,13 @@ public class AchievementsPanel extends BasePanel {
         final JScrollPane scrollPane = buildScrollPane(listPanel);
         add(scrollPane, BorderLayout.CENTER);
 
-        addComponentListener(new java.awt.event.ComponentAdapter() {
+        addComponentListener(new ComponentAdapter() {
+            /**
+             * Handles the component resized event to revalidate the panel.
+             * @param e the component event
+             */
             @Override
-            public void componentResized(java.awt.event.ComponentEvent e) {
+            public void componentResized(ComponentEvent e) {
                 revalidate();
             }
         });
@@ -67,6 +73,13 @@ public class AchievementsPanel extends BasePanel {
         return SongSelectionPanel.buildScrollPane(content);
     }
 
+    /**
+     * Draws the background of the panel using the standard menu background.
+     *
+     * @param g2d the graphics context
+     * @param w   the width of the panel
+     * @param h   the height of the panel
+     */
     @Override
     protected void drawBackground(Graphics2D g2d, int w, int h) {
         RenderUtils.drawMenuBackground(g2d, w, h);
@@ -78,11 +91,19 @@ public class AchievementsPanel extends BasePanel {
      */
     private JPanel createTopBar() {
         final JPanel topBar = new JPanel(new BorderLayout()) {
+            /**
+             * Returns the preferred size of the top bar.
+             * @return the preferred dimension
+             */
             @Override
             public Dimension getPreferredSize() {
                 return new Dimension(super.getPreferredSize().width, UIScale.scale(70));
             }
 
+            /**
+             * Returns the insets for the top bar.
+             * @return the insets
+             */
             @Override
             public Insets getInsets() {
                 return new Insets(0, UIScale.scale(30), 0, UIScale.scale(30));
@@ -104,6 +125,10 @@ public class AchievementsPanel extends BasePanel {
         controls.add(filterLabel);
 
         filterBtn = new CycleButton(new String[]{"ALL", "READY TO CLAIM", "IN PROGRESS"}, 0) {
+            /**
+             * Returns the preferred size of the filter button.
+             * @return the preferred dimension
+             */
             @Override
             public Dimension getPreferredSize() {
                 return new Dimension(UIScale.scale(170), UIScale.scale(36));
@@ -121,6 +146,10 @@ public class AchievementsPanel extends BasePanel {
         controls.add(sortLabel);
 
         sortBtn = new CycleButton(new String[]{"DEFAULT", "PROGRESS", "REWARD"}, 0) {
+            /**
+             * Returns the preferred size of the sort button.
+             * @return the preferred dimension
+             */
             @Override
             public Dimension getPreferredSize() {
                 return new Dimension(UIScale.scale(150), UIScale.scale(36));
@@ -134,14 +163,26 @@ public class AchievementsPanel extends BasePanel {
         return topBar;
     }
 
+    /**
+     * Creates and configures the control panel for filtering and sorting.
+     *
+     * @return a configured JPanel for UI controls
+     */
     private JPanel getJPanel() {
         final JPanel controls = new JPanel(new FlowLayout(FlowLayout.RIGHT, UIScale.scale(15), UIScale.scale(12))) {
+            /**
+             * Lays out the components in the panel.
+             */
             @Override
             public void doLayout() {
                 setFlowLayoutGap(this);
                 super.doLayout();
             }
 
+            /**
+             * Sets the gap for the flow layout based on UI scale.
+             * @param p the panel to configure
+             */
             private void setFlowLayoutGap(JPanel p) {
                 LayoutManager lm = p.getLayout();
                 if (lm instanceof FlowLayout fl) {
@@ -163,6 +204,11 @@ public class AchievementsPanel extends BasePanel {
         if (listPanel == null) return;
         listPanel.removeAll();
         listPanel.setBorder(new EmptyBorder(UIScale.scale(10), UIScale.scale(20), UIScale.scale(20), UIScale.scale(20)) {
+            /**
+             * Returns the insets of the border.
+             * @param c the component
+             * @return the insets
+             */
             @Override
             public Insets getBorderInsets(Component c) {
                 return new Insets(UIScale.scale(10), UIScale.scale(20), UIScale.scale(20), UIScale.scale(20));

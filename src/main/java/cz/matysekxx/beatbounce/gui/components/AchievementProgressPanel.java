@@ -30,16 +30,31 @@ public class AchievementProgressPanel extends JPanel {
         this.setOpaque(false);
     }
 
+    /**
+     * Returns the preferred size of this panel, accounting for UI scaling.
+     *
+     * @return the preferred dimension
+     */
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(UIScale.scale(170), UIScale.scale(38));
     }
 
+    /**
+     * Returns the minimum size of this panel, which is same as the preferred size.
+     *
+     * @return the minimum dimension
+     */
     @Override
     public Dimension getMinimumSize() {
         return getPreferredSize();
     }
 
+    /**
+     * Returns the maximum size of this panel, which is same as the preferred size.
+     *
+     * @return the maximum dimension
+     */
     @Override
     public Dimension getMaximumSize() {
         return getPreferredSize();
@@ -47,6 +62,8 @@ public class AchievementProgressPanel extends JPanel {
 
     /**
      * Paints the progress bar and status text.
+     *
+     * @param g the Graphics context
      */
     @Override
     protected void paintComponent(Graphics g) {

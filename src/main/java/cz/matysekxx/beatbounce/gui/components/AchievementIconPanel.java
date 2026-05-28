@@ -30,17 +30,32 @@ public class AchievementIconPanel extends JPanel {
         this.setOpaque(false);
     }
 
+    /**
+     * Returns the preferred size of this panel, accounting for UI scaling.
+     *
+     * @return the preferred dimension
+     */
     @Override
     public Dimension getPreferredSize() {
         final int boxSize = UIScale.scale(60);
         return new Dimension(boxSize, boxSize);
     }
 
+    /**
+     * Returns the minimum size of this panel, which is same as the preferred size.
+     *
+     * @return the minimum dimension
+     */
     @Override
     public Dimension getMinimumSize() {
         return getPreferredSize();
     }
 
+    /**
+     * Returns the maximum size of this panel, which is same as the preferred size.
+     *
+     * @return the maximum dimension
+     */
     @Override
     public Dimension getMaximumSize() {
         return getPreferredSize();
@@ -48,6 +63,8 @@ public class AchievementIconPanel extends JPanel {
 
     /**
      * Dispatches the painting to a specific drawing method based on achievement type.
+     *
+     * @param g the Graphics context
      */
     @Override
     protected void paintComponent(Graphics g) {
@@ -74,6 +91,14 @@ public class AchievementIconPanel extends JPanel {
         g2.dispose();
     }
 
+    /**
+     * Draws a star icon representing a high score achievement.
+     *
+     * @param g2      the Graphics2D context
+     * @param centerX the horizontal center of the icon
+     * @param centerY the vertical center of the icon
+     * @param alpha   the transparency level (lower for incomplete achievements)
+     */
     private void drawStar(Graphics2D g2, int centerX, int centerY, float alpha) {
         final int points = 5;
         final int outerRadius = UIScale.scale(14);
@@ -103,26 +128,34 @@ public class AchievementIconPanel extends JPanel {
         g2.draw(star);
     }
 
+    /**
+     * Draws a music note icon representing a unique songs achievement.
+     *
+     * @param g2      the Graphics2D context
+     * @param centerX the horizontal center of the icon
+     * @param centerY the vertical center of the icon
+     * @param alpha   the transparency level
+     */
     private void drawMusicNote(Graphics2D g2, int centerX, int centerY, float alpha) {
         final int head1X = centerX - UIScale.scale(10);
         final int head1Y = centerY + UIScale.scale(6);
         final int head2X = centerX + UIScale.scale(4);
         final int head2Y = centerY + UIScale.scale(2);
         final int noteW = UIScale.scale(9);
-        final int noteH = UIScale.scale(7);
+        final int noteW_H = UIScale.scale(7);
 
         g2.setStroke(RenderCache.STROKE_2);
 
-        drawNoteHead(g2, head1X, head1Y, noteW, noteH, alpha);
-        drawNoteHead(g2, head2X, head2Y, noteW, noteH, alpha);
+        drawNoteHead(g2, head1X, head1Y, noteW, noteW_H, alpha);
+        drawNoteHead(g2, head2X, head2Y, noteW, noteW_H, alpha);
 
         final int stem1X = head1X + noteW - UIScale.scale(1);
         final int stem2X = head2X + noteW - UIScale.scale(1);
         final int stemTopY = centerY - UIScale.scale(12);
 
         g2.setColor(new Color(255, 255, 255, (int) (200 * alpha)));
-        g2.drawLine(stem1X, head1Y + noteH / 2, stem1X, stemTopY);
-        g2.drawLine(stem2X, head2Y + noteH / 2, stem2X, stemTopY - UIScale.scale(4));
+        g2.drawLine(stem1X, head1Y + noteW_H / 2, stem1X, stemTopY);
+        g2.drawLine(stem2X, head2Y + noteW_H / 2, stem2X, stemTopY - UIScale.scale(4));
 
         Path2D.Double beam = new Path2D.Double();
         beam.moveTo(stem1X, stemTopY);
@@ -137,6 +170,16 @@ public class AchievementIconPanel extends JPanel {
         g2.draw(beam);
     }
 
+    /**
+     * Draws a single note head for a music note icon.
+     *
+     * @param g2    the Graphics2D context
+     * @param x     the x position
+     * @param y     the y position
+     * @param w     the width
+     * @param h     the height
+     * @param alpha the transparency level
+     */
     private void drawNoteHead(Graphics2D g2, int x, int y, int w, int h, float alpha) {
         g2.setPaint(new GradientPaint(x, y, new Color(190, 0, 255, (int) (25 * alpha)), x + w, y + h, new Color(0, 255, 255, (int) (25 * alpha))));
         g2.fillOval(x, y, w, h);
@@ -144,6 +187,14 @@ public class AchievementIconPanel extends JPanel {
         g2.drawOval(x, y, w, h);
     }
 
+    /**
+     * Draws an orb icon representing an orbs held achievement.
+     *
+     * @param g2      the Graphics2D context
+     * @param centerX the horizontal center of the icon
+     * @param centerY the vertical center of the icon
+     * @param alpha   the transparency level
+     */
     private void drawOrb(Graphics2D g2, int centerX, int centerY, float alpha) {
         final int r = UIScale.scale(13);
         final int rInner = UIScale.scale(8);
@@ -167,6 +218,14 @@ public class AchievementIconPanel extends JPanel {
         g2.fillOval(centerX - UIScale.scale(6), centerY - UIScale.scale(6), UIScale.scale(4), UIScale.scale(4));
     }
 
+    /**
+     * Draws a default diamond icon for unknown achievement types.
+     *
+     * @param g2      the Graphics2D context
+     * @param centerX the horizontal center of the icon
+     * @param centerY the vertical center of the icon
+     * @param alpha   the transparency level
+     */
     private void drawDefault(Graphics2D g2, int centerX, int centerY, float alpha) {
         final Path2D.Double diamond = new Path2D.Double();
         final int size = UIScale.scale(13);

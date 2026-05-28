@@ -12,8 +12,14 @@ import java.util.Random;
  * Uses Object Pooling to prevent GC stuttering.
  */
 public class ScorePopup {
+    /**
+     * Random number generator for various visual offsets and color selection.
+     */
     private static final Random RANDOM = new Random();
 
+    /**
+     * Set of neon colors used for the score popups.
+     */
     private static final Color[] NEON_COLORS = {
             new Color(0, 255, 255),
             new Color(255, 0, 255),
@@ -23,8 +29,19 @@ public class ScorePopup {
             new Color(255, 0, 100)
     };
 
+    /**
+     * The maximum size of the score popup pool.
+     */
     private static final int POOL_SIZE = 100;
+
+    /**
+     * The pool of reusable ScorePopup instances.
+     */
     private static final ScorePopup[] pool = new ScorePopup[POOL_SIZE];
+
+    /**
+     * The current number of available instances in the pool.
+     */
     private static int poolCount = 0;
 
     static {
@@ -34,21 +51,64 @@ public class ScorePopup {
         poolCount = POOL_SIZE;
     }
 
+    /**
+     * The total duration the popup remains visible on screen.
+     */
     private final double duration = 0.8;
+
+    /**
+     * The text to be displayed (e.g., "+10").
+     */
     private String text;
+
+    /**
+     * The primary color of the popup text.
+     */
     private Color color;
+
+    /**
+     * The speed at which the popup moves upwards.
+     */
     private double speed;
+
+    /**
+     * Horizontal offset for random movement.
+     */
     private double xOffset;
+
+    /**
+     * The current horizontal position of the popup.
+     */
     private double x;
+
+    /**
+     * The current vertical position of the popup.
+     */
     private double y;
+
+    /**
+     * The current transparency level of the popup.
+     */
     private double alpha = 1.0;
+
+    /**
+     * The time elapsed since the popup was initialized.
+     */
     private double elapsed = 0;
 
+    /**
+     * Private constructor for ScorePopup, instances should be obtained via {@link #createRandom(int, double, double)}.
+     */
     private ScorePopup() {
     }
 
     /**
      * Retrieves a ScorePopup from the pool or creates a new one if empty.
+     *
+     * @param amount the score amount to display
+     * @param startX the starting x coordinate
+     * @param startY the starting y coordinate
+     * @return a ScorePopup instance
      */
     public static ScorePopup createRandom(int amount, double startX, double startY) {
         final ScorePopup popup;
@@ -63,6 +123,11 @@ public class ScorePopup {
 
     /**
      * Initializes the popup with new parameters.
+     *
+     * @param amount the score amount
+     * @param startX the starting x coordinate
+     * @param startY the starting y coordinate
+     * @param color  the color of the popup
      */
     public void init(int amount, double startX, double startY, Color color) {
         this.text = "+" + amount;

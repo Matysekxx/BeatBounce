@@ -22,6 +22,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * Handles loading and saving of high scores and total currency from/to JSON files.
  */
 public class ScoreManager {
+    /**
+     * Logger for the ScoreManager class.
+     */
     private static final Logger LOG = LoggerFactory.getLogger(ScoreManager.class);
     /**
      * Jackson ObjectMapper for JSON processing.

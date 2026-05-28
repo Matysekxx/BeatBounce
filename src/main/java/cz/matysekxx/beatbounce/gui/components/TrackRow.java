@@ -21,20 +21,58 @@ import java.util.function.Consumer;
  * It features a beautiful, non-expanding round glass card design.
  */
 public class TrackRow extends JPanel {
+    /**
+     * The data associated with the track if it's an online track.
+     */
     private final TrackData data;
+
+    /**
+     * The local path to the track if it's a local library track.
+     */
     private final Path localPath;
+
+    /**
+     * The Audius client used for downloading online tracks.
+     */
     private final AudiusClient audiusClient;
+
+    /**
+     * The screen manager used for navigating to the game screen.
+     */
     private final ScreenManager screenManager;
 
+    /**
+     * The title of the track.
+     */
     private final String title;
+
+    /**
+     * The artist of the track.
+     */
     private final String artist;
+
+    /**
+     * The difficulty level of the track in stars.
+     */
     private final int stars;
+
+    /**
+     * The best score achieved on this track as a string.
+     */
     private final String bestScore;
 
+    /**
+     * Whether the mouse is currently hovering over this row.
+     */
     private boolean hovered = false;
 
     /**
      * Constructor for online tracks (Audius API).
+     *
+     * @param data          the track data
+     * @param audiusClient  the Audius client
+     * @param screenManager the screen manager
+     * @param onSelect      callback for when the track is selected
      */
     public TrackRow(TrackData data, AudiusClient audiusClient, ScreenManager screenManager, Consumer<TrackData> onSelect) {
         this.data = data;
@@ -54,6 +92,9 @@ public class TrackRow extends JPanel {
 
     /**
      * Constructor for local tracks (Library).
+     *
+     * @param path          the path to the local file
+     * @param screenManager the screen manager
      */
     public TrackRow(Path path, ScreenManager screenManager) {
         this.data = null;
@@ -71,22 +112,39 @@ public class TrackRow extends JPanel {
         setupUI(null);
     }
 
+    /**
+     * Initializes the UI components and event listeners.
+     *
+     * @param onSelect callback for online track selection
+     */
     private void setupUI(Consumer<TrackData> onSelect) {
         this.setOpaque(false);
         this.setCursor(new Cursor(Cursor.HAND_CURSOR));
         this.addMouseListener(new MouseAdapter() {
+            /**
+             * Handles the mouse entered event to set hovered state.
+             * @param e the mouse event
+             */
             @Override
             public void mouseEntered(MouseEvent e) {
                 hovered = true;
                 repaint();
             }
 
+            /**
+             * Handles the mouse exited event to clear hovered state.
+             * @param e the mouse event
+             */
             @Override
             public void mouseExited(MouseEvent e) {
                 hovered = false;
                 repaint();
             }
 
+            /**
+             * Handles the mouse pressed event to select or play the track.
+             * @param e the mouse event
+             */
             @Override
             public void mousePressed(MouseEvent e) {
                 if (localPath != null) {
@@ -105,16 +163,31 @@ public class TrackRow extends JPanel {
         });
     }
 
+    /**
+     * Returns the preferred size of the component.
+     *
+     * @return the preferred dimension
+     */
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(super.getPreferredSize().width, UIScale.scale(90));
     }
 
+    /**
+     * Returns the maximum size of the component.
+     *
+     * @return the maximum dimension
+     */
     @Override
     public Dimension getMaximumSize() {
         return new Dimension(Integer.MAX_VALUE, UIScale.scale(90));
     }
 
+    /**
+     * Paints the track row component.
+     *
+     * @param g the graphics context
+     */
     @Override
     protected void paintComponent(Graphics g) {
         final Graphics2D g2 = (Graphics2D) g.create();
@@ -211,6 +284,14 @@ public class TrackRow extends JPanel {
         g2.dispose();
     }
 
+    /**
+     * Truncates the title string if it's too long to fit in the available space.
+     *
+     * @param scoreX      the x-coordinate of the score display
+     * @param textStartX  the x-coordinate where text starts
+     * @param g2          the graphics context
+     * @return the truncated string with ellipsis
+     */
     private String getString(int scoreX, int textStartX, Graphics2D g2) {
         final int maxTitleWidth = scoreX - textStartX - UIScale.scale(20);
         final FontMetrics fmTitle = g2.getFontMetrics();
@@ -225,6 +306,9 @@ public class TrackRow extends JPanel {
         return displayTitle;
     }
 
+    /**
+     * Handles the play action, either launching the game or starting a download.
+     */
     private void handlePlay() {
         if (data.starting) return;
         if (data.isDownloaded(audiusClient)) {
@@ -248,6 +332,12 @@ public class TrackRow extends JPanel {
         }
     }
 
+    /**
+     * Launches the game screen with the specified track.
+     *
+     * @param audioPath the path to the audio file
+     * @param stars     the difficulty stars
+     */
     private void launchGame(Path audioPath, int stars) {
         if (audioPath == null) return;
         if (data != null) {
@@ -283,3 +373,4 @@ public class TrackRow extends JPanel {
         }
     }
 }
+

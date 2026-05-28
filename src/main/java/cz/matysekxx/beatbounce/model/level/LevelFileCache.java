@@ -33,7 +33,7 @@ public class LevelFileCache {
     /**
      * The current version of the binary cache format.
      */
-    private static final int CACHE_VERSION = 3;
+    private static final int CACHE_VERSION = 9;
 
     /**
      * Attempts to load level data from a binary cache file.
@@ -80,15 +80,18 @@ public class LevelFileCache {
                 AbstractTile tile;
                 switch (type) {
                     case 0 -> {
-                        final int fakeLaneCount = dis.readInt();
-                        final List<Integer> fakeLanes = new ArrayList<>(fakeLaneCount);
-                        for (int j = 0; j < fakeLaneCount; j++) fakeLanes.add(dis.readInt());
-                        tile = new NormalTile(beatEvent, new java.awt.Point(x, y), z, fakeLanes);
+                        final int realCount = dis.readInt();
+                        final List<Integer> realOffsets = new ArrayList<>(realCount);
+                        for (int j = 0; j < realCount; j++) realOffsets.add(dis.readInt());
+                        final int fakeCount = dis.readInt();
+                        final List<Integer> fakeOffsets = new ArrayList<>(fakeCount);
+                        for (int j = 0; j < fakeCount; j++) fakeOffsets.add(dis.readInt());
+                        tile = new NormalTile(beatEvent, x, y, z, realOffsets, fakeOffsets);
                     }
                     case 1 -> {
                         final int amplitude = dis.readInt();
-                        final double speed = dis.readDouble();
-                        tile = new MovingTile(beatEvent, x, y, z, amplitude, speed);
+                        final double speedValue = dis.readDouble();
+                        tile = new MovingTile(beatEvent, x, y, z, amplitude, speedValue);
                     }
                     case 2 -> tile = new LongTile(beatEvent, x, y, z, lengthInZ);
                     case 3 -> tile = new SmallTile(beatEvent, x, y, z);
@@ -156,9 +159,12 @@ public class LevelFileCache {
 
                 switch (tile) {
                     case NormalTile nt -> {
-                        final List<Integer> fakeLanes = nt.getFakeLaneOffsets();
-                        dos.writeInt(fakeLanes.size());
-                        for (int offset : fakeLanes) dos.writeInt(offset);
+                        final List<Integer> realOffsets = nt.getRealLaneOffsets();
+                        dos.writeInt(realOffsets.size());
+                        for (int offset : realOffsets) dos.writeInt(offset);
+                        final List<Integer> fakeOffsets = nt.getFakeLaneOffsets();
+                        dos.writeInt(fakeOffsets.size());
+                        for (int offset : fakeOffsets) dos.writeInt(offset);
                     }
                     case MovingTile mt -> {
                         dos.writeInt(mt.getAmplitude());

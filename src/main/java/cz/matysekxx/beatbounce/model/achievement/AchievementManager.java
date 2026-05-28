@@ -9,13 +9,38 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * Manages the player's achievements, including loading, saving, and evaluating progress.
+ */
 public class AchievementManager {
+    /**
+     * Logger for the AchievementManager class.
+     */
     private static final Logger LOG = LoggerFactory.getLogger(AchievementManager.class);
 
+    /**
+     * Repository for accessing achievement data.
+     */
     private static final AchievementRepository repository = new AchievementRepository();
+
+    /**
+     * List of listeners to be notified when an achievement is unlocked.
+     */
     private static final List<AchievementListener> listeners = new CopyOnWriteArrayList<>();
+
+    /**
+     * List of all defined achievements.
+     */
     private static List<Achievement> achievements = new ArrayList<>();
+
+    /**
+     * Persistent save data for achievements.
+     */
     private static AchievementSaveData saveData = new AchievementSaveData();
+
+    /**
+     * Flag to prevent concurrent achievement checks.
+     */
     private static boolean checking = false;
 
     static {
@@ -23,35 +48,62 @@ public class AchievementManager {
         checkAchievements();
     }
 
+    /**
+     * Adds an achievement listener.
+     *
+     * @param listener the listener to add
+     */
     public static void addListener(AchievementListener listener) {
         listeners.add(listener);
     }
 
+    /**
+     * Removes an achievement listener.
+     *
+     * @param listener the listener to remove
+     */
     public static void removeListener(AchievementListener listener) {
         listeners.remove(listener);
     }
 
+    /**
+     * Loads achievement definitions and player progress from the repository.
+     */
     public static void loadData() {
         achievements = repository.loadDefinitions();
         saveData = repository.loadSaveData();
         LOG.info("Loaded {} achievements. Total plays: {}", achievements.size(), saveData.getTotalPlays());
     }
 
+    /**
+     * Saves the current achievement progress to the repository.
+     */
     public static synchronized void saveData() {
         repository.saveSaveData(saveData);
     }
 
+    /**
+     * Updates progress when a level is completed and triggers an achievement check.
+     */
     public static synchronized void onLevelEnded() {
         saveData.setTotalPlays(saveData.getTotalPlays() + 1);
         saveData();
         checkAchievements();
     }
 
+    /**
+     * Retrieves the list of all achievements, triggering a progress check first.
+     *
+     * @return a list of achievements
+     */
     public static List<Achievement> getAchievements() {
         checkAchievements();
         return new ArrayList<>(achievements);
     }
 
+    /**
+     * Evaluates current progress for all achievements and unlocks those that meet requirements.
+     */
     public static synchronized void checkAchievements() {
         if (checking) return;
         checking = true;
@@ -83,12 +135,21 @@ public class AchievementManager {
         }
     }
 
+    /**
+     * Resets all achievement progress and saves the empty state.
+     */
     public static synchronized void reset() {
         saveData = new AchievementSaveData();
         saveData();
         checkAchievements();
     }
 
+    /**
+     * Claims the reward for a completed achievement if it hasn't been claimed yet.
+     *
+     * @param ach the achievement to claim the reward for
+     * @return true if the reward was successfully claimed, false otherwise
+     */
     public static synchronized boolean claimReward(Achievement ach) {
         if (ach.isCompleted() && !saveData.getRewardedIds().contains(ach.getId())) {
             ach.setRewarded(true);
@@ -104,6 +165,10 @@ public class AchievementManager {
     /**
      * Filters a list of achievements based on the specified filter option.
      * Supported options: "ALL", "READY TO CLAIM", "CLAIMED", "IN PROGRESS".
+     *
+     * @param list         the list of achievements to filter
+     * @param filterOption the filtering criteria
+     * @return the filtered list of achievements
      */
     public static List<Achievement> filterAchievements(List<Achievement> list, String filterOption) {
         if (filterOption == null || filterOption.equalsIgnoreCase("ALL")) {
@@ -135,6 +200,10 @@ public class AchievementManager {
      * - Already "CLAIMED" achievements are placed at the bottom since they are done.
      * - Secondary sorting will apply the requested sorting type ("PROGRESS" percentage descending,
      * "REWARD" value descending, or "DEFAULT" repository order).
+     *
+     * @param list       the list of achievements to sort
+     * @param sortOption the sorting criteria
+     * @return the sorted list of achievements
      */
     public static List<Achievement> sortAchievements(List<Achievement> list, String sortOption) {
         final List<Achievement> sorted = new ArrayList<>(list);
@@ -173,6 +242,12 @@ public class AchievementManager {
         return sorted;
     }
 
+    /**
+     * Returns a priority value for an achievement to aid in natural sorting.
+     *
+     * @param ach the achievement to evaluate
+     * @return the priority value (lower is higher priority)
+     */
     private static int getPriority(Achievement ach) {
         if (ach.isCompleted() && !ach.isRewarded()) {
             return 1;
@@ -183,7 +258,15 @@ public class AchievementManager {
         return 3;
     }
 
+    /**
+     * Interface for listening to achievement unlock events.
+     */
     public interface AchievementListener {
+        /**
+         * Called when an achievement is successfully unlocked.
+         *
+         * @param achievement the unlocked achievement
+         */
         void onAchievementUnlocked(Achievement achievement);
     }
 }

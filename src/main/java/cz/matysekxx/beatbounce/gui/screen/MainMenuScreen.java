@@ -118,9 +118,16 @@ public class MainMenuScreen extends Screen {
 
     /**
      * Helper to create a styled transparent JPanel.
+     *
+     * @return a new styled JPanel
      */
     private static JPanel getJPanel() {
         final JPanel p = new JPanel() {
+            /**
+             * Paints the sidebar background with a linear gradient and a border line.
+             *
+             * @param g the Graphics context to use for painting
+             */
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -134,6 +141,11 @@ public class MainMenuScreen extends Screen {
                 g2.dispose();
             }
 
+            /**
+             * Returns the preferred size of the sidebar panel, applying UI scaling to the width.
+             *
+             * @return the scaled preferred dimension
+             */
             @Override
             public Dimension getPreferredSize() {
                 return new Dimension(UIScale.scale(280), super.getPreferredSize().height);
@@ -146,6 +158,8 @@ public class MainMenuScreen extends Screen {
 
     /**
      * Creates and populates the sidebar navigation panel.
+     *
+     * @return the created sidebar JPanel
      */
     private JPanel createSidebar() {
         final JPanel p = getJPanel();
@@ -181,9 +195,17 @@ public class MainMenuScreen extends Screen {
 
     /**
      * Creates a styled button for the sidebar.
+     *
+     * @param title the text to display on the button
+     * @return the created sidebar JButton
      */
     private JButton createSidebarButton(String title) {
         final JButton btn = new JButton(title) {
+            /**
+             * Paints the sidebar button with a custom background and text styling.
+             *
+             * @param g the Graphics context to use for painting
+             */
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -208,6 +230,11 @@ public class MainMenuScreen extends Screen {
                 g2.dispose();
             }
 
+            /**
+             * Returns the preferred size of the sidebar button, applying UI scaling.
+             *
+             * @return the scaled preferred dimension
+             */
             @Override
             public Dimension getPreferredSize() {
                 return new Dimension(UIScale.scale(260), UIScale.scale(55));

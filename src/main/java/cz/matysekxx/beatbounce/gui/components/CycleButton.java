@@ -75,6 +75,11 @@ public class CycleButton extends JButton {
         return options[currentIndex];
     }
 
+    /**
+     * Paints the button with its current option and interactive effects.
+     *
+     * @param g the graphics context to use for painting
+     */
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();

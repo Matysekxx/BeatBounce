@@ -23,9 +23,24 @@ public class ToastNotification {
      */
     private static final float FADE_TIME = 0.5f;
 
+    /**
+     * Background color for the toast notification.
+     */
     private static final Color BG_COLOR = new Color(15, 15, 25, 230);
+
+    /**
+     * Border color for the toast notification.
+     */
     private static final Color BORDER_COLOR = new Color(255, 200, 0, 180);
+
+    /**
+     * Primary text color for the notification content.
+     */
     private static final Color TEXT_COLOR = new Color(255, 255, 255);
+
+    /**
+     * Color for the notification title.
+     */
     private static final Color TITLE_COLOR = new Color(255, 215, 0);
 
     /**
@@ -100,6 +115,8 @@ public class ToastNotification {
 
     /**
      * Calculates the current alpha transparency based on the timer.
+     *
+     * @return the calculated alpha value between 0.0 and 1.0
      */
     private float calculateAlpha() {
         float alpha = 1f;
@@ -113,6 +130,11 @@ public class ToastNotification {
 
     /**
      * Calculates the horizontal position for the sliding animation.
+     *
+     * @param width  the width of the container
+     * @param toastW the width of the toast
+     * @param alpha  the current alpha value
+     * @return the calculated horizontal position
      */
     private int calculateX(int width, int toastW, float alpha) {
         int x = width - toastW - UIScale.scale(20);
@@ -124,6 +146,12 @@ public class ToastNotification {
 
     /**
      * Draws the rounded background and border.
+     *
+     * @param g2d the Graphics2D context
+     * @param x   the horizontal position
+     * @param y   the vertical position
+     * @param w   the width
+     * @param h   the height
      */
     private void drawBackground(Graphics2D g2d, int x, int y, int w, int h) {
         final RoundRectangle2D.Float rect = new RoundRectangle2D.Float(x, y, w, h, UIScale.scale(15), UIScale.scale(15));
@@ -136,6 +164,11 @@ public class ToastNotification {
 
     /**
      * Draws the decorative icon.
+     *
+     * @param g2d  the Graphics2D context
+     * @param x    the horizontal position
+     * @param y    the vertical position
+     * @param size the size of the icon
      */
     private void drawIcon(Graphics2D g2d, int x, int y, int size) {
         g2d.setColor(new Color(255, 215, 0, 50));
@@ -149,6 +182,12 @@ public class ToastNotification {
 
     /**
      * Draws the text content with ellipsis if necessary.
+     *
+     * @param g2d      the Graphics2D context
+     * @param toastY   the vertical position of the toast
+     * @param toastW   the width of the toast
+     * @param iconX    the horizontal position of the icon
+     * @param iconSize the size of the icon
      */
     private void drawText(Graphics2D g2d, int toastY, int toastW, int iconX, int iconSize) {
         final int textX = iconX + iconSize + UIScale.scale(15);

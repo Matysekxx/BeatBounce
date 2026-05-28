@@ -11,8 +11,17 @@ import java.awt.*;
  * Screen that displays the game credits.
  */
 public class CreditsScreen extends Screen {
+    /**
+     * The panel that handles the scrolling and rendering of the credits text.
+     */
     private final CreditsPanel creditsPanel;
 
+    /**
+     * Constructs a new CreditsScreen and initializes the UI components.
+     * Sets up a back button to return to the IntroScreen.
+     *
+     * @param screenManager the screen manager used for navigation
+     */
     public CreditsScreen(ScreenManager screenManager) {
         super();
         this.setLayout(new BorderLayout());

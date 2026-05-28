@@ -3,6 +3,7 @@ package cz.matysekxx.beatbounce.model.entity;
 import cz.matysekxx.beatbounce.event.BeatEvent;
 
 import java.awt.*;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -26,7 +27,23 @@ public final class TileFactory {
      * @return a new {@link NormalTile}
      */
     public static NormalTile createNormalTile(BeatEvent event, int x, int y, double z) {
-        return new NormalTile(event, new Point(x, y), z);
+        return new NormalTile(event, x, y, z, List.of(0), Collections.emptyList(), 0);
+    }
+
+    /**
+     * Creates a {@link NormalTile} with specified real and fake segments and optional movement speed.
+     *
+     * @param event       the beat event
+     * @param x           world X position
+     * @param y           world Y position
+     * @param z           world Z position
+     * @param realOffsets list of real segment offsets
+     * @param fakeOffsets list of fake segment offsets
+     * @param speed       sliding speed
+     * @return a new {@link NormalTile}
+     */
+    public static NormalTile createNormalTile(BeatEvent event, int x, int y, double z, List<Integer> realOffsets, List<Integer> fakeOffsets, double speed) {
+        return new NormalTile(event, x, y, z, realOffsets, fakeOffsets, speed);
     }
 
     /**
@@ -41,7 +58,7 @@ public final class TileFactory {
      */
     public static NormalTile createNormalTileWithFakes(BeatEvent event, int x, int y, double z,
                                                        List<Integer> fakeLaneOffsets) {
-        return new NormalTile(event, new Point(x, y), z, fakeLaneOffsets);
+        return new NormalTile(event, x, y, z, List.of(0), fakeLaneOffsets, 0);
     }
 
     /**
@@ -99,5 +116,4 @@ public final class TileFactory {
     public static BreakableTile createBreakableTile(BeatEvent event, int x, int y, double z) {
         return new BreakableTile(event, x, y, z);
     }
-
 }

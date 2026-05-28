@@ -96,32 +96,32 @@ public final class RenderUtils {
     private static int[][] starCache = null;
 
     /**
-     * Cached width for background resources.
+     * Cached width for background resources to detect resolution changes.
      */
     private static int bgCachedW = -1;
 
     /**
-     * Cached height for background resources.
+     * Cached height for background resources to detect resolution changes.
      */
     private static int bgCachedH = -1;
 
     /**
-     * First radial gradient for background orbs.
+     * First radial gradient for background orbs, centered on the left side.
      */
     private static RadialGradientPaint bgOrb1;
 
     /**
-     * Second radial gradient for background orbs.
+     * Second radial gradient for background orbs, centered on the right side.
      */
     private static RadialGradientPaint bgOrb2;
 
     /**
-     * Third radial gradient for background orbs.
+     * Third radial gradient for background orbs, centered in the middle.
      */
     private static RadialGradientPaint bgOrb3;
 
     /**
-     * Gradient paint for the floor.
+     * Gradient paint for the floor, providing a sense of depth and perspective.
      */
     private static GradientPaint floorGradient;
 
@@ -134,6 +134,9 @@ public final class RenderUtils {
     }
 
 
+    /**
+     * Private constructor to prevent instantiation of this utility class.
+     */
     private RenderUtils() {
     }
 

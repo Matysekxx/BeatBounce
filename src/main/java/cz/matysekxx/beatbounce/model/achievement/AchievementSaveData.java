@@ -30,34 +30,55 @@ public class AchievementSaveData {
     }
 
     /**
+     * Returns the total play count.
+     *
      * @return the total play count
      */
     public int getTotalPlays() {
         return totalPlays;
     }
 
+    /**
+     * Sets the total play count.
+     *
+     * @param totalPlays the new total play count
+     */
     public void setTotalPlays(int totalPlays) {
         this.totalPlays = totalPlays;
     }
 
     /**
+     * Returns the list of completed achievement IDs.
+     *
      * @return list of completed achievement IDs
      */
     public List<String> getCompletedIds() {
         return completedIds;
     }
 
+    /**
+     * Sets the list of completed achievement IDs.
+     *
+     * @param completedIds the list of completed IDs
+     */
     public void setCompletedIds(List<String> completedIds) {
         this.completedIds = completedIds;
     }
 
     /**
+     * Returns the list of IDs with claimed rewards.
+     *
      * @return list of IDs with claimed rewards
      */
     public List<String> getRewardedIds() {
         return rewardedIds;
     }
 
+    /**
+     * Sets the list of IDs with claimed rewards.
+     *
+     * @param rewardedIds the list of IDs with claimed rewards
+     */
     public void setRewardedIds(List<String> rewardedIds) {
         this.rewardedIds = rewardedIds;
     }

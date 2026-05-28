@@ -33,8 +33,19 @@ public class AchievementRowPanel extends JPanel {
      */
     private final Runnable claimCallback;
 
+    /**
+     * The panel that displays the achievement icon.
+     */
     private final AchievementIconPanel iconPanel;
+
+    /**
+     * The panel that displays the achievement progress.
+     */
     private final AchievementProgressPanel progressPanel;
+
+    /**
+     * The panel that provides the interface to claim the achievement reward.
+     */
     private final AchievementClaimPanel claimPanel;
 
     /**
@@ -83,11 +94,21 @@ public class AchievementRowPanel extends JPanel {
         });
     }
 
+    /**
+     * Returns the preferred size of this panel, accounting for UI scaling.
+     *
+     * @return the preferred dimension
+     */
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(super.getPreferredSize().width, UIScale.scale(90));
     }
 
+    /**
+     * Returns the maximum size of this panel, allowing it to stretch horizontally.
+     *
+     * @return the maximum dimension
+     */
     @Override
     public Dimension getMaximumSize() {
         return new Dimension(Integer.MAX_VALUE, UIScale.scale(90));
@@ -135,6 +156,8 @@ public class AchievementRowPanel extends JPanel {
 
     /**
      * Renders the row background with hover highlights and text info.
+     *
+     * @param g the Graphics context
      */
     @Override
     protected void paintComponent(Graphics g) {

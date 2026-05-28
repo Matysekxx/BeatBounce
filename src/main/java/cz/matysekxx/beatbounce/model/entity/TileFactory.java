@@ -27,11 +27,11 @@ public final class TileFactory {
      * @return a new {@link NormalTile}
      */
     public static NormalTile createNormalTile(BeatEvent event, int x, int y, double z) {
-        return new NormalTile(event, x, y, z, List.of(0), Collections.emptyList(), 0);
+        return new NormalTile(event, x, y, z, List.of(0), Collections.emptyList());
     }
 
     /**
-     * Creates a {@link NormalTile} with specified real and fake segments and optional movement speed.
+     * Creates a {@link NormalTile} with specified real and fake segments.
      *
      * @param event       the beat event
      * @param x           world X position
@@ -39,11 +39,10 @@ public final class TileFactory {
      * @param z           world Z position
      * @param realOffsets list of real segment offsets
      * @param fakeOffsets list of fake segment offsets
-     * @param speed       sliding speed
      * @return a new {@link NormalTile}
      */
-    public static NormalTile createNormalTile(BeatEvent event, int x, int y, double z, List<Integer> realOffsets, List<Integer> fakeOffsets, double speed) {
-        return new NormalTile(event, x, y, z, realOffsets, fakeOffsets, speed);
+    public static NormalTile createNormalTile(BeatEvent event, int x, int y, double z, List<Integer> realOffsets, List<Integer> fakeOffsets) {
+        return new NormalTile(event, x, y, z, realOffsets, fakeOffsets);
     }
 
     /**
@@ -58,7 +57,7 @@ public final class TileFactory {
      */
     public static NormalTile createNormalTileWithFakes(BeatEvent event, int x, int y, double z,
                                                        List<Integer> fakeLaneOffsets) {
-        return new NormalTile(event, x, y, z, List.of(0), fakeLaneOffsets, 0);
+        return new NormalTile(event, x, y, z, List.of(0), fakeLaneOffsets);
     }
 
     /**

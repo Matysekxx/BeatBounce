@@ -6,7 +6,6 @@ import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.event.BeatEvent;
 import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.gui.RenderCache;
-import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.WindowData;
 
 import java.awt.*;
@@ -16,8 +15,7 @@ import java.util.List;
 
 /**
  * The {@code NormalTile} class represents the standard tile in BeatBounce.
- * It has been enhanced to support multiple segments (real and fake) and horizontal movement,
- * unifying the previous 'SlidingTile' functionality into the base tile type.
+ * It supports multiple segments (real and fake) across the road width.
  */
 public class NormalTile extends AbstractTile {
     /**
@@ -28,10 +26,6 @@ public class NormalTile extends AbstractTile {
      * Relative horizontal offsets for fake (visual-only) segments.
      */
     private final List<Integer> fakeLaneOffsets;
-    /**
-     * Horizontal sliding speed in units per second.
-     */
-    private double speed = 0;
     /**
      * Scratch polygon for rendering multiple segments.
      */
@@ -56,32 +50,17 @@ public class NormalTile extends AbstractTile {
             @JsonProperty("y") int y,
             @JsonProperty("z") double z,
             @JsonProperty("realLaneOffsets") List<Integer> realLaneOffsets,
-            @JsonProperty("fakeLaneOffsets") List<Integer> fakeLaneOffsets,
-            @JsonProperty("speed") double speed) {
+            @JsonProperty("fakeLaneOffsets") List<Integer> fakeLaneOffsets) {
         super(beatEvent, new Point(x, y), z, 50.0);
         this.realLaneOffsets = realLaneOffsets != null ? realLaneOffsets : new ArrayList<>(List.of(0));
         this.fakeLaneOffsets = fakeLaneOffsets != null ? fakeLaneOffsets : Collections.emptyList();
-        this.speed = speed;
     }
 
     /**
      * Legacy constructor for simple tiles.
      */
     public NormalTile(BeatEvent beatEvent, Point point, double z, List<Integer> fakeLaneOffsets) {
-        this(beatEvent, point.x, point.y, z, List.of(0), fakeLaneOffsets, 0);
-    }
-
-    /**
-     * Updates the horizontal position if the tile has a speed set.
-     * Implements wrapping logic to keep tiles within road bounds.
-     */
-    public void update(double deltaTime) {
-        if (speed == 0) return;
-        double newX = getX() + speed * deltaTime;
-        final double roadWidth = RenderUtils.ROAD_WIDTH * 2.0;
-        while (newX > RenderUtils.ROAD_WIDTH) newX -= roadWidth;
-        while (newX < -RenderUtils.ROAD_WIDTH) newX += roadWidth;
-        setLocation((int) newX, getY());
+        this(beatEvent, point.x, point.y, z, List.of(0), fakeLaneOffsets);
     }
 
     /**
@@ -93,11 +72,9 @@ public class NormalTile extends AbstractTile {
         final double scaleBack = cam.getScale(this.getZ() + getLengthInZ());
         if (scaleFront <= 0) return;
 
-        final double roadWidth = RenderUtils.ROAD_WIDTH * 2.0;
-
         g2d.setColor(RenderCache.customColorWithAlpha(getDynamicColor(0.8f, 0.4f, 0.0), 120));
         for (int offset : fakeLaneOffsets) {
-            prepareSegmentPolygon(cam, windowData, scaleFront, scaleBack, roadWidth, offset);
+            prepareSegmentPolygon(cam, windowData, scaleFront, scaleBack, offset);
             g2d.fillPolygon(segmentScratchPolygon);
             if (!Settings.graphicsQuality.equals("LOW")) {
                 g2d.setStroke(RenderCache.STROKE_1_5);
@@ -107,21 +84,17 @@ public class NormalTile extends AbstractTile {
         }
 
         for (int offset : realLaneOffsets) {
-            prepareSegmentPolygon(cam, windowData, scaleFront, scaleBack, roadWidth, offset);
+            prepareSegmentPolygon(cam, windowData, scaleFront, scaleBack, offset);
             drawTile(g2d, segmentScratchPolygon, scaleFront);
         }
     }
 
     /**
      * Calculates the projected X position for a specific segment and populates the scratch polygon.
-     * Implements wrapping logic to ensure segments stay within the road boundaries.
      */
-    private void prepareSegmentPolygon(Camera3D cam, WindowData windowData, double scaleFront, double scaleBack, double roadWidth, int offset) {
-        double segmentX = getX() + offset;
-        while (segmentX > RenderUtils.ROAD_WIDTH) segmentX -= roadWidth;
-        while (segmentX < -RenderUtils.ROAD_WIDTH) segmentX += roadWidth;
-
-        setupPolygon(cam, windowData.width(), windowData.height() / 3, scaleFront, scaleBack, (int) segmentX, 1.0, segmentScratchPolygon);
+    private void prepareSegmentPolygon(Camera3D cam, WindowData windowData, double scaleFront, double scaleBack, int offset) {
+        final int segmentX = getX() + offset;
+        setupPolygon(cam, windowData.width(), windowData.height() / 3, scaleFront, scaleBack, segmentX, 1.0, segmentScratchPolygon);
     }
 
     @Override
@@ -151,12 +124,8 @@ public class NormalTile extends AbstractTile {
     @Override
     public boolean isHit(double playerX, double playerRadius) {
         final double halfWidth = 60.0 + playerRadius;
-        final double roadWidth = RenderUtils.ROAD_WIDTH * 2.0;
         for (int offset : realLaneOffsets) {
-            double tx = getX() + offset;
-            while (tx > RenderUtils.ROAD_WIDTH) tx -= roadWidth;
-            while (tx < -RenderUtils.ROAD_WIDTH) tx += roadWidth;
-
+            final double tx = getX() + offset;
             if (playerX >= tx - halfWidth && playerX <= tx + halfWidth) return true;
         }
         return false;
@@ -168,9 +137,5 @@ public class NormalTile extends AbstractTile {
 
     public List<Integer> getFakeLaneOffsets() {
         return fakeLaneOffsets;
-    }
-
-    public double getSpeed() {
-        return speed;
     }
 }

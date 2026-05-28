@@ -151,21 +151,9 @@ public class CollisionEngine {
      * @return true if the player is falling (missed the tile)
      */
     private boolean isPlayerFalling(AbstractTile nextTile) {
-        final double halfWidth = getTileHalfWidth(nextTile);
-        final double tileMinX = nextTile.getX() - halfWidth;
-        final double tileMaxX = nextTile.getX() + halfWidth;
-
         final double playerX = gameEngine.getSphere().getX();
-        return playerX < tileMinX || playerX > tileMaxX;
-    }
-
-    /**
-     * Calculates the effective collision half-width of a tile, accounting for player radius.
-     */
-    private double getTileHalfWidth(AbstractTile tile) {
-        return (tile instanceof SmallTile)
-                ? SMALL_HALF_WIDTH + gameEngine.getSphere().getRadius()
-                : NORMAL_HALF_WIDTH + gameEngine.getSphere().getRadius();
+        final double playerRadius = gameEngine.getSphere().getRadius();
+        return !nextTile.isHit(playerX, playerRadius);
     }
 
     /**

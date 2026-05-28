@@ -128,6 +128,13 @@ public class IntroPanel extends BasePanel implements Runnable {
         }
     }
 
+    /**
+     * Draws the background elements including the primary background and the floor.
+     *
+     * @param g2d the graphics context
+     * @param w   the width of the panel
+     * @param h   the height of the panel
+     */
     @Override
     protected void drawBackground(Graphics2D g2d, int w, int h) {
         final int horizonY = (h >> 1) + UIScale.scale(100);
@@ -135,6 +142,11 @@ public class IntroPanel extends BasePanel implements Runnable {
         RenderUtils.drawFloor(g2d, w, h, horizonY);
     }
 
+    /**
+     * Paints the component and its animated elements.
+     *
+     * @param g the graphics context
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

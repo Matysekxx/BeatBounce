@@ -104,9 +104,26 @@ public class TrackRow extends JPanel {
 
         final String rawName = path.getFileName().toString();
         int dot = rawName.lastIndexOf('.');
-        this.title = (dot > 0) ? rawName.substring(0, dot) : rawName;
-        this.artist = "Local Song";
-        this.stars = 1 + (Math.abs(title.hashCode()) % 10);
+        final String baseTitle = (dot > 0) ? rawName.substring(0, dot) : rawName;
+
+        String loadedArtist = "Local Song";
+        String loadedTitle = baseTitle;
+        int loadedStars = 1 + (Math.abs(baseTitle.hashCode()) % 10);
+        try {
+            var cached = cz.matysekxx.beatbounce.model.level.LevelFileCache.readMetadata(path.toFile());
+            if (cached.isPresent()) {
+                loadedArtist = cached.get().artist();
+                String nameFromCache = cached.get().songName();
+                int cacheDot = nameFromCache.lastIndexOf('.');
+                loadedTitle = (cacheDot > 0) ? nameFromCache.substring(0, cacheDot) : nameFromCache;
+                loadedStars = cached.get().stars();
+            }
+        } catch (Exception ignored) {
+        }
+
+        this.title = loadedTitle;
+        this.artist = loadedArtist;
+        this.stars = loadedStars;
         this.bestScore = String.valueOf(ScoreManager.getBestScore(title));
 
         setupUI(null);
@@ -352,7 +369,7 @@ public class TrackRow extends JPanel {
                             screenManager.initScreen(GameScreen.class);
                             final GameScreen gs = screenManager.getScreen(GameScreen.class);
                             screenManager.showScreen(GameScreen.class);
-                            gs.setupGamePanel(audioPath, stars);
+                            gs.setupGamePanel(audioPath, stars, data.title, data.artist);
                             data.starting = false;
                         } catch (Exception ex) {
                             ExceptionHandler.handle("Failed to launch game", ex);
@@ -366,7 +383,7 @@ public class TrackRow extends JPanel {
                 screenManager.initScreen(GameScreen.class);
                 final GameScreen gs = screenManager.getScreen(GameScreen.class);
                 screenManager.showScreen(GameScreen.class);
-                gs.setupGamePanel(audioPath, stars);
+                gs.setupGamePanel(audioPath, stars, title, artist);
             } catch (Exception ex) {
                 ExceptionHandler.handle("Failed to launch game", ex);
             }

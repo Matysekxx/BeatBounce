@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +34,7 @@ public class LevelFileCache {
     /**
      * The current version of the binary cache format.
      */
-    private static final int CACHE_VERSION = 9;
+    private static final int CACHE_VERSION = 10;
 
     /**
      * Attempts to load level data from a binary cache file.
@@ -47,18 +48,10 @@ public class LevelFileCache {
         if (!cacheFile.exists()) return Optional.empty();
 
         try (final DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(cacheFile)))) {
-            final int version = dis.readInt();
-            if (version != CACHE_VERSION) {
-                LOG.warn("Cache version mismatch (expected {}, got {}). Ignoring cache.", CACHE_VERSION, version);
-                return Optional.empty();
-            }
+            final LevelCacheData header = readHeader(dis);
+            if (header == null) return Optional.empty();
 
-            final String songName = dis.readUTF();
-            final int stars = dis.readInt();
-            final double bpm = dis.readDouble();
-            final int totalBeatsDetected = dis.readInt();
             final int tilesCount = dis.readInt();
-
             final List<AbstractTile> tiles = new ArrayList<>(tilesCount);
             for (int i = 0; i < tilesCount; i++) {
                 final byte type = dis.readByte();
@@ -101,13 +94,49 @@ public class LevelFileCache {
                 tiles.add(tile);
             }
 
-            final LevelCacheData data = new LevelCacheData(tiles, songName, stars, version, bpm, totalBeatsDetected);
+            final LevelCacheData data = new LevelCacheData(tiles, header.songName(), header.artist(), header.stars(), header.cacheVersion(), header.bpm(), header.totalBeatsDetected());
             LOG.info("Successfully loaded binary cache: {} ({} tiles)", cacheFile.getName(), tilesCount);
             return Optional.of(data);
         } catch (Exception e) {
             LOG.warn("Failed to load binary cache for {}: {}", cacheFile.getName(), e.getMessage());
             return Optional.empty();
         }
+    }
+
+    /**
+     * Reads only the metadata (header) from a binary cache file without parsing tiles.
+     * Useful for library listings.
+     *
+     * @param audioFile the original audio file
+     * @return an {@link Optional} containing {@link LevelCacheData} with metadata, but no tiles
+     */
+    public static Optional<LevelCacheData> readMetadata(File audioFile) {
+        final File cacheFile = getCacheFile(audioFile, 1.0f);
+        if (!cacheFile.exists()) return Optional.empty();
+
+        try (final DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(cacheFile)))) {
+            final LevelCacheData header = readHeader(dis);
+            return Optional.ofNullable(header);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Reads the level header from the stream.
+     */
+    private static LevelCacheData readHeader(DataInputStream dis) throws IOException {
+        final int version = dis.readInt();
+        if (version != CACHE_VERSION) {
+            return null;
+        }
+        final String songName = dis.readUTF();
+        final String artist = dis.readUTF();
+        final int stars = dis.readInt();
+        final double bpm = dis.readDouble();
+        final int totalBeatsDetected = dis.readInt();
+
+        return new LevelCacheData(Collections.emptyList(), songName, artist, stars, version, bpm, totalBeatsDetected);
     }
 
     /**
@@ -121,6 +150,7 @@ public class LevelFileCache {
         try (final DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(cacheFile)))) {
             dos.writeInt(CACHE_VERSION);
             dos.writeUTF(level.songName());
+            dos.writeUTF(level.artist());
             dos.writeInt(level.stars());
             dos.writeDouble(0.0);
             dos.writeInt(0);

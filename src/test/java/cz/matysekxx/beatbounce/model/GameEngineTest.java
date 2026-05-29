@@ -39,7 +39,7 @@ public class GameEngineTest {
         tiles.add(new NormalTile(null, 0, 150, 0, List.of(0), List.of()));
         tiles.add(new NormalTile(null, 0, 150, 500, List.of(0), List.of()));
 
-        mockLevel = new Level(tiles, null, "test.mp3", 3);
+        mockLevel = new Level(tiles, null, "test.mp3", "Bobek", 3);
         mockSphere = new Sphere(0, 150, 0, 25);
         mockCam = new Camera3D(0, 0, -500, 500);
         mockClip = (Clip) Proxy.newProxyInstance(

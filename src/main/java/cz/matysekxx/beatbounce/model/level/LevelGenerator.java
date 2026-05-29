@@ -38,12 +38,13 @@ public class LevelGenerator {
      * @param audioData       the audio metadata and sample data to analyze
      * @param speedMultiplier the multiplier for playback speed (scales timestamps)
      * @param stars           the difficulty rating (1-10 stars)
+     * @param artist          the artist of the song
      * @return a fully initialized {@link Level}
      */
-    public static Level generateLevel(AudioData audioData, float speedMultiplier, int stars) {
+    public static Level generateLevel(AudioData audioData, float speedMultiplier, int stars, String artist) {
         final LevelCacheKey key = LevelCacheKey.of(audioData.file().getAbsolutePath(), speedMultiplier);
         if (LevelCacheManager.contains(key))
-            return new Level(LevelCacheManager.get(key), audioData, audioData.file().getName(), stars);
+            return new Level(LevelCacheManager.get(key), audioData, audioData.file().getName(), artist, stars);
 
         final Optional<LevelCacheData> cachedLevelOpt = LevelFileCache.fromFile(audioData.file(), speedMultiplier);
         if (cachedLevelOpt.isPresent()) {
@@ -51,6 +52,7 @@ public class LevelGenerator {
             final Level loadedLevel = new Level(
                     diskCachedLevel.tiles(), audioData,
                     diskCachedLevel.songName(),
+                    diskCachedLevel.artist(),
                     diskCachedLevel.stars() > 0 ? diskCachedLevel.stars() : stars
             );
             LevelCacheManager.put(key, loadedLevel.tiles());
@@ -59,7 +61,7 @@ public class LevelGenerator {
 
         final AudioAnalyzer audioAnalyzer = new AudioAnalyzer(audioData, speedMultiplier);
         final Level generatedLevel = new GenerationContext(
-                audioAnalyzer.analyze(), audioData.file().getName(), audioData, stars
+                audioAnalyzer.analyze(), audioData.file().getName(), artist, audioData, stars
         ).generate();
         LevelCacheManager.put(key, generatedLevel.tiles());
         LevelFileCache.toFile(generatedLevel, speedMultiplier);

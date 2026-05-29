@@ -21,11 +21,12 @@ public class GenerationContextTest {
                 BeatEvent.of(3.0, 0.7)
         );
 
-        GenerationContext context = new GenerationContext(events, "TestSong", null, 3);
+        GenerationContext context = new GenerationContext(events, "TestSong", "TestArtist", null, 3);
         Level level = context.generate();
 
         assertNotNull(level);
         assertEquals("TestSong", level.songName());
+        assertEquals("TestArtist", level.artist());
 
         List<AbstractTile> tiles = level.tiles();
         assertTrue(tiles.size() >= 3, "Level should have at least as many tiles as beats.");
@@ -43,7 +44,7 @@ public class GenerationContextTest {
                 BeatEvent.of(2.0, EventType.BEAT, 1.0)
         );
 
-        GenerationContext context = new GenerationContext(events, "RowSong", null, 6);
+        GenerationContext context = new GenerationContext(events, "RowSong", "RowArtist", null, 6);
         Level level = context.generate();
 
         boolean hasMultiSegmentTile = false;
@@ -61,7 +62,7 @@ public class GenerationContextTest {
     @Test
     void testGenerateEmptyLevel() {
         List<BeatEvent> events = List.of();
-        GenerationContext context = new GenerationContext(events, "EmptySong", null, 1);
+        GenerationContext context = new GenerationContext(events, "EmptySong", "EmptyArtist", null, 1);
         Level level = context.generate();
 
         assertNotNull(level);

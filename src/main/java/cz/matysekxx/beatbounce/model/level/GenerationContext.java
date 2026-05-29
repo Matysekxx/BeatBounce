@@ -56,6 +56,11 @@ class GenerationContext {
     private final String songName;
 
     /**
+     * Artist of the song being processed.
+     */
+    private final String artist;
+
+    /**
      * Random generator seeded by song name and difficulty.
      */
     private final Random rng;
@@ -137,11 +142,12 @@ class GenerationContext {
      *
      * @param events    the sorted beat events from audio analysis
      * @param songName  name of the song
+     * @param artist    artist of the song
      * @param audioData full audio metadata
      * @param stars     difficulty rating 1–10
      */
-    public GenerationContext(Iterable<BeatEvent> events, String songName, AudioData audioData, int stars) {
-        this(events, songName, audioData, stars, TempoMap.DEFAULT, Collections.emptyList());
+    public GenerationContext(Iterable<BeatEvent> events, String songName, String artist, AudioData audioData, int stars) {
+        this(events, songName, artist, audioData, stars, TempoMap.DEFAULT, Collections.emptyList());
     }
 
     /**
@@ -149,15 +155,17 @@ class GenerationContext {
      *
      * @param events    sorted beat events
      * @param songName  song name
+     * @param artist    artist name
      * @param audioData audio metadata
      * @param stars     difficulty 1–10
      * @param tempoMap  detected tempo data
      * @param sections  detected structural sections
      */
-    public GenerationContext(Iterable<BeatEvent> events, String songName, AudioData audioData, int stars,
+    public GenerationContext(Iterable<BeatEvent> events, String songName, String artist, AudioData audioData, int stars,
                              TempoMap tempoMap, List<SectionDetector.SongSection> sections) {
         this.events = events;
         this.songName = songName;
+        this.artist = artist;
         this.audioData = audioData;
         this.profile = DifficultyProfile.forStars(stars);
         this.rng = new Random((long) songName.hashCode() * 31 + stars);
@@ -196,7 +204,7 @@ class GenerationContext {
         rowState.reset();
         filledBeats.forEach(this::processBeat);
         tiles.removeIf(t -> t.getZ() >= maxZ);
-        return new Level(tiles, audioData, songName, profile.stars());
+        return new Level(tiles, audioData, songName, artist, profile.stars());
     }
 
     /**

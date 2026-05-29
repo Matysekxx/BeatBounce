@@ -55,10 +55,12 @@ public class GameScreen extends Screen {
      * Sets up the game panel with the specified audio file and difficulty (stars).
      * It loads the level asynchronously and shows a loading panel in the meantime.
      *
-     * @param audioPath the path to the audio file
-     * @param stars     the difficulty level represented by stars
+     * @param audioPath  the path to the audio file
+     * @param stars      the difficulty level represented by stars
+     * @param songTitle  the title of the song
+     * @param songArtist the artist of the song
      */
-    public void setupGamePanel(Path audioPath, int stars) {
+    public void setupGamePanel(Path audioPath, int stars, String songTitle, String songArtist) {
         if (gamePanel != null) {
             gamePanel.stopGame();
             gamePanel = null;
@@ -73,12 +75,12 @@ public class GameScreen extends Screen {
 
         AudioData.createAsync(audioPath.toFile().getPath()).thenApply(audioData -> {
             final float speedMultiplier = 1.0f;
-            return LevelGenerator.generateLevel(audioData, speedMultiplier, stars);
+            return LevelGenerator.generateLevel(audioData, speedMultiplier, stars, songArtist);
         }).thenAccept(level -> SwingUtilities.invokeLater(() -> {
             this.getContentPane().removeAll();
             final Runnable onExit = () -> screenManager.showScreen(MainMenuScreen.class);
             gamePanel = new GamePanel(onExit);
-            gamePanel.init(level);
+            gamePanel.init(level, songTitle, songArtist);
             this.getContentPane().add(gamePanel, BorderLayout.CENTER);
             this.getContentPane().revalidate();
             this.getContentPane().repaint();
@@ -90,6 +92,33 @@ public class GameScreen extends Screen {
             SwingUtilities.invokeLater(() -> loadingPanel.setText("Failed to load level!"));
             return null;
         });
+    }
+
+    /**
+     * Overloaded setupGamePanel for local paths or where title/artist aren't explicitly provided.
+     * It attempts to load metadata from the level cache to display correct info.
+     *
+     * @param audioPath the path to the audio file
+     * @param stars     the difficulty level represented by stars
+     */
+    public void setupGamePanel(Path audioPath, int stars) {
+        final String rawName = audioPath.getFileName().toString();
+        int dot = rawName.lastIndexOf('.');
+        final String baseTitle = (dot > 0) ? rawName.substring(0, dot) : rawName;
+
+        String artist = "Local Song";
+        String title = baseTitle;
+
+        try {
+            var cached = cz.matysekxx.beatbounce.model.level.LevelFileCache.readMetadata(audioPath.toFile());
+            if (cached.isPresent()) {
+                artist = cached.get().artist();
+                title = cached.get().songName();
+            }
+        } catch (Exception ignored) {
+        }
+
+        setupGamePanel(audioPath, stars, title, artist);
     }
 
     /**

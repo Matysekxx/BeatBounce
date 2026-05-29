@@ -108,6 +108,14 @@ public class GamePanel extends JPanel implements Runnable {
      */
     private float scorePopAlpha = 0f;
     /**
+     * The title of the song being played.
+     */
+    private String songTitle;
+    /**
+     * The artist of the song being played.
+     */
+    private String songArtist;
+    /**
      * Helper for rendering game-specific UI elements.
      */
     private GameUIRenderer uiRenderer;
@@ -202,12 +210,16 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     /**
-     * Initializes the game panel with the specified level.
+     * Initializes the game panel with the specified level and song metadata.
      *
-     * @param level the level to play
+     * @param level      the level to play
+     * @param songTitle  the title of the song
+     * @param songArtist the artist of the song
      */
-    public void init(Level level) {
+    public void init(Level level, String songTitle, String songArtist) {
         this.actionQueue.clear();
+        this.songTitle = songTitle;
+        this.songArtist = songArtist;
         this.clip = level.audioData().clip();
         final Sphere sphere = new Sphere(0, 150, 0, 25);
         this.gameEngine = new GameEngine(level, sphere, cam, clip);
@@ -215,7 +227,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.scorePopAlpha = 0f;
         this.activeToasts.clear();
         AchievementManager.addListener(toastListener);
-        this.uiRenderer = new GameUIRenderer(gameEngine, clip);
+        this.uiRenderer = new GameUIRenderer(gameEngine, clip, songTitle, songArtist);
         this.worldRenderer = new GameWorldRenderer(cam, gameEngine, level, sphere);
         this.addMouseMotionListener(new GameController(cam, sphere, gameEngine));
         final MouseAdapter uiMouseAdapter = new MouseAdapter() {
@@ -252,7 +264,7 @@ public class GamePanel extends JPanel implements Runnable {
                     actionQueue.add(() -> {
                         switch (action) {
                             case RESUME -> gameEngine.togglePause();
-                            case RESTART -> gameEngine.init();
+                            case RESTART -> init(gameEngine.getLevel(), songTitle, songArtist);
                             case QUIT -> {
                                 stopGame();
                                 if (onExit != null) onExit.run();
@@ -469,4 +481,3 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 }
-

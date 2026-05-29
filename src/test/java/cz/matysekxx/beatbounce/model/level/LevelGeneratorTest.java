@@ -53,9 +53,10 @@ public class LevelGeneratorTest {
 
             fileCache.when(() -> LevelFileCache.fromFile(any(), anyFloat())).thenReturn(Optional.empty());
 
-            Level level = LevelGenerator.generateLevel(audioData, 1.0f, 5);
+            Level level = LevelGenerator.generateLevel(audioData, 1.0f, 5, "TestArtist");
 
             assertEquals("test.wav", level.songName());
+            assertEquals("TestArtist", level.artist());
             assertTrue(level.tiles().size() >= 2);
             assertInstanceOf(NormalTile.class, level.tiles().get(0));
             assertInstanceOf(NormalTile.class, level.tiles().get(1));
@@ -77,7 +78,7 @@ public class LevelGeneratorTest {
 
             fileCache.when(() -> LevelFileCache.fromFile(any(), anyFloat())).thenReturn(Optional.empty());
 
-            Level level = LevelGenerator.generateLevel(audioData, 1.0f, 5);
+            Level level = LevelGenerator.generateLevel(audioData, 1.0f, 5, "TestArtist");
 
             assertEquals(1, level.tiles().size());
         }
@@ -96,7 +97,7 @@ public class LevelGeneratorTest {
 
             fileCache.when(() -> LevelFileCache.fromFile(any(), anyFloat())).thenReturn(Optional.empty());
 
-            Level level = LevelGenerator.generateLevel(audioData, 1.0f, 5);
+            Level level = LevelGenerator.generateLevel(audioData, 1.0f, 5, "TestArtist");
 
             long distinctLanes = level.tiles().stream()
                     .map(AbstractTile::getX)

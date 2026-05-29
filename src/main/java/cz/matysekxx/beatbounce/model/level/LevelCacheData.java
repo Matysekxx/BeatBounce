@@ -9,6 +9,7 @@ import java.util.List;
  *
  * @param tiles              the list of tiles in the level
  * @param songName           the name of the song
+ * @param artist             the artist of the song
  * @param stars              the difficulty rating (1-10)
  * @param cacheVersion       format version, used to detect stale caches
  * @param bpm                detected BPM of the track (informational)
@@ -17,24 +18,10 @@ import java.util.List;
 public record LevelCacheData(
         List<AbstractTile> tiles,
         String songName,
+        String artist,
         int stars,
         int cacheVersion,
         double bpm,
         int totalBeatsDetected
 ) {
-    /**
-     * Current cache format version. Increment whenever the tile model changes.
-     */
-    public static final int CURRENT_VERSION = 2;
-
-    /**
-     * Convenience constructor for levels that don't track BPM or beat counts.
-     *
-     * @param tiles    tile list
-     * @param songName song name
-     * @param stars    difficulty
-     */
-    public LevelCacheData(List<AbstractTile> tiles, String songName, int stars) {
-        this(tiles, songName, stars, CURRENT_VERSION, 0.0, 0);
-    }
 }

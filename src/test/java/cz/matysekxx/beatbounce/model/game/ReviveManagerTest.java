@@ -41,7 +41,7 @@ class ReviveManagerTest {
 
         AbstractTile tile0 = new NormalTile(null, 0, 150, 0, List.of(0), List.of());
         AbstractTile tile1 = new LongTile(null, 0, 150, 1000, 500);
-        level = new Level(List.of(tile0, tile1), null, "testSong", 3);
+        level = new Level(List.of(tile0, tile1), null, "testSong", "Bobek", 3);
 
         gameEngine = new GameEngine(level, sphere, cam, null);
         reviveManager = new ReviveManager(gameEngine, sphere);

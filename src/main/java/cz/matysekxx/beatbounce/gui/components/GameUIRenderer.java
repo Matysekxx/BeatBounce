@@ -97,9 +97,19 @@ public class GameUIRenderer {
     private static final Color ORBS_TEXT_COLOR = new Color(255, 200, 0, 200);
 
     /**
-     * Background color for the song progress bar.
+     * The background color for the song progress bar.
      */
     private static final Color PROGRESS_BG = new Color(255, 255, 255, 22);
+
+    /**
+     * The title of the song being played.
+     */
+    private final String songTitle;
+
+    /**
+     * The artist of the song being played.
+     */
+    private final String songArtist;
 
     /**
      * The game engine instance to pull data from.
@@ -206,10 +216,14 @@ public class GameUIRenderer {
      *
      * @param gameEngine the game model to retrieve state and score from
      * @param clip       the audio clip to track progress
+     * @param songTitle  the title of the song
+     * @param songArtist the artist of the song
      */
-    public GameUIRenderer(GameEngine gameEngine, Clip clip) {
+    public GameUIRenderer(GameEngine gameEngine, Clip clip, String songTitle, String songArtist) {
         this.gameEngine = gameEngine;
         this.clip = clip;
+        this.songTitle = songTitle;
+        this.songArtist = songArtist;
     }
 
     /**
@@ -716,6 +730,11 @@ public class GameUIRenderer {
         if (totalSec < 10) timeStringBuilder.append("0");
         timeStringBuilder.append(totalSec);
         g2d.drawString(timeStringBuilder.toString(), UIScale.scale(10), barY - UIScale.scale(7));
+
+        final String songInfo = songTitle + "  -  " + songArtist;
+        final int infoW = g2d.getFontMetrics().stringWidth(songInfo);
+        g2d.setColor(RenderCache.whiteWithAlpha(130));
+        g2d.drawString(songInfo, width - infoW - UIScale.scale(10), barY - UIScale.scale(7));
     }
 
     /**

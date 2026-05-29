@@ -297,7 +297,7 @@ public class IntroPanel extends BasePanel implements Runnable {
      */
     private void drawTitle(Graphics2D g2d, int w, int h, float globalHue) {
         final String text = "BEAT BOUNCE";
-        final Font font = UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_150);
+        final Font font = UIScale.scaleFont(RenderCache.AUDIOWIDE_150);
         g2d.setFont(font);
 
         final FontMetrics fm = g2d.getFontMetrics();

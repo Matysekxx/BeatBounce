@@ -134,7 +134,7 @@ public class ButtonFactory {
         final IsometricButton button = new IsometricButton(
                 "BACK", grayFront, grayTop, grayGlow, 4, 15, new Dimension(110, 40)
         );
-        button.setFont(UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_24));
+        button.setFont(UIScale.scaleFont(RenderCache.AUDIOWIDE_24));
         button.setForeground(new Color(180, 180, 190));
         button.addActionListener(actionListener);
         button.setOpaque(false);

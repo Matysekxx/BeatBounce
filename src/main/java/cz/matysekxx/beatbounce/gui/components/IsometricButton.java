@@ -76,7 +76,7 @@ public class IsometricButton extends JButton {
         this.arc = UIScale.scale(arc);
         this.setCursor(new Cursor(Cursor.HAND_CURSOR));
         this.setForeground(Color.WHITE);
-        this.setFont(UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_24));
+        this.setFont(UIScale.scaleFont(RenderCache.AUDIOWIDE_24));
         if (size != null) {
             this.setPreferredSize(new Dimension(UIScale.scale(size.width), UIScale.scale(size.height)));
         }

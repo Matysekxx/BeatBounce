@@ -41,7 +41,16 @@ public class OrbSpawner {
             Collections.shuffle(validTiles, random);
             for (int i = 0; i < toSpawn; i++) {
                 final AbstractTile t = validTiles.get(i);
-                orbs.add(new Orb(t.getX(), 110, t.getZ(), 20));
+                int orbX = t.getX();
+
+                if (t instanceof NormalTile nt) {
+                    final List<Integer> realOffsets = nt.getRealLaneOffsets();
+                    if (!realOffsets.isEmpty()) {
+                        orbX += realOffsets.get(random.nextInt(realOffsets.size()));
+                    }
+                }
+
+                orbs.add(new Orb(orbX, 110, t.getZ(), 20));
             }
         }
     }

@@ -15,6 +15,16 @@ with procedural generation, it transforms any audio track into a unique interact
 sphere through a 3D-projected environment, timing their movements to the detected beats and frequency shifts of the
 music.
 
+<br>
+<div align="center">
+  <img src="src/main/resources/gameplay.png" alt="BeatBounce Gameplay" width="90%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.5);">
+  <br>
+</div>
+
+<br>
+
+---
+
 ## 🚀 Key Features
 
 - **🎹 Intelligent Level Generation**: Automatically maps level geometry to BPM, spectral flux, and detected song

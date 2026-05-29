@@ -134,6 +134,8 @@ public class LevelEndAnimationHandler implements GameStateHandler {
         gameEngine.setNeonFlashAlpha(0f);
         cam.setY(0);
         gameEngine.stopClip();
-        ScoreManager.updateScore(LevelUtil.getCleanSongName(gameEngine.getLevel()), gameEngine.getScore());
+        final String songName = LevelUtil.getCleanSongName(gameEngine.getLevel());
+        gameEngine.setNewHighScore(ScoreManager.isHighScore(songName, gameEngine.getScore()));
+        ScoreManager.updateScore(songName, gameEngine.getScore());
     }
 }

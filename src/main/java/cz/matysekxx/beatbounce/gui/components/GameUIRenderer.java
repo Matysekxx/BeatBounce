@@ -7,6 +7,7 @@ import cz.matysekxx.beatbounce.model.game.ReviveManager;
 import cz.matysekxx.beatbounce.model.game.state.GameState;
 import cz.matysekxx.beatbounce.model.score.ScoreManager;
 
+import cz.matysekxx.beatbounce.util.LevelUtil;
 import cz.matysekxx.beatbounce.util.UIScale;
 
 import javax.sound.sampled.Clip;
@@ -562,17 +563,14 @@ public class GameUIRenderer {
         currentY += UIScale.scale(60);
 
         if (gameEngine.isNewHighScore()) {
-            final double t = System.currentTimeMillis() / 300.0;
-            final float glow = (float) ((Math.sin(t) + 1.0) / 2.0);
             g2d.setFont(UIScale.scaleFont(RenderCache.AUDIOWIDE_36));
-            g2d.setColor(RenderCache.customColorWithAlpha(RenderUtils.yellow, (int) (150 + 105 * glow)));
+            g2d.setColor(RenderUtils.yellow);
             final String hsText = "NEW HIGH SCORE!";
             g2d.drawString(hsText, (width - g2d.getFontMetrics().stringWidth(hsText)) / 2, currentY);
         } else {
             g2d.setFont(UIScale.scaleFont(RenderCache.AUDIOWIDE_36));
             g2d.setColor(new Color(150, 150, 150));
-            String songId = gameEngine.getLevel().songName();
-            if (songId.contains(".")) songId = songId.substring(0, songId.lastIndexOf('.'));
+            final String songId = LevelUtil.getCleanSongName(gameEngine.getLevel());
             final String bestText = "BEST: " + String.format("%,d", ScoreManager.getBestScore(songId));
             g2d.drawString(bestText, (width - g2d.getFontMetrics().stringWidth(bestText)) / 2, currentY);
         }

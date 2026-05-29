@@ -45,7 +45,9 @@ public class FallingHandler implements GameStateHandler {
         gameEngine.getCam().setZ(gameEngine.getGameZProgress() - 500);
         if (sphere.getCurrentY() > 500) {
             gameEngine.setGameState(GameState.GAME_OVER);
-            ScoreManager.updateScore(LevelUtil.getCleanSongName(gameEngine.getLevel()), gameEngine.getScore());
+            final String songName = LevelUtil.getCleanSongName(gameEngine.getLevel());
+            gameEngine.setNewHighScore(ScoreManager.isHighScore(songName, gameEngine.getScore()));
+            ScoreManager.updateScore(songName, gameEngine.getScore());
         }
     }
 }

@@ -146,6 +146,11 @@ public class GameEngine {
     private boolean reviveDeclined = false;
 
     /**
+     * Flag set if the current run achieved a new high score.
+     */
+    private boolean newHighScore = false;
+
+    /**
      * Constructs a new GameEngine.
      *
      * @param level  the level to play
@@ -187,6 +192,7 @@ public class GameEngine {
         this.longTileScoreAccum = 0;
         this.reviveManager.setRevivesUsed(0);
         this.reviveDeclined = false;
+        this.newHighScore = false;
         this.sphere.reset();
 
         cam.setX(0);
@@ -266,12 +272,21 @@ public class GameEngine {
     }
 
     /**
-     * Checks if the current score is higher than the previous best for this song.
+     * Checks if the current run achieved a new high score.
      *
      * @return true if a new high score is achieved
      */
     public boolean isNewHighScore() {
-        return ScoreManager.isHighScore(LevelUtil.getCleanSongName(level), score);
+        return newHighScore;
+    }
+
+    /**
+     * Sets whether the current run achieved a new high score.
+     *
+     * @param newHighScore true if new high score
+     */
+    public void setNewHighScore(boolean newHighScore) {
+        this.newHighScore = newHighScore;
     }
 
     /**

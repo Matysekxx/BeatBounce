@@ -43,6 +43,7 @@ public class SwingConfiguration {
      */
     public static void setup() {
         try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
             UIManager.put("TitlePane.background", Color.BLACK);
             UIManager.put("TitlePane.foreground", Color.WHITE);

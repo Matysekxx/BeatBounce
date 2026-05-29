@@ -251,8 +251,8 @@ public class CreditsPanel extends BasePanel implements Runnable {
             if (currentY > -100 && currentY < h + 100) {
                 if (!entry.text.isEmpty()) {
                     g2d.setFont(entry.isTitle ?
-                            UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_48) :
-                            UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_24));
+                            UIScale.scaleFont(RenderCache.AUDIOWIDE_48) :
+                            UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_24));
 
                     FontMetrics fm = g2d.getFontMetrics();
                     int x = (w - fm.stringWidth(entry.text)) / 2;

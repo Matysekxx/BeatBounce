@@ -132,7 +132,7 @@ public abstract class AbstractTile extends Entity {
         double pulseScale = 1.0;
         if (impactTime > 0) {
             double progress = impactTime / IMPACT_DURATION;
-            pulseScale = 1.0 + 0.15 * Math.sin(progress * Math.PI);
+            pulseScale = 1.0 + 0.3 * Math.sin(progress * Math.PI);
         }
 
         final double scaleFront = cam.getScale(this.getZ());
@@ -148,7 +148,7 @@ public abstract class AbstractTile extends Entity {
         this.drawTile(g2d, scratchPolygon, scaleFront);
         if (impactTime > 0) {
             final double progress = impactTime / IMPACT_DURATION;
-            g2d.setColor(RenderCache.whiteWithAlpha((int) (180 * progress)));
+            g2d.setColor(RenderCache.whiteWithAlpha((int) (220 * progress)));
             g2d.fillPolygon(scratchPolygon);
         }
     }

@@ -240,7 +240,7 @@ public class MainMenuScreen extends Screen {
                 return new Dimension(UIScale.scale(260), UIScale.scale(55));
             }
         };
-        btn.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_18));
+        btn.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_24));
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);

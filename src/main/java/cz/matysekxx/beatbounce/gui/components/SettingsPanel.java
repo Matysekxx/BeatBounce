@@ -145,7 +145,7 @@ public class SettingsPanel extends JPanel {
         displayGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(10))));
         displayGroup.add(createLeftAlignedComponent(vsyncCheck = new CustomCheckBox("V-Sync (Triple Buffering)", Settings.vsync)));
         displayGroup.add(Box.createRigidArea(new Dimension(0, UIScale.scale(10))));
-        displayGroup.add(createLeftAlignedComponent(showFpsCheck = new CustomCheckBox("Show FPS Counter", Settings.showFps)));
+        displayGroup.add(createLeftAlignedComponent(showFpsCheck = new CustomCheckBox("Show FPS", Settings.showFps)));
 
         contentColumn.add(displayGroup);
         contentColumn.add(Box.createRigidArea(new Dimension(0, UIScale.scale(30))));
@@ -311,7 +311,7 @@ public class SettingsPanel extends JPanel {
         titlePanel.add(t);
 
         titlePanel.setMinimumSize(new Dimension(0, UIScale.scale(45)));
-        titlePanel.setPreferredSize(new Dimension(UIScale.scale(520), UIScale.scale(45)));
+        titlePanel.setPreferredSize(new Dimension(UIScale.scale(600), UIScale.scale(45)));
         titlePanel.setMaximumSize(new Dimension(Short.MAX_VALUE, UIScale.scale(45)));
         titlePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -534,7 +534,7 @@ public class SettingsPanel extends JPanel {
      * Creates a horizontal panel to align a single component (like a checkbox) to the left.
      */
     private JPanel createLeftAlignedComponent(JComponent comp) {
-        final JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, UIScale.scale(30), 0));
+        final JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         p.setOpaque(false);
         p.add(comp);
         p.setAlignmentX(Component.LEFT_ALIGNMENT);

@@ -88,12 +88,12 @@ public class StepSelector extends JComponent {
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();
         RenderUtils.initGraphics2D(g2);
-        int w = getWidth() / values.length;
-        int margin = UIScale.scale(4);
+        final int w = getWidth() / values.length;
+        final int margin = UIScale.scale(4);
 
         for (int i = 0; i < values.length; i++) {
-            int x = i * w + margin;
-            int itemW = w - margin * 2;
+            final int x = i * w + margin;
+            final int itemW = w - margin * 2;
 
             g2.setColor(i == selectedIndex ? RenderUtils.cyan : new Color(40, 40, 45));
             g2.fillRoundRect(x, UIScale.scale(4), itemW, UIScale.scale(30), UIScale.scale(12), UIScale.scale(12));
@@ -104,9 +104,9 @@ public class StepSelector extends JComponent {
             }
 
             g2.setColor(i == selectedIndex ? Color.WHITE : new Color(255, 255, 255, 150));
-            g2.setFont(i == selectedIndex ? UIScale.scaleFont(RenderCache.SANS_BOLD_16) : UIScale.scaleFont(RenderCache.SANS_PLAIN_16));
-            String s = String.valueOf(values[i]);
-            FontMetrics fm = g2.getFontMetrics();
+            g2.setFont(i == selectedIndex ? UIScale.scaleFont(RenderCache.SANS_BOLD_18) : UIScale.scaleFont(RenderCache.SANS_PLAIN_18));
+            final String s = String.valueOf(values[i]);
+            final FontMetrics fm = g2.getFontMetrics();
             g2.drawString(s, x + (itemW - fm.stringWidth(s)) / 2, UIScale.scale(25));
         }
         g2.dispose();

@@ -38,6 +38,22 @@ public class CustomCheckBox extends JCheckBox {
     }
 
     /**
+     * Overrides preferred size to ensure the full text and custom icon fit.
+     * This prevents truncation with ellipsis (...) in constrained layouts.
+     */
+    @Override
+    public Dimension getPreferredSize() {
+        final Dimension base = super.getPreferredSize();
+        final FontMetrics fm = getFontMetrics(getFont());
+        final int textWidth = fm.stringWidth(getText());
+        final int iconWidth = getIcon().getIconWidth();
+        final int gap = getIconTextGap();
+        final int totalWidth = iconWidth + gap + textWidth + UIScale.scale(10);
+        final int totalHeight = Math.max(base.height, getIcon().getIconHeight() + UIScale.scale(4));
+        return new Dimension(totalWidth, totalHeight);
+    }
+
+    /**
      * A custom icon implementation that renders a toggle switch.
      */
     private class CheckBoxIcon implements Icon {

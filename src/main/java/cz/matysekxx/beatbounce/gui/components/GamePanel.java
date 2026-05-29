@@ -86,11 +86,11 @@ public class GamePanel extends JPanel implements Runnable {
     /**
      * The core game logic model.
      */
-    private GameEngine gameEngine;
+    private volatile GameEngine gameEngine;
     /**
      * Flag indicating if the game loop is active.
      */
-    private boolean running;
+    private volatile boolean running;
     /**
      * Timestamp of the previous frame for delta time calculation.
      */
@@ -143,6 +143,18 @@ public class GamePanel extends JPanel implements Runnable {
      * The most recently calculated FPS value.
      */
     private int currentUpdateFps = 0;
+    /**
+     * Mouse motion listener for game control.
+     */
+    private GameController gameController;
+    /**
+     * Mouse listener for UI interaction.
+     */
+    private MouseAdapter uiMouseAdapter;
+    /**
+     * Key listener for game keyboard controls.
+     */
+    private GameKeyController gameKeyController;
     /**
      * Off-screen buffer for double-buffered rendering.
      */
@@ -217,6 +229,13 @@ public class GamePanel extends JPanel implements Runnable {
      * @param songArtist the artist of the song
      */
     public void init(Level level, String songTitle, String songArtist) {
+        if (gameController != null) this.removeMouseMotionListener(gameController);
+        if (uiMouseAdapter != null) {
+            this.removeMouseListener(uiMouseAdapter);
+            this.removeMouseMotionListener(uiMouseAdapter);
+        }
+        if (gameKeyController != null) this.removeKeyListener(gameKeyController);
+
         this.actionQueue.clear();
         this.songTitle = songTitle;
         this.songArtist = songArtist;
@@ -226,11 +245,15 @@ public class GamePanel extends JPanel implements Runnable {
         this.lastScore = 0;
         this.scorePopAlpha = 0f;
         this.activeToasts.clear();
+        AchievementManager.removeListener(toastListener);
         AchievementManager.addListener(toastListener);
         this.uiRenderer = new GameUIRenderer(gameEngine, clip, songTitle, songArtist);
         this.worldRenderer = new GameWorldRenderer(cam, gameEngine, level, sphere);
-        this.addMouseMotionListener(new GameController(cam, sphere, gameEngine));
-        final MouseAdapter uiMouseAdapter = new MouseAdapter() {
+
+        this.gameController = new GameController(cam, sphere, gameEngine);
+        this.addMouseMotionListener(gameController);
+
+        this.uiMouseAdapter = new MouseAdapter() {
             /**
              * Handles the mouse moved event to update UI mouse position.
              * @param e the mouse event
@@ -278,11 +301,18 @@ public class GamePanel extends JPanel implements Runnable {
         };
         this.addMouseListener(uiMouseAdapter);
         this.addMouseMotionListener(uiMouseAdapter);
+
         final Runnable quitAction = () -> {
             stopGame();
             if (onExit != null) onExit.run();
         };
-        this.addKeyListener(new GameKeyController(gameEngine, actionQueue, quitAction));
+        this.gameKeyController = new GameKeyController(gameEngine, actionQueue, quitAction);
+        this.addKeyListener(gameKeyController);
+
+        if (running) {
+            gameEngine.init();
+            lastFrameTime = System.nanoTime();
+        }
     }
 
     /**

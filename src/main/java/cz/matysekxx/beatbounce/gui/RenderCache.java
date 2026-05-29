@@ -2,12 +2,70 @@ package cz.matysekxx.beatbounce.gui;
 
 import java.awt.*;
 import java.awt.geom.GeneralPath;
+import java.io.InputStream;
 
 /**
  * A cache for rendering resources such as strokes, fonts, and colors with alpha.
  * It also contains predefined shapes for rendering game objects.
  */
 public final class RenderCache {
+    /**
+     * Montserrat Black font, size 12.
+     */
+    public static final Font MONTSERRAT_BLACK_12 = loadFont("Montserrat-Black.ttf", 12);
+    /**
+     * Montserrat Black font, size 14.
+     */
+    public static final Font MONTSERRAT_BLACK_14 = loadFont("Montserrat-Black.ttf", 14);
+    /**
+     * Montserrat Black font, size 16.
+     */
+    public static final Font MONTSERRAT_BLACK_16 = loadFont("Montserrat-Black.ttf", 16);
+    /**
+     * Montserrat Black font, size 18.
+     */
+    public static final Font MONTSERRAT_BLACK_18 = loadFont("Montserrat-Black.ttf", 18);
+    /**
+     * Montserrat Black font, size 20.
+     */
+    public static final Font MONTSERRAT_BLACK_20 = loadFont("Montserrat-Black.ttf", 20);
+    /**
+     * Montserrat Black font, size 24.
+     */
+    public static final Font MONTSERRAT_BLACK_24 = loadFont("Montserrat-Black.ttf", 24);
+    /**
+     * Montserrat Black font, size 28.
+     */
+    public static final Font MONTSERRAT_BLACK_28 = loadFont("Montserrat-Black.ttf", 28);
+    /**
+     * Audiowide font, size 24.
+     */
+    public static final Font AUDIOWIDE_24 = loadFont("Audiowide-Regular.ttf", 24);
+    /**
+     * Audiowide font, size 36.
+     */
+    public static final Font AUDIOWIDE_36 = loadFont("Audiowide-Regular.ttf", 36);
+    /**
+     * Audiowide font, size 48.
+     */
+    public static final Font AUDIOWIDE_48 = loadFont("Audiowide-Regular.ttf", 48);
+    /**
+     * Audiowide font, size 64.
+     */
+    public static final Font AUDIOWIDE_64 = loadFont("Audiowide-Regular.ttf", 64);
+    /**
+     * Audiowide font, size 78.
+     */
+    public static final Font AUDIOWIDE_78 = loadFont("Audiowide-Regular.ttf", 78);
+    /**
+     * Audiowide font, size 85.
+     */
+    public static final Font AUDIOWIDE_85 = loadFont("Audiowide-Regular.ttf", 85);
+    /**
+     * Audiowide font, size 150.
+     */
+    public static final Font AUDIOWIDE_150 = loadFont("Audiowide-Regular.ttf", 150);
+
     /**
      * A stroke with width 1.0.
      */
@@ -295,6 +353,24 @@ public final class RenderCache {
      * Private constructor to prevent instantiation of this utility class.
      */
     private RenderCache() {
+    }
+
+    /**
+     * Loads a custom font from the resources directory.
+     *
+     * @param name the name of the font file
+     * @param size the size of the font
+     * @return the loaded font, or a fallback font if loading fails
+     */
+    public static Font loadFont(String name, float size) {
+        try (InputStream is = RenderCache.class.getResourceAsStream("/fonts/" + name)) {
+            if (is == null) {
+                return new Font("SansSerif", Font.BOLD, (int) size);
+            }
+            return Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(size);
+        } catch (Exception e) {
+            return new Font("SansSerif", Font.BOLD, (int) size);
+        }
     }
 
     /**

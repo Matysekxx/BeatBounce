@@ -704,15 +704,15 @@ public class GameUIRenderer {
             }
         }
 
-        g2d.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_14));
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_18));
         g2d.setColor(RenderCache.whiteWithAlpha(150));
         timeStringBuilder.setLength(0);
         timeStringBuilder.append((int) current / 60).append(":");
-        int currentSec = (int) current % 60;
+        final int currentSec = (int) current % 60;
         if (currentSec < 10) timeStringBuilder.append("0");
         timeStringBuilder.append(currentSec).append("  /  ");
         timeStringBuilder.append((int) total / 60).append(":");
-        int totalSec = (int) total % 60;
+        final int totalSec = (int) total % 60;
         if (totalSec < 10) timeStringBuilder.append("0");
         timeStringBuilder.append(totalSec);
         g2d.drawString(timeStringBuilder.toString(), UIScale.scale(10), barY - UIScale.scale(7));

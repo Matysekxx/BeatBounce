@@ -8,7 +8,6 @@ import cz.matysekxx.beatbounce.model.level.Level;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.awt.*;
 import java.util.List;
 
 import static org.mockito.Mockito.*;

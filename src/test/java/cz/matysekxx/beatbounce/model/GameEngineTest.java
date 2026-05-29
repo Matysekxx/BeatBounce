@@ -11,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.sound.sampled.Clip;
-import java.awt.*;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;

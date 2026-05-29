@@ -557,10 +557,10 @@ public class SettingsPanel extends JPanel {
                 g2.drawString(getText(), (getWidth() - fm.stringWidth(getText())) / 2, (getHeight() - fm.getHeight()) / 2 + fm.getAscent());
                 g2.dispose();
             }
-            };
-            btn.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_18));
-            btn.setPreferredSize(new Dimension(UIScale.scale(250), UIScale.scale(50)));
-            btn.setContentAreaFilled(false);
+        };
+        btn.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_18));
+        btn.setPreferredSize(new Dimension(UIScale.scale(250), UIScale.scale(50)));
+        btn.setContentAreaFilled(false);
 
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);

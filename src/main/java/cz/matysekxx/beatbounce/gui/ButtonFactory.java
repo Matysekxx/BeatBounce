@@ -42,19 +42,19 @@ public class ButtonFactory {
     private static final Color CYAN_FRONT_SIDE = new Color(0, 70, 100);
 
     /**
-     * Glow color for yellow-themed buttons.
+     * Glow color for gold-themed buttons (improved yellow).
      */
-    private static final Color YELLOW_TOP_GLOW = new Color(255, 255, 150);
+    private static final Color GOLD_TOP_GLOW = new Color(255, 230, 100);
 
     /**
-     * Fill color for yellow-themed buttons.
+     * Fill color for gold-themed buttons (improved yellow).
      */
-    private static final Color YELLOW_TOP_FILL = new Color(255, 215, 0);
+    private static final Color GOLD_TOP_FILL = new Color(220, 180, 0);
 
     /**
-     * Front face color for yellow-themed buttons.
+     * Front face color for gold-themed buttons (improved yellow).
      */
-    private static final Color YELLOW_FRONT_SIDE = new Color(120, 100, 0);
+    private static final Color GOLD_FRONT_SIDE = new Color(100, 80, 0);
 
     /**
      * Glow color for red-themed buttons.
@@ -70,6 +70,11 @@ public class ButtonFactory {
      * Front face color for red-themed buttons.
      */
     private static final Color RED_FRONT_SIDE = new Color(110, 0, 0);
+
+    /**
+     * Default dimension for primary isometric buttons.
+     */
+    private static final Dimension PRIMARY_BUTTON_SIZE = new Dimension(280, 100);
 
     /**
      * Creates a magenta styled "START" button.
@@ -92,13 +97,13 @@ public class ButtonFactory {
     }
 
     /**
-     * Creates a yellow styled "CREDITS" button.
+     * Creates a gold styled "CREDITS" button.
      *
      * @param listener the listener to be notified when the button is clicked
      * @return a {@link JButton} configured with credits button styling
      */
     public static JButton createCreditButton(ActionListener listener) {
-        return createButton("CREDITS", YELLOW_TOP_FILL, YELLOW_TOP_GLOW, YELLOW_FRONT_SIDE, listener);
+        return createButton("CREDITS", GOLD_TOP_FILL, GOLD_TOP_GLOW, GOLD_FRONT_SIDE, listener);
     }
 
     /**
@@ -113,7 +118,7 @@ public class ButtonFactory {
      */
     private static JButton createButton(String text, Color topFill, Color topGlow, Color frontSide, ActionListener listener) {
         final IsometricButton button = new IsometricButton(
-                text, frontSide, topFill, topGlow, 10, 40, new Dimension(220, 80)
+                text, frontSide, topFill, topGlow, 15, 50, PRIMARY_BUTTON_SIZE
         );
         button.addActionListener(listener);
         button.setOpaque(false);
@@ -150,7 +155,7 @@ public class ButtonFactory {
      */
     public static JButton createSecondaryButton(String text, ActionListener actionListener) {
         final IsometricButton button = new IsometricButton(
-                text, RED_FRONT_SIDE, RED_TOP_FILL, RED_TOP_GLOW, 10, 40, new Dimension(220, 80)
+                text, RED_FRONT_SIDE, RED_TOP_FILL, RED_TOP_GLOW, 15, 50, PRIMARY_BUTTON_SIZE
         );
         button.addActionListener(actionListener);
         button.setOpaque(false);

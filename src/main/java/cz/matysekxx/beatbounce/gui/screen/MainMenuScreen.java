@@ -171,7 +171,7 @@ public class MainMenuScreen extends Screen {
         gbc.insets = new Insets(UIScale.scale(40), 0, UIScale.scale(50), 0);
 
         final JLabel logo = new JLabel("BEAT BOUNCE");
-        logo.setFont(UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_24));
+        logo.setFont(UIScale.scaleFont(RenderCache.AUDIOWIDE_24));
         logo.setForeground(RenderUtils.cyan);
         logo.setHorizontalAlignment(SwingConstants.CENTER);
         p.add(logo, gbc);

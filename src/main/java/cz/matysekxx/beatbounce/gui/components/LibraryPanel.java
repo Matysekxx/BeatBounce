@@ -52,7 +52,7 @@ public class LibraryPanel extends BasePanel {
         topBar.setOpaque(false);
 
         final JLabel title = new JLabel("YOUR LIBRARY");
-        title.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_36));
+        title.setFont(UIScale.scaleFont(RenderCache.AUDIOWIDE_36));
         title.setForeground(RenderUtils.cyan);
         topBar.add(title, BorderLayout.CENTER);
 

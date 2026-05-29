@@ -248,7 +248,10 @@ public class SettingsPanel extends JPanel {
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
-        if (!jarFile.getName().endsWith(".jar")) return;
+        if (!jarFile.getName().endsWith(".jar")) {
+            System.exit(0);
+            return;
+        }
         ProcessBuilder pb = new ProcessBuilder(javaBin, "-jar", jarFile.getPath());
         pb.directory(jarFile.getParentFile());
         pb.start();
@@ -301,8 +304,9 @@ public class SettingsPanel extends JPanel {
         titlePanel.setOpaque(false);
 
         final JLabel t = new JLabel(title);
-        t.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_22));
+        t.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_20));
         t.setForeground(RenderUtils.cyan);
+
         t.setBorder(BorderFactory.createEmptyBorder(0, 0, UIScale.scale(20), 0));
         titlePanel.add(t);
 
@@ -499,34 +503,6 @@ public class SettingsPanel extends JPanel {
     }
 
     /**
-     * Creates a horizontal panel with a label and a component.
-     */
-    private JPanel createLabeledComponent(String labelText, JComponent comp) {
-        final JLabel l = new JLabel(labelText);
-        styleLabel(l);
-        return createLabeledComponent(l, comp);
-    }
-
-    /**
-     * Creates a horizontal panel with a label and a component.
-     */
-    private JPanel createLabeledComponent(JLabel l, JComponent comp) {
-        final JPanel p = new JPanel();
-        p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
-        p.setOpaque(false);
-        p.add(l);
-        p.add(Box.createRigidArea(new Dimension(UIScale.scale(20), 0)));
-        p.add(comp);
-
-        p.setAlignmentX(Component.LEFT_ALIGNMENT);
-        final int h = UIScale.scale(50);
-        p.setMinimumSize(new Dimension(0, h));
-        p.setPreferredSize(new Dimension(UIScale.scale(540), h));
-        p.setMaximumSize(new Dimension(Short.MAX_VALUE, h));
-        return p;
-    }
-
-    /**
      * Creates a horizontal panel to perfectly center the component by adding a balancing rigid area on the right.
      */
     private JPanel createPerfectlyCenteredComponent(String labelText, JComponent comp) {
@@ -581,10 +557,11 @@ public class SettingsPanel extends JPanel {
                 g2.drawString(getText(), (getWidth() - fm.stringWidth(getText())) / 2, (getHeight() - fm.getHeight()) / 2 + fm.getAscent());
                 g2.dispose();
             }
-        };
-        btn.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_18));
-        btn.setPreferredSize(new Dimension(UIScale.scale(200), UIScale.scale(50)));
-        btn.setContentAreaFilled(false);
+            };
+            btn.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_18));
+            btn.setPreferredSize(new Dimension(UIScale.scale(250), UIScale.scale(50)));
+            btn.setContentAreaFilled(false);
+
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));

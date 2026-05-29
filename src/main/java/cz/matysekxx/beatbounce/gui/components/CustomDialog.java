@@ -33,7 +33,7 @@ public class CustomDialog extends JDialog {
 
         final DialogContentPane dialogContentPane = new DialogContentPane(borderColor);
         final JLabel titleLabel = new JLabel(titleText);
-        titleLabel.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_28));
+        titleLabel.setFont(UIScale.scaleFont(RenderCache.AUDIOWIDE_24));
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, UIScale.scale(20), 0));

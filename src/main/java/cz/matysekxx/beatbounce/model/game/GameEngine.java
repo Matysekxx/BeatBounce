@@ -7,7 +7,6 @@ import cz.matysekxx.beatbounce.model.game.state.*;
 import cz.matysekxx.beatbounce.model.level.Level;
 import cz.matysekxx.beatbounce.model.level.LevelGenerator;
 import cz.matysekxx.beatbounce.model.score.ScoreManager;
-import cz.matysekxx.beatbounce.util.LevelUtil;
 
 import javax.sound.sampled.Clip;
 import java.util.ArrayList;

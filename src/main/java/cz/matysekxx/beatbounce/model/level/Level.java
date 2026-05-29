@@ -15,5 +15,6 @@ import java.util.List;
  * @param artist    the artist of the song
  * @param stars     the difficulty rating in stars
  */
-public record Level(List<AbstractTile> tiles, @JsonIgnore AudioData audioData, String songName, String artist, int stars) {
+public record Level(List<AbstractTile> tiles, @JsonIgnore AudioData audioData, String songName, String artist,
+                    int stars) {
 }

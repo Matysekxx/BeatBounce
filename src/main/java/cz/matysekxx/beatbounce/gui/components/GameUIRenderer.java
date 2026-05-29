@@ -287,7 +287,7 @@ public class GameUIRenderer {
 
         final int mX = centerX + (int) (Math.sin(tutorialTimer * speed) * amplitude);
         drawMouseShape(g2d, mX, centerY, RenderUtils.cyan, true);
-        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_17));
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_18));
         final String text = "MOVE MOUSE TO CONTROL";
         final FontMetrics fm = g2d.getFontMetrics();
         RenderUtils.drawText(g2d, text, (width - fm.stringWidth(text)) / 2, centerY + UIScale.scale(80), RenderUtils.cyan);
@@ -341,7 +341,7 @@ public class GameUIRenderer {
             g2d.setStroke(RenderCache.STROKE_1);
         }
 
-        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_150));
+        g2d.setFont(UIScale.scaleFont(RenderCache.AUDIOWIDE_150));
         final FontMetrics fm = g2d.getFontMetrics();
         RenderUtils.drawText(g2d, text, (width - fm.stringWidth(text)) / 2, (height + fm.getAscent()) / 2, RenderUtils.cyan);
     }
@@ -448,7 +448,7 @@ public class GameUIRenderer {
 
         drawGlassCard(g2d, width, height, cardW, cardH, RenderUtils.cyan, pulse);
 
-        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_78));
+        g2d.setFont(UIScale.scaleFont(RenderCache.AUDIOWIDE_64));
         final String title = "PAUSED";
         RenderUtils.drawText(g2d, title, (width - g2d.getFontMetrics().stringWidth(title)) / 2, cardY + UIScale.scale(110), RenderUtils.cyan);
 
@@ -476,7 +476,7 @@ public class GameUIRenderer {
         final int cardY = setupScreenCard(g2d, width, height, cardW, cardH, RenderUtils.yellow, pulse);
 
         final String text = "LEVEL COMPLETE";
-        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_78));
+        g2d.setFont(UIScale.scaleFont(RenderCache.AUDIOWIDE_78));
         RenderUtils.drawText(g2d, text, (width - g2d.getFontMetrics().stringWidth(text)) / 2, cardY + UIScale.scale(110), RenderUtils.yellow);
 
         drawCardLine(g2d, width, cardW, cardY + UIScale.scale(140), FINISHED_YELLOW_LINE, pulse);
@@ -508,7 +508,7 @@ public class GameUIRenderer {
         final int cardY = setupScreenCard(g2d, width, height, cardW, cardH, GAMEOVER_RED, pulse);
 
         final String text = "GAME OVER";
-        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_85));
+        g2d.setFont(UIScale.scaleFont(RenderCache.AUDIOWIDE_85));
         final int x = (width - g2d.getFontMetrics().stringWidth(text)) / 2;
         final int y = cardY + UIScale.scale(120);
 
@@ -537,12 +537,12 @@ public class GameUIRenderer {
 
         int currentY = titleY + UIScale.scale(40);
 
-        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_16));
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_16));
         g2d.setColor(SCORE_LABEL_COLOR);
         g2d.drawString(label, (width - g2d.getFontMetrics().stringWidth(label)) / 2, currentY);
 
         currentY += UIScale.scale(60);
-        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_60));
+        g2d.setFont(UIScale.scaleFont(RenderCache.AUDIOWIDE_64));
         RenderUtils.drawText(g2d, scoreText, (width - g2d.getFontMetrics().stringWidth(scoreText)) / 2, currentY, accentColor);
 
         currentY += UIScale.scale(60);
@@ -550,12 +550,12 @@ public class GameUIRenderer {
         if (gameEngine.isNewHighScore()) {
             final double t = System.currentTimeMillis() / 300.0;
             final float glow = (float) ((Math.sin(t) + 1.0) / 2.0);
-            g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_24));
+            g2d.setFont(UIScale.scaleFont(RenderCache.AUDIOWIDE_36));
             g2d.setColor(RenderCache.customColorWithAlpha(RenderUtils.yellow, (int) (150 + 105 * glow)));
             final String hsText = "NEW HIGH SCORE!";
             g2d.drawString(hsText, (width - g2d.getFontMetrics().stringWidth(hsText)) / 2, currentY);
         } else {
-            g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_24));
+            g2d.setFont(UIScale.scaleFont(RenderCache.AUDIOWIDE_36));
             g2d.setColor(new Color(150, 150, 150));
             String songId = gameEngine.getLevel().songName();
             if (songId.contains(".")) songId = songId.substring(0, songId.lastIndexOf('.'));
@@ -565,13 +565,13 @@ public class GameUIRenderer {
         currentY += UIScale.scale(40);
 
         final String orbsLabel = "ORBS COLLECTED: " + gameEngine.getCollectedOrbs();
-        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_16));
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_16));
         g2d.setColor(ORBS_COLOR);
         g2d.drawString(orbsLabel, (width - g2d.getFontMetrics().stringWidth(orbsLabel)) / 2, currentY);
         currentY += UIScale.scale(30);
 
         final String totalOrbsLabel = "TOTAL ORBS: " + ScoreManager.getCurrency();
-        g2d.setFont(UIScale.scaleFont(RenderCache.SANS_PLAIN_16));
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_14));
         g2d.setColor(TOTAL_ORBS_COLOR);
         g2d.drawString(totalOrbsLabel, (width - g2d.getFontMetrics().stringWidth(totalOrbsLabel)) / 2, currentY);
     }
@@ -614,19 +614,20 @@ public class GameUIRenderer {
         }
 
         final String label = "S  C  O  R  E";
-        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_11));
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_12));
         g2d.setColor(SCORE_TEXT_COLOR);
         g2d.drawString(label, (width - g2d.getFontMetrics().stringWidth(label)) / 2, UIScale.scale(30));
+
 
         g2d.setColor(RenderCache.customColorWithAlpha(c, (int) (100 + 80 * pulse)));
         g2d.drawLine(width / 2 - UIScale.scale(35), UIScale.scale(35), width / 2 + UIScale.scale(35), UIScale.scale(35));
 
         final String text = Integer.toString(score);
-        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_60));
+        g2d.setFont(UIScale.scaleFont(RenderCache.AUDIOWIDE_48));
         RenderUtils.drawText(g2d, text, (width - g2d.getFontMetrics().stringWidth(text)) / 2, UIScale.scale(88), c);
 
         final String orbsText = String.valueOf(gameEngine.getCollectedOrbs());
-        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_24));
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_24));
         final int orbsW = g2d.getFontMetrics().stringWidth(orbsText);
 
         final int boxW = orbsW + UIScale.scale(50);
@@ -703,7 +704,7 @@ public class GameUIRenderer {
             }
         }
 
-        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_16));
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_14));
         g2d.setColor(RenderCache.whiteWithAlpha(150));
         timeStringBuilder.setLength(0);
         timeStringBuilder.append((int) current / 60).append(":");
@@ -776,13 +777,13 @@ public class GameUIRenderer {
         final int cardY = setupScreenCard(g2d, width, height, cardW, cardH, cardColor, pulse);
 
         final String text = "YOU FELL";
-        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_85));
+        g2d.setFont(UIScale.scaleFont(RenderCache.AUDIOWIDE_64));
         RenderUtils.drawText(g2d, text, (width - g2d.getFontMetrics().stringWidth(text)) / 2, cardY + UIScale.scale(110), cardColor);
 
         drawCardLine(g2d, width, cardW, cardY + UIScale.scale(135), cardColor, pulse);
 
         int currentY = cardY + UIScale.scale(185);
-        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_16));
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_18));
         g2d.setColor(SCORE_TEXT_COLOR);
         final String scoreText = "Score so far: " + String.format("%,d", gameEngine.getScore());
         g2d.drawString(scoreText, (width - g2d.getFontMetrics().stringWidth(scoreText)) / 2, currentY);
@@ -793,10 +794,10 @@ public class GameUIRenderer {
         g2d.drawString(orbsText, (width - g2d.getFontMetrics().stringWidth(orbsText)) / 2, currentY);
 
         currentY += UIScale.scale(55);
-        g2d.setFont(UIScale.scaleFont(RenderCache.MONO_ITALIC_BOLD_24));
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_28));
         if (canRevive) {
             g2d.setColor(ORBS_TEXT_COLOR);
-            final String reviveText = "REVIVE? Cost: " + gameEngine.getReviveCost() + " orbs";
+            final String reviveText = "REVIVE Cost: " + gameEngine.getReviveCost() + " orbs";
             g2d.drawString(reviveText, (width - g2d.getFontMetrics().stringWidth(reviveText)) / 2, currentY);
         } else {
             g2d.setColor(GAMEOVER_RED_LIGHT);
@@ -806,7 +807,7 @@ public class GameUIRenderer {
         }
 
         currentY += UIScale.scale(35);
-        g2d.setFont(UIScale.scaleFont(RenderCache.SANS_PLAIN_16));
+        g2d.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_14));
         g2d.setColor(TOTAL_ORBS_COLOR);
         final String totalOrbs = "Your orbs: " + ScoreManager.getCurrency();
         g2d.drawString(totalOrbs, (width - g2d.getFontMetrics().stringWidth(totalOrbs)) / 2, currentY);

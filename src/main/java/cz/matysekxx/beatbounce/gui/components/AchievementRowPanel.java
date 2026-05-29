@@ -199,7 +199,7 @@ public class AchievementRowPanel extends JPanel {
         g2.drawRoundRect(0, 0, w - 1, h - 1, UIScale.scale(18), UIScale.scale(18));
 
 
-        g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_22));
+        g2.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_20));
         if (achievement.isCompleted()) {
             if (achievement.isRewarded()) {
                 g2.setColor(new Color(0, 220, 110));
@@ -218,6 +218,7 @@ public class AchievementRowPanel extends JPanel {
 
         final int descWidth = g2.getFontMetrics().stringWidth(descBase);
         final String rewardText = "+" + achievement.getReward() + " ORBS";
+        g2.setFont(UIScale.scaleFont(RenderCache.AUDIOWIDE_24));
         if (achievement.isRewarded()) {
             g2.setColor(new Color(110, 110, 120));
         } else if (achievement.isCompleted()) {

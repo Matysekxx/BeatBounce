@@ -120,7 +120,7 @@ public class AchievementsPanel extends BasePanel {
         final JPanel controls = getJPanel();
 
         final JLabel filterLabel = new JLabel("FILTER:");
-        filterLabel.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_13));
+        filterLabel.setFont(UIScale.scaleFont(RenderCache.AUDIOWIDE_24));
         filterLabel.setForeground(new Color(200, 200, 220));
         controls.add(filterLabel);
 
@@ -131,19 +131,20 @@ public class AchievementsPanel extends BasePanel {
              */
             @Override
             public Dimension getPreferredSize() {
-                return new Dimension(UIScale.scale(170), UIScale.scale(36));
+                return new Dimension(UIScale.scale(190), UIScale.scale(36));
             }
         };
-        filterBtn.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_14));
+        filterBtn.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_14));
         filterBtn.addActionListener(_ -> loadAchievements());
         controls.add(filterBtn);
 
         controls.add(Box.createRigidArea(new Dimension(UIScale.scale(10), 0)));
 
         final JLabel sortLabel = new JLabel("SORT:");
-        sortLabel.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_13));
+        sortLabel.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_14));
         sortLabel.setForeground(new Color(200, 200, 220));
         controls.add(sortLabel);
+
 
         sortBtn = new CycleButton(new String[]{"DEFAULT", "PROGRESS", "REWARD"}, 0) {
             /**
@@ -152,10 +153,10 @@ public class AchievementsPanel extends BasePanel {
              */
             @Override
             public Dimension getPreferredSize() {
-                return new Dimension(UIScale.scale(150), UIScale.scale(36));
+                return new Dimension(UIScale.scale(160), UIScale.scale(36));
             }
         };
-        sortBtn.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_14));
+        sortBtn.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_14));
         sortBtn.addActionListener(_ -> loadAchievements());
         controls.add(sortBtn);
 

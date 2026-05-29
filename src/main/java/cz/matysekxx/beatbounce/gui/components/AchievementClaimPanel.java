@@ -27,11 +27,6 @@ public class AchievementClaimPanel extends JPanel {
     private final Achievement achievement;
 
     /**
-     * Action to perform when the claim button is clicked.
-     */
-    private final Runnable onClaimRequested;
-
-    /**
      * Whether the mouse is currently over the claim button.
      */
     private boolean buttonHovered = false;
@@ -44,8 +39,6 @@ public class AchievementClaimPanel extends JPanel {
      */
     public AchievementClaimPanel(Achievement achievement, Runnable onClaimRequested) {
         this.achievement = achievement;
-        this.onClaimRequested = onClaimRequested;
-
         this.setOpaque(false);
 
         this.addMouseListener(new MouseAdapter() {
@@ -143,7 +136,7 @@ public class AchievementClaimPanel extends JPanel {
                 g2.drawRoundRect(0, 0, w - 1, h - 1, UIScale.scale(14), UIScale.scale(14));
 
                 g2.setColor(new Color(0, 220, 110));
-                g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_18));
+                g2.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_14));
                 final String claimedTxt = "CLAIMED";
                 final FontMetrics fmClaimed = g2.getFontMetrics();
                 g2.drawString(claimedTxt, (w - fmClaimed.stringWidth(claimedTxt)) / 2, UIScale.scale(32));
@@ -160,7 +153,7 @@ public class AchievementClaimPanel extends JPanel {
                 }
 
                 g2.setColor(Color.BLACK);
-                g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_20));
+                g2.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_16));
                 final String claimTxt = "CLAIM";
                 final FontMetrics fmClaim = g2.getFontMetrics();
                 g2.drawString(claimTxt, (w - fmClaim.stringWidth(claimTxt)) / 2, UIScale.scale(32));
@@ -173,7 +166,7 @@ public class AchievementClaimPanel extends JPanel {
             g2.drawRoundRect(0, 0, w - 1, h - 1, UIScale.scale(14), UIScale.scale(14));
 
             g2.setColor(new Color(255, 255, 255, 60));
-            g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_18));
+            g2.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_14));
             final String lockedTxt = "LOCKED";
             final FontMetrics fmLocked = g2.getFontMetrics();
             g2.drawString(lockedTxt, (w - fmLocked.stringWidth(lockedTxt)) / 2, UIScale.scale(32));

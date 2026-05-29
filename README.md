@@ -134,26 +134,6 @@ flowchart TD
 
 ---
 
-## 📂 Project Structure
-
-```text
-src
-+---main
-|   +---java
-|   |   \---cz.matysekxx.beatbounce
-|   |       +---achievements  # Logic for unlockable milestones
-|   |       +---api           # Audius Discovery Provider integration
-|   |       +---configuration # App-wide settings and hardware tweaks
-|   |       +---controller    # Input handling (Keyboard/Mouse)
-|   |       +---gui           # Custom-rendered Swing screens and components
-|   |       +---model         # Domain logic: Audio DSP, Entities, Game Engine
-|   |       \---util          # Mathematical helpers and scaling utilities
-|   \---resources             # Static assets: MP3s, icons, level metadata
-\---test                      # Comprehensive unit tests (JUnit 5)
-```
-
----
-
 ## ⚙️ Installation & Running
 
 ### Prerequisites

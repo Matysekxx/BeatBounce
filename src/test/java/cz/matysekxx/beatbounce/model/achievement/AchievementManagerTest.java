@@ -68,7 +68,7 @@ public class AchievementManagerTest {
 
         assertTrue(AchievementManager.claimReward(firstBounce));
         assertTrue(firstBounce.isRewarded());
-        assertEquals(10, ScoreManager.getCurrency());
+        assertEquals(2, ScoreManager.getCurrency());
     }
 
     @Test

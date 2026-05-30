@@ -132,7 +132,7 @@ public class AudioManager {
      */
     private static AudioInputStream getAudioInputStream(String resourcePath) throws UnsupportedAudioFileException, IOException {
         final URL url = getResourceURL(resourcePath);
-        assert url != null;
+        if (url == null) return null;
         final AudioInputStream ais = AudioSystem.getAudioInputStream(url);
         final AudioFormat baseFormat = ais.getFormat();
         final AudioFormat targetFormat = new AudioFormat(

@@ -470,7 +470,6 @@ public class GamePanel extends JPanel implements Runnable {
             g2d.setColor(RenderCache.blackWithAlpha(flashAlpha));
             g2d.fillRect(0, 0, w, h);
         }
-        assert gameEngine != null;
         uiRenderer.renderGameState(g2d, w, h, gameEngine.getGameState());
 
         synchronized (activeToasts) {

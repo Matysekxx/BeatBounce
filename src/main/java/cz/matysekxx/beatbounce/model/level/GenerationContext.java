@@ -23,6 +23,8 @@ import static cz.matysekxx.beatbounce.model.level.LevelGenerator.getZSpeed;
  * <p>
  * Difficulty is governed by a {@link DifficultyProfile} (stars 1–10) rather than raw
  * probability constants.
+ *
+ * @author Matysekxx, Gemini
  */
 class GenerationContext {
     /**
@@ -237,7 +239,7 @@ class GenerationContext {
                     ? 60.0 / tempoMap.getBeatInterval() : 120.0;
 
             result.add(PlacedBeat.of(
-                    e.timestamp(), e.salience(), isHighIntensity, false,
+                    e.timestamp(), e.salience(), isHighIntensity,
                     e.type(), e.duration(), section, bpm
             ));
             lastTimestamp = e.timestamp();
@@ -473,7 +475,7 @@ class GenerationContext {
             int fills = 0;
             while (t < gapEnd - interval * 0.5 && fills < maxFills) {
                 if (t >= songDurationSeconds) break;
-                result.add(PlacedBeat.ofFill(t, 0.0));
+                result.add(PlacedBeat.ofFill(t));
                 t += interval;
                 fills++;
             }

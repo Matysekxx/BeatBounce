@@ -8,6 +8,7 @@ package cz.matysekxx.beatbounce.model.audio;
  *
  * @param primaryBpm      detected beats-per-minute (60–240 range)
  * @param firstBeatOffset estimated time in seconds of the very first beat
+ * @author Matysekxx
  */
 public record TempoMap(double primaryBpm, double firstBeatOffset) {
 
@@ -46,14 +47,5 @@ public record TempoMap(double primaryBpm, double firstBeatOffset) {
      */
     public boolean isValidBpm() {
         return primaryBpm >= 60.0 && primaryBpm <= 240.0;
-    }
-
-    /**
-     * Returns a human-readable BPM string rounded to one decimal place.
-     *
-     * @return formatted BPM string
-     */
-    public String formatBpm() {
-        return String.format("%.1f BPM", primaryBpm);
     }
 }

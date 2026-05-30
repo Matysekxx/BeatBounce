@@ -14,6 +14,8 @@ import java.awt.*;
  * The {@code BreakableTile} class represents a tile that shatters after being landed on.
  * It extends {@link AbstractTile}.
  * Once broken, it performs a shattering animation and eventually disappears.
+ *
+ * @author Matysekxx
  */
 public class BreakableTile extends AbstractTile {
     /**

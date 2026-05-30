@@ -10,6 +10,8 @@ import java.nio.file.Path;
 /**
  * Data class representing a music track from the Audius API.
  * It stores track information, download status, and UI-related state.
+ *
+ * @author Matysekxx
  */
 public class TrackData {
     /**

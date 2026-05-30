@@ -20,6 +20,8 @@ import java.nio.file.StandardCopyOption;
 /**
  * A panel that displays the user's local song library.
  * It allows users to view downloaded songs and add new local audio files.
+ *
+ * @author Matysekxx
  */
 public class LibraryPanel extends BasePanel {
     /**

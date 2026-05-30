@@ -5,6 +5,7 @@ package cz.matysekxx.beatbounce.model.level;
  *
  * @param filePath        the absolute path to the audio file
  * @param speedMultiplier the speed multiplier used for generation
+ * @author Matysekxx
  */
 public record LevelCacheKey(String filePath, float speedMultiplier) {
     /**

@@ -18,6 +18,8 @@ import java.util.concurrent.locks.LockSupport;
  * // Sleep using Java Time API
  * Time.sleep(Duration.ofSeconds(2));
  * }</pre>
+ *
+ * @author Matysekxx
  */
 public final class Time {
 

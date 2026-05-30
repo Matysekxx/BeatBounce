@@ -14,6 +14,8 @@ import java.awt.event.ActionEvent;
  * Each click advances to the next option in the array.
  * It overrides fireActionPerformed to guarantee that the index is incremented
  * before any registered ActionListeners are fired (solving Swing's LIFO listener order bug).
+ *
+ * @author Matysekxx
  */
 public class CycleButton extends JButton {
 
@@ -84,15 +86,15 @@ public class CycleButton extends JButton {
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();
         RenderUtils.initGraphics2D(g2);
-        boolean hover = getModel().isRollover();
+        final boolean hover = getModel().isRollover();
         g2.setColor(hover ? new Color(40, 40, 70) : new Color(30, 30, 50));
         g2.fillRoundRect(0, 0, getWidth(), getHeight(), UIScale.scale(12), UIScale.scale(12));
         g2.setColor(hover ? Color.WHITE : RenderUtils.cyan);
         g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, UIScale.scale(12), UIScale.scale(12));
         g2.setColor(Color.WHITE);
         g2.setFont(getFont());
-        FontMetrics fm = g2.getFontMetrics();
-        String t = "◄  " + getText() + "  ►";
+        final FontMetrics fm = g2.getFontMetrics();
+        final String t = "◄ " + getText() + " ►";
         g2.drawString(t, (getWidth() - fm.stringWidth(t)) / 2, (getHeight() - fm.getHeight()) / 2 + fm.getAscent());
         g2.dispose();
     }

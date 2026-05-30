@@ -19,6 +19,8 @@ import java.util.Optional;
  * Uses custom binary serialization to store level tiles and metadata.
  * This ensures lightning-fast loading of previously played levels, completely
  * bypassing the heavy audio analysis phase.
+ *
+ * @author Matysekxx
  */
 public class LevelFileCache {
     /**

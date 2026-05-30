@@ -10,6 +10,8 @@ import java.util.Random;
  * A visual popup that shows score increases (e.g., "+10").
  * It floats upwards and fades out over time with cyberpunk neon colors.
  * Uses Object Pooling to prevent GC stuttering.
+ *
+ * @author Matysekxx
  */
 public class ScorePopup {
     /**
@@ -179,7 +181,7 @@ public class ScorePopup {
         if (alpha <= 0) return;
 
         g2d.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_26));
-        int alphaInt = (int) (alpha * 255);
+        final int alphaInt = (int) (alpha * 255);
 
         double drawX = x;
         if (x == 0) {

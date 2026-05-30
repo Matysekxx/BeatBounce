@@ -11,6 +11,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 
@@ -24,6 +25,8 @@ import java.util.concurrent.CompletableFuture;
  * All requests are identified by the application name {@code "BeatBounce"} as required by the
  * Audius Discovery Provider API.
  * </p>
+ *
+ * @author Matysekxx
  */
 public class AudiusClient {
 
@@ -182,7 +185,7 @@ public class AudiusClient {
                     final Path destination = downloadDirectory.resolve(sanitizedFileName + extension);
 
                     try (var inputStream = response.body()) {
-                        Files.copy(inputStream, destination, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                        Files.copy(inputStream, destination, StandardCopyOption.REPLACE_EXISTING);
                         return destination;
                     } catch (IOException e) {
                         throw new RuntimeException("Error while downloading file", e);

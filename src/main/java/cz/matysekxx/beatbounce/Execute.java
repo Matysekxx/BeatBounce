@@ -16,6 +16,8 @@ import cz.matysekxx.beatbounce.gui.screen.ScreenManager;
  * Execute app = Execute.getSingleton();
  * app.run();
  * }</pre>
+ *
+ * @author Matysekxx
  */
 public class Execute implements Runnable {
 

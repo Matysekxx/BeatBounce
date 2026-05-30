@@ -3,6 +3,8 @@ package cz.matysekxx.beatbounce.model.achievement;
 /**
  * Defines the various types of progress that can be tracked for achievements.
  * Each type corresponds to a specific evaluator that calculates progress from save data.
+ *
+ * @author Matysekxx
  */
 public enum AchievementType {
     /**

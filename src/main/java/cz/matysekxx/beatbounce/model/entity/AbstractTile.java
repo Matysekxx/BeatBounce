@@ -27,6 +27,9 @@ import java.awt.*;
         @JsonSubTypes.Type(value = SmallTile.class, name = "small"),
         @JsonSubTypes.Type(value = BreakableTile.class, name = "breakable")
 })
+/**
+ * @author Matysekxx
+ */
 public abstract class AbstractTile extends Entity {
     /**
      * Duration of the impact animation in seconds.

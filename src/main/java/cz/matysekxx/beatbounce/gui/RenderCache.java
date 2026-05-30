@@ -7,6 +7,8 @@ import java.io.InputStream;
 /**
  * A cache for rendering resources such as strokes, fonts, and colors with alpha.
  * It also contains predefined shapes for rendering game objects.
+ *
+ * @author Matysekxx
  */
 public final class RenderCache {
     /**

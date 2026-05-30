@@ -18,6 +18,7 @@ import cz.matysekxx.beatbounce.model.audio.SectionDetector;
  * @param duration        sustained-note duration in seconds (0 for regular beats)
  * @param sectionType     the musical section this beat belongs to
  * @param bpm             BPM active at this point in the track
+ * @author Matysekxx
  */
 record PlacedBeat(
         double timestamp,
@@ -34,11 +35,10 @@ record PlacedBeat(
      * Factory method for simple fill beats (synthetically generated).
      *
      * @param timestamp time of the fill beat
-     * @param salience  strength (typically 0)
      * @return a fill {@link PlacedBeat}
      */
-    static PlacedBeat ofFill(double timestamp, double salience) {
-        return new PlacedBeat(timestamp, salience, false, true,
+    static PlacedBeat ofFill(double timestamp) {
+        return new PlacedBeat(timestamp, 0.0, false, true,
                 EventType.BEAT, 0.0, SectionDetector.SectionType.VERSE, 120.0);
     }
 
@@ -48,25 +48,16 @@ record PlacedBeat(
      * @param timestamp       beat time
      * @param salience        beat strength
      * @param isHighIntensity whether in a high-intensity section
-     * @param isFill          whether synthetically generated
      * @param eventType       classified event type
      * @param duration        sustained-note duration (0 for normal beats)
      * @param sectionType     current musical section
      * @param bpm             current BPM
      * @return a new {@link PlacedBeat}
      */
-    static PlacedBeat of(double timestamp, double salience, boolean isHighIntensity, boolean isFill,
+    static PlacedBeat of(double timestamp, double salience, boolean isHighIntensity,
                          EventType eventType, double duration,
                          SectionDetector.SectionType sectionType, double bpm) {
-        return new PlacedBeat(timestamp, salience, isHighIntensity, isFill,
+        return new PlacedBeat(timestamp, salience, isHighIntensity, false,
                 eventType, duration, sectionType, bpm);
-    }
-
-    /**
-     * Legacy factory method kept for backward compatibility with gap-fill code.
-     */
-    static PlacedBeat of(double timestamp, double salience, boolean isHighIntensity, boolean isFill) {
-        return new PlacedBeat(timestamp, salience, isHighIntensity, isFill,
-                EventType.BEAT, 0.0, SectionDetector.SectionType.VERSE, 120.0);
     }
 }

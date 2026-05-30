@@ -33,6 +33,7 @@ import java.util.function.Supplier;
  * }</pre>
  *
  * @param <T> The type of the value.
+ * @author Matysekxx
  */
 public class Lazy<T> {
     /**

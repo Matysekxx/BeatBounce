@@ -7,6 +7,8 @@ import cz.matysekxx.beatbounce.model.game.GameEngine;
  * Handles the logic for the {@link GameState#COUNTDOWN} state.
  * Decrements the countdown timer and transitions the game to the {@link GameState#PLAYING} state
  * when the timer reaches zero, starting the music playback.
+ *
+ * @author Matysekxx
  */
 public class CountdownHandler implements GameStateHandler {
     /**

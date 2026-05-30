@@ -5,6 +5,7 @@ package cz.matysekxx.beatbounce.gui;
  *
  * @param width  the width of the window
  * @param height the height of the window
+ * @author Matysekxx
  */
 public record WindowData(
         int width,

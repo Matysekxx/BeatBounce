@@ -13,6 +13,8 @@ import java.awt.geom.Path2D;
  * Renders a decorative icon for an achievement based on its type.
  * Each type (High Score, Unique Songs, etc.) has its own vector-like procedural drawing.
  * Icons are desaturated for incomplete achievements.
+ *
+ * @author Matysekxx
  */
 public class AchievementIconPanel extends JPanel {
     /**
@@ -157,7 +159,7 @@ public class AchievementIconPanel extends JPanel {
         g2.drawLine(stem1X, head1Y + noteW_H / 2, stem1X, stemTopY);
         g2.drawLine(stem2X, head2Y + noteW_H / 2, stem2X, stemTopY - UIScale.scale(4));
 
-        Path2D.Double beam = new Path2D.Double();
+        final Path2D.Double beam = new Path2D.Double();
         beam.moveTo(stem1X, stemTopY);
         beam.lineTo(stem2X, stemTopY - UIScale.scale(4));
         beam.lineTo(stem2X, stemTopY - UIScale.scale(4) + UIScale.scale(4));

@@ -6,6 +6,8 @@ import cz.matysekxx.beatbounce.model.game.GameEngine;
 /**
  * Handles the detection of collisions between the player sphere and collectible orbs.
  * Implements Continuous Collision Detection (CCD) to ensure no orbs are skipped at high speeds.
+ *
+ * @author Matysekxx
  */
 public class OrbCollisionEngine {
     /**

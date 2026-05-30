@@ -15,6 +15,8 @@ import java.awt.*;
  * The main menu screen of the BeatBounce application.
  * It provides navigation to various sections of the game such as song selection,
  * library, skins, shop, and settings.
+ *
+ * @author Matysekxx
  */
 public class MainMenuScreen extends Screen {
 
@@ -22,16 +24,6 @@ public class MainMenuScreen extends Screen {
      * The background panel for the main menu.
      */
     private final MainPanel backgroundPanel;
-
-    /**
-     * Client for Audius API interactions.
-     */
-    private final AudiusClient audiusClient;
-
-    /**
-     * JSON object mapper.
-     */
-    private final ObjectMapper objectMapper;
 
     /**
      * Layout manager for switching between different sub-panels.
@@ -87,8 +79,8 @@ public class MainMenuScreen extends Screen {
      */
     public MainMenuScreen(ScreenManager screenManager) {
         super();
-        this.audiusClient = new AudiusClient();
-        this.objectMapper = new ObjectMapper();
+        final AudiusClient audiusClient = new AudiusClient();
+        final ObjectMapper objectMapper = new ObjectMapper();
         this.screenManager = screenManager;
         this.setLayout(new BorderLayout());
 

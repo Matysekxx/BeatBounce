@@ -17,6 +17,7 @@ import java.util.concurrent.Executors;
  * @param format  The standardized {@link AudioFormat} used for the samples.
  * @param clip    The loaded audio clip ready for playback.
  * @param file    The original audio file.
+ * @author Matysekxx
  */
 public record AudioData(
         short[] samples,

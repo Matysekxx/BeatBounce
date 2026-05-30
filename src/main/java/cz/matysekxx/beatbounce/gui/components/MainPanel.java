@@ -9,6 +9,8 @@ import java.awt.*;
 /**
  * A panel used as the background for the main menu.
  * It handles background rendering and animations.
+ *
+ * @author Matysekxx
  */
 public class MainPanel extends BasePanel implements Runnable {
     /**

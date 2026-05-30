@@ -14,6 +14,8 @@ import java.util.List;
  *   <li>Picks the lag with maximum correlation and converts it to BPM.</li>
  *   <li>Normalises the result into the 60–200 BPM range by halving / doubling.</li>
  * </ol>
+ *
+ * @author Matysekxx, Gemini
  */
 public class BpmDetector {
     /**

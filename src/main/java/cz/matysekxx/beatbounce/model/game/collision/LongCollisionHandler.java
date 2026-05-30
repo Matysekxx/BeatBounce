@@ -9,6 +9,8 @@ import cz.matysekxx.beatbounce.model.game.GameEngine;
  * Handles complex collision logic for {@link LongTile}s.
  * Manages the state when the player is rolling over a long tile, awards continuous
  * score, and handles the transition to the next jump at the tile's end.
+ *
+ * @author Matysekxx
  */
 public class LongCollisionHandler extends CollisionHandler {
     /**

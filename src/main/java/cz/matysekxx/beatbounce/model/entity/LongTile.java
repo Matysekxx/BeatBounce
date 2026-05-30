@@ -12,6 +12,8 @@ import java.awt.*;
  * The {@code LongTile} class represents a tile with extended length along the Z-axis.
  * It is typically used for sustained notes in the game.
  * It extends {@link AbstractTile}.
+ *
+ * @author Matysekxx
  */
 public class LongTile extends AbstractTile {
     /**

@@ -9,6 +9,8 @@ import java.awt.*;
 /**
  * A class that represents a button-like UI element that is not a true Swing component.
  * It is used for custom rendering within a {@link JPanel} and handles its own hit detection and drawing.
+ *
+ * @author Matysekxx
  */
 public class SimulatedButton {
     /**

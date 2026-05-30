@@ -8,6 +8,8 @@ import java.util.Map;
 /**
  * Registry for achievement evaluators.
  * Maps AchievementType to its corresponding AchievementEvaluator.
+ *
+ * @author Matysekxx
  */
 public class AchievementEvaluatorRegistry {
     /**

@@ -15,6 +15,8 @@ import java.awt.event.MouseMotionListener;
  * This controller listens for mouse motion events and updates the sphere's
  * target position based on the mouse's horizontal coordinates and the 3D camera projection.
  * </p>
+ *
+ * @author Matysekxx
  */
 public class GameController implements MouseMotionListener {
     /**

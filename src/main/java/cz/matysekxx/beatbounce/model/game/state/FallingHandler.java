@@ -9,6 +9,8 @@ import cz.matysekxx.beatbounce.util.LevelUtil;
  * Handles the logic for the {@link GameState#FALLING} state.
  * Manages the sphere's downward movement after a miss and transitions the game
  * to the {@link GameState#GAME_OVER} state once the sphere falls out of view.
+ *
+ * @author Matysekxx
  */
 public class FallingHandler implements GameStateHandler {
     /**

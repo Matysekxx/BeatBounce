@@ -12,6 +12,8 @@ import java.awt.*;
 /**
  * A stylized {@link JCheckBox} with a custom toggle switch icon.
  * Features a rounded track and a sliding knob with smooth color transitions.
+ *
+ * @author Matysekxx
  */
 public class CustomCheckBox extends JCheckBox {
 

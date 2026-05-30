@@ -9,6 +9,8 @@ import javax.swing.*;
  * The entry point for the BeatBounce application.
  * This class handles low-level system property configuration for rendering,
  * High DPI support, and bootstraps the application execution.
+ *
+ * @author Matysekxx
  */
 public class Main {
 

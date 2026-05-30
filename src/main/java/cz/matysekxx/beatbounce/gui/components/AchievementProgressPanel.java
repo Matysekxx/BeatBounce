@@ -13,6 +13,8 @@ import java.awt.*;
  * A horizontal progress bar component that visualizes completion status of an achievement.
  * Displays current progress text (e.g., "1 / 5") and a filled bar with dynamic colors
  * depending on whether the achievement is completed or rewarded.
+ *
+ * @author Matysekxx
  */
 public class AchievementProgressPanel extends JPanel {
     /**

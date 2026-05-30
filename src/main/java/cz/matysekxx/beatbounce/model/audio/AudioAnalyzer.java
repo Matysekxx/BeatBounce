@@ -19,6 +19,8 @@ import java.util.concurrent.CountDownLatch;
  *   <li>Section detection via {@link SectionDetector} — structural segmentation.</li>
  *   <li>Post-processing — sort, inject SECTION_CHANGE events.</li>
  * </ol>
+ *
+ * @author Matysekxx
  */
 public class AudioAnalyzer {
     /**

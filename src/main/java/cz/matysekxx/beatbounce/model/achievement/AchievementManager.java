@@ -11,6 +11,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Manages the player's achievements, including loading, saving, and evaluating progress.
+ *
+ * @author Matysekxx
  */
 public class AchievementManager {
     /**

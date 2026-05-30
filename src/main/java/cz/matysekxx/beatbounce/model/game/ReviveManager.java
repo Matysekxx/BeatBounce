@@ -9,6 +9,8 @@ import cz.matysekxx.beatbounce.model.score.ScoreManager;
 /**
  * Manages the logic for reviving the player after a fall.
  * Handles cost calculation, currency deduction, and game state restoration.
+ *
+ * @author Matysekxx
  */
 public class ReviveManager {
     /**

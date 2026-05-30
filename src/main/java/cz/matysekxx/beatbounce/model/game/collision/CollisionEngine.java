@@ -9,22 +9,10 @@ import java.util.HashMap;
  * Orchestrates collision detection between the player and the level tiles.
  * It uses specialized {@link CollisionHandler}s for different tile types and
  * implements Continuous Collision Detection (CCD) to prevent skipping tiles at high speeds.
+ *
+ * @author Matysekxx
  */
 public class CollisionEngine {
-    /**
-     * Standard width of a single lane in world units.
-     */
-    private static final int LANE_WIDTH = 120;
-
-    /**
-     * Half-width of a normal tile for collision checks.
-     */
-    private static final double NORMAL_HALF_WIDTH = LANE_WIDTH / 2.0;
-
-    /**
-     * Half-width of a small tile for collision checks.
-     */
-    private static final double SMALL_HALF_WIDTH = 25.0;
 
     /**
      * Mapping of tile classes to their respective collision handlers.

@@ -20,7 +20,8 @@ import java.awt.event.MouseEvent;
  *     <li>{@link AchievementProgressPanel} for the numerical/bar progress.</li>
  *     <li>{@link AchievementClaimPanel} for the reward collection button.</li>
  * </ul>
- * It also handles the 'claimed' flash animation.
+ *
+ * @author Matysekxx
  */
 public class AchievementRowPanel extends JPanel {
     /**
@@ -142,7 +143,7 @@ public class AchievementRowPanel extends JPanel {
         claimAnimationProgress = 1.0f;
         if (AchievementManager.claimReward(achievement)) {
             final Timer timer = new Timer(15, e -> {
-                claimAnimationProgress -= 0.03f;
+                claimAnimationProgress -= 0.1f;
                 if (claimAnimationProgress <= 0f) {
                     claimAnimationProgress = 0f;
                     ((Timer) e.getSource()).stop();
@@ -168,14 +169,12 @@ public class AchievementRowPanel extends JPanel {
         if (hovered) {
             if (achievement.isCompleted()) {
                 if (achievement.isRewarded()) {
-
                     g2.setPaint(new LinearGradientPaint(0, 0, w, 0,
                             new float[]{0f, 1f},
                             new Color[]{new Color(0, 255, 110, 35), new Color(0, 255, 110, 5)}));
                     g2.fillRoundRect(0, 0, w, h, UIScale.scale(18), UIScale.scale(18));
                     g2.setColor(new Color(0, 255, 110, 120));
                 } else {
-
                     g2.setPaint(new LinearGradientPaint(0, 0, w, 0,
                             new float[]{0f, 1f},
                             new Color[]{new Color(255, 215, 0, 45), new Color(255, 215, 0, 5)}));
@@ -183,7 +182,6 @@ public class AchievementRowPanel extends JPanel {
                     g2.setColor(new Color(255, 215, 0, 140));
                 }
             } else {
-
                 g2.setPaint(new LinearGradientPaint(0, 0, w, 0,
                         new float[]{0f, 1f},
                         new Color[]{new Color(255, 255, 255, 20), new Color(255, 255, 255, 5)}));
@@ -191,7 +189,6 @@ public class AchievementRowPanel extends JPanel {
                 g2.setColor(new Color(255, 255, 255, 60));
             }
         } else {
-
             g2.setColor(new Color(255, 255, 255, 12));
             g2.fillRoundRect(0, 0, w, h, UIScale.scale(18), UIScale.scale(18));
             g2.setColor(new Color(255, 255, 255, 25));

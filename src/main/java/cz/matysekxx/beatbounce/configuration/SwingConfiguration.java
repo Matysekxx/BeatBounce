@@ -12,6 +12,8 @@ import java.awt.*;
  * overrides standard {@link UIManager} properties to create a cohesive dark theme
  * across all application components.
  * </p>
+ *
+ * @author Matysekxx
  */
 public class SwingConfiguration {
 

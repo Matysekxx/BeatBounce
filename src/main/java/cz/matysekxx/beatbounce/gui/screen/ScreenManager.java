@@ -10,6 +10,8 @@ import java.util.function.Supplier;
 
 /**
  * Manages the different screens in the application, handling registration, initialization, and navigation between them.
+ *
+ * @author Matysekxx
  */
 public class ScreenManager {
 

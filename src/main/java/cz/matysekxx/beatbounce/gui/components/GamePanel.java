@@ -31,6 +31,8 @@ import java.util.List;
 
 /**
  * The main panel for the game, handling rendering, user input, and the game loop.
+ *
+ * @author Matysekxx
  */
 public class GamePanel extends JPanel implements Runnable {
     /**
@@ -80,10 +82,6 @@ public class GamePanel extends JPanel implements Runnable {
      */
     private Thread gameThread;
     /**
-     * The audio clip for the current level's song.
-     */
-    private Clip clip;
-    /**
      * The core game logic model.
      */
     private volatile GameEngine gameEngine;
@@ -107,14 +105,6 @@ public class GamePanel extends JPanel implements Runnable {
      * Alpha value for the score "pop" animation.
      */
     private float scorePopAlpha = 0f;
-    /**
-     * The title of the song being played.
-     */
-    private String songTitle;
-    /**
-     * The artist of the song being played.
-     */
-    private String songArtist;
     /**
      * Helper for rendering game-specific UI elements.
      */
@@ -237,9 +227,7 @@ public class GamePanel extends JPanel implements Runnable {
         if (gameKeyController != null) this.removeKeyListener(gameKeyController);
 
         this.actionQueue.clear();
-        this.songTitle = songTitle;
-        this.songArtist = songArtist;
-        this.clip = level.audioData().clip();
+        final Clip clip = level.audioData().clip();
         final Sphere sphere = new Sphere(0, 150, 0, 25);
         this.gameEngine = new GameEngine(level, sphere, cam, clip);
         this.lastScore = 0;

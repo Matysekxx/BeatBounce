@@ -16,6 +16,8 @@ import java.util.stream.Stream;
 /**
  * Centralized file system management for the application.
  * Handles path resolution and directory creation for game data.
+ *
+ * @author Matysekxx
  */
 public class FileSystem {
     private static final Logger LOG = LoggerFactory.getLogger(FileSystem.class);

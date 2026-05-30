@@ -11,6 +11,8 @@ import java.util.Map;
  * <p>
  * Used by {@link AudioProcessor} to classify detected beats by their dominant
  * frequency range (kick, snare, hi-hat, melodic).
+ *
+ * @author Matysekxx, Gemini
  */
 public class FrequencyBandAnalyzer {
 

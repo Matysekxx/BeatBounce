@@ -9,6 +9,8 @@ import java.awt.event.ActionListener;
 
 /**
  * Factory class for creating styled isometric buttons used in the application.
+ *
+ * @author Matysekxx
  */
 public class ButtonFactory {
     /**

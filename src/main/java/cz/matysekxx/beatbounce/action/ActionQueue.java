@@ -6,6 +6,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * A thread-safe singleton queue for managing and deferred execution of UI and game actions.
  * This class ensures that actions requested from various threads (e.g., UI events)
  * are processed in a synchronized manner within the main game loop.
+ *
+ * @author Matysekxx
  */
 public class ActionQueue {
     /**

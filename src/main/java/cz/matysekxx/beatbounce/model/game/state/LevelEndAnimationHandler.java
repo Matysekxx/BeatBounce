@@ -10,6 +10,8 @@ import cz.matysekxx.beatbounce.util.LevelUtil;
  * Handles the logic for the {@link GameState#LEVEL_END_ANIMATION} state.
  * Manages the final cutscene where the camera pulls back and the sphere flies off
  * after completing the level. Also updates the persistent user score and currency.
+ *
+ * @author Matysekxx
  */
 public class LevelEndAnimationHandler implements GameStateHandler {
     /**

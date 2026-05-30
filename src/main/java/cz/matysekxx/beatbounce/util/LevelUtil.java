@@ -4,6 +4,8 @@ import cz.matysekxx.beatbounce.model.level.Level;
 
 /**
  * Utility class for level-related operations.
+ *
+ * @author Matysekxx
  */
 public class LevelUtil {
     /**

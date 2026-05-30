@@ -5,6 +5,8 @@ import java.awt.*;
 /**
  * Utility class for dynamic UI scaling.
  * It provides methods to scale values and fonts based on the current window resolution.
+ *
+ * @author Matysekxx
  */
 public final class UIScale {
 

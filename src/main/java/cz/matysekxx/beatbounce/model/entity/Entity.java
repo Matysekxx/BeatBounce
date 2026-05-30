@@ -4,6 +4,8 @@ package cz.matysekxx.beatbounce.model.entity;
  * The {@code Entity} class represents a basic object in the game world with
  * coordinates {@code x} and {@code y}.
  * It serves as a base class for other game entities such as tiles and spheres.
+ *
+ * @author Matysekxx
  */
 public abstract class Entity {
     /**

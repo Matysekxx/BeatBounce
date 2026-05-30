@@ -13,6 +13,8 @@ import java.awt.event.MouseEvent;
 /**
  * A custom scroll bar UI that provides a modern, neon-themed look.
  * It uses {@link RenderUtils} to initialize graphics and follows the game's aesthetic.
+ *
+ * @author Matysekxx
  */
 public class ScrollBarUI extends BasicScrollBarUI {
     /**

@@ -20,6 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * Manages game scores, currency, and persistence.
  * <p>
  * Handles loading and saving of high scores and total currency from/to JSON files.
+ *
+ * @author Matysekxx
  */
 public class ScoreManager {
     /**

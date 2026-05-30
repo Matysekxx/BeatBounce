@@ -12,6 +12,8 @@ import java.awt.*;
 /**
  * A panel that displays a loading screen with a progress bar and animated title.
  * It uses a separate thread for the loading animation.
+ *
+ * @author Matysekxx
  */
 public class LoadingPanel extends JPanel implements Runnable {
     /**

@@ -14,6 +14,8 @@ import java.awt.event.MouseEvent;
 /**
  * A custom {@link JButton} with a 3D isometric look and feel.
  * Features a depth effect, top glow on hover, and a "press" animation that shifts the button downwards.
+ *
+ * @author Matysekxx
  */
 public class IsometricButton extends JButton {
     /**

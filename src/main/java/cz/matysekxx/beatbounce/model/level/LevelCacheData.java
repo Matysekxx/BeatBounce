@@ -14,6 +14,7 @@ import java.util.List;
  * @param cacheVersion       format version, used to detect stale caches
  * @param bpm                detected BPM of the track (informational)
  * @param totalBeatsDetected total number of raw beat events detected during analysis
+ * @author Matysekxx
  */
 public record LevelCacheData(
         List<AbstractTile> tiles,

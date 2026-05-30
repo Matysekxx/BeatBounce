@@ -19,6 +19,8 @@ import java.awt.event.MouseEvent;
  *     <li><b>Claim:</b> Ready to be collected (interactive).</li>
  *     <li><b>Claimed:</b> Reward already collected (disabled).</li>
  * </ul>
+ *
+ * @author Matysekxx
  */
 public class AchievementClaimPanel extends JPanel {
     /**
@@ -141,10 +143,12 @@ public class AchievementClaimPanel extends JPanel {
                 final FontMetrics fmClaimed = g2.getFontMetrics();
                 g2.drawString(claimedTxt, (w - fmClaimed.stringWidth(claimedTxt)) / 2, UIScale.scale(32));
             } else {
-                g2.setPaint(new LinearGradientPaint(0, 0, 0, h,
+                if (buttonHovered) g2.setPaint(new LinearGradientPaint(0, 0, 0, h,
                         new float[]{0f, 1f},
-                        buttonHovered ? new Color[]{new Color(255, 235, 100), new Color(255, 180, 0)}
-                                : new Color[]{new Color(255, 215, 0), new Color(230, 150, 0)}));
+                        new Color[]{new Color(255, 235, 100), new Color(255, 180, 0)}));
+                else g2.setPaint(new LinearGradientPaint(0, 0, 0, h,
+                        new float[]{0f, 1f},
+                        new Color[]{new Color(255, 215, 0), new Color(230, 150, 0)}));
                 g2.fillRoundRect(0, 0, w, h, UIScale.scale(14), UIScale.scale(14));
                 if (buttonHovered) {
                     g2.setColor(new Color(255, 255, 255, 200));

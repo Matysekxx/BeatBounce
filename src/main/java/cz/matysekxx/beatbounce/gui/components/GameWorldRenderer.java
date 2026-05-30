@@ -21,6 +21,8 @@ import java.util.List;
 /**
  * Handles the rendering of the 3D world environment, including the planet,
  * neon grid (floor and ceiling), and game entities.
+ *
+ * @author Matysekxx
  */
 public class GameWorldRenderer {
     /**
@@ -264,7 +266,10 @@ public class GameWorldRenderer {
             final int ex = projScratch[0], ey = projScratch[1];
 
             final boolean isMainLane = Math.abs(lx) <= 300;
-            final float laneHue = isMainLane ? globalHue : (globalHue + 0.5f) % 1.0f;
+            final float laneHue;
+            if (isMainLane) laneHue = globalHue;
+            else laneHue = (globalHue + 0.5f) % 1.0f;
+
             final int alpha = isMainLane ? 110 : (int) (110 * 0.5);
 
             g2d.setColor(RenderCache.customColorWithAlpha(getCachedColor(laneHue), alpha));

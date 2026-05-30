@@ -16,6 +16,8 @@ import java.util.List;
 /**
  * The {@code NormalTile} class represents the standard tile in BeatBounce.
  * It supports multiple segments (real and fake) across the road width.
+ *
+ * @author Matysekxx
  */
 public class NormalTile extends AbstractTile {
     /**

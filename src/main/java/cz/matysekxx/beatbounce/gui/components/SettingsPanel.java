@@ -17,6 +17,8 @@ import java.net.URISyntaxException;
 /**
  * A panel that allows users to configure various game settings.
  * It includes options for display, graphics, audio, and gameplay.
+ *
+ * @author Matysekxx
  */
 public class SettingsPanel extends JPanel {
 

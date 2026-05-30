@@ -8,6 +8,8 @@ import java.awt.*;
 
 /**
  * Utility class for screen-related operations.
+ *
+ * @author Matysekxx
  */
 public class ScreenUtil {
 

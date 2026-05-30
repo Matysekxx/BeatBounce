@@ -8,10 +8,12 @@ import java.util.List;
 
 /**
  * Divides a song into structural sections (Intro, Verse, Chorus, etc.)
- * by analysing the average energy of sliding time windows across the beat event list.
+ * by analyzing the average energy of sliding time windows across the beat event list.
  * <p>
- * The detector smooths the energy curve, normalises it, and classifies each window
+ * The detector smooths the energy curve, normalizes it, and classifies each window
  * heuristically based on energy level and position within the song.
+ *
+ * @author Matysekxx, Gemini
  */
 public class SectionDetector {
     /**

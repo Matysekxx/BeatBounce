@@ -12,6 +12,8 @@ import javax.sound.sampled.Clip;
  * Handles the logic for the {@link GameState#PLAYING} state.
  * This is the primary gameplay handler, responsible for updating audio sync,
  * tile animations, camera movement, and orchestrating collision checks.
+ *
+ * @author Matysekxx
  */
 public class PlayingHandler implements GameStateHandler {
     /**

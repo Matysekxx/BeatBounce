@@ -15,6 +15,8 @@ import java.util.concurrent.Flow;
  * a {@link CountDownLatch} to signal the completion or failure of the audio stream,
  * allowing the analyzer thread to safely block until all chunks are processed.
  * </p>
+ *
+ * @author Matysekxx
  */
 public class AudioSubscriber implements Flow.Subscriber<BeatEvent> {
 

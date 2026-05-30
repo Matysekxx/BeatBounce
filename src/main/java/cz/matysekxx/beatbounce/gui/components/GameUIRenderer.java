@@ -20,6 +20,8 @@ import java.util.List;
 /**
  * A renderer class responsible for drawing the game's user interface elements.
  * This includes countdowns, pause screens, game over screens, scores, and progress bars.
+ *
+ * @author Matysekxx
  */
 public class GameUIRenderer {
     /**

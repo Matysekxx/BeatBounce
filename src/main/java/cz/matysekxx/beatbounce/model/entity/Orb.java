@@ -16,6 +16,8 @@ import java.awt.geom.Ellipse2D;
  *   <li><b>Pulsing Glow:</b> A dynamic radial gradient that expands and contracts over time.</li>
  *   <li><b>Performance Optimization:</b> Caches {@link RadialGradientPaint} to avoid expensive object creation during frames where the orb hasn't moved relative to the screen.</li>
  * </ul>
+ *
+ * @author Matysekxx
  */
 public class Orb {
     /**
@@ -117,15 +119,6 @@ public class Orb {
      */
     public double getZ() {
         return z;
-    }
-
-    /**
-     * Returns the physical world radius.
-     *
-     * @return the {@code radius} value
-     */
-    public double getRadius() {
-        return radius;
     }
 
     /**

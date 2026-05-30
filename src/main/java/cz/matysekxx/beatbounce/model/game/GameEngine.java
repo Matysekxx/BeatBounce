@@ -17,6 +17,8 @@ import java.util.Map;
 /**
  * The core logic of the game, managing the game state, player movement, score, and level progress.
  * It acts as the central hub for gameplay mechanics and orchestrates various state handlers.
+ *
+ * @author Matysekxx
  */
 public class GameEngine {
     /**

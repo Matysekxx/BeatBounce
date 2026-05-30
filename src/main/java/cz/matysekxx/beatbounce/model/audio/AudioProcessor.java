@@ -28,6 +28,8 @@ import java.util.concurrent.SubmissionPublisher;
  *   <li>Sustained note detection for long tiles.</li>
  * </ul>
  * </p>
+ *
+ * @author Matysekxx, Gemini
  */
 public class AudioProcessor implements Flow.Publisher<BeatEvent>, Closeable {
     /**

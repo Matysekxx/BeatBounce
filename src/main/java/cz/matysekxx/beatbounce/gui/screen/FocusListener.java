@@ -9,6 +9,8 @@ import java.awt.event.WindowFocusListener;
 /**
  * A listener that mutes or unmutes the application audio based on window focus.
  * It checks the {@link Settings#muteOnFocusLoss} setting to determine whether to act.
+ *
+ * @author Matysekxx
  */
 public class FocusListener implements WindowFocusListener {
     /**

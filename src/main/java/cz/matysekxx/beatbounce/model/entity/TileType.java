@@ -7,6 +7,8 @@ import cz.matysekxx.beatbounce.model.level.DifficultyProfile;
  * <p>
  * Used as a discriminator in JSON serialisation (see {@link AbstractTile})
  * and as a reference when building {@link DifficultyProfile} allow-lists.
+ *
+ * @author Matysekxx
  */
 public enum TileType {
     /**

@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * @param intensityValue The numerical value representing the musical intensity at this point.
  * @param duration       Duration of the event in seconds (non-zero for {@link EventType#SUSTAINED_NOTE}).
  * @param bandName       Name of the dominant frequency band that triggered this event, or {@code null}.
+ * @author Matysekxx
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record BeatEvent(

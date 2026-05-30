@@ -6,6 +6,8 @@ import cz.matysekxx.beatbounce.model.score.ScoreManager;
 /**
  * Evaluator for the high score achievement.
  * Returns the global high score from the ScoreManager.
+ *
+ * @author Matysekxx
  */
 public class HighScoreEvaluator implements AchievementEvaluator {
     /**

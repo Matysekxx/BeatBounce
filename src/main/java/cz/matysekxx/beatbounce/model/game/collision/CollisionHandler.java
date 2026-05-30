@@ -7,6 +7,8 @@ import cz.matysekxx.beatbounce.model.game.GameEngine;
 /**
  * Abstract base class for tile-specific collision handlers.
  * Provides shared utility methods for advancing the game state upon successful landing.
+ *
+ * @author Matysekxx
  */
 public abstract class CollisionHandler {
     /**

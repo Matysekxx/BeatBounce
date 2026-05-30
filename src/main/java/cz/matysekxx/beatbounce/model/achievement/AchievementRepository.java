@@ -18,6 +18,8 @@ import java.util.List;
 /**
  * Repository class for loading and saving achievement-related data.
  * It manages both the static definitions from resources and the player's persistent progress on disk.
+ *
+ * @author Matysekxx
  */
 public class AchievementRepository {
     /**

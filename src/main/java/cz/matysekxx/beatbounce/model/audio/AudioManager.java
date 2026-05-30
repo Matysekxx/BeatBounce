@@ -14,6 +14,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Manages game audio, including sound effects (SFX) and background menu music.
  * Handles caching, volume application, and playback.
+ *
+ * @author Matysekxx
  */
 public class AudioManager {
     /**
@@ -55,7 +57,7 @@ public class AudioManager {
 
         Thread.ofVirtual().start(() -> {
             try {
-                URL url = getResourceURL(resourcePath);
+                final URL url = getResourceURL(resourcePath);
                 if (url == null) return;
 
                 try (AudioInputStream ais = AudioSystem.getAudioInputStream(url)) {

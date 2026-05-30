@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 /**
  * Responsible for randomly spawning collectible orbs along the level's path.
  * Orbs are placed on top of valid tiles to ensure they are reachable.
+ *
+ * @author Matysekxx
  */
 public class OrbSpawner {
     /**

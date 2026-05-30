@@ -4,6 +4,8 @@ import cz.matysekxx.beatbounce.util.UIScale;
 
 /**
  * Represents a 3D camera in the game world, used for projecting 3D coordinates to 2D screen space.
+ *
+ * @author Matysekxx
  */
 public class Camera3D {
     /**

@@ -11,6 +11,8 @@ import java.util.Random;
 /**
  * Utility class for common rendering operations and colors.
  * It provides methods for drawing backgrounds, floors, text with bloom effects, and more.
+ *
+ * @author Matysekxx
  */
 public final class RenderUtils {
     /**

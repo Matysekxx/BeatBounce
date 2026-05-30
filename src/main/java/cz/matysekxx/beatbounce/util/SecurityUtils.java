@@ -10,6 +10,8 @@ import java.util.Base64;
  * for local save files (scores, currency, and achievements).
  * It completely prevents players from editing JSON save files in text editors,
  * automatically resetting or rejecting modified/corrupted files.
+ *
+ * @author Matysekxx
  */
 public class SecurityUtils {
     /**

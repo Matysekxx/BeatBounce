@@ -10,6 +10,8 @@ import java.util.List;
  * <p>
  * Every tile type registered in {@link TileType} has a corresponding factory method here.
  * Generation code and tests should use this class rather than constructing tiles directly.
+ *
+ * @author Matysekxx
  */
 public final class TileFactory {
 

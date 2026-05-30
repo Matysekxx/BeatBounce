@@ -27,6 +27,7 @@ import java.util.Set;
  * @param allowStaircase      whether staircase lane pattern is enabled
  * @param laneChangeFrequency mean probability of changing lane per beat (0.0–1.0)
  * @param allowedTypes        tile types permitted at this difficulty
+ * @author Matysekxx
  */
 public record DifficultyProfile(
         int stars,

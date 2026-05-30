@@ -2,6 +2,8 @@ package cz.matysekxx.beatbounce.model.game.state;
 
 /**
  * Represents the various states the game can be in during its lifecycle.
+ *
+ * @author Matysekxx
  */
 public enum GameState {
     /**

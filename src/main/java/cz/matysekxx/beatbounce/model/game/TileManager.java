@@ -8,6 +8,8 @@ import cz.matysekxx.beatbounce.model.entity.MovingTile;
 /**
  * Manages the state updates for all tiles in the level.
  * This includes advancing animations for impact effects, moving tiles, and shattering tiles.
+ *
+ * @author Matysekxx
  */
 public class TileManager {
     /**

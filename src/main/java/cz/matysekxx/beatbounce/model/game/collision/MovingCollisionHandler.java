@@ -7,6 +7,8 @@ import cz.matysekxx.beatbounce.model.game.GameEngine;
 /**
  * Handles collisions with {@link MovingTile}s.
  * Awards standard points and advances the game state.
+ *
+ * @author Matysekxx
  */
 public class MovingCollisionHandler extends CollisionHandler {
     /**

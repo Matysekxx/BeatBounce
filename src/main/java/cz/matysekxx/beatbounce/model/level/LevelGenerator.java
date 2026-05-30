@@ -12,6 +12,8 @@ import java.util.Optional;
  * <p>
  * The actual procedural generation logic is encapsulated within the {@link GenerationContext} class.
  * </p>
+ *
+ * @author Matysekxx
  */
 public class LevelGenerator {
 
@@ -61,7 +63,11 @@ public class LevelGenerator {
 
         final AudioAnalyzer audioAnalyzer = new AudioAnalyzer(audioData, speedMultiplier);
         final Level generatedLevel = new GenerationContext(
-                audioAnalyzer.analyze(), audioData.file().getName(), artist, audioData, stars
+                audioAnalyzer.analyze(),
+                audioData.file().getName(),
+                artist,
+                audioData,
+                stars
         ).generate();
         LevelCacheManager.put(key, generatedLevel.tiles());
         LevelFileCache.toFile(generatedLevel, speedMultiplier);

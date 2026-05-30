@@ -16,6 +16,8 @@ import java.util.List;
 
 /**
  * A panel that displays game credits with a scrolling animation and a rich animated background.
+ *
+ * @author Matysekxx
  */
 public class CreditsPanel extends BasePanel implements Runnable {
     /**
@@ -73,7 +75,7 @@ public class CreditsPanel extends BasePanel implements Runnable {
     private void loadCredits() {
         try (InputStream is = getClass().getResourceAsStream("/credits.json")) {
             if (is != null) {
-                ObjectMapper mapper = new ObjectMapper();
+                final ObjectMapper mapper = new ObjectMapper();
                 credits = mapper.readValue(is, new TypeReference<>() {
                 });
             }
@@ -151,8 +153,8 @@ public class CreditsPanel extends BasePanel implements Runnable {
         final Graphics2D g2d = (Graphics2D) g.create();
         RenderUtils.initGraphics2D(g2d);
 
-        int w = getWidth();
-        int h = getHeight();
+        final int w = getWidth();
+        final int h = getHeight();
         if (w <= 0 || h <= 0) return;
 
         final float globalHue = (time * 0.05f) % 1.0f;

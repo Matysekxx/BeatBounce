@@ -6,6 +6,8 @@ import cz.matysekxx.beatbounce.model.achievement.AchievementSaveData;
  * Interface for achievement progress evaluators.
  * Each implementation defines how to calculate the current progress value
  * for a specific achievement type.
+ *
+ * @author Matysekxx
  */
 public interface AchievementEvaluator {
     /**

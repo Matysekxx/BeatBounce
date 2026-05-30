@@ -12,6 +12,8 @@ import static cz.matysekxx.beatbounce.util.Time.sleep;
 
 /**
  * The initial screen of the game, featuring the game title and navigation buttons.
+ *
+ * @author Matysekxx
  */
 public class IntroScreen extends Screen {
     /**

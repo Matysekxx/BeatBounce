@@ -9,6 +9,8 @@ import java.awt.*;
 
 /**
  * Screen that displays the game credits.
+ *
+ * @author Matysekxx
  */
 public class CreditsScreen extends Screen {
     /**

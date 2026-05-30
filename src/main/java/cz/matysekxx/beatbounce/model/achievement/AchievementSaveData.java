@@ -6,6 +6,8 @@ import java.util.List;
 /**
  * Data transfer object representing the persistent state of a player's achievements.
  * This class is serialized to JSON and encrypted for local storage.
+ *
+ * @author Matysekxx
  */
 public class AchievementSaveData {
     /**

@@ -6,6 +6,8 @@ import cz.matysekxx.beatbounce.model.score.ScoreManager;
 /**
  * Evaluator for the orbs held achievement.
  * Returns the current currency (orbs) from the ScoreManager.
+ *
+ * @author Matysekxx
  */
 public class OrbsHeldEvaluator implements AchievementEvaluator {
     /**

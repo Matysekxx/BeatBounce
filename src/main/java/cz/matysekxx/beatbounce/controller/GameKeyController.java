@@ -12,6 +12,8 @@ import java.awt.event.KeyEvent;
  * A keyboard input controller that translates key events into game actions.
  * It routes commands through the {@link ActionQueue} to ensure thread-safe execution
  * relative to the game state.
+ *
+ * @author Matysekxx
  */
 public class GameKeyController extends KeyAdapter {
     /**
@@ -71,10 +73,8 @@ public class GameKeyController extends KeyAdapter {
                 }
             }
             case FINISHED -> {
-                switch (key) {
-                    case KeyEvent.VK_R -> actionQueue.add(gameEngine::init);
-                    case KeyEvent.VK_ESCAPE, KeyEvent.VK_ENTER -> actionQueue.add(quitAction);
-                }
+                if (key == KeyEvent.VK_R) actionQueue.add(gameEngine::init);
+                else if (key == KeyEvent.VK_ESCAPE || key == KeyEvent.VK_ENTER) actionQueue.add(quitAction);
             }
         }
     }

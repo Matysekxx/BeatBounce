@@ -12,6 +12,8 @@ import java.awt.image.BufferedImage;
  * Abstract base class for UI panels providing an off-screen cache for static backgrounds.
  * It manages resizing and reduces rendering overhead by caching the background image,
  * which prevents visual artifacts and performance drops when transitioning between monitors.
+ *
+ * @author Matysekxx
  */
 public abstract class BasePanel extends JPanel {
 

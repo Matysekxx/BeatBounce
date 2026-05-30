@@ -15,9 +15,11 @@ import java.util.List;
 
 
 /**
- * The main container for the achievements dashboard.
+ * The main container for the achievements' dashboard.
  * Features a filterable and sortable list of all game achievements.
  * Includes a top navigation bar with {@link CycleButton}s for UI control.
+ *
+ * @author Matysekxx
  */
 public class AchievementsPanel extends BasePanel {
 
@@ -90,26 +92,7 @@ public class AchievementsPanel extends BasePanel {
      * Creates the top bar with title and control buttons.
      */
     private JPanel createTopBar() {
-        final JPanel topBar = new JPanel(new BorderLayout()) {
-            /**
-             * Returns the preferred size of the top bar.
-             * @return the preferred dimension
-             */
-            @Override
-            public Dimension getPreferredSize() {
-                return new Dimension(super.getPreferredSize().width, UIScale.scale(70));
-            }
-
-            /**
-             * Returns the insets for the top bar.
-             * @return the insets
-             */
-            @Override
-            public Insets getInsets() {
-                return new Insets(0, UIScale.scale(30), 0, UIScale.scale(30));
-            }
-        };
-        topBar.setOpaque(false);
+        final JPanel topBar = getTopBar();
 
         final JLabel titleLabel = new JLabel("ACHIEVEMENTS");
         titleLabel.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_28));
@@ -164,6 +147,30 @@ public class AchievementsPanel extends BasePanel {
         return topBar;
     }
 
+    private JPanel getTopBar() {
+        final JPanel topBar = new JPanel(new BorderLayout()) {
+            /**
+             * Returns the preferred size of the top bar.
+             * @return the preferred dimension
+             */
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(super.getPreferredSize().width, UIScale.scale(70));
+            }
+
+            /**
+             * Returns the insets for the top bar.
+             * @return the insets
+             */
+            @Override
+            public Insets getInsets() {
+                return new Insets(0, UIScale.scale(30), 0, UIScale.scale(30));
+            }
+        };
+        topBar.setOpaque(false);
+        return topBar;
+    }
+
     /**
      * Creates and configures the control panel for filtering and sorting.
      *
@@ -185,7 +192,7 @@ public class AchievementsPanel extends BasePanel {
              * @param p the panel to configure
              */
             private void setFlowLayoutGap(JPanel p) {
-                LayoutManager lm = p.getLayout();
+                final LayoutManager lm = p.getLayout();
                 if (lm instanceof FlowLayout fl) {
                     fl.setHgap(UIScale.scale(15));
                     fl.setVgap(UIScale.scale(12));

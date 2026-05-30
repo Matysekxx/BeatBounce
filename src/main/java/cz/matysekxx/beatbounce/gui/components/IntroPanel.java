@@ -16,6 +16,8 @@ import java.awt.geom.AffineTransform;
 /**
  * A panel used for the intro screen, featuring animated particles and a stylized background.
  * It manages its own animation thread.
+ *
+ * @author Matysekxx
  */
 public class IntroPanel extends BasePanel implements Runnable {
     /**
@@ -167,7 +169,7 @@ public class IntroPanel extends BasePanel implements Runnable {
             Particle.drawAll(g2d, particles, count);
         }
 
-        drawIntroGrid(g2d, w, h, horizonY, globalHue);
+        drawGrid(g2d, w, h, horizonY, globalHue);
         drawShapes(g2d, w, horizonY, globalHue);
 
         final Color horizonColor = Color.getHSBColor(globalHue, 0.6f, 1.0f);
@@ -253,7 +255,7 @@ public class IntroPanel extends BasePanel implements Runnable {
      * Renders simulated audio frequency bars.
      */
     private void drawAudioBars(Graphics2D g2d, int w, int horizonY, float globalHue) {
-        final int barCount = 120;
+        final int barCount = 80;
         final float barWidth = (float) w / barCount;
         final int maxHeight = UIScale.scale(160);
 
@@ -342,7 +344,7 @@ public class IntroPanel extends BasePanel implements Runnable {
     /**
      * Renders the animated futuristic grid on the floor.
      */
-    private void drawIntroGrid(Graphics2D g2d, int w, int h, int horizonY, float globalHue) {
+    private void drawGrid(Graphics2D g2d, int w, int h, int horizonY, float globalHue) {
         final int vanishingPointX = w >> 1;
 
         final Color vertGridColor = Color.getHSBColor((globalHue + 0.1f) % 1.0f, 0.7f, 1.0f);

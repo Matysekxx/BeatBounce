@@ -4,6 +4,8 @@ package cz.matysekxx.beatbounce.model.achievement;
  * Represents a single achievement in the game.
  * It contains metadata like title, description, and requirements,
  * as well as the player's current progress and completion status.
+ *
+ * @author Matysekxx
  */
 public class Achievement {
     /**

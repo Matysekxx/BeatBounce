@@ -14,6 +14,8 @@ import java.awt.event.MouseEvent;
 /**
  * A custom UI component that allows selecting a value from a discrete set of steps.
  * It is used for settings like Target FPS.
+ *
+ * @author Matysekxx
  */
 public class StepSelector extends JComponent {
     /**

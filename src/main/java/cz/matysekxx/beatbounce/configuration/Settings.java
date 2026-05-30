@@ -17,6 +17,8 @@ import java.util.Properties;
  * Settings are persisted in a {@code config.properties} file and can be loaded or saved
  * using the provided static methods.
  * </p>
+ *
+ * @author Matysekxx
  */
 public class Settings {
     /**

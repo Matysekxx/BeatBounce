@@ -6,6 +6,8 @@ package cz.matysekxx.beatbounce.event;
  * These types allow the system to differentiate between rhythmic pulses (beats),
  * frequency-classified percussion, sustained notes, and structural section changes.
  * </p>
+ *
+ * @author Matysekxx
  */
 public enum EventType {
     /**

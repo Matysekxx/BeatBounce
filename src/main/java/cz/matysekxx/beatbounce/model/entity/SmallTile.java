@@ -13,6 +13,8 @@ import java.awt.*;
  * The {@code SmallTile} class represents a narrower tile variant in the game.
  * It requires more precise movement from the player to land on.
  * It extends {@link AbstractTile}.
+ *
+ * @author Matysekxx
  */
 public class SmallTile extends AbstractTile {
     /**

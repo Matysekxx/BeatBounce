@@ -6,6 +6,8 @@ import cz.matysekxx.beatbounce.model.score.ScoreManager;
 /**
  * Evaluator for achievements based on the number of unique songs played.
  * It tracks how many different tracks the player has attempted.
+ *
+ * @author Matysekxx
  */
 public class UniqueSongsEvaluator implements AchievementEvaluator {
     /**

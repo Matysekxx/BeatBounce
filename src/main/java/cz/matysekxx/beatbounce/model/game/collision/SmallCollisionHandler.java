@@ -7,6 +7,8 @@ import cz.matysekxx.beatbounce.model.game.GameEngine;
 /**
  * Handles collisions with {@link SmallTile}s.
  * Awards higher points due to increased difficulty and advances the game state.
+ *
+ * @author Matysekxx
  */
 public class SmallCollisionHandler extends CollisionHandler {
     /**

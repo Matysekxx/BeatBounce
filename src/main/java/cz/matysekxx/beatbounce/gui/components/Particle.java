@@ -8,6 +8,8 @@ import java.awt.*;
 /**
  * Represents a visual particle in the background animation.
  * Particles move and fade to create a dynamic visual effect.
+ *
+ * @author Matysekxx
  */
 public class Particle {
     /**

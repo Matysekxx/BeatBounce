@@ -11,6 +11,8 @@ import java.awt.*;
 /**
  * The {@code MovingTile} class represents a tile that oscillates horizontally over time.
  * It extends {@link AbstractTile}.
+ *
+ * @author Matysekxx
  */
 public class MovingTile extends AbstractTile {
     /**

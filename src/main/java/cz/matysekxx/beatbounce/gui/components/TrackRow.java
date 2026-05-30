@@ -19,6 +19,8 @@ import java.util.function.Consumer;
 /**
  * A unified, highly-polished premium UI component representing a single track (local or online).
  * It features a beautiful, non-expanding round glass card design.
+ *
+ * @author Matysekxx
  */
 public class TrackRow extends JPanel {
     /**

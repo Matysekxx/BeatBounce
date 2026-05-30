@@ -11,6 +11,8 @@ import java.awt.geom.RoundRectangle2D;
 /**
  * A notification popup that appears when an achievement is unlocked.
  * It animates onto the screen from the right, stays for a duration, and then fades out.
+ *
+ * @author Matysekxx
  */
 public class ToastNotification {
     /**

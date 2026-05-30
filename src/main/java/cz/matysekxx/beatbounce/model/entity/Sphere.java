@@ -17,6 +17,8 @@ import java.awt.*;
  *   <li><b>Jumping:</b> Implements a parabolic trajectory based on world time and beat duration.</li>
  *   <li><b>Visuals:</b> Handles transparency (alpha), scaling, and dynamic shadow rendering.</li>
  * </ul>
+ *
+ * @author Matysekxx
  */
 public class Sphere extends Entity {
     /**
@@ -129,15 +131,6 @@ public class Sphere extends Entity {
     }
 
     /**
-     * Immediately cancels the current jump and resets the sphere to ground level (Y=150).
-     */
-    public void cancelJump() {
-        this.isJumping = false;
-        this.currentY = 150;
-        this.y = 150;
-    }
-
-    /**
      * Updates the sphere's position and internal state.
      * <p>
      * Horizontal movement uses exponential decay for a smooth "organic" feel:
@@ -173,15 +166,6 @@ public class Sphere extends Entity {
             currentY = 150;
         }
         this.y = (int) currentY;
-    }
-
-    /**
-     * Returns the target horizontal world coordinate.
-     *
-     * @return the {@code targetX} value
-     */
-    public double getTargetX() {
-        return targetX;
     }
 
     /**

@@ -10,6 +10,8 @@ import java.awt.*;
 /**
  * A custom undecorated {@link JDialog} with a stylized background and border.
  * Provides a consistent look for in-game dialogs.
+ *
+ * @author Matysekxx
  */
 public class CustomDialog extends JDialog {
 

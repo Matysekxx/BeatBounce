@@ -16,6 +16,8 @@ import java.net.URL;
 /**
  * Abstract base class for all game screens.
  * Extends {@link JFrame} and provides basic window configuration based on {@link Settings}.
+ *
+ * @author Matysekxx
  */
 public abstract class Screen extends JFrame {
 

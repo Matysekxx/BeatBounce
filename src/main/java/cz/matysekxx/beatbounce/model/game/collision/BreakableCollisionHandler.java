@@ -8,6 +8,8 @@ import cz.matysekxx.beatbounce.model.game.GameEngine;
  * Handles collisions with {@link BreakableTile}s.
  * If the tile is already broken, the player falls. Otherwise, the tile is broken
  * and the player is awarded extra points.
+ *
+ * @author Matysekxx
  */
 public class BreakableCollisionHandler extends CollisionHandler {
 

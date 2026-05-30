@@ -10,6 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * Manages the in-memory cache of generated level tiles.
  * Prevents re-analyzing and re-generating levels for the same audio file and speed
  * within a single session.
+ *
+ * @author Matysekxx
  */
 public class LevelCacheManager {
     /**

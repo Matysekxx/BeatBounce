@@ -3,6 +3,8 @@ package cz.matysekxx.beatbounce.gui.components;
 /**
  * Represents the set of possible actions that can be triggered from the game's UI,
  * such as in the pause menu or revive screen.
+ *
+ * @author Matysekxx
  */
 public enum UIAction {
     /**

@@ -16,22 +16,6 @@ import java.awt.*;
  * @author Matysekxx
  */
 public class SwingConfiguration {
-
-    /**
-     * Primary text color (Light Grey) to ensure high readability on dark backgrounds.
-     */
-    private static final Color lightText = new Color(220, 220, 220);
-
-    /**
-     * Accent color (Soft Blue) used for selection highlights and focus indicators.
-     */
-    private static final Color accentBlue = new Color(97, 175, 239);
-
-    /**
-     * Default background color for button components.
-     */
-    private static final Color buttonBg = new Color(60, 65, 75);
-
     /**
      * Initializes the application's look and feel and applies theme overrides.
      * <p>
@@ -47,27 +31,7 @@ public class SwingConfiguration {
             UIManager.put("TitlePane.unifiedBackground", false);
             UIManager.put("TitlePane.background", new Color(30, 30, 30));
             UIManager.put("TitlePane.foreground", new Color(200, 200, 200));
-
-            setupButtonProperties();
-            setupComboBoxProperties();
         } catch (Exception _) {
         }
-    }
-
-    /**
-     * Configures standard button colors.
-     */
-    private static void setupButtonProperties() {
-        UIManager.put("Button.foreground", Color.WHITE);
-    }
-
-    /**
-     * Configures JComboBox and its dropdown selection colors.
-     */
-    private static void setupComboBoxProperties() {
-        UIManager.put("ComboBox.background", buttonBg);
-        UIManager.put("ComboBox.foreground", lightText);
-        UIManager.put("ComboBox.selectionBackground", accentBlue);
-        UIManager.put("ComboBox.selectionForeground", Color.WHITE);
     }
 }

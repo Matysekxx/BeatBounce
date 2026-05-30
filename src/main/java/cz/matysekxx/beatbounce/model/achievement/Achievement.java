@@ -231,6 +231,7 @@ public class Achievement {
      * @return integer percentage
      */
     public int getProgressPercentage() {
+        if (completed) return 100;
         if (target <= 0) return 0;
         return Math.clamp((int) (((double) currentProgress / target) * 100), 0, 100);
     }

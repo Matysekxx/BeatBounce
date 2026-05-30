@@ -117,11 +117,13 @@ public class AchievementManager {
                 int progress = AchievementEvaluatorRegistry.getEvaluator(ach.getType()).evaluate(saveData);
                 ach.setCurrentProgress(progress);
 
-                final boolean isCompleted = progress >= ach.getTarget();
-                ach.setCompleted(isCompleted || saveData.getCompletedIds().contains(ach.getId()));
+                final boolean isNowCompleted = progress >= ach.getTarget();
+                final boolean wasAlreadyCompleted = saveData.getCompletedIds().contains(ach.getId());
+                
+                ach.setCompleted(isNowCompleted || wasAlreadyCompleted);
                 ach.setRewarded(saveData.getRewardedIds().contains(ach.getId()));
 
-                if (isCompleted && !saveData.getCompletedIds().contains(ach.getId())) {
+                if (isNowCompleted && !wasAlreadyCompleted) {
                     saveData.getCompletedIds().add(ach.getId());
                     stateChanged = true;
                     LOG.info("Unlocked achievement: {} - {}", ach.getId(), ach.getTitle());

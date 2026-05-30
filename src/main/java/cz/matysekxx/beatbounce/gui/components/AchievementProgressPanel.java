@@ -99,7 +99,7 @@ public class AchievementProgressPanel extends JPanel {
 
         final double pct = (double) achievement.getProgressPercentage() / 100.0;
         if (pct > 0) {
-            final int fillW = (int) (w * pct);
+            final int fillW = Math.min(w, (int) (w * pct));
             if (achievement.isCompleted()) {
                 if (achievement.isRewarded()) {
                     g2.setPaint(new LinearGradientPaint(barX, barY, barX + fillW, barY,

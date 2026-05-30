@@ -25,9 +25,15 @@ public class ScreenUtil {
     public static void applyFullscreen(Screen screen) {
         final GraphicsDevice[] devices = getDevices();
         final GraphicsDevice device = (Settings.monitorIndex >= 0 && Settings.monitorIndex < devices.length) ? devices[Settings.monitorIndex] : devices[0];
-        final Rectangle bounds = device.getDefaultConfiguration().getBounds();
+        try {
+            device.setFullScreenWindow(null);
+        } catch (Exception ignored) {
+        }
+        screen.setResizable(false);
         screen.setExtendedState(JFrame.NORMAL);
+        final Rectangle bounds = device.getDefaultConfiguration().getBounds();
         screen.setBounds(bounds);
+        screen.setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
     /**
@@ -36,11 +42,16 @@ public class ScreenUtil {
      * @param screen the screen to apply the default size to
      */
     public static void applyDefaultSize(Screen screen) {
-        screen.setExtendedState(JFrame.NORMAL);
-        screen.setSize(1024, 768);
-        screen.setMinimumSize(new Dimension(1024, 768));
         final GraphicsDevice[] devices = getDevices();
         final GraphicsDevice device = (Settings.monitorIndex >= 0 && Settings.monitorIndex < devices.length) ? devices[Settings.monitorIndex] : devices[0];
+        try {
+            device.setFullScreenWindow(null);
+        } catch (Exception ignored) {
+        }
+        screen.setExtendedState(JFrame.NORMAL);
+        screen.setResizable(false);
+        screen.setSize(1024, 768);
+        screen.setMinimumSize(new Dimension(1024, 768));
         final Rectangle bounds = device.getDefaultConfiguration().getBounds();
         screen.setLocation(bounds.x + (bounds.width - 1024) / 2, bounds.y + (bounds.height - 768) / 2);
     }

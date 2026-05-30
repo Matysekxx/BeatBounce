@@ -106,4 +106,11 @@ public class Lazy<T> {
     public void initialize() {
         get();
     }
+
+    /**
+     * Resets the cached value, allowing it to be computed again.
+     */
+    public synchronized void reset() {
+        value = null;
+    }
 }

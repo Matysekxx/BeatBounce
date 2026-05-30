@@ -162,8 +162,13 @@ public class MainMenuScreen extends Screen {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(UIScale.scale(40), 0, UIScale.scale(50), 0);
 
-        final JLabel logo = new JLabel("BEAT BOUNCE");
-        logo.setFont(UIScale.scaleFont(RenderCache.AUDIOWIDE_24));
+        final JLabel logo = new JLabel("BEAT BOUNCE") {
+            @Override
+            public Dimension getPreferredSize() {
+                setFont(UIScale.scaleFont(RenderCache.AUDIOWIDE_24));
+                return super.getPreferredSize();
+            }
+        };
         logo.setForeground(RenderUtils.cyan);
         logo.setHorizontalAlignment(SwingConstants.CENTER);
         p.add(logo, gbc);
@@ -214,7 +219,7 @@ public class MainMenuScreen extends Screen {
                     g2.fillRect(0, UIScale.scale(5), UIScale.scale(4), getHeight() - UIScale.scale(10));
                 }
 
-                g2.setFont(getFont());
+                g2.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_24));
                 g2.setColor(active ? Color.WHITE : (getModel().isRollover() ? RenderUtils.cyan : new Color(200, 200, 220)));
                 final FontMetrics fm = g2.getFontMetrics();
                 g2.drawString(getText(), UIScale.scale(30), (getHeight() + fm.getAscent() - fm.getDescent()) / 2);
@@ -232,7 +237,6 @@ public class MainMenuScreen extends Screen {
                 return new Dimension(UIScale.scale(260), UIScale.scale(55));
             }
         };
-        btn.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_24));
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);
@@ -264,6 +268,17 @@ public class MainMenuScreen extends Screen {
             case "ACHIEVEMENTS" -> achievementsPanel.loadAchievements();
         }
         cardLayout.show(cardPanel, name);
+    }
+
+    /**
+     * Opens a specific panel programmatically.
+     *
+     * @param name the name of the panel to open
+     */
+    public void openPanel(String name) {
+        activePanel = name;
+        showPanel(name);
+        sidebar.repaint();
     }
 
     /**

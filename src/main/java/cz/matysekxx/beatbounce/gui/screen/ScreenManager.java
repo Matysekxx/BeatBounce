@@ -2,7 +2,6 @@ package cz.matysekxx.beatbounce.gui.screen;
 
 import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.util.Lazy;
-import cz.matysekxx.beatbounce.util.ScreenUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -103,38 +102,28 @@ public class ScreenManager {
      * This may involve disposing and recreating windows to change decoration or fullscreen state.
      */
     public void applySettings() {
-        for (Lazy<Screen> lazyScreen : windows.values()) {
+        final Screen currentActive = activeWindow;
+        Class<? extends Screen> activeClass = null;
+
+        for (var entry : windows.entrySet()) {
+            final Lazy<Screen> lazyScreen = entry.getValue();
             if (lazyScreen.wasInitialized()) {
                 final Screen screen = lazyScreen.get();
-                final boolean isActive = (screen == activeWindow);
-                screen.dispose();
-                screen.setUndecorated(Settings.fullscreen);
-                if (Settings.fullscreen) {
-                    applyFullscreen(screen);
-                } else {
-                    applyDefaultSize(screen);
+                if (screen == currentActive) {
+                    activeClass = entry.getKey();
                 }
-                if (isActive) screen.setVisible(true);
+                screen.dispose();
+                lazyScreen.reset();
             }
         }
-    }
 
-    /**
-     * Configures the screen to occupy the entire bounds of the target monitor.
-     *
-     * @param screen The screen to make fullscreen.
-     */
-    private void applyFullscreen(Screen screen) {
-        ScreenUtil.applyFullscreen(screen);
-    }
-
-    /**
-     * Resets the screen to its default windowed size and position.
-     *
-     * @param screen the screen to resize
-     */
-    private void applyDefaultSize(Screen screen) {
-        ScreenUtil.applyDefaultSize(screen);
+        if (activeClass != null) {
+            activeWindow = null;
+            showScreen(activeClass);
+            if (activeClass == MainMenuScreen.class) {
+                getScreen(MainMenuScreen.class).openPanel("SETTINGS");
+            }
+        }
     }
 
     /**

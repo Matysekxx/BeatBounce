@@ -7,10 +7,7 @@ import cz.matysekxx.beatbounce.util.UIScale;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.HierarchyBoundsListener;
-import java.awt.event.HierarchyEvent;
+import java.awt.event.*;
 import java.net.URL;
 
 /**
@@ -49,26 +46,22 @@ public abstract class Screen extends JFrame {
         this.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                UIScale.update(getWidth(), getHeight());
-            }
-
-            @Override
-            public void componentMoved(ComponentEvent e) {
-                UIScale.update(getWidth(), getHeight());
+                if (isVisible() && getWidth() > 0 && getHeight() > 0) {
+                    UIScale.update(getWidth(), getHeight());
+                }
             }
         });
-        this.addHierarchyBoundsListener(new HierarchyBoundsListener() {
-            @Override
-            public void ancestorMoved(HierarchyEvent e) {
-                UIScale.update(getWidth(), getHeight());
-            }
-
+        this.addHierarchyBoundsListener(new HierarchyBoundsAdapter() {
             @Override
             public void ancestorResized(HierarchyEvent e) {
-                UIScale.update(getWidth(), getHeight());
+                if (isVisible() && getWidth() > 0 && getHeight() > 0) {
+                    UIScale.update(getWidth(), getHeight());
+                }
             }
         });
-        UIScale.update(getWidth(), getHeight());
+        if (getWidth() > 0 && getHeight() > 0) {
+            UIScale.update(getWidth(), getHeight());
+        }
     }
 
     /**

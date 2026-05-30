@@ -393,7 +393,7 @@ public class SettingsPanel extends JPanel {
      */
     private void showRestartDialog() {
         final CustomDialog dialog = new CustomDialog(
-                (Frame) SwingUtilities.getWindowAncestor(this),
+                screenManager.getActiveScreen(),
                 "Restart Required",
                 "<html><center>Some settings require a restart<br>to take full effect.</center></html>",
                 RenderUtils.cyan
@@ -431,7 +431,7 @@ public class SettingsPanel extends JPanel {
      */
     private void showResetDialog() {
         final CustomDialog dialog = new CustomDialog(
-                (Frame) SwingUtilities.getWindowAncestor(this),
+                screenManager.getActiveScreen(),
                 "Reset to Defaults",
                 "<html><center>Are you sure you want to reset all<br>settings to their defaults?</center></html>",
                 Color.RED

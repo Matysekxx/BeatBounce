@@ -119,7 +119,7 @@ public class AchievementManager {
 
                 final boolean isNowCompleted = progress >= ach.getTarget();
                 final boolean wasAlreadyCompleted = saveData.getCompletedIds().contains(ach.getId());
-                
+
                 ach.setCompleted(isNowCompleted || wasAlreadyCompleted);
                 ach.setRewarded(saveData.getRewardedIds().contains(ach.getId()));
 

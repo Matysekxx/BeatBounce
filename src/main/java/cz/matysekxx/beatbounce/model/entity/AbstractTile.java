@@ -30,19 +30,33 @@ import java.awt.*;
         @JsonSubTypes.Type(value = BreakableTile.class, name = "breakable")
 })
 public abstract class AbstractTile extends Entity {
-    /** Duration of the impact animation in seconds. */
+    /**
+     * Duration of the impact animation in seconds.
+     */
     protected static final double IMPACT_DURATION = 0.25;
-    /** Scratch polygon for projection rendering. */
+    /**
+     * Scratch polygon for projection rendering.
+     */
     protected final Polygon scratchPolygon = new Polygon(new int[4], new int[4], 4);
-    /** The depth position of the tile in the 3D space. */
+    /**
+     * The depth position of the tile in the 3D space.
+     */
     protected double z;
-    /** The length of the tile along the Z-axis. */
+    /**
+     * The length of the tile along the Z-axis.
+     */
     protected double lengthInZ;
-    /** Current impact animation time. */
+    /**
+     * Current impact animation time.
+     */
     protected double impactTime = 0;
-    /** Whether the tile has been activated (landed on). */
+    /**
+     * Whether the tile has been activated (landed on).
+     */
     protected boolean isActivated = false;
-    /** The beat event associated with this tile. */
+    /**
+     * The beat event associated with this tile.
+     */
     private BeatEvent beatEvent;
 
     /**
@@ -63,9 +77,17 @@ public abstract class AbstractTile extends Entity {
         this.lengthInZ = lengthInZ;
     }
 
-    public BeatEvent getBeatEvent() { return beatEvent; }
-    public double getZ() { return z; }
-    public double getLengthInZ() { return lengthInZ; }
+    public BeatEvent getBeatEvent() {
+        return beatEvent;
+    }
+
+    public double getZ() {
+        return z;
+    }
+
+    public double getLengthInZ() {
+        return lengthInZ;
+    }
 
     /**
      * Determines if the player's horizontal position is within the bounds of this tile.
@@ -91,10 +113,14 @@ public abstract class AbstractTile extends Entity {
         final int cxB = cam.projectX(targetX, z + lengthInZ, windowData.width()), cyB = cam.projectY(150, z + lengthInZ, windowData.horizonY());
         final double wF = getTileWidth() * sF * pulseScale, wB = getTileWidth() * sB * pulseScale;
 
-        poly.xpoints[0] = (int) (cxF - wF / 2); poly.ypoints[0] = cyF;
-        poly.xpoints[1] = (int) (cxF + wF / 2); poly.ypoints[1] = cyF;
-        poly.xpoints[2] = (int) (cxB + wB / 2); poly.ypoints[2] = cyB;
-        poly.xpoints[3] = (int) (cxB - wB / 2); poly.ypoints[3] = cyB;
+        poly.xpoints[0] = (int) (cxF - wF / 2);
+        poly.ypoints[0] = cyF;
+        poly.xpoints[1] = (int) (cxF + wF / 2);
+        poly.ypoints[1] = cyF;
+        poly.xpoints[2] = (int) (cxB + wB / 2);
+        poly.ypoints[2] = cyB;
+        poly.xpoints[3] = (int) (cxB - wB / 2);
+        poly.ypoints[3] = cyB;
         poly.invalidate();
     }
 

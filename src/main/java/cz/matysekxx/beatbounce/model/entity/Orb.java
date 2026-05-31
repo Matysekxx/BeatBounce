@@ -150,8 +150,8 @@ public class Orb {
      *   <li><b>Highlight Layer:</b> A small offset shine to give a sense of volume.</li>
      * </ol>
      *
-     * @param g2d the graphics context to paint on
-     * @param cam the {@link Camera3D} used for projection
+     * @param g2d        the graphics context to paint on
+     * @param cam        the {@link Camera3D} used for projection
      * @param windowData the window metadata for screen dimension access
      */
     public void render(Graphics2D g2d, Camera3D cam, WindowData windowData) {
@@ -170,7 +170,9 @@ public class Orb {
             final int glowR = (int) (pr * (1.8f + ((Math.sin(t / 120.0) + 1.0) / 2.0) * 0.6f));
             if (cachedPaint == null || lastPx != px || lastPy != py || lastGlowR != glowR) {
                 cachedPaint = new RadialGradientPaint(px, py, glowR, new float[]{0, 1}, new Color[]{new Color(255, 170, 0, 160), new Color(255, 170, 0, 0)});
-                lastPx = px; lastPy = py; lastGlowR = glowR;
+                lastPx = px;
+                lastPy = py;
+                lastGlowR = glowR;
             }
             g2d.setPaint(cachedPaint);
             glowEllipse.setFrame(px - glowR, py - glowR, glowR * 2, glowR * 2);

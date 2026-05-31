@@ -24,16 +24,26 @@ import java.util.List;
  * @author Matysekxx
  */
 public class GameWorldRenderer {
-    /** Primary light color for the planet body. */
+    /**
+     * Primary light color for the planet body.
+     */
     private static final Color PLANET_BODY_LIGHT = new Color(45, 15, 80);
-    /** Secondary dark color for the planet body. */
+    /**
+     * Secondary dark color for the planet body.
+     */
     private static final Color PLANET_BODY_DARK = new Color(10, 0, 25);
-    /** Inner glow color for the planet rings. */
+    /**
+     * Inner glow color for the planet rings.
+     */
     private static final Color PLANET_RING_INNER = new Color(255, 200, 255, 200);
-    /** Fully transparent color. */
+    /**
+     * Fully transparent color.
+     */
     private static final Color TRANSPARENT = new Color(0, 0, 0, 0);
 
-    /** Cached colors for the entire HSB hue range to improve performance. */
+    /**
+     * Cached colors for the entire HSB hue range to improve performance.
+     */
     private static final Color[] HUE_CACHE = new Color[360];
 
     static {
@@ -61,17 +71,29 @@ public class GameWorldRenderer {
      */
     private final Sphere sphere;
 
-    /** Off-screen buffer for the static background elements. */
+    /**
+     * Off-screen buffer for the static background elements.
+     */
     private BufferedImage bgCache;
-    /** Cached RadialGradientPaint for the planet glow. */
+    /**
+     * Cached RadialGradientPaint for the planet glow.
+     */
     private RadialGradientPaint cachedGlowPaint;
-    /** Cached RadialGradientPaint for the planet body. */
+    /**
+     * Cached RadialGradientPaint for the planet body.
+     */
     private RadialGradientPaint cachedBodyPaint;
-    /** Last used glow radius for caching. */
+    /**
+     * Last used glow radius for caching.
+     */
     private int lastGlowR = -1;
-    /** Last used base color RGB for caching. */
+    /**
+     * Last used base color RGB for caching.
+     */
     private int lastBaseColorRGB = -1;
-    /** Last used glow alpha for caching. */
+    /**
+     * Last used glow alpha for caching.
+     */
     private int lastGlowAlpha = -1;
 
     /**
@@ -131,9 +153,11 @@ public class GameWorldRenderer {
         Color baseColor = getCachedColor(globalHue);
 
         if (cachedGlowPaint == null || lastGlowR != glowR || lastBaseColorRGB != baseColor.getRGB() || lastGlowAlpha != glowAlpha) {
-            cachedGlowPaint = new RadialGradientPaint(cx, cy, glowR, new float[]{0, 1}, 
-                new Color[]{RenderCache.customColorWithAlpha(baseColor, glowAlpha), TRANSPARENT});
-            lastGlowR = glowR; lastBaseColorRGB = baseColor.getRGB(); lastGlowAlpha = glowAlpha;
+            cachedGlowPaint = new RadialGradientPaint(cx, cy, glowR, new float[]{0, 1},
+                    new Color[]{RenderCache.customColorWithAlpha(baseColor, glowAlpha), TRANSPARENT});
+            lastGlowR = glowR;
+            lastBaseColorRGB = baseColor.getRGB();
+            lastGlowAlpha = glowAlpha;
         }
         g2d.setPaint(cachedGlowPaint);
         g2d.fillOval(cx - glowR, cy - glowR, glowR * 2, glowR * 2);
@@ -142,7 +166,8 @@ public class GameWorldRenderer {
         drawRing(g2d, cx, ry, r * 1.8f, UIScale.scale(28), 0, RenderCache.customColorWithAlpha(getCachedColor((globalHue + 0.3f) % 1f), 60), RenderCache.STROKE_1);
         drawRing(g2d, cx, ry, r * 1.4f, UIScale.scale(18), 0, RenderCache.customColorWithAlpha(baseColor, 40), RenderCache.STROKE_1);
 
-        if (cachedBodyPaint == null) cachedBodyPaint = new RadialGradientPaint(cx - r / 2.5f, cy - r / 2.5f, r * 1.5f, new float[]{0, 1}, new Color[]{PLANET_BODY_LIGHT, PLANET_BODY_DARK});
+        if (cachedBodyPaint == null)
+            cachedBodyPaint = new RadialGradientPaint(cx - r / 2.5f, cy - r / 2.5f, r * 1.5f, new float[]{0, 1}, new Color[]{PLANET_BODY_LIGHT, PLANET_BODY_DARK});
         g2d.setPaint(cachedBodyPaint);
         g2d.fillOval(cx - r, cy - r, r * 2, r * 2);
 
@@ -160,7 +185,8 @@ public class GameWorldRenderer {
      * Renders a segment of a 3D ring.
      */
     private void drawRing(Graphics2D g2d, int cx, int cy, float rx, int ry, int start, Color c, Stroke s) {
-        g2d.setColor(c); g2d.setStroke(s);
+        g2d.setColor(c);
+        g2d.setStroke(s);
         g2d.drawArc(cx - (int) rx, cy - ry, (int) (rx * 2), ry * 2, start, 180);
     }
 
@@ -170,7 +196,8 @@ public class GameWorldRenderer {
     private void drawNeonGrid(Graphics2D g2d, WindowData wd, float globalHue) {
         double camZ = cam.getZ(), camZmod = camZ % 150;
         for (int z = 0; z < 3000; z += 150) {
-            double dist = z - camZmod; if (dist <= 0) continue;
+            double dist = z - camZmod;
+            if (dist <= 0) continue;
             int py = cam.projectY(150, camZ + dist, wd.horizonY());
             if (py < 0 || py > wd.height()) continue;
             g2d.setColor(RenderCache.customColorWithAlpha(getCachedColor((globalHue + (z / 3000f) * 0.15f) % 1f), (int) Math.clamp(255 - (dist / 3000.0 * 255), 0, 60)));

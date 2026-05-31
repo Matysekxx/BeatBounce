@@ -98,6 +98,11 @@ public class NormalTile extends AbstractTile {
         return false;
     }
 
-    public List<Integer> getRealLaneOffsets() { return realLaneOffsets; }
-    public List<Integer> getFakeLaneOffsets() { return fakeLaneOffsets; }
+    public List<Integer> getRealLaneOffsets() {
+        return realLaneOffsets;
+    }
+
+    public List<Integer> getFakeLaneOffsets() {
+        return fakeLaneOffsets;
+    }
 }

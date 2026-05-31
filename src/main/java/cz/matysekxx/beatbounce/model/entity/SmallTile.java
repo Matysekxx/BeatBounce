@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.event.BeatEvent;
-import cz.matysekxx.beatbounce.gui.Camera3D;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 
 import java.awt.*;

@@ -21,9 +21,14 @@ music.
 
 This software was developed as a final annual project for the 2nd year at [SPŠE Ječná](https://www.spsejecna.cz/).
 
-The core ambition of this project extended beyond a standard school assignment. The primary goal was to architect a **fully complete, highly optimized, and genuinely production-ready game** capable of commercial or indie distribution on platforms like [itch.io](https://itch.io/). It showcases modern Java capabilities, low-latency engine design, and complex algorithmic music generation.
+The core ambition of this project extended beyond a standard school assignment. The primary goal was to architect a *
+*fully complete, highly optimized, and genuinely production-ready game** capable of commercial or indie distribution on
+platforms like [itch.io](https://itch.io/). It showcases modern Java capabilities, low-latency engine design, and
+complex algorithmic music generation.
 
-> 🏆 **Acknowledgments:** A profound thank you goes out to the faculty and teachers at **SPŠE Ječná** for their professional guidance, structural support, and for equipping me with the technical foundations required to build this project.
+> 🏆 **Acknowledgments:** A profound thank you goes out to the faculty and teachers at **SPŠE Ječná** for their
+> professional guidance, structural support, and for equipping me with the technical foundations required to build this
+> project.
 ---
 
 ## 🚀 Key Features

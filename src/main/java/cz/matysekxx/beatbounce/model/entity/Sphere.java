@@ -330,9 +330,9 @@ public class Sphere extends Entity {
     /**
      * Renders the sphere and its drop shadow in 3D perspective.
      *
-     * @param g2d the graphics context to paint on
-     * @param cam the {@link Camera3D} used for perspective projection
-     * @param windowData  metadata about the rendering window dimensions
+     * @param g2d        the graphics context to paint on
+     * @param cam        the {@link Camera3D} used for perspective projection
+     * @param windowData metadata about the rendering window dimensions
      */
     public void render(Graphics2D g2d, Camera3D cam, WindowData windowData) {
         final double scale = cam.getScale(z);
@@ -354,9 +354,9 @@ public class Sphere extends Entity {
     /**
      * Renders a drop shadow on the ground plane (Y=150).
      *
-     * @param g2d the graphics context
-     * @param cam the camera used for projection
-     * @param windowData  screen metadata
+     * @param g2d        the graphics context
+     * @param cam        the camera used for projection
+     * @param windowData screen metadata
      */
     public void drawShadow(Graphics2D g2d, Camera3D cam, WindowData windowData) {
         final double scale = cam.getScale(z);

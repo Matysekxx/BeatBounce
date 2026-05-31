@@ -2,6 +2,7 @@ package cz.matysekxx.beatbounce.model.entity;
 
 import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.Camera3D;
+import cz.matysekxx.beatbounce.gui.WindowData;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
@@ -151,37 +152,25 @@ public class Orb {
      *
      * @param g2d the graphics context to paint on
      * @param cam the {@link Camera3D} used for projection
-     * @param win the window metadata for screen dimension access
+     * @param windowData the window metadata for screen dimension access
      */
-    public void render(Graphics2D g2d, Camera3D cam, cz.matysekxx.beatbounce.gui.WindowData win) {
+    public void render(Graphics2D g2d, Camera3D cam, WindowData windowData) {
         if (collected) return;
 
         final double scale = cam.getScale(z);
         if (scale <= 0) return;
 
         final long t = System.currentTimeMillis();
-        final double levitationOffset = Math.sin(t / 200.0) * 12.0;
-        final int px = (int) (win.width() / 2.0 + (x - cam.getX()) * scale);
-        final int py = (int) (win.height() / 3.0 + ((y + levitationOffset) - cam.getY()) * scale);
-        int pr = (int) (radius * scale);
-
-        if (pr < 1) pr = 1;
+        final double levitation = Math.sin(t / 200.0) * 12.0;
+        final int px = cam.projectX(x, z, windowData.width());
+        final int py = cam.projectY(y + levitation, z, windowData.horizonY());
+        int pr = Math.max(1, (int) (radius * scale));
 
         if (!Settings.graphicsQuality.equals("LOW")) {
-            final float pulse = (float) ((Math.sin(t / 120.0) + 1.0) / 2.0);
-            final int glowR = (int) (pr * (1.8f + pulse * 0.6f));
-
-            final Color glowStart = new Color(255, 170, 0, 160);
-            final Color glowEnd = new Color(255, 170, 0, 0);
+            final int glowR = (int) (pr * (1.8f + ((Math.sin(t / 120.0) + 1.0) / 2.0) * 0.6f));
             if (cachedPaint == null || lastPx != px || lastPy != py || lastGlowR != glowR) {
-                cachedPaint = new RadialGradientPaint(
-                        px, py, glowR,
-                        new float[]{0f, 1f},
-                        new Color[]{glowStart, glowEnd}
-                );
-                lastPx = px;
-                lastPy = py;
-                lastGlowR = glowR;
+                cachedPaint = new RadialGradientPaint(px, py, glowR, new float[]{0, 1}, new Color[]{new Color(255, 170, 0, 160), new Color(255, 170, 0, 0)});
+                lastPx = px; lastPy = py; lastGlowR = glowR;
             }
             g2d.setPaint(cachedPaint);
             glowEllipse.setFrame(px - glowR, py - glowR, glowR * 2, glowR * 2);
@@ -194,8 +183,8 @@ public class Orb {
 
         if (!Settings.graphicsQuality.equals("LOW")) {
             g2d.setColor(new Color(255, 255, 200, 200));
-            final int highlightR = (int) (pr * 0.5);
-            highlightEllipse.setFrame(px - pr * 0.2, py - pr * 0.2, highlightR, highlightR);
+            final int hR = (int) (pr * 0.5);
+            highlightEllipse.setFrame(px - pr * 0.2, py - pr * 0.2, hR, hR);
             g2d.fill(highlightEllipse);
         }
     }

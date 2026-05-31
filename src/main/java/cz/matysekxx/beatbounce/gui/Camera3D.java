@@ -130,4 +130,28 @@ public class Camera3D {
         final double distance = Math.max(0.0, this.getDistanceTo(objectZ));
         return (fieldOfView * UIScale.getScale()) / (distance + 1);
     }
+
+    /**
+     * Projects a 3D X-coordinate to 2D screen space.
+     *
+     * @param worldX the X-coordinate in the game world
+     * @param worldZ the Z-coordinate (depth) in the game world
+     * @param width  the width of the rendering area
+     * @return the projected X-coordinate on the screen
+     */
+    public int projectX(double worldX, double worldZ, int width) {
+        return (int) (width / 2.0 + (worldX - x) * getScale(worldZ));
+    }
+
+    /**
+     * Projects a 3D Y-coordinate to 2D screen space.
+     *
+     * @param worldY   the Y-coordinate in the game world
+     * @param worldZ   the Z-coordinate (depth) in the game world
+     * @param horizonY the Y-coordinate of the horizon on the screen
+     * @return the projected Y-coordinate on the screen
+     */
+    public int projectY(double worldY, double worldZ, int horizonY) {
+        return (int) (horizonY + (worldY - y) * getScale(worldZ));
+    }
 }

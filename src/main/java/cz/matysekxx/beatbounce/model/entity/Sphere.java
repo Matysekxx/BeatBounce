@@ -330,53 +330,47 @@ public class Sphere extends Entity {
     /**
      * Renders the sphere and its drop shadow in 3D perspective.
      *
-     * @param g2d        the graphics context to paint on
-     * @param cam        the {@link Camera3D} used for perspective projection
-     * @param windowData metadata about the rendering window dimensions
+     * @param g2d the graphics context to paint on
+     * @param cam the {@link Camera3D} used for perspective projection
+     * @param windowData  metadata about the rendering window dimensions
      */
     public void render(Graphics2D g2d, Camera3D cam, WindowData windowData) {
         final double scale = cam.getScale(z);
         if (scale <= 0) return;
-        final double vx = 0;
-        final double vy = 0;
 
-        drawShadow(g2d, cam, windowData, vx);
+        drawShadow(g2d, cam, windowData);
 
-        final int screenX = (int) (windowData.width() / 2. + (currentX + vx - cam.getX()) * scale);
-        final int screenY = (int) (windowData.height() / 3. + (currentY + vy - radius - cam.getY()) * scale);
-        final int scaledRadiusX = (int) (radius * scale * scaleMultiplier);
-        final int scaledRadiusY = (int) (radius * scale * scaleMultiplier);
+        final int screenX = cam.projectX(currentX, z, windowData.width());
+        final int screenY = cam.projectY(currentY - radius, z, windowData.horizonY());
+        final int sRadius = (int) (radius * scale * scaleMultiplier);
 
         final int a = (int) (255 * Math.clamp(alpha, 0, 1.0f));
-        if (a <= 0 || scaledRadiusX <= 0 || scaledRadiusY <= 0) return;
+        if (a <= 0 || sRadius <= 0) return;
 
         g2d.setColor(RenderCache.magentaWithAlpha(a));
-        g2d.fillOval(screenX - scaledRadiusX, screenY - scaledRadiusY, scaledRadiusX * 2, scaledRadiusY * 2);
+        g2d.fillOval(screenX - sRadius, screenY - sRadius, sRadius * 2, sRadius * 2);
     }
 
     /**
      * Renders a drop shadow on the ground plane (Y=150).
-     * The shadow's size and transparency are dynamically calculated based on the sphere's current altitude.
      *
-     * @param g2d        the graphics context
-     * @param cam        the camera used for projection
-     * @param windowData screen metadata
-     * @param vx         additional horizontal vibration offset
+     * @param g2d the graphics context
+     * @param cam the camera used for projection
+     * @param windowData  screen metadata
      */
-    public void drawShadow(Graphics2D g2d, Camera3D cam, WindowData windowData, double vx) {
+    public void drawShadow(Graphics2D g2d, Camera3D cam, WindowData windowData) {
         final double scale = cam.getScale(z);
-        final double groundY = 150;
-        final int shadowScreenX = (int) (windowData.width() / 2. + (currentX + vx - cam.getX()) * scale);
-        final int shadowScreenY = (int) (windowData.height() / 3. + (groundY - cam.getY()) * scale);
+        final int sx = cam.projectX(currentX, z, windowData.width());
+        final int sy = cam.projectY(150, z, windowData.horizonY());
 
-        final double heightFactor = Math.max(0, (groundY - currentY) / 300.0);
-        final float shadowAlpha = (float) Math.max(0, 0.4 - heightFactor * 0.3);
-        final int shadowSizeX = (int) (radius * scale * (1.2 - heightFactor * 0.4));
-        final int shadowSizeY = (int) (shadowSizeX * 0.4);
+        final double hFactor = Math.max(0, (150 - currentY) / 300.0);
+        final float sAlpha = (float) Math.max(0, 0.4 - hFactor * 0.3);
+        final int sSizeX = (int) (radius * scale * (1.2 - hFactor * 0.4));
+        final int sSizeY = (int) (sSizeX * 0.4);
 
-        if (shadowAlpha > 0 && shadowSizeX > 0 && shadowSizeY > 0) {
-            g2d.setColor(RenderCache.blackWithAlpha((int) (255 * shadowAlpha)));
-            g2d.fillOval(shadowScreenX - shadowSizeX, shadowScreenY - shadowSizeY / 2, shadowSizeX * 2, shadowSizeY);
+        if (sAlpha > 0 && sSizeX > 0 && sSizeY > 0) {
+            g2d.setColor(RenderCache.blackWithAlpha((int) (255 * sAlpha)));
+            g2d.fillOval(sx - sSizeX, sy - sSizeY / 2, sSizeX * 2, sSizeY);
         }
     }
 }

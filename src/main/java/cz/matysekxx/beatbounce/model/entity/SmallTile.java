@@ -40,28 +40,13 @@ public class SmallTile extends AbstractTile {
     }
 
     /**
-     * Overrides the X-point calculation to make the tile narrower (50 world units instead of 100).
+     * Overrides the base width to make the tile narrower (50 world units instead of 100).
      *
-     * @param cam        the camera used for projection
-     * @param width      screen width
-     * @param scaleFront scale at the front of the tile
-     * @param scaleBack  scale at the back of the tile
-     * @param targetX    world X coordinate
-     * @param pulseScale current animation pulse scale
-     * @param xpoints    array to fill with projected X coordinates
+     * @return the tile width (50)
      */
     @Override
-    protected void fillXPoints(Camera3D cam, int width, double scaleFront, double scaleBack, int targetX, double pulseScale, int[] xpoints) {
-        final double centerScreenFront = ((double) width / 2) + ((targetX - cam.getX()) * scaleFront);
-        final double centerScreenBack = ((double) width / 2) + ((targetX - cam.getX()) * scaleBack);
-
-        final double frontWidth = 50 * scaleFront * pulseScale;
-        final double backWidth = 50 * scaleBack * pulseScale;
-
-        xpoints[0] = (int) (centerScreenFront - frontWidth / 2);
-        xpoints[1] = (int) (centerScreenFront + frontWidth / 2);
-        xpoints[2] = (int) (centerScreenBack + backWidth / 2);
-        xpoints[3] = (int) (centerScreenBack - backWidth / 2);
+    protected int getTileWidth() {
+        return 50;
     }
 
     /**

@@ -173,9 +173,9 @@ public class BreakableTile extends AbstractTile {
     /**
      * Renders the tile in a 3D perspective.
      *
-     * @param g2d        the graphics context to paint on
-     * @param cam        the {@link Camera3D} used for perspective calculations
-     * @param windowData the {@link WindowData} containing screen dimensions
+     * @param g2d the graphics context to paint on
+     * @param cam the {@link Camera3D} used for perspective calculations
+     * @param wd  the {@link WindowData} containing screen dimensions
      */
     @Override
     public void render(Graphics2D g2d, Camera3D cam, WindowData windowData) {

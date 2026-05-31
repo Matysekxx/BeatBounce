@@ -447,19 +447,19 @@ public class GamePanel extends JPanel implements Runnable {
         g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, w, h);
 
-        final int horizonY = h / 3;
+        final WindowData windowData = WindowData.of(w, h);
         final long time = System.currentTimeMillis();
         final float globalHue = (animTime * 0.02f) % 1.0f;
+
         if (gameEngine.getGameState() != GameState.FINISHED) {
-            worldRenderer.drawBackground(g2d, w, h, horizonY);
+            worldRenderer.drawBackground(g2d, windowData);
         }
 
         if (gameEngine.getGameState() != GameState.FINISHED) {
-            worldRenderer.drawPlanetAndGrid(g2d, w, h, horizonY, time, globalHue);
+            worldRenderer.drawPlanetAndGrid(g2d, windowData, time, globalHue);
             if (Settings.particlesEnabled) {
                 Particle.drawAll(g2d, particles, particleCount);
             }
-            final WindowData windowData = WindowData.of(w, h);
             worldRenderer.drawGameObjects(g2d, windowData);
             uiRenderer.drawProgressBar(g2d, w, h);
             uiRenderer.drawScore(g2d, w, scorePopAlpha);

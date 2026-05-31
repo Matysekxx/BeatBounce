@@ -21,4 +21,13 @@ public record WindowData(
     public static WindowData of(int width, int height) {
         return new WindowData(width, height);
     }
+
+    /**
+     * Calculates the Y-coordinate of the horizon based on the window height.
+     *
+     * @return the horizon Y-coordinate
+     */
+    public int horizonY() {
+        return height / 3;
+    }
 }

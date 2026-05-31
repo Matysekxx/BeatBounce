@@ -79,7 +79,7 @@ public class AchievementProgressPanel extends JPanel {
         final int barX = 0;
         final int barY = UIScale.scale(22);
 
-        g2.setFont(UIScale.scaleFont(RenderCache.MONO_BOLD_12));
+        g2.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_16));
         String progressText;
         if (achievement.isCompleted()) {
             progressText = "COMPLETED";

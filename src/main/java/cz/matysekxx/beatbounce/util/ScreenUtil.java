@@ -50,9 +50,9 @@ public class ScreenUtil {
         }
         screen.setExtendedState(JFrame.NORMAL);
         screen.setResizable(false);
-        screen.setSize(1024, 768);
-        screen.setMinimumSize(new Dimension(1024, 768));
+        screen.setSize(1124, 768);
+        screen.setMinimumSize(new Dimension(1124, 768));
         final Rectangle bounds = device.getDefaultConfiguration().getBounds();
-        screen.setLocation(bounds.x + (bounds.width - 1024) / 2, bounds.y + (bounds.height - 768) / 2);
+        screen.setLocation(bounds.x + (bounds.width - 1124) / 2, bounds.y + (bounds.height - 768) / 2);
     }
 }

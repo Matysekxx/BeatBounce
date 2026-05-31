@@ -176,10 +176,6 @@ public final class RenderCache {
      */
     public static final Font SANS_PLAIN_16 = new Font("SansSerif", Font.PLAIN, 16);
     /**
-     * SansSerif Plain font, size 17.
-     */
-    public static final Font SANS_PLAIN_17 = new Font("SansSerif", Font.PLAIN, 17);
-    /**
      * SansSerif Plain font, size 18.
      */
     public static final Font SANS_PLAIN_18 = new Font("SansSerif", Font.PLAIN, 18);
@@ -187,27 +183,10 @@ public final class RenderCache {
      * SansSerif Plain font, size 20.
      */
     public static final Font SANS_PLAIN_20 = new Font("SansSerif", Font.PLAIN, 20);
-
-    /**
-     * SansSerif Bold font, size 11.
-     */
-    public static final Font SANS_BOLD_11 = new Font("SansSerif", Font.BOLD, 11);
-    /**
-     * SansSerif Bold font, size 13.
-     */
-    public static final Font SANS_BOLD_13 = new Font("SansSerif", Font.BOLD, 13);
-    /**
-     * SansSerif Bold font, size 14.
-     */
-    public static final Font SANS_BOLD_14 = new Font("SansSerif", Font.BOLD, 14);
     /**
      * SansSerif Bold font, size 15.
      */
     public static final Font SANS_BOLD_15 = new Font("SansSerif", Font.BOLD, 15);
-    /**
-     * SansSerif Bold font, size 16.
-     */
-    public static final Font SANS_BOLD_16 = new Font("SansSerif", Font.BOLD, 16);
     /**
      * SansSerif Bold font, size 18.
      */
@@ -232,10 +211,6 @@ public final class RenderCache {
      * SansSerif Bold font, size 36.
      */
     public static final Font SANS_BOLD_36 = new Font("SansSerif", Font.BOLD, 36);
-    /**
-     * SansSerif Bold font, size 56.
-     */
-    public static final Font SANS_BOLD_56 = new Font("SansSerif", Font.BOLD, 56);
 
     /**
      * SansSerif Italic font, size 22.
@@ -263,29 +238,13 @@ public final class RenderCache {
      */
     public static final Shape SHAPE_PENTAGON;
     /**
-     * Monospaced Bold font, size 65.
-     */
-    public static final Font MONO_BOLD_65 = new Font("Monospaced", Font.BOLD, 65);
-    /**
      * Cached black colors with pre-calculated alpha levels.
      */
     public static final Color[] BLACK_ALPHA = new Color[256];
     /**
-     * Cached cyan colors with pre-calculated alpha levels.
-     */
-    private static final Color[] CYAN_ALPHA = new Color[256];
-    /**
      * Cached magenta colors with pre-calculated alpha levels.
      */
     private static final Color[] MAGENTA_ALPHA = new Color[256];
-    /**
-     * Cached yellow colors with pre-calculated alpha levels.
-     */
-    private static final Color[] YELLOW_ALPHA = new Color[256];
-    /**
-     * Cached red colors with pre-calculated alpha levels.
-     */
-    private static final Color[] RED_ALPHA = new Color[256];
     /**
      * Cached white colors with pre-calculated alpha levels.
      */
@@ -297,10 +256,7 @@ public final class RenderCache {
 
     static {
         for (int i = 0; i < 256; i++) {
-            CYAN_ALPHA[i] = new Color(0, 255, 255, i);
             MAGENTA_ALPHA[i] = new Color(255, 0, 255, i);
-            YELLOW_ALPHA[i] = new Color(255, 215, 0, i);
-            RED_ALPHA[i] = new Color(255, 0, 0, i);
             WHITE_ALPHA[i] = new Color(255, 255, 255, i);
             BLACK_ALPHA[i] = new Color(0, 0, 0, i);
         }
@@ -376,16 +332,6 @@ public final class RenderCache {
     }
 
     /**
-     * Returns a cyan color with the specified alpha value.
-     *
-     * @param alpha the alpha value (0-255)
-     * @return the color
-     */
-    public static Color cyanWithAlpha(int alpha) {
-        return CYAN_ALPHA[Math.clamp(alpha, 0, 255)];
-    }
-
-    /**
      * Returns a magenta color with the specified alpha value.
      *
      * @param alpha the alpha value (0-255)
@@ -393,26 +339,6 @@ public final class RenderCache {
      */
     public static Color magentaWithAlpha(int alpha) {
         return MAGENTA_ALPHA[Math.clamp(alpha, 0, 255)];
-    }
-
-    /**
-     * Returns a yellow color with the specified alpha value.
-     *
-     * @param alpha the alpha value (0-255)
-     * @return the color
-     */
-    public static Color yellowWithAlpha(int alpha) {
-        return YELLOW_ALPHA[Math.clamp(alpha, 0, 255)];
-    }
-
-    /**
-     * Returns a red color with the specified alpha value.
-     *
-     * @param alpha the alpha value (0-255)
-     * @return the color
-     */
-    public static Color redWithAlpha(int alpha) {
-        return RED_ALPHA[Math.clamp(alpha, 0, 255)];
     }
 
     /**

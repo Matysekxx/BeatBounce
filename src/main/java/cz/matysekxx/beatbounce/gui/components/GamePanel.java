@@ -25,9 +25,9 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * The main panel for the game, handling rendering, user input, and the game loop.
@@ -72,7 +72,7 @@ public class GamePanel extends JPanel implements Runnable {
     /**
      * Active achievement toast notifications.
      */
-    private final List<ToastNotification> activeToasts = new ArrayList<>();
+    private final List<ToastNotification> activeToasts = new CopyOnWriteArrayList<>();
     /**
      * Listener to spawn new toasts on achievement unlock.
      */
@@ -322,16 +322,10 @@ public class GamePanel extends JPanel implements Runnable {
             updateCursorVisibility();
             if (uiRenderer != null) uiRenderer.update(dt);
 
-            synchronized (activeToasts) {
-                final Iterator<ToastNotification> it = activeToasts.iterator();
-                while (it.hasNext()) {
-                    final ToastNotification toast = it.next();
-                    toast.update(dt);
-                    if (toast.isFinished()) {
-                        it.remove();
-                    }
-                }
-            }
+            activeToasts.removeIf(toast -> {
+                toast.update(dt);
+                return toast.isFinished();
+            });
 
             if (Settings.particlesEnabled) {
                 final int w = (cachedW > 0) ? cachedW : 1920;
@@ -472,10 +466,8 @@ public class GamePanel extends JPanel implements Runnable {
         }
         uiRenderer.renderGameState(g2d, w, h, gameEngine.getGameState());
 
-        synchronized (activeToasts) {
-            int index = 0;
-            for (ToastNotification toast : activeToasts) toast.draw(g2d, w, index++);
-        }
+        int index = 0;
+        for (ToastNotification toast : activeToasts) toast.draw(g2d, w, index++);
 
         if (Settings.showFps) {
             g2d.setColor(Color.YELLOW);

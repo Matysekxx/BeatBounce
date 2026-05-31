@@ -117,7 +117,6 @@ public class AchievementsPanel extends BasePanel {
                 return new Dimension(UIScale.scale(190), UIScale.scale(36));
             }
         };
-        filterBtn.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_14));
         filterBtn.addActionListener(_ -> loadAchievements());
         controls.add(filterBtn);
 
@@ -139,7 +138,6 @@ public class AchievementsPanel extends BasePanel {
                 return new Dimension(UIScale.scale(160), UIScale.scale(36));
             }
         };
-        sortBtn.setFont(UIScale.scaleFont(RenderCache.MONTSERRAT_BLACK_14));
         sortBtn.addActionListener(_ -> loadAchievements());
         controls.add(sortBtn);
 

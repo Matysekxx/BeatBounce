@@ -116,7 +116,11 @@ public class TrackData {
     public Path findDownloadedPath(AudiusClient client) {
         final String[] exts = {".mp3", ".ogg", ".wav", ".flac"};
         final Path dir = client.getDownloadDirectory();
-        final String sanitized = title.replaceAll("[\\\\/:*?\"<>|]", "_");
+        final String sanitized = title
+                .trim()
+                .replaceAll("[\\\\/:*?\"<>|]", "_")
+                .replaceAll("\\s+", " ")
+                .replaceAll("[.\\s]+$", "");
         for (String ext : exts) {
             final Path p = dir.resolve(sanitized + ext);
             if (Files.exists(p)) return p;

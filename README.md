@@ -35,8 +35,8 @@ complex algorithmic music generation.
 
 - **🎹 Intelligent Level Generation**: Automatically maps level geometry to BPM, spectral flux, and detected song
   sections (Intro, Chorus, etc.).
-- **🎵 Audius Integration**: Stream and analyze millions of tracks directly from the
-  decentralized [Audius](https://audius.co/) network.
+- **🎵 ccMixter Integration**: Stream and analyze millions of tracks directly from the
+  [ccMixter](http://ccmixter.org/) platform.
 - **⚡ High-Performance Rendering**: Custom-built Swing-based engine with hardware acceleration (OpenGL/Direct3D) and
   High DPI support.
 - **🏆 Progression & Achievements**: Dynamic scoring system with combo multipliers, global high scores, and unlockable

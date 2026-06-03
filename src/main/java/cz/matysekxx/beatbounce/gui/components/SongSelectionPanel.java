@@ -2,7 +2,7 @@ package cz.matysekxx.beatbounce.gui.components;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.matysekxx.beatbounce.api.AudiusClient;
+import cz.matysekxx.beatbounce.api.CcMixterClient;
 import cz.matysekxx.beatbounce.configuration.Settings;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
@@ -25,7 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
- * A panel that allows users to browse and select songs from the Audius API.
+ * A panel that allows users to browse and select songs from the ccMixter API.
  * It includes search functionality and genre filters.
  *
  * @author Matysekxx
@@ -33,9 +33,9 @@ import java.util.stream.Collectors;
 public class SongSelectionPanel extends BasePanel implements Runnable {
 
     /**
-     * Client for interacting with the Audius API.
+     * Client for interacting with the ccMixter API.
      */
-    private final AudiusClient audiusClient;
+    private final CcMixterClient ccMixterClient;
 
     /**
      * JSON mapper for parsing API responses.
@@ -85,7 +85,7 @@ public class SongSelectionPanel extends BasePanel implements Runnable {
     /**
      * Currently active genre filter.
      */
-    private String activeGenre = "All-Time";
+    private String activeGenre = "Top";
 
     /**
      * Search input field.
@@ -95,13 +95,13 @@ public class SongSelectionPanel extends BasePanel implements Runnable {
     /**
      * Constructs a new SongSelectionPanel.
      *
-     * @param audiusClient  the client used for API requests
+     * @param ccMixterClient  the client used for API requests
      * @param objectMapper  the mapper used for JSON parsing
      * @param screenManager the screen manager used for navigation
      */
-    public SongSelectionPanel(AudiusClient audiusClient, ObjectMapper objectMapper, ScreenManager screenManager) {
+    public SongSelectionPanel(CcMixterClient ccMixterClient, ObjectMapper objectMapper, ScreenManager screenManager) {
         super();
-        this.audiusClient = audiusClient;
+        this.ccMixterClient = ccMixterClient;
         this.objectMapper = objectMapper;
         this.screenManager = screenManager;
 
@@ -127,8 +127,7 @@ public class SongSelectionPanel extends BasePanel implements Runnable {
                 songListPanel.revalidate();
             }
         });
-
-        loadTracks("allTime", null);
+        loadTracks(null);
     }
 
     /**
@@ -228,7 +227,7 @@ public class SongSelectionPanel extends BasePanel implements Runnable {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     searchQuery = searchField.getText();
-                    audiusClient.searchTracks(searchQuery).thenAccept(
+                    ccMixterClient.searchTracks(searchQuery).thenAccept(
                             json -> SwingUtilities.invokeLater(() -> loadSongs(json))
                     );
                 }
@@ -238,7 +237,7 @@ public class SongSelectionPanel extends BasePanel implements Runnable {
         topBar.add(searchContainer, BorderLayout.WEST);
 
         final JPanel genrePanel = getJPanel();
-        final String[] genres = {"All-Time", "Trending", "Electronic", "Hip-Hop", "Pop", "World"};
+        final String[] genres = {"Top", "Instrumental", "Electronic", "Hip-Hop", "Rock", "Pop"};
         for (String g : genres) genrePanel.add(createGenreChip(g));
         topBar.add(genrePanel, BorderLayout.CENTER);
 
@@ -300,7 +299,7 @@ public class SongSelectionPanel extends BasePanel implements Runnable {
 
             @Override
             public Dimension getPreferredSize() {
-                return new Dimension(UIScale.scale(100), UIScale.scale(38));
+                return new Dimension(UIScale.scale(120), UIScale.scale(38));
             }
         };
         btn.setContentAreaFilled(false);
@@ -310,30 +309,33 @@ public class SongSelectionPanel extends BasePanel implements Runnable {
         btn.addActionListener(_ -> {
             AudioManager.playSFX("/click-sound.mp3");
             activeGenre = name;
-            final String time = name.equals("Trending") ? "month" : "allTime";
-            String genre = (name.equals("All-Time") || name.equals("Trending")) ? null : name;
-            if (name.equals("Hip-Hop")) genre = "Hip-Hop/Rap";
-            loadTracks(time, genre);
+            String genre;
+            if (name.equals("Top")) {
+                genre = null;
+            } else if (name.equals("Hip-Hop")) {
+                genre = "hip_hop";
+            } else {
+                genre = name.toLowerCase();
+            }
+            loadTracks(genre);
             repaint();
         });
         return btn;
     }
 
     /**
-     * Asynchronously loads tracks from the Audius API based on time and genre filters.
+     * Asynchronously loads tracks from the ccMixter API based on the genre filter.
      *
-     * @param time  The timeframe (e.g., "allTime", "month").
      * @param genre The genre string, or null for all genres.
      */
-    private void loadTracks(String time, String genre) {
+    private void loadTracks(String genre) {
         final CompletableFuture<String> future;
-        if (genre != null) future = audiusClient.getTrendingTracksByGenre(genre, time);
-        else future = audiusClient.getTrendingTracks(time);
+        future = ccMixterClient.getTrendingTracksByGenre(genre);
         future.thenAccept(json -> SwingUtilities.invokeLater(() -> loadSongs(json)));
     }
 
     /**
-     * Parses the JSON response from Audius and populates the track list.
+     * Parses the JSON response from ccMixter and populates the track list.
      *
      * @param json The JSON string response from the API.
      */
@@ -341,8 +343,12 @@ public class SongSelectionPanel extends BasePanel implements Runnable {
         try {
             final JsonNode root = objectMapper.readTree(json);
             allTracks.clear();
-            for (JsonNode node : root.path("data")) {
-                allTracks.add(new TrackData(node));
+            final JsonNode arrayNode = root.isArray() ? root : root.path("data");
+
+            if (arrayNode.isArray()) {
+                for (JsonNode node : arrayNode) {
+                    allTracks.add(new TrackData(node));
+                }
             }
             filterTracks();
             if (!filteredTracks.isEmpty()) {
@@ -371,7 +377,7 @@ public class SongSelectionPanel extends BasePanel implements Runnable {
     private void updateSongList() {
         songListPanel.removeAll();
         for (TrackData track : filteredTracks) {
-            songListPanel.add(new TrackRow(track, audiusClient, screenManager, this::selectTrack));
+            songListPanel.add(new TrackRow(track, ccMixterClient, screenManager, this::selectTrack));
             songListPanel.add(Box.createRigidArea(new Dimension(0, 0)));
         }
         songListPanel.revalidate();

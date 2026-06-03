@@ -17,25 +17,25 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 /**
- * Test class for {@link AudiusClient}.
+ * Test class for {@link CcMixterClient}.
  * Verifies that tracks can be searched.
  */
-class AudiusClientTest {
+class CcMixterClientTest {
     static {
         System.setProperty("net.bytebuddy.experimental", "true");
     }
 
     private HttpClient mockHttpClient;
-    private AudiusClient audiusClient;
+    private CcMixterClient ccMixterClient;
 
     @BeforeEach
     void setUp() {
         mockHttpClient = Mockito.mock(HttpClient.class);
-        audiusClient = new AudiusClient(mockHttpClient);
+        ccMixterClient = new CcMixterClient(mockHttpClient);
     }
 
     /**
-     * Tests that {@link AudiusClient#searchTracks(String)} correctly builds the search URI
+     * Tests that {@link CcMixterClient#searchTracks(String)} correctly builds the search URI
      * and returns the expected JSON response.
      *
      * @throws ExecutionException   if the future completed exceptionally.
@@ -50,13 +50,13 @@ class AudiusClientTest {
 
         when(mockHttpClient.sendAsync(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
                 .thenReturn(CompletableFuture.completedFuture(mockResponse));
-        CompletableFuture<String> future = audiusClient.searchTracks("synthwave");
+        CompletableFuture<String> future = ccMixterClient.searchTracks("synthwave");
         String result = future.get();
 
         assertEquals(expectedJson, result);
 
         ArgumentCaptor<HttpRequest> requestCaptor = ArgumentCaptor.forClass(HttpRequest.class);
         Mockito.verify(mockHttpClient).sendAsync(requestCaptor.capture(), any());
-        assertTrue(requestCaptor.getValue().uri().toString().contains("query=synthwave"));
+        assertTrue(requestCaptor.getValue().uri().toString().contains("search=synthwave"));
     }
 }

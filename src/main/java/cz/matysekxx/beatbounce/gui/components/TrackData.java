@@ -1,21 +1,21 @@
 package cz.matysekxx.beatbounce.gui.components;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import cz.matysekxx.beatbounce.api.AudiusClient;
+import cz.matysekxx.beatbounce.api.CcMixterClient;
 import cz.matysekxx.beatbounce.model.score.ScoreManager;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * Data class representing a music track from the Audius API.
+ * Data class representing a music track from the ccMixter API.
  * It stores track information, download status, and UI-related state.
  *
  * @author Matysekxx
  */
 public class TrackData {
     /**
-     * Unique identifier for the track from the Audius API.
+     * Unique identifier for the track from the API (used as download URL).
      */
     public String id;
 
@@ -85,10 +85,17 @@ public class TrackData {
      * @param node the JSON node containing track data
      */
     public TrackData(JsonNode node) {
-        this.id = node.path("id").asText();
-        this.title = node.path("title").asText();
-        this.artist = node.path("user").path("name").asText("Unknown Artist");
-        this.hash = id.hashCode();
+        this.title = node.has("upload_name") ? node.path("upload_name").asText() : node.path("title").asText("Unknown Title");
+        this.artist = node.has("user_name") ? node.path("user_name").asText() : node.path("user").path("name").asText("Unknown Artist");
+        String downloadUrl = "";
+        if (node.has("files") && node.path("files").isArray() && !node.path("files").isEmpty()) {
+            downloadUrl = node.path("files").get(0).path("download_url").asText();
+        } else {
+            downloadUrl = node.has("upload_id") ? node.path("upload_id").asText() : node.path("id").asText("");
+        }
+        this.id = downloadUrl;
+
+        this.hash = this.title.hashCode() ^ this.artist.hashCode();
         this.stars = 1 + (Math.abs(hash) % 10);
         this.best = ScoreManager.getBestScore(title);
 
@@ -99,10 +106,10 @@ public class TrackData {
     /**
      * Checks if the track has already been downloaded.
      *
-     * @param client the Audius client used to get the download directory
+     * @param client the ccMixter client used to get the download directory
      * @return true if the track file exists locally, false otherwise
      */
-    public boolean isDownloaded(AudiusClient client) {
+    public boolean isDownloaded(CcMixterClient client) {
         return findDownloadedPath(client) != null;
     }
 
@@ -110,10 +117,10 @@ public class TrackData {
      * Finds the local path of the downloaded track file.
      * It checks for various audio file extensions.
      *
-     * @param client the Audius client used to get the download directory
+     * @param client the ccMixter client used to get the download directory
      * @return the {@link Path} to the local file, or {@code null} if not found
      */
-    public Path findDownloadedPath(AudiusClient client) {
+    public Path findDownloadedPath(CcMixterClient client) {
         final String[] exts = {".mp3", ".ogg", ".wav", ".flac"};
         final Path dir = client.getDownloadDirectory();
         final String sanitized = title

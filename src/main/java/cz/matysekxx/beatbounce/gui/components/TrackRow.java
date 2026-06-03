@@ -1,6 +1,6 @@
 package cz.matysekxx.beatbounce.gui.components;
 
-import cz.matysekxx.beatbounce.api.AudiusClient;
+import cz.matysekxx.beatbounce.api.CcMixterClient;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.screen.GameScreen;
@@ -34,9 +34,9 @@ public class TrackRow extends JPanel {
     private final Path localPath;
 
     /**
-     * The Audius client used for downloading online tracks.
+     * The ccMixter client used for downloading online tracks.
      */
-    private final AudiusClient audiusClient;
+    private final CcMixterClient ccMixterClient;
 
     /**
      * The screen manager used for navigating to the game screen.
@@ -69,17 +69,17 @@ public class TrackRow extends JPanel {
     private boolean hovered = false;
 
     /**
-     * Constructor for online tracks (Audius API).
+     * Constructor for online tracks (ccMixter API).
      *
      * @param data          the track data
-     * @param audiusClient  the Audius client
+     * @param ccMixterClient  the ccMixter client
      * @param screenManager the screen manager
      * @param onSelect      callback for when the track is selected
      */
-    public TrackRow(TrackData data, AudiusClient audiusClient, ScreenManager screenManager, Consumer<TrackData> onSelect) {
+    public TrackRow(TrackData data, CcMixterClient ccMixterClient, ScreenManager screenManager, Consumer<TrackData> onSelect) {
         this.data = data;
         this.localPath = null;
-        this.audiusClient = audiusClient;
+        this.ccMixterClient = ccMixterClient;
         this.screenManager = screenManager;
 
         this.title = data.title;
@@ -101,7 +101,7 @@ public class TrackRow extends JPanel {
     public TrackRow(Path path, ScreenManager screenManager) {
         this.data = null;
         this.localPath = path;
-        this.audiusClient = null;
+        this.ccMixterClient = null;
         this.screenManager = screenManager;
 
         final String rawName = path.getFileName().toString();
@@ -172,10 +172,10 @@ public class TrackRow extends JPanel {
                     if (onSelect != null) {
                         onSelect.accept(data);
                     }
-                    if (!data.isDownloaded(audiusClient)) {
+                    if (!data.isDownloaded(ccMixterClient)) {
                         handlePlay();
                     } else {
-                        launchGame(data.findDownloadedPath(audiusClient), stars);
+                        launchGame(data.findDownloadedPath(ccMixterClient), stars);
                     }
                 }
             }
@@ -233,7 +233,7 @@ public class TrackRow extends JPanel {
 
         String icon = "🎵";
         if (localPath == null && data != null) {
-            if (data.isDownloaded(audiusClient)) {
+            if (data.isDownloaded(ccMixterClient)) {
                 icon = "✓";
                 g2.setColor(RenderUtils.cyan);
             } else {
@@ -279,7 +279,7 @@ public class TrackRow extends JPanel {
 
             g2.setColor(Color.BLACK);
             g2.setFont(UIScale.scaleFont(RenderCache.SANS_BOLD_20));
-            final String playTxt = (localPath != null || data.isDownloaded(audiusClient)) ? "PLAY" : "GET";
+            final String playTxt = (localPath != null || data.isDownloaded(ccMixterClient)) ? "PLAY" : "GET";
             final FontMetrics fmPlay = g2.getFontMetrics();
             g2.drawString(playTxt, bx + (btnW - fmPlay.stringWidth(playTxt)) / 2, by + UIScale.scale(32));
         } else if (data != null && data.downloading) {
@@ -330,13 +330,13 @@ public class TrackRow extends JPanel {
      */
     private void handlePlay() {
         if (data.starting) return;
-        if (data.isDownloaded(audiusClient)) {
-            launchGame(data.findDownloadedPath(audiusClient), data.stars);
+        if (data.isDownloaded(ccMixterClient)) {
+            launchGame(data.findDownloadedPath(ccMixterClient), data.stars);
         } else {
             data.downloading = true;
             data.downloadProgress = 0.15f;
             repaint();
-            audiusClient.downloadMusic(data.id, data.title).thenAccept(downloadedPath -> {
+            ccMixterClient.downloadMusic(data.id, data.title).thenAccept(downloadedPath -> {
                 data.downloadProgress = 1f;
                 SwingUtilities.invokeLater(() -> {
                     data.downloading = false;
@@ -392,4 +392,3 @@ public class TrackRow extends JPanel {
         }
     }
 }
-

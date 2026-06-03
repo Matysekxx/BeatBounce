@@ -1,7 +1,7 @@
 package cz.matysekxx.beatbounce.gui.screen;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.matysekxx.beatbounce.api.AudiusClient;
+import cz.matysekxx.beatbounce.api.CcMixterClient;
 import cz.matysekxx.beatbounce.gui.RenderCache;
 import cz.matysekxx.beatbounce.gui.RenderUtils;
 import cz.matysekxx.beatbounce.gui.components.*;
@@ -79,7 +79,7 @@ public class MainMenuScreen extends Screen {
      */
     public MainMenuScreen(ScreenManager screenManager) {
         super();
-        final AudiusClient audiusClient = new AudiusClient();
+        final CcMixterClient ccMixterClient = new CcMixterClient();
         final ObjectMapper objectMapper = new ObjectMapper();
         this.screenManager = screenManager;
         this.setLayout(new BorderLayout());
@@ -97,7 +97,7 @@ public class MainMenuScreen extends Screen {
         cardPanel.setBorder(BorderFactory.createEmptyBorder(UIScale.scale(20), UIScale.scale(20), UIScale.scale(20), UIScale.scale(20)));
         backgroundPanel.add(cardPanel, BorderLayout.CENTER);
 
-        songSelectionPanel = new SongSelectionPanel(audiusClient, objectMapper, screenManager);
+        songSelectionPanel = new SongSelectionPanel(ccMixterClient, objectMapper, screenManager);
         libraryPanel = new LibraryPanel(screenManager);
         achievementsPanel = new AchievementsPanel();
         final SettingsPanel settingsPanel = new SettingsPanel(screenManager);
